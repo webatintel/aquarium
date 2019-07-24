@@ -1,0 +1,78 @@
+#version 450
+
+layout(location = 0) in vec4 v_position;
+layout(location = 1) in vec2 v_texCoord;
+layout(location = 2) in vec3 v_tangent;  // #normalMap
+layout(location = 3) in vec3 v_binormal;  // #normalMap
+layout(location = 4) in vec3 v_normal;
+layout(location = 5) in vec3 v_surfaceToLight;
+layout(location = 6) in vec3 v_surfaceToView;
+layout(location = 0) out vec4 outColor;
+
+layout(std140, set = 0, binding = 0) uniform LightUniforms {
+    vec4 lightColor;
+    vec4 specular;
+    vec4 ambient;
+} lightUniforms;
+
+layout(std140, set = 2, binding = 0) uniform InnerUniforms{
+	float eta;
+	float tankColorFudge;
+	float refractionFudge;
+	float padding;
+} innerUniforms;
+
+layout(set = 2, binding = 1) uniform sampler samplerTex2D;
+layout(set = 2, binding = 2) uniform sampler samplerSkybox;
+layout(set = 2, binding = 3) uniform texture2D diffuse;
+layout(set = 2, binding = 4) uniform texture2D normalMap;
+layout(set = 2, binding = 5) uniform texture2D reflectionMap; // #reflection
+layout(set = 2, binding = 6) uniform textureCube skybox; // #reflecton
+
+layout(std140, set = 0, binding = 1) uniform Fogs
+{
+    float fogPower;
+	float fogMult;
+	float fogOffset;
+	float padding;
+	vec4 fogColor;
+} fogs;
+
+vec4 lit(float l ,float h, float m) {
+  return vec4(1.0,
+              max(l, 0.0),
+              (l > 0.0) ? pow(max(0.0, h), m) : 0.0,
+              1.0);
+}
+void main() {
+  vec4 diffuseColor = texture(sampler2D(diffuse, samplerTex2D), v_texCoord) +
+      vec4(innerUniforms.tankColorFudge, innerUniforms.tankColorFudge, innerUniforms.tankColorFudge, 1);
+  mat3 tangentToWorld = mat3(v_tangent,  // #normalMap
+                             v_binormal,  // #normalMap
+                             v_normal);  // #normalMap
+  vec4 normalSpec = texture(sampler2D(normalMap, samplerTex2D), v_texCoord.xy);  // #normalMap
+  vec4 normalSpec = vec4(0,0,0,0);  // #noNormalMap
+  vec4 refraction = texture(sampler2D(reflectionMap, samplerTex2D), v_texCoord.xy);
+  vec3 tangentNormal = normalSpec.xyz - vec3(0.5, 0.5, 0.5);  // #normalMap
+  tangentNormal = normalize(tangentNormal + vec3(0,0,innerUniforms.refractionFudge));  // #normalMap
+  vec3 normal = (tangentToWorld * tangentNormal);  // #normalMap
+  normal = normalize(normal);  // #normalMap
+  vec3 normal = normalize(v_normal);   // #noNormalMap
+
+  vec3 surfaceToView = normalize(v_surfaceToView);
+
+  vec3 refractionVec = refract(surfaceToView, normal, innerUniforms.eta);
+
+  vec4 skyColor = texture(samplerCube(skybox, samplerSkybox), refractionVec);
+
+//  vec4 bumpSkyColor = texture(samplerCube(skybox, samplerSkybox), refractionVec);
+//  vec4 nonBumpSkyColor = texture(
+//      samplerCube(skybox, samplerSkybox)
+//      refract(surfaceToView, normalize(v_normal), innerUniforms.eta));
+//  vec4 skyColor = mix(nonBumpSkyColor, bumpSkyColor, normalSpec.a);
+  outColor = vec4(
+      mix(skyColor * diffuseColor, diffuseColor, refraction.r).rgb,
+      diffuseColor.a);
+  outColor = mix(outColor, vec4(fogs.fogColor.rgb, diffuseColor.a),
+		clamp(pow((v_position.z / v_position.w), fogs.fogPower) * fogs.fogMult - fogs.fogOffset,0.0,1.0));
+}

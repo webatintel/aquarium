@@ -1,0 +1,95 @@
+cbuffer lightFactorUniforms : register(b0, space2)
+{
+    float lightFactorUniforms_shininess : packoffset(c0);
+    float lightFactorUniforms_specularFactor : packoffset(c0.y);
+};
+cbuffer lightUniforms : register(b0, space0)
+{
+    float4 lightUniforms_lightColor : packoffset(c0);
+    float4 lightUniforms_specular : packoffset(c1);
+    float4 lightUniforms_ambient : packoffset(c2);
+};
+cbuffer fogs : register(b1, space0)
+{
+    float fogs_fogPower : packoffset(c0);
+    float fogs_fogMult : packoffset(c0.y);
+    float fogs_fogOffset : packoffset(c0.z);
+    float4 fogs_fogColor : packoffset(c1);
+};
+Texture2D<float4> diffuse : register(t0, space2);
+SamplerState samplerTex2D : register(s0, space0);
+Texture2D<float4> normalMap : register(t1, space2);
+
+static float2 v_texCoord;
+static float3 v_tangent;
+static float3 v_binormal;
+static float3 v_normal;
+static float3 v_surfaceToLight;
+static float3 v_surfaceToView;
+static float4 outColor;
+static float4 v_position;
+
+struct SPIRV_Cross_Input
+{
+    float4 v_position : TEXCOORD0;
+    float2 v_texCoord : TEXCOORD1;
+    float3 v_tangent : TEXCOORD2;
+    float3 v_binormal : TEXCOORD3;
+    float3 v_normal : TEXCOORD4;
+    float3 v_surfaceToLight : TEXCOORD5;
+    float3 v_surfaceToView : TEXCOORD6;
+};
+
+struct SPIRV_Cross_Output
+{
+    float4 outColor : SV_Target0;
+};
+
+float4 lit(float l, float h, float m)
+{
+    float _16 = l;
+    float _22;
+    if (l > 0.0f)
+    {
+        _22 = pow(max(0.0f, h), m);
+    }
+    else
+    {
+        _22 = 0.0f;
+    }
+    return float4(1.0f, max(_16, 0.0f), _22, 1.0f);
+}
+
+void frag_main()
+{
+    float4 diffuseColor = diffuse.Sample(samplerTex2D, v_texCoord);
+    float3x3 tangentToWorld = float3x3(float3(v_tangent), float3(v_binormal), float3(v_normal));
+    float4 normalSpec = normalMap.Sample(samplerTex2D, v_texCoord);
+    float3 tangentNormal = normalSpec.xyz - 0.5f.xxx;
+    float3 normal = mul(tangentNormal, tangentToWorld);
+    normal = normalize(normal);
+    float3 surfaceToLight = normalize(v_surfaceToLight);
+    float3 surfaceToView = normalize(v_surfaceToView);
+    float3 halfVector = normalize(surfaceToLight + surfaceToView);
+    float param = dot(normal, surfaceToLight);
+    float param_1 = dot(normal, halfVector);
+    float param_2 = lightFactorUniforms_shininess;
+    float4 litR = lit(param, param_1, param_2);
+    outColor = float4((lightUniforms_lightColor * (((diffuseColor * litR.y) + (diffuseColor * lightUniforms_ambient)) + (((lightUniforms_specular * litR.z) * lightFactorUniforms_specularFactor) * normalSpec.w))).xyz, diffuseColor.w);
+    outColor = lerp(outColor, float4(fogs_fogColor.xyz, diffuseColor.w), clamp((pow(v_position.z / v_position.w, fogs_fogPower) * fogs_fogMult) - fogs_fogOffset, 0.0f, 1.0f).xxxx);
+}
+
+SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)
+{
+    v_texCoord = stage_input.v_texCoord;
+    v_tangent = stage_input.v_tangent;
+    v_binormal = stage_input.v_binormal;
+    v_normal = stage_input.v_normal;
+    v_surfaceToLight = stage_input.v_surfaceToLight;
+    v_surfaceToView = stage_input.v_surfaceToView;
+    v_position = stage_input.v_position;
+    frag_main();
+    SPIRV_Cross_Output stage_output;
+    stage_output.outColor = outColor;
+    return stage_output;
+}

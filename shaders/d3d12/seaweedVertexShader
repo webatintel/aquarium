@@ -1,0 +1,85 @@
+struct WorldUniform
+{
+    row_major float4x4 world;
+    row_major float4x4 worldInverseTranspose;
+    row_major float4x4 worldViewProjection;
+};
+
+cbuffer WorldUniforms : register(b0, space3)
+{
+    WorldUniform worlds[20] : packoffset(c0);
+};
+cbuffer seaweedPer : register(b1, space3)
+{
+    float seaweedPer_time[20] : packoffset(c0);
+};
+cbuffer lightWorldPositionUniform : register(b0, space1)
+{
+    float3 lightWorldPositionUniform_lightWorldPos : packoffset(c0);
+	row_major float4x4 viewProjection : packoffset(c1);
+    row_major float4x4 viewInverse : packoffset(c5);
+};
+
+static float4 gl_Position;
+static int gl_InstanceIndex;
+static float2 v_texCoord;
+static float2 texCoord;
+static float4 v_position;
+static float4 position;
+static float3 v_normal;
+static float3 normal;
+static float3 v_surfaceToLight;
+static float3 v_surfaceToView;
+
+struct SPIRV_Cross_Input
+{
+    float4 position : TEXCOORD0;
+    float3 normal : TEXCOORD1;
+    float2 texCoord : TEXCOORD2;
+    uint gl_InstanceIndex : SV_InstanceID;
+};
+
+struct SPIRV_Cross_Output
+{
+    float4 v_position : TEXCOORD0;
+    float2 v_texCoord : TEXCOORD1;
+    float3 v_normal : TEXCOORD2;
+    float3 v_surfaceToLight : TEXCOORD3;
+    float3 v_surfaceToView : TEXCOORD4;
+    float4 gl_Position : SV_Position;
+};
+
+void vert_main()
+{
+    float3 toCamera = normalize(viewInverse[3].xyz - worlds[gl_InstanceIndex].world[3].xyz);
+    float3 yAxis = float3(0.0f, 1.0f, 0.0f);
+    float3 xAxis = cross(yAxis, toCamera);
+    float4x4 newWorld = float4x4(float4(float4(xAxis, 0.0f)), float4(float4(yAxis, 0.0f)), float4(float4(xAxis, 0.0f)), float4(worlds[gl_InstanceIndex].world[3]));
+    v_texCoord = texCoord;
+    v_position = position + float4((sin(seaweedPer_time[gl_InstanceIndex] * 0.5f) * pow(position.y * 0.070000000298023223876953125f, 2.0f)) * 1.0f, -4.0f, 0.0f, 0.0f);
+    v_position = mul(v_position, mul(newWorld, viewProjection));
+    v_normal = mul(float4(normal, 0.0f), newWorld).xyz;
+    v_surfaceToLight = lightWorldPositionUniform_lightWorldPos - mul(position, worlds[gl_InstanceIndex].world).xyz;
+    v_surfaceToView = (viewInverse[3] - mul(position, worlds[gl_InstanceIndex].world)).xyz;
+    v_position.y = -v_position.y;
+    gl_Position = v_position;
+    gl_Position.y = -gl_Position.y;
+    gl_Position.z = (gl_Position.z + gl_Position.w) * 0.5;
+}
+
+SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)
+{
+    gl_InstanceIndex = int(stage_input.gl_InstanceIndex);
+    texCoord = stage_input.texCoord;
+    position = stage_input.position;
+    normal = stage_input.normal;
+    vert_main();
+    SPIRV_Cross_Output stage_output;
+    stage_output.gl_Position = gl_Position;
+    stage_output.v_texCoord = v_texCoord;
+    stage_output.v_position = v_position;
+    stage_output.v_normal = v_normal;
+    stage_output.v_surfaceToLight = v_surfaceToLight;
+    stage_output.v_surfaceToView = v_surfaceToView;
+    return stage_output;
+}

@@ -1,0 +1,55 @@
+#version 450
+
+layout(std140, set = 1, binding = 0) uniform LightWorldPositionUniform {
+    vec3 lightWorldPos;
+    mat4 viewProjection;
+    mat4 viewInverse;
+} lightWorldPositionUniform;
+
+struct WorldUniform
+{
+    mat4 world;
+    mat4 worldInverseTranspose;
+    mat4 worldViewProjection;
+};
+
+layout(std140, set = 3, binding = 0) uniform WorldUniforms {
+    WorldUniform worlds[20];
+} worldUniforms;
+
+layout(std140,set = 3, binding = 1) uniform SeaweedPer {
+    float time[20];
+} seaweedPer;
+
+layout(location = 0) in vec4 position;
+layout(location = 1) in vec3 normal;
+layout(location = 2) in vec2 texCoord;
+layout(location = 0) out vec4 v_position;
+layout(location = 1) out vec2 v_texCoord;
+layout(location = 2) out vec3 v_normal;
+layout(location = 3) out vec3 v_surfaceToLight;
+layout(location = 4) out vec3 v_surfaceToView;
+void main() {
+  vec3 toCamera = normalize(lightWorldPositionUniform.viewInverse[3].xyz - worldUniforms.worlds[gl_InstanceIndex].world[3].xyz);
+  vec3 yAxis = vec3(0, 1, 0);
+  vec3 xAxis = cross(yAxis, toCamera);
+
+  mat4 newWorld = mat4(
+      vec4(xAxis, 0),
+      vec4(yAxis, 0),
+      vec4(xAxis, 0),
+      worldUniforms.worlds[gl_InstanceIndex].world[3]);
+
+  v_texCoord = texCoord;
+  v_position = position + vec4(
+      sin(seaweedPer.time[gl_InstanceIndex] * 0.5) * pow(position.y * 0.07, 2.0) * 1.0,
+      -4,  // TODO(gman): remove this hack
+      0,
+      0);
+  v_position = (lightWorldPositionUniform.viewProjection * newWorld) * v_position;
+  v_normal = (newWorld * vec4(normal, 0)).xyz;
+  v_surfaceToLight = lightWorldPositionUniform.lightWorldPos - (worldUniforms.worlds[gl_InstanceIndex].world * position).xyz;
+  v_surfaceToView = (lightWorldPositionUniform.viewInverse[3] - (worldUniforms.worlds[gl_InstanceIndex].world * position)).xyz;
+  v_position.y = -v_position.y;
+  gl_Position = v_position;
+}

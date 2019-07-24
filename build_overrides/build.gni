@@ -1,0 +1,13 @@
+#
+# Copyright (c) 2019 The Aquarium Project Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+
+build_with_chromium = false
+
+use_system_xcode = true
+
+linux_use_bundled_binutils_override = true
+
+ignore_elf32_limitations = false

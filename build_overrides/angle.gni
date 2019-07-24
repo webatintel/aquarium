@@ -1,0 +1,14 @@
+#
+# Copyright (c) 2019 The Aquarium Project Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+
+angle_root = "//third_party/angle"
+
+angle_glslang_dir = "//third_party/glslang"
+angle_googletest_dir = "//third_party/googletest"
+angle_libjpeg_turbo_dir = "//third_party/angle/third_party/libjpeg_turbo"
+angle_jsoncpp_dir = "//third_party/angle/third_party/jsoncpp"
+angle_libpng_dir = "//third_party/angle/third_party/libpng"
+angle_spirv_tools_dir = "//third_party/spirv-tools"

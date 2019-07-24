@@ -1,0 +1,245 @@
+#
+# Copyright (c) 2019 The Aquarium Project Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+
+declare_args() {
+  enable_dawn = is_win || is_mac
+  enable_angle = false
+  enable_d3d12 = is_win
+  enable_opengl = is_win || is_linux || is_mac
+}
+
+executable("aquarium") {
+  libs = []
+
+  sources = [
+    "src/common/AQUARIUM_ASSERT.h",
+    "src/common/FPSTimer.cpp",
+    "src/common/FPSTimer.h",
+    "src/aquarium-optimized/Aquarium.cpp",
+    "src/aquarium-optimized/Aquarium.h",
+    "src/aquarium-optimized/Buffer.h",
+    "src/aquarium-optimized/Context.h",
+    "src/aquarium-optimized/ContextFactory.cpp",
+    "src/aquarium-optimized/ContextFactory.h",
+    "src/aquarium-optimized/FishModel.h",
+    "src/aquarium-optimized/Main.cpp",
+    "src/aquarium-optimized/Matrix.h",
+    "src/aquarium-optimized/Model.cpp",
+    "src/aquarium-optimized/Model.h",
+    "src/aquarium-optimized/Program.h",
+    "src/aquarium-optimized/ResourceHelper.h",
+    "src/aquarium-optimized/ResourceHelper.cpp",
+    "src/aquarium-optimized/SeaweedModel.h",
+    "src/aquarium-optimized/Texture.cpp",
+    "src/aquarium-optimized/Texture.h",
+  ]
+
+  deps = [
+    "third_party:stb",
+    "third_party:imgui",
+  ]
+
+  include_dirs = [
+    "third_party/rapidjson/include",
+    "third_party/stb",
+    "src",
+    "third_party/imgui",
+    "third_party/imgui/examples",
+  ]
+
+  if(enable_angle || enable_opengl) {
+      sources += [
+      "src/aquarium-optimized/opengl/BufferGL.cpp",
+      "src/aquarium-optimized/opengl/BufferGL.h",
+      "src/aquarium-optimized/opengl/ContextGL.cpp",
+      "src/aquarium-optimized/opengl/ContextGL.h",
+      "src/aquarium-optimized/opengl/FishModelGL.cpp",
+      "src/aquarium-optimized/opengl/FishModelGL.h",
+      "src/aquarium-optimized/opengl/GenericModelGL.cpp",
+      "src/aquarium-optimized/opengl/GenericModelGL.h",
+      "src/aquarium-optimized/opengl/InnerModelGL.cpp",
+      "src/aquarium-optimized/opengl/InnerModelGL.h",
+      "src/aquarium-optimized/opengl/OutsideModelGL.cpp",
+      "src/aquarium-optimized/opengl/OutsideModelGL.h",
+      "src/aquarium-optimized/opengl/ProgramGL.cpp",
+      "src/aquarium-optimized/opengl/ProgramGL.h",
+      "src/aquarium-optimized/opengl/SeaweedModelGL.cpp",
+      "src/aquarium-optimized/opengl/SeaweedModelGL.h",
+      "src/aquarium-optimized/opengl/TextureGL.cpp",
+      "src/aquarium-optimized/opengl/TextureGL.h",
+      "src/aquarium-optimized/opengl/imgui_impl_opengl3.h",
+      "src/aquarium-optimized/opengl/imgui_impl_opengl3.cpp",
+    ]
+  }
+
+  defines = []
+
+  if (enable_angle) {
+    enable_dawn = false
+    enable_d3d12 = false
+
+    defines += [ "EGL_EGL_PROTOTYPES",
+    "IMGUI_IMPL_OPENGL_LOADER_CUSTOM",
+    "IMGUI_IMPL_OPENGL_ES3", ]
+
+    include_dirs += [
+      "third_party/angle/include",
+      "third_party/angle/util",
+    ]
+
+    deps += [
+      "third_party/angle:libANGLE",
+      "third_party/angle:libGLESv2",
+      "third_party/angle:libEGL",
+      "third_party/angle:angle_util_static",
+    ]
+  } else {
+    deps += [ "third_party:glad" ]
+
+    include_dirs += [ "third_party/glad/include" ]
+    defines += [ "IMGUI_IMPL_OPENGL_LOADER_GLAD", ]
+  }
+
+  if (enable_dawn) {
+    defines += [ "ENABLE_DAWN_BACKEND" ]
+
+    include_dirs += [ "third_party/dawn/src" ]
+
+    sources += [
+      "src/aquarium-optimized/dawn/BufferDawn.cpp",
+      "src/aquarium-optimized/dawn/BufferDawn.h",
+      "src/aquarium-optimized/dawn/ContextDawn.cpp",
+      "src/aquarium-optimized/dawn/ContextDawn.h",
+      "src/aquarium-optimized/dawn/FishModelDawn.cpp",
+      "src/aquarium-optimized/dawn/FishModelDawn.h",
+      "src/aquarium-optimized/dawn/FishModelInstancedDrawDawn.cpp",
+      "src/aquarium-optimized/dawn/FishModelInstancedDrawDawn.h",
+      "src/aquarium-optimized/dawn/GenericModelDawn.cpp",
+      "src/aquarium-optimized/dawn/GenericModelDawn.h",
+      "src/aquarium-optimized/dawn/InnerModelDawn.cpp",
+      "src/aquarium-optimized/dawn/InnerModelDawn.h",
+      "src/aquarium-optimized/dawn/OutsideModelDawn.cpp",
+      "src/aquarium-optimized/dawn/OutsideModelDawn.h",
+      "src/aquarium-optimized/dawn/ProgramDawn.cpp",
+      "src/aquarium-optimized/dawn/ProgramDawn.h",
+      "src/aquarium-optimized/dawn/SeaweedModelDawn.cpp",
+      "src/aquarium-optimized/dawn/SeaweedModelDawn.h",
+      "src/aquarium-optimized/dawn/TextureDawn.cpp",
+      "src/aquarium-optimized/dawn/TextureDawn.h",
+      "src/aquarium-optimized/dawn/imgui_impl_dawn.cpp",
+      "src/aquarium-optimized/dawn/imgui_impl_dawn.h",
+    ]
+
+    deps += [
+      "third_party/dawn/src/dawn:dawn_headers",
+      "third_party/dawn:dawn_utils",
+      "third_party/dawn/src/dawn:libdawn",
+      "third_party/dawn:libdawn_native",
+      "third_party/dawn/third_party/shaderc:libshaderc",
+    ]
+
+    include_dirs += [
+      "third_party/dawn/third_party/glfw/include",
+      "third_party/dawn/third_party/shaderc/libshaderc/include",
+    ]
+  } else {
+      deps += [ "third_party:glfw" ]
+
+    include_dirs += [
+      "third_party/glfw/include",
+    ]
+  }
+
+  if (enable_d3d12) {
+    defines += [ "ENABLE_D3D12_BACKEND" ]
+
+    include_dirs += [
+      "src/include/d3d12",
+    ]
+
+    libs += [
+      "d3d12.lib",
+      "dxgi.lib",
+      "d3dcompiler.lib",
+    ]
+
+    sources += [
+      "src/aquarium-optimized/d3d12/BufferD3D12.cpp",
+      "src/aquarium-optimized/d3d12/BufferD3D12.h",
+      "src/aquarium-optimized/d3d12/ContextD3D12.cpp",
+      "src/aquarium-optimized/d3d12/ContextD3D12.h",
+      "src/aquarium-optimized/d3d12/FishModelD3D12.cpp",
+      "src/aquarium-optimized/d3d12/FishModelD3D12.h",
+      "src/aquarium-optimized/d3d12/FishModelInstancedDrawD3D12.cpp",
+      "src/aquarium-optimized/d3d12/FishModelInstancedDrawD3D12.h",
+      "src/aquarium-optimized/d3d12/GenericModelD3D12.cpp",
+      "src/aquarium-optimized/d3d12/GenericModelD3D12.h",
+      "src/aquarium-optimized/d3d12/InnerModelD3D12.cpp",
+      "src/aquarium-optimized/d3d12/InnerModelD3D12.h",
+      "src/aquarium-optimized/d3d12/OutsideModelD3D12.cpp",
+      "src/aquarium-optimized/d3d12/OutsideModelD3D12.h",
+      "src/aquarium-optimized/d3d12/ProgramD3D12.cpp",
+      "src/aquarium-optimized/d3d12/ProgramD3D12.h",
+      "src/aquarium-optimized/d3d12/SeaweedModelD3D12.cpp",
+      "src/aquarium-optimized/d3d12/SeaweedModelD3D12.h",
+      "src/aquarium-optimized/d3d12/TextureD3D12.cpp",
+      "src/aquarium-optimized/d3d12/TextureD3D12.h",
+      "src/aquarium-optimized/d3d12/imgui_impl_dx12.h",
+      "src/aquarium-optimized/d3d12/imgui_impl_dx12.cpp",
+    ]
+  }
+
+  cflags_cc = [
+    "-Wno-string-conversion",
+    "-Wno-unused-result",
+    "-Wno-format-security",
+    "-Wno-microsoft-enum-forward-reference",
+  ]
+}
+
+executable("aquarium-direct-map") {
+  sources = [
+    "src/common/AQUARIUM_ASSERT.h",
+    "src/common/FPSTimer.h",
+    "src/common/FPSTimer.cpp",
+    "src/aquarium-direct-map/AttribBuffer.h",
+    "src/aquarium-direct-map/AttribBuffer.cpp",
+    "src/aquarium-direct-map/Buffer.h",
+    "src/aquarium-direct-map/Buffer.cpp",
+    "src/aquarium-direct-map/Globals.h",
+    "src/aquarium-direct-map/Main.cpp",
+    "src/aquarium-direct-map/Matrix.h",
+    "src/aquarium-direct-map/Model.h",
+    "src/aquarium-direct-map/Model.cpp",
+    "src/aquarium-direct-map/Program.h",
+    "src/aquarium-direct-map/Program.cpp",
+    "src/aquarium-direct-map/Scene.h",
+    "src/aquarium-direct-map/Scene.cpp",
+    "src/aquarium-direct-map/Texture.h",
+    "src/aquarium-direct-map/Texture.cpp",
+    "src/aquarium-direct-map/Uniform.h",
+    "src/aquarium-direct-map/Uniform.cpp",
+  ]
+  
+  deps = [
+    "third_party:stb",
+    "third_party:glad",
+    "third_party:glfw",
+  ]
+  
+  include_dirs = [
+    "third_party/glad/include",
+    "third_party/rapidjson/include",
+    "third_party/stb",
+    "third_party/glfw/include",
+    "src",
+  ]
+  
+  cflags_cc = [
+    "-Wno-string-conversion",
+    "-Wno-unused-result",
+  ]
+}

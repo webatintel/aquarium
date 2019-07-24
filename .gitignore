@@ -1,0 +1,27 @@
+#
+# Copyright (c) 2019 The Aquarium Project Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# Ignore Visual Studio temporary files, build results,
+# third party libraries and gn build dummy folders.
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Third party libraries
+!third_party/glad
+!third_party/BUILD.gn
+third_party/*
+
+# Gn build dummy folders
+.cipd/
+.gclient_entries
+build/
+buildtools/
+out/
+testing/
+tools/

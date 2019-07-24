@@ -1,0 +1,10 @@
+#
+# Copyright (c) 2019 The Aquarium Project Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+
+spirv_tools_standalone = false
+
+spirv_tools_googletest_dir = "//third_party/dawn/third_party/googletest"
+spirv_tools_spirv_headers_dir = "//third_party/spirv-headers"
