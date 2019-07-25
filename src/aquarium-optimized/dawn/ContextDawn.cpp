@@ -191,8 +191,8 @@ bool ContextDawn::initialize(
 
     mPreferredSwapChainFormat =
         static_cast<dawn::TextureFormat>(binding->GetPreferredSwapChainTextureFormat());
-    mSwapchain.Configure(mPreferredSwapChainFormat, dawn::TextureUsageBit::OutputAttachment,
-                         mClientWidth, mClientHeight);
+    mSwapchain.Configure(mPreferredSwapChainFormat, kSwapchainBackBufferUsageBit, mClientWidth,
+                         mClientHeight);
 
     dawn_native::PCIInfo info = backendAdapter.GetPCIInfo();
     mRenderer                 = info.name;
@@ -201,21 +201,18 @@ bool ContextDawn::initialize(
     // When MSAA is enabled, we create an intermediate multisampled texture to render the scene to.
     if (mEnableMSAA)
     {
-        dawn::TextureDescriptor descriptor;
-        descriptor.dimension       = dawn::TextureDimension::e2D;
-        descriptor.size.width      = mClientWidth;
-        descriptor.size.height     = mClientHeight;
-        descriptor.size.depth      = 1;
-        descriptor.arrayLayerCount = 1;
-        descriptor.sampleCount     = 4;
-        descriptor.format          = mPreferredSwapChainFormat;
-        descriptor.mipLevelCount   = 1;
-        descriptor.usage           = dawn::TextureUsageBit::OutputAttachment;
-
-        mSceneRenderTargetView = mDevice.CreateTexture(&descriptor).CreateDefaultView();
+        mSceneRenderTargetView = createMultisampledRenderTargetView();
     }
 
     mSceneDepthStencilView = createDepthStencilView();
+
+    // TODO(jiawei.shao@intel.com): support recreating swapchain when window is resized on all
+    // backends
+    if (backend == BACKENDTYPE::BACKENDTYPEDAWNVULKAN)
+    {
+        glfwSetFramebufferSizeCallback(mWindow, framebufferResizeCallback);
+        glfwSetWindowUserPointer(mWindow, this);
+    }
 
 // Skipping Imgui on dawn_vulkan backend
 #ifdef __linux__
@@ -237,6 +234,11 @@ bool ContextDawn::initialize(
     ImGui_ImplDawn_Init(this, mPreferredSwapChainFormat, mEnableMSAA);
 
     return true;
+}
+
+void ContextDawn::framebufferResizeCallback(GLFWwindow *window, int width, int height) {
+    ContextDawn *contextDawn = reinterpret_cast<ContextDawn *>(glfwGetWindowUserPointer(window));
+    contextDawn->mIsSwapchainOutOfDate = true;
 }
 
 bool ContextDawn::GetHardwareAdapter(
@@ -429,6 +431,22 @@ dawn::RenderPipeline ContextDawn::createRenderPipeline(
     dawn::RenderPipeline mPipeline = mDevice.CreateRenderPipeline(&descriptor);
 
     return mPipeline;
+}
+
+dawn::TextureView ContextDawn::createMultisampledRenderTargetView() const
+{
+    dawn::TextureDescriptor descriptor;
+    descriptor.dimension       = dawn::TextureDimension::e2D;
+    descriptor.size.width      = mClientWidth;
+    descriptor.size.height     = mClientHeight;
+    descriptor.size.depth      = 1;
+    descriptor.arrayLayerCount = 1;
+    descriptor.sampleCount     = 4;
+    descriptor.format          = mPreferredSwapChainFormat;
+    descriptor.mipLevelCount   = 1;
+    descriptor.usage           = dawn::TextureUsageBit::OutputAttachment;
+
+    return mDevice.CreateTexture(&descriptor).CreateDefaultView();
 }
 
 dawn::TextureView ContextDawn::createDepthStencilView() const
@@ -631,6 +649,18 @@ void ContextDawn::destoryImgUI()
 
 void ContextDawn::preFrame()
 {
+    if (mIsSwapchainOutOfDate) {
+        glfwGetFramebufferSize(mWindow, &mClientWidth, &mClientHeight);
+        if (mEnableMSAA) {
+            mSceneRenderTargetView = createMultisampledRenderTargetView();
+        }
+        mSceneDepthStencilView = createDepthStencilView();
+        mSwapchain.Configure(mPreferredSwapChainFormat, kSwapchainBackBufferUsageBit, mClientWidth,
+                             mClientHeight);
+
+        mIsSwapchainOutOfDate = false;
+    }
+
     mCommandEncoder = mDevice.CreateCommandEncoder();
     mBackbuffer     = mSwapchain.GetNextTexture();
 

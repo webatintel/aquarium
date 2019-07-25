@@ -77,6 +77,7 @@ class ContextDawn : public Context
         ProgramDawn *mProgramDawn,
         const dawn::VertexInputDescriptor &mVertexInputDescriptor,
         bool enableBlend) const;
+    dawn::TextureView createMultisampledRenderTargetView() const;
     dawn::TextureView createDepthStencilView() const;
     dawn::Buffer createBuffer(uint32_t size, dawn::BufferUsageBit bit) const;
     void setBufferData(const dawn::Buffer &buffer, uint32_t start, uint32_t size, const void* pixels) const;
@@ -106,7 +107,14 @@ class ContextDawn : public Context
         dawn_native::BackendType backendType,
         const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset);
     void initAvailableToggleBitset(BACKENDTYPE backendType) override;
+    static void framebufferResizeCallback(GLFWwindow *window, int width, int height);
 
+    // TODO(jiawei.shao@intel.com): remove dawn::TextureUsageBit::CopyDst when the bug in Dawn is
+    // fixed.
+    static constexpr dawn::TextureUsageBit kSwapchainBackBufferUsageBit =
+        dawn::TextureUsageBit::OutputAttachment | dawn::TextureUsageBit::CopyDst;
+
+    bool mIsSwapchainOutOfDate = false;
     GLFWwindow *mWindow;
     std::unique_ptr<dawn_native::Instance> mInstance;
 
