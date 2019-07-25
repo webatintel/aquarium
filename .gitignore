@@ -13,9 +13,9 @@
 *.sln.docstates
 
 # Third party libraries
+third_party/*
 !third_party/glad
 !third_party/BUILD.gn
-third_party/*
 
 # Gn build dummy folders
 .cipd/

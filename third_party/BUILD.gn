@@ -1,0 +1,193 @@
+#
+# Copyright (c) 2019 The Aquarium Project Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+
+is_msvc = is_win && !is_clang
+
+# Glad
+config("glad_public") {
+  include_dirs = [ "glad/include" ]
+}
+
+static_library("glad") {
+  sources = [
+    "glad/include/KHR/khrplatform.h",
+    "glad/include/glad/glad.h",
+    "glad/src/glad.c",
+  ]
+
+  public_configs = [ ":glad_public" ]
+}
+
+glfw_dir = "//third_party/glfw"
+
+config("glfw_public") {
+  include_dirs = [ "${glfw_dir}/include" ]
+
+  if (is_win) {
+    defines = [ "_GLFW_WIN32" ]
+  }
+
+  if (is_mac) {
+    defines = [ "_GLFW_COCOA" ]
+  }
+
+  if (is_linux) {
+    defines = [ "_GLFW_X11" ]
+  }
+}
+
+static_library("glfw") {
+  public_configs = [ ":glfw_public" ]
+
+   if (is_msvc) {
+    # nonstandard extension, function/data pointer conversion in expression
+    cflags_c = [ "/wd4152" ]
+  } else {
+    cflags_c = [
+      "-Wno-sign-compare",
+      "-Wno-missing-field-initializers",
+    ]
+  }
+
+  sources = [
+    "${glfw_dir}/include/GLFW/glfw3.h",
+    "${glfw_dir}/include/GLFW/glfw3native.h",
+    "${glfw_dir}/src/context.c",
+    "${glfw_dir}/src/egl_context.c",
+    "${glfw_dir}/src/egl_context.h",
+    "${glfw_dir}/src/init.c",
+    "${glfw_dir}/src/input.c",
+    "${glfw_dir}/src/internal.h",
+    "${glfw_dir}/src/monitor.c",
+    "${glfw_dir}/src/osmesa_context.c",
+    "${glfw_dir}/src/osmesa_context.h",
+    "${glfw_dir}/src/vulkan.c",
+    "${glfw_dir}/src/window.c",
+  ]
+  libs = []
+
+  if (is_win) {
+    sources += [
+      "${glfw_dir}/src/wgl_context.c",
+      "${glfw_dir}/src/wgl_context.h",
+      "${glfw_dir}/src/win32_init.c",
+      "${glfw_dir}/src/win32_joystick.c",
+      "${glfw_dir}/src/win32_joystick.h",
+      "${glfw_dir}/src/win32_monitor.c",
+      "${glfw_dir}/src/win32_platform.h",
+      "${glfw_dir}/src/win32_thread.c",
+      "${glfw_dir}/src/win32_time.c",
+      "${glfw_dir}/src/win32_window.c",
+    ]
+  }
+
+  if (is_linux || is_mac) {
+    sources += [
+      "${glfw_dir}/src/posix_thread.c",
+      "${glfw_dir}/src/posix_thread.h",
+    ]
+  }
+
+  if (is_linux) {
+    sources += [
+      "${glfw_dir}/src/glx_context.c",
+      "${glfw_dir}/src/glx_context.h",
+      "${glfw_dir}/src/linux_joystick.c",
+      "${glfw_dir}/src/linux_joystick.h",
+      "${glfw_dir}/src/posix_time.c",
+      "${glfw_dir}/src/posix_time.h",
+      "${glfw_dir}/src/x11_init.c",
+      "${glfw_dir}/src/x11_monitor.c",
+      "${glfw_dir}/src/x11_platform.h",
+      "${glfw_dir}/src/x11_window.c",
+      "${glfw_dir}/src/xkb_unicode.c",
+      "${glfw_dir}/src/xkb_unicode.h",
+    ]
+
+    libs += [
+      "rt",
+      "dl",
+      "X11",
+      "Xcursor",
+      "Xinerama",
+      "Xrandr",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "${glfw_dir}/src/cocoa_init.m",
+      "${glfw_dir}/src/cocoa_joystick.h",
+      "${glfw_dir}/src/cocoa_joystick.m",
+      "${glfw_dir}/src/cocoa_monitor.m",
+      "${glfw_dir}/src/cocoa_platform.h",
+      "${glfw_dir}/src/cocoa_time.c",
+      "${glfw_dir}/src/cocoa_window.m",
+      "${glfw_dir}/src/nsgl_context.h",
+      "${glfw_dir}/src/nsgl_context.m",
+    ]
+    libs += [
+      "Cocoa.framework",
+      "IOKit.framework",
+      "CoreFoundation.framework",
+      "CoreVideo.framework",
+    ]
+    cflags_objc = [
+      "-Wno-sign-compare",
+      "-Wno-unguarded-availability",
+    ]
+  }
+}
+
+# GLM
+config("glm_public_config") {
+  include_dirs = [ "glm" ]
+}
+source_set("glm") {
+  public_configs = [ ":glm_public_config" ]
+  # GLM is header only but has too many files to list them.
+}
+
+# STB
+config("stb_public_config") {
+  include_dirs = [ "stb" ]
+
+  if (!is_msvc) {
+    cflags_cc = [ "-Wno-implicit-fallthrough" ]
+  }
+}
+source_set("stb") {
+  public_configs = [ ":stb_public_config" ]
+  sources = [
+    "stb/stb_image.h",
+  ]
+}
+
+# IMGUI
+config("imgui_public_config") {
+  include_dirs = [ "imgui",
+    "${glfw_dir}/include",
+    "glad/include", ]
+}
+source_set("imgui") {
+  public_configs = [ ":imgui_public_config" ]
+  sources = [
+    "imgui/imconfig.h",
+    "imgui/imgui.h",
+    "imgui/imgui.cpp",
+    "imgui/imgui_demo.cpp",
+    "imgui/imgui_draw.cpp",
+    "imgui/imgui_internal.h",
+    "imgui/imgui_widgets.cpp",
+    "imgui/examples/imgui_impl_glfw.h",
+    "imgui/examples/imgui_impl_glfw.cpp",
+  ]
+
+  cflags_cc = [
+    "-Wno-string-conversion",
+    "-Wno-unused-result",
+  ]
+}
