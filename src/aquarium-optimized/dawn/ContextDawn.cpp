@@ -214,11 +214,6 @@ bool ContextDawn::initialize(
         glfwSetWindowUserPointer(mWindow, this);
     }
 
-// Skipping Imgui on dawn_vulkan backend
-#ifdef __linux__
-    return true;
-#endif
-
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -600,12 +595,6 @@ void ContextDawn::showWindow()
 
 void ContextDawn::showFPS(const FPSTimer &fpsTimer)
 {
-    // TODO(yizhou): Dawn doesn't support recreating swap chain if framebuffer size is changed. This will cause 
-    // 'AcquireNextImage' returns an error code on linux vulkan backend. The error is 'VK_ERROR_OUT_OF_DATE_KHR'.
-#ifdef __linux__
-    return;
-#endif
-
     // Start the Dear ImGui frame
     ImGui_ImplDawn_NewFrame();
     ImGui_ImplGlfw_NewFrame();
