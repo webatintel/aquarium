@@ -21,6 +21,15 @@ Aquarium is a native implementation of [WebGL Aquarium](https://github.com/WebGL
     <td>N</td>
     <td>Not supported</td>
   </tr>
+  <tr align=left>
+    <td>Linux</td>
+    <td>Dawn/Vulkan</td>
+    <td>Y</td>
+    <td>Y</td>
+    <td>Y</td>
+    <td>Y</td>
+    <td>Y</td>
+  </tr>
   <tr align=left class="supported-row">
     <td>macOS</td>
     <td>OpenGL</td>
@@ -101,15 +110,6 @@ Aquarium is a native implementation of [WebGL Aquarium](https://github.com/WebGL
     <td>N</td>
     <td>N</td>
     <td>N</td>
-  </tr>
-  <tr align=left>
-    <td>Linux</td>
-    <td>Dawn/Vulkan</td>
-    <td>N</td>
-    <td>Y</td>
-    <td>Y</td>
-    <td>Y</td>
-    <td>Y</td>
   </tr>
   <tr align=left>
     <td>Linux</td>
