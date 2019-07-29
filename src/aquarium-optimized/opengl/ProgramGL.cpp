@@ -8,18 +8,6 @@
 // Compiles OpenGL shaders and check if compiled success.
 // Apply Buffers, Textures and Uniforms to program.
 
-#ifdef EGL_EGL_PROTOTYPES
-#include <angle_gl.h>
-#include <memory>
-#include "EGL/egl.h"
-#include "EGL/eglext.h"
-#include "EGL/eglext_angle.h"
-#include "EGL/eglplatform.h"
-#include "EGLWindow.h"
-#else
-#include "glad/glad.h"
-#endif
-
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -27,6 +15,7 @@
 #include <string>
 #include <vector>
 
+#include "OpenGLPlatforms.h"
 #include "ProgramGL.h"
 #include "common/AQUARIUM_ASSERT.h"
 

@@ -17,3 +17,4 @@ check_targets = [
   # Everything in third_party/BUILD.gn
   "//third_party/:*",
 ]
+

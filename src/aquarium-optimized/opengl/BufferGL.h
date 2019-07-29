@@ -9,21 +9,10 @@
 #ifndef BUFFERGL_H
 #define BUFFERGL_H 1
 
-#ifdef EGL_EGL_PROTOTYPES
-#include <angle_gl.h>
-#include <memory>
-#include "EGL/egl.h"
-#include "EGL/eglext.h"
-#include "EGL/eglext_angle.h"
-#include "EGL/eglplatform.h"
-#include "EGLWindow.h"
-#else
-#include "glad/glad.h"
-#endif
-
 #include <vector>
 
 #include "ContextGL.h"
+#include "OpenGLPlatforms.h"
 
 #include "../Buffer.h"
 

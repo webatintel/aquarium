@@ -6,7 +6,7 @@
 
 declare_args() {
   enable_dawn = is_win || is_linux || is_mac
-  enable_angle = false
+  enable_angle = is_win
   enable_d3d12 = is_win
   enable_opengl = is_win || is_linux || is_mac
 }
@@ -72,35 +72,27 @@ executable("aquarium") {
       "src/aquarium-optimized/opengl/TextureGL.h",
       "src/aquarium-optimized/opengl/imgui_impl_opengl3.h",
       "src/aquarium-optimized/opengl/imgui_impl_opengl3.cpp",
+      "src/aquarium-optimized/opengl/OpenGLPlatforms.h",
+      "src/aquarium-optimized/opengl/OpenGLFunctions.h",
+      "src/aquarium-optimized/opengl/OpenGLFunctions.cpp",
     ]
   }
 
   defines = []
 
   if (enable_angle) {
-    enable_dawn = false
-    enable_d3d12 = false
-
     defines += [ "EGL_EGL_PROTOTYPES",
     "IMGUI_IMPL_OPENGL_LOADER_CUSTOM",
     "IMGUI_IMPL_OPENGL_ES3", ]
 
     include_dirs += [
       "third_party/angle/include",
-      "third_party/angle/util",
     ]
 
     deps += [
-      "third_party/angle:libANGLE",
       "third_party/angle:libGLESv2",
       "third_party/angle:libEGL",
-      "third_party/angle:angle_util_static",
     ]
-  } else {
-    deps += [ "third_party:glad" ]
-
-    include_dirs += [ "third_party/glad/include" ]
-    defines += [ "IMGUI_IMPL_OPENGL_LOADER_GLAD", ]
   }
 
   if (enable_dawn) {
@@ -223,13 +215,13 @@ executable("aquarium-direct-map") {
     "src/aquarium-direct-map/Uniform.h",
     "src/aquarium-direct-map/Uniform.cpp",
   ]
-
+  
   deps = [
     "third_party:stb",
     "third_party:glad",
     "third_party:glfw",
   ]
-
+  
   include_dirs = [
     "third_party/glad/include",
     "third_party/rapidjson/include",
@@ -237,7 +229,7 @@ executable("aquarium-direct-map") {
     "third_party/glfw/include",
     "src",
   ]
-
+  
   cflags_cc = [
     "-Wno-string-conversion",
     "-Wno-unused-result",
