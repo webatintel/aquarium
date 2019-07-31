@@ -96,6 +96,7 @@ class ContextGL : public Context
   private:
     void initState();
     void initAvailableToggleBitset(BACKENDTYPE backendType) override;
+    static void framebufferResizeCallback(GLFWwindow *window, int width, int height);
 
     GLFWwindow *mWindow;
     std::string mGLSLVersion;
