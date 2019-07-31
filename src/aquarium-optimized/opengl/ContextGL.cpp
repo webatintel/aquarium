@@ -75,7 +75,6 @@ bool ContextGL::initialize(BACKENDTYPE backend,
 #endif
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 #endif
 
     GLFWmonitor *pMonitor   = glfwGetPrimaryMonitor();
@@ -101,6 +100,8 @@ bool ContextGL::initialize(BACKENDTYPE backend,
     }
 
     setWindowTitle("Aquarium");
+    glfwSetFramebufferSizeCallback(mWindow, framebufferResizeCallback);
+    glfwSetWindowUserPointer(mWindow, this);
 
 #ifndef GL_GLES_PROTOTYPES 
     glfwWindowHint(GLFW_DECORATED, GL_FALSE);
@@ -315,6 +316,14 @@ EGLBoolean ContextGL::FindEGLConfig(EGLDisplay dpy, const EGLint *attrib_list, E
     return EGL_FALSE;
 }
 #endif
+
+void ContextGL::framebufferResizeCallback(GLFWwindow *window, int width, int height)
+{
+    ContextGL *contextGL     = reinterpret_cast<ContextGL *>(glfwGetWindowUserPointer(window));
+    contextGL->mClientWidth  = width;
+    contextGL->mClientHeight = height;
+    glViewport(0, 0, width, height);
+}
 
 Texture *ContextGL::createTexture(const std::string &name, const std::string &url)
 {
