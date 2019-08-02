@@ -11,13 +11,14 @@
 
 FPSTimer::FPSTimer()
     : mTotalTime(static_cast<float>(NUM_FRAMES_TO_AVERAGE)),
-    mTimeTable(NUM_FRAMES_TO_AVERAGE,1.0f),
-    mHistoryFPS(NUM_HISTORY_DATA, 1.0f),
-    mHistoryFrameTime(NUM_HISTORY_DATA, 100.0f),
-    mTimeTableCursor(0),
-    mInstantaneousFPS(0.0f),
-    mAverageFPS(0.0f)
-{}
+      mTimeTable(NUM_FRAMES_TO_AVERAGE, 1.0f),
+      mHistoryFPS(NUM_HISTORY_DATA, 1.0f),
+      mHistoryFrameTime(NUM_HISTORY_DATA, 100.0f),
+      mTimeTableCursor(0),
+      mInstantaneousFPS(0.0f),
+      mAverageFPS(0.0f)
+{
+}
 
 void FPSTimer::update(float elapsedTime)
 {

@@ -14,7 +14,7 @@
 class FishModel : public Model
 {
   public:
-    FishModel(MODELGROUP type, MODELNAME name, bool blend) : Model(type, name, blend){}
+    FishModel(MODELGROUP type, MODELNAME name, bool blend) : Model(type, name, blend) {}
 
     virtual void updateFishPerUniforms(float x,
                                        float y,

@@ -27,13 +27,13 @@ void ProgramDawn::loadProgram()
 {
     std::ifstream VertexShaderStream(mVId, std::ios::in);
     std::string VertexShaderCode((std::istreambuf_iterator<char>(VertexShaderStream)),
-        std::istreambuf_iterator<char>());
+                                 std::istreambuf_iterator<char>());
     VertexShaderStream.close();
 
     // Read the Fragment Shader code from the file
     std::ifstream FragmentShaderStream(mFId, std::ios::in);
     std::string FragmentShaderCode((std::istreambuf_iterator<char>(FragmentShaderStream)),
-        std::istreambuf_iterator<char>());
+                                   std::istreambuf_iterator<char>());
     FragmentShaderStream.close();
 
     FragmentShaderCode =

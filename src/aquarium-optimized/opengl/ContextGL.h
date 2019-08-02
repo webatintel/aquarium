@@ -10,11 +10,11 @@
 
 #ifdef EGL_EGL_PROTOTYPES
 #include <angle_gl.h>
+#include <memory>
 #include "EGL/egl.h"
 #include "EGL/eglext.h"
-#include "EGL/eglplatform.h"
 #include "EGL/eglext_angle.h"
-#include <memory>
+#include "EGL/eglplatform.h"
 #include "EGLWindow.h"
 #else
 #include "glad/glad.h"
@@ -28,7 +28,7 @@
 
 class BufferGL;
 class TextureGL;
-enum BACKENDTYPE: short;
+enum BACKENDTYPE : short;
 
 class ContextGL : public Context
 {
@@ -52,7 +52,7 @@ class ContextGL : public Context
 
     Model *createModel(Aquarium *aquarium, MODELGROUP type, MODELNAME name, bool blend) override;
     int getUniformLocation(unsigned int programId, const std::string &name) const;
-    int getAttribLocation(unsigned int programId, const std::string & name) const;
+    int getAttribLocation(unsigned int programId, const std::string &name) const;
     void setUniform(int index, const float *v, int type) const;
     void setTexture(const TextureGL &texture, int index, int unit) const;
     void setAttribs(const BufferGL &bufferGL, int index) const;

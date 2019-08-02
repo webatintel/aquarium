@@ -9,8 +9,8 @@
 #ifndef BUFFERDAWN_H
 #define BUFFERDAWN_H 1
 
-#include <vector>
 #include <dawn/dawncpp.h>
+#include <vector>
 
 #include "../Buffer.h"
 
@@ -49,4 +49,3 @@ class BufferDawn : public Buffer
 };
 
 #endif
-

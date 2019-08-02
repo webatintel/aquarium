@@ -4,8 +4,8 @@
 // found in the LICENSE file.
 //
 
-#include "Aquarium.h"
 #include "ContextFactory.h"
+#include "Aquarium.h"
 
 #include "opengl/ContextGL.h"
 #ifdef ENABLE_DAWN_BACKEND
@@ -28,28 +28,28 @@ Context *ContextFactory::createContext(BACKENDTYPE backendType)
     {
         case BACKENDTYPE::BACKENDTYPEOPENGL:
         case BACKENDTYPE::BACKENDTYPEANGLE:
-            {
-                mContext = new ContextGL(backendType);
-                break;
-            }
+        {
+            mContext = new ContextGL(backendType);
+            break;
+        }
         case BACKENDTYPE::BACKENDTYPEDAWND3D12:
         case BACKENDTYPE::BACKENDTYPEDAWNMETAL:
         case BACKENDTYPE::BACKENDTYPEDAWNVULKAN:
-            {
+        {
 #ifdef ENABLE_DAWN_BACKEND
-                mContext = new ContextDawn(backendType);
+            mContext = new ContextDawn(backendType);
 #endif
-                break;
-            }
-            case BACKENDTYPE::BACKENDTYPED3D12:
-            {
+            break;
+        }
+        case BACKENDTYPE::BACKENDTYPED3D12:
+        {
 #ifdef ENABLE_D3D12_BACKEND
-                mContext = new ContextD3D12(backendType);
-                break;
+            mContext = new ContextD3D12(backendType);
+            break;
 #endif
-            }
-            default:
-                break;
+        }
+        default:
+            break;
     }
 
     return mContext;

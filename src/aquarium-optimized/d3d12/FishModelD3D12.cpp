@@ -5,8 +5,8 @@
 //
 // FishModelD3D12.cpp: Implements fish model of D3D12.
 
-#include "BufferD3D12.h"
 #include "FishModelD3D12.h"
+#include "BufferD3D12.h"
 
 FishModelD3D12::FishModelD3D12(Context *context,
                                Aquarium *aquarium,
@@ -17,7 +17,7 @@ FishModelD3D12::FishModelD3D12(Context *context,
 {
     mContextD3D12 = static_cast<ContextD3D12 *>(context);
 
-    const Fish &fishInfo              = fishTable[name - MODELNAME::MODELSMALLFISHA];
+    const Fish &fishInfo               = fishTable[name - MODELNAME::MODELSMALLFISHA];
     mFishVertexUniforms.fishLength     = fishInfo.fishLength;
     mFishVertexUniforms.fishBendAmount = fishInfo.fishBendAmount;
     mFishVertexUniforms.fishWaveLength = fishInfo.fishWaveLength;
@@ -25,7 +25,7 @@ FishModelD3D12::FishModelD3D12(Context *context,
     mLightFactorUniforms.shininess      = 5.0f;
     mLightFactorUniforms.specularFactor = 0.3f;
 
-    instance = aquarium->fishCount[fishInfo.modelName - MODELNAME::MODELSMALLFISHA];
+    instance  = aquarium->fishCount[fishInfo.modelName - MODELNAME::MODELSMALLFISHA];
     mFishPers = new FishPer[instance];
 }
 

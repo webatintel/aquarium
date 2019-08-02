@@ -3,8 +3,8 @@
 
 #include "ProgramDawn.h"
 
-#include "imgui_impl_dawn.h"
 #include "imgui.h"
+#include "imgui_impl_dawn.h"
 #include "utils/ComboRenderPipelineDescriptor.h"
 
 // Dawn data
@@ -108,8 +108,8 @@ void ImGui_ImplDawn_RenderDrawData(ImDrawData *draw_data)
     }
 
     // Upload vertex/index data into a single contiguous GPU buffer
-    uint32_t vtx_dst = 0;
-    uint32_t idx_dst = 0;
+    uint32_t vtx_dst    = 0;
+    uint32_t idx_dst    = 0;
     ImDrawVert *pVertex = mVertexData;
     ImDrawIdx *pIndex   = mIndexData;
     for (int n = 0; n < draw_data->CmdListsCount; n++)
@@ -192,7 +192,7 @@ static void ImGui_ImplDawn_CreateFontsTexture()
         descriptor.format          = mFormat;
         descriptor.mipLevelCount   = 1;
         descriptor.usage = dawn::TextureUsageBit::CopyDst | dawn::TextureUsageBit::Sampled;
-        mTexture                   = mContextDawn->createTexture(descriptor);
+        mTexture         = mContextDawn->createTexture(descriptor);
 
         mStagingBuffer = mContextDawn->createBufferFromData(pixels, width * height * 4,
                                                             dawn::BufferUsageBit::CopySrc);
@@ -218,15 +218,15 @@ static void ImGui_ImplDawn_CreateFontsTexture()
         mTextureView = mTexture.CreateView(&viewDescriptor);
 
         dawn::SamplerDescriptor samplerDesc;
-        samplerDesc.addressModeU    = dawn::AddressMode::Repeat;
-        samplerDesc.addressModeV    = dawn::AddressMode::Repeat;
-        samplerDesc.addressModeW    = dawn::AddressMode::Repeat;
-        samplerDesc.minFilter       = dawn::FilterMode::Linear;
-        samplerDesc.magFilter       = dawn::FilterMode::Linear;
-        samplerDesc.lodMinClamp     = 0.0f;
-        samplerDesc.lodMaxClamp     = 0.0f;
-        samplerDesc.compare = dawn::CompareFunction::Always;
-        samplerDesc.mipmapFilter    = dawn::FilterMode::Linear;
+        samplerDesc.addressModeU = dawn::AddressMode::Repeat;
+        samplerDesc.addressModeV = dawn::AddressMode::Repeat;
+        samplerDesc.addressModeW = dawn::AddressMode::Repeat;
+        samplerDesc.minFilter    = dawn::FilterMode::Linear;
+        samplerDesc.magFilter    = dawn::FilterMode::Linear;
+        samplerDesc.lodMinClamp  = 0.0f;
+        samplerDesc.lodMaxClamp  = 0.0f;
+        samplerDesc.compare      = dawn::CompareFunction::Always;
+        samplerDesc.mipmapFilter = dawn::FilterMode::Linear;
 
         mSampler = mContextDawn->createSampler(samplerDesc);
     }
@@ -348,7 +348,7 @@ bool ImGui_ImplDawn_Init(ContextDawn *context, dawn::TextureFormat rtv_format, b
         ImGuiBackendFlags_RendererHasVtxOffset;  // We can honor the ImDrawCmd::VtxOffset field,
                                                  // allowing for large meshes.
 
-    mFormat     = rtv_format;
+    mFormat      = rtv_format;
     mContextDawn = context;
 
     mIndexBuffer      = NULL;
@@ -369,13 +369,13 @@ void ImGui_ImplDawn_Shutdown()
     mVsModule  = nullptr;
     mFsModule  = nullptr;
 
-    mIndexBuffer  = nullptr;
-    mVertexBuffer = nullptr;
-    mStagingBuffer   = nullptr;
-    mTexture      = nullptr;
-    mSampler      = nullptr;
+    mIndexBuffer    = nullptr;
+    mVertexBuffer   = nullptr;
+    mStagingBuffer  = nullptr;
+    mTexture        = nullptr;
+    mSampler        = nullptr;
     mConstantBuffer = nullptr;
-    mTextureView     = nullptr;
+    mTextureView    = nullptr;
 }
 
 void ImGui_ImplDawn_NewFrame()

@@ -103,7 +103,7 @@ bool ContextGL::initialize(BACKENDTYPE backend,
     glfwSetFramebufferSizeCallback(mWindow, framebufferResizeCallback);
     glfwSetWindowUserPointer(mWindow, this);
 
-#ifndef GL_GLES_PROTOTYPES 
+#ifndef GL_GLES_PROTOTYPES
     glfwWindowHint(GLFW_DECORATED, GL_FALSE);
     glfwMakeContextCurrent(mWindow);
 #else
@@ -112,7 +112,7 @@ bool ContextGL::initialize(BACKENDTYPE backend,
     std::vector<EGLAttrib> display_attribs;
 
     display_attribs.push_back(EGL_PLATFORM_ANGLE_TYPE_ANGLE);
-    //display_attribs.push_back(EGL_PLATFORM_ANGLE_TYPE_OPENGL_ANGLE);
+    // display_attribs.push_back(EGL_PLATFORM_ANGLE_TYPE_OPENGL_ANGLE);
     display_attribs.push_back(EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE);
     display_attribs.push_back(EGL_PLATFORM_ANGLE_MAX_VERSION_MAJOR_ANGLE);
     display_attribs.push_back(-1);
@@ -123,10 +123,10 @@ bool ContextGL::initialize(BACKENDTYPE backend,
     display_attribs.push_back(EGL_NONE);
 
     HWND hwnd = glfwGetWin32Window(mWindow);
-    mDisplay = eglGetPlatformDisplay(EGL_PLATFORM_ANGLE_ANGLE,
-        reinterpret_cast<void *>(GetDC(hwnd)),
-        &display_attribs[0]);
-    if (mDisplay == EGL_NO_DISPLAY) {
+    mDisplay  = eglGetPlatformDisplay(EGL_PLATFORM_ANGLE_ANGLE,
+                                     reinterpret_cast<void *>(GetDC(hwnd)), &display_attribs[0]);
+    if (mDisplay == EGL_NO_DISPLAY)
+    {
         std::cout << "EGL display query failed with error " << std::endl;
     }
     GLint mEGLMajorVersion = 0;
@@ -139,15 +139,10 @@ bool ContextGL::initialize(BACKENDTYPE backend,
     const char *displayExtensions = eglQueryString(mDisplay, EGL_EXTENSIONS);
 
     std::vector<EGLint> configAttributes = {
-        EGL_RED_SIZE,       8,
-        EGL_GREEN_SIZE,     8,
-        EGL_BLUE_SIZE,      8,
-        EGL_ALPHA_SIZE,     8,
-        EGL_DEPTH_SIZE,     24,
-        EGL_STENCIL_SIZE,   8,
-        EGL_SAMPLE_BUFFERS, 0,
-        EGL_SAMPLES,        EGL_DONT_CARE
-    };
+        EGL_RED_SIZE,       8,  EGL_GREEN_SIZE,   8,
+        EGL_BLUE_SIZE,      8,  EGL_ALPHA_SIZE,   8,
+        EGL_DEPTH_SIZE,     24, EGL_STENCIL_SIZE, 8,
+        EGL_SAMPLE_BUFFERS, 0,  EGL_SAMPLES,      EGL_DONT_CARE};
 
     // Add dynamic attributes
     bool hasPixelFormatFloat = strstr(displayExtensions, "EGL_EXT_pixel_format_float") != nullptr;
@@ -188,7 +183,8 @@ bool ContextGL::initialize(BACKENDTYPE backend,
 
     surfaceAttributes.push_back(EGL_NONE);
 
-    mSurface = eglCreateWindowSurface(mDisplay, mConfig, reinterpret_cast<EGLNativeWindowType>(hwnd), &surfaceAttributes[0]);
+    mSurface = eglCreateWindowSurface(
+        mDisplay, mConfig, reinterpret_cast<EGLNativeWindowType>(hwnd), &surfaceAttributes[0]);
 
     if (eglGetError() != EGL_SUCCESS)
     {
@@ -215,13 +211,13 @@ bool ContextGL::initialize(BACKENDTYPE backend,
     // Set the window full screen
     // glfwSetWindowPos(window, 0, 0);
 
-    #ifndef EGL_EGL_PROTOTYPES
+#ifndef EGL_EGL_PROTOTYPES
     if (!gladLoadGL())
     {
         std::cout << "Something went wrong!" << std::endl;
         exit(-1);
     }
-    #endif
+#endif
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -396,7 +392,8 @@ void ContextGL::initAvailableToggleBitset(BACKENDTYPE backendType)
 
 Buffer *ContextGL::createBuffer(int numComponents, std::vector<float> *buf, bool isIndex)
 {
-    BufferGL *buffer = new BufferGL(this, static_cast<int>(buf->size()), numComponents, isIndex, GL_FLOAT, false);
+    BufferGL *buffer =
+        new BufferGL(this, static_cast<int>(buf->size()), numComponents, isIndex, GL_FLOAT, false);
     buffer->loadBuffer(*buf);
 
     return buffer;
@@ -469,7 +466,8 @@ void ContextGL::showFPS(const FPSTimer &fpsTimer)
 
         std::ostringstream rendererStream;
         std::string backend = mResourceHelper->getBackendName();
-        for (auto & c: backend ) c = toupper(c);
+        for (auto &c : backend)
+            c = toupper(c);
 #ifdef EGL_EGL_PROTOTYPES
         rendererStream << mRenderer;
 #else
@@ -479,11 +477,12 @@ void ContextGL::showFPS(const FPSTimer &fpsTimer)
         ImGui::Text(renderer.c_str());
 
         std::ostringstream resolutionStream;
-        resolutionStream <<"Resolution " << mClientWidth << "x" << mClientHeight;
+        resolutionStream << "Resolution " << mClientWidth << "x" << mClientHeight;
         std::string resolution = resolutionStream.str();
         ImGui::Text(resolution.c_str());
 
-        ImGui::PlotLines("[0,100 FPS]", fpsTimer.getHistoryFps(), NUM_HISTORY_DATA, 0, NULL, 0.0f, 100.0f, ImVec2 (0,40));
+        ImGui::PlotLines("[0,100 FPS]", fpsTimer.getHistoryFps(), NUM_HISTORY_DATA, 0, NULL, 0.0f,
+                         100.0f, ImVec2(0, 40));
 
         ImGui::PlotHistogram("[0,100 ms/frame]", fpsTimer.getHistoryFrameTime(), NUM_HISTORY_DATA,
                              0, NULL, 0.0f, 100.0f, ImVec2(0, 40));
@@ -744,7 +743,8 @@ bool ContextGL::compileProgram(unsigned int programId,
     {
         glGetShaderiv(FragmentShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
         std::vector<char> FragmentShaderErrorMessage(InfoLogLength);
-        glGetShaderInfoLog(FragmentShaderID, InfoLogLength, nullptr, &FragmentShaderErrorMessage[0]);
+        glGetShaderInfoLog(FragmentShaderID, InfoLogLength, nullptr,
+                           &FragmentShaderErrorMessage[0]);
         std::cout << stdout << &FragmentShaderErrorMessage[0] << std::endl;
     }
 

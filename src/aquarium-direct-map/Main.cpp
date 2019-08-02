@@ -38,7 +38,7 @@
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
 
-#define min(a,b) ((a)<(b)?(a):(b))
+#define min(a, b) ((a) < (b) ? (a) : (b))
 
 void render();
 
@@ -54,62 +54,92 @@ std::string mPath;
 int g_numFish;
 
 // Variables calculate time
-float then = 0.0f;
-float mClock = 0.0f;
+float then     = 0.0f;
+float mClock   = 0.0f;
 float eyeClock = 0.0f;
 
 const G_ui_per g_ui[] = {
-    { "globals", "speed", 1.0f, 4.0f },{ "globals", "targetHeight", 0.0f, 150.0f },
-    { "globals", "targetRadius", 88.0f, 200.0f },{ "globals", "eyeHeight", 19.0f, 150.0f },
-    { "globals", "eyeSpeed", 0.06f, 1.0f },{ "globals", "fieldOfView", 85.0f, 179.0f, 1.0f },
-    { "globals", "ambientRed", 0.22f, 1.0f },{ "globals", "ambientGreen", 0.25f, 1.0f },
-    { "globals", "ambientBlue", 0.39f, 1.0f },{ "globals", "fogPower", 14.5f, 50.0f },
-    { "globals", "fogMult", 1.66f, 10.0f },{ "globals", "fogOffset", 0.53f, 3.0f },
-    { "globals", "fogRed", 0.54f, 1.0f },{ "globals", "fogGreen", 0.86f, 1.0f },
-    { "globals", "fogBlue", 1.0f, 1.0f },{ "fish", "fishHeightRange", 1.0f, 3.0f },
-    { "fish", "fishHeight", 25.0f, 50.0f },{ "fish", "fishSpeed", 0.124f, 2.0f },
-    { "fish", "fishOffset", 0.52f, 2.0f },{ "fish", "fishXClock", 1.0f, 2.0f },
-    { "fish", "fishYClock", 0.556f, 2.0f },{ "fish", "fishZClock", 1.0f, 2.0f },
-    { "fish", "fishTailSpeed", 1.0f, 30.0f },{ "innerConst", "refractionFudge", 3.0f, 50.0f },
-    { "innerConst", "eta", 1.0f, 1.20f },{ "innerConst", "tankColorFudge", 0.8f, 2.0f } };
+    {"globals", "speed", 1.0f, 4.0f},           {"globals", "targetHeight", 0.0f, 150.0f},
+    {"globals", "targetRadius", 88.0f, 200.0f}, {"globals", "eyeHeight", 19.0f, 150.0f},
+    {"globals", "eyeSpeed", 0.06f, 1.0f},       {"globals", "fieldOfView", 85.0f, 179.0f, 1.0f},
+    {"globals", "ambientRed", 0.22f, 1.0f},     {"globals", "ambientGreen", 0.25f, 1.0f},
+    {"globals", "ambientBlue", 0.39f, 1.0f},    {"globals", "fogPower", 14.5f, 50.0f},
+    {"globals", "fogMult", 1.66f, 10.0f},       {"globals", "fogOffset", 0.53f, 3.0f},
+    {"globals", "fogRed", 0.54f, 1.0f},         {"globals", "fogGreen", 0.86f, 1.0f},
+    {"globals", "fogBlue", 1.0f, 1.0f},         {"fish", "fishHeightRange", 1.0f, 3.0f},
+    {"fish", "fishHeight", 25.0f, 50.0f},       {"fish", "fishSpeed", 0.124f, 2.0f},
+    {"fish", "fishOffset", 0.52f, 2.0f},        {"fish", "fishXClock", 1.0f, 2.0f},
+    {"fish", "fishYClock", 0.556f, 2.0f},       {"fish", "fishZClock", 1.0f, 2.0f},
+    {"fish", "fishTailSpeed", 1.0f, 30.0f},     {"innerConst", "refractionFudge", 3.0f, 50.0f},
+    {"innerConst", "eta", 1.0f, 1.20f},         {"innerConst", "tankColorFudge", 0.8f, 2.0f}};
 
-G_sceneInfo g_sceneInfo[] = { { "SmallFishA",{ "fishVertexShader", "fishReflectionFragmentShader" }, true },
-{ "MediumFishA",{ "fishVertexShader", "fishNormalMapFragmentShader" }, true },
-{ "MediumFishB",{ "fishVertexShader", "fishReflectionFragmentShader" }, true },
-{ "BigFishA",{ "fishVertexShader", "fishNormalMapFragmentShader" }, true },
-{ "BigFishB",{ "fishVertexShader", "fishNormalMapFragmentShader" }, true },
-{ "Arch",{ "", "" }, true },
-{ "Coral",{ "", "" }, true },
-{ "CoralStoneA",{ "", "" }, true },
-{ "CoralStoneB",{ "", "" }, true },
-{ "EnvironmentBox",{ "diffuseVertexShader", "diffuseFragmentShader" }, false, "outside" },
-{ "FloorBase_Baked",{ "", "" }, true },
-{ "FloorCenter",{ "", "" }, true },
-{ "GlobeBase",{ "diffuseVertexShader", "diffuseFragmentShader" } },
-{ "GlobeInner",{ "innerRefractionMapVertexShader", "innerRefractionMapFragmentShader" }, true, "inner" },
-{ "RockA",{ "", "" }, true },
-{ "RockB",{ "", "" }, true },
-{ "RockC",{ "", "" }, true },
-{ "RuinColumn",{ "", "" }, true },
-{ "Skybox",{ "diffuseVertexShader", "diffuseFragmentShader" }, false, "outside" },
-{ "Stone",{ "", "" }, true },
-{ "Stones",{ "", "" }, true },
-{ "SunknShip",{ "", "" }, true },
-{ "SunknSub",{ "", "" }, true },
-{ "SupportBeams",{ "", "" }, false, "outside" },
-{ "SeaweedA",{ "seaweedVertexShader", "seaweedFragmentShader" }, false, "seaweed", true },
-{ "SeaweedB",{ "seaweedVertexShader", "seaweedFragmentShader" }, false, "seaweed", true },
-{ "TreasureChest",{ "", "" }, true } };
+G_sceneInfo g_sceneInfo[] = {
+    {"SmallFishA", {"fishVertexShader", "fishReflectionFragmentShader"}, true},
+    {"MediumFishA", {"fishVertexShader", "fishNormalMapFragmentShader"}, true},
+    {"MediumFishB", {"fishVertexShader", "fishReflectionFragmentShader"}, true},
+    {"BigFishA", {"fishVertexShader", "fishNormalMapFragmentShader"}, true},
+    {"BigFishB", {"fishVertexShader", "fishNormalMapFragmentShader"}, true},
+    {"Arch", {"", ""}, true},
+    {"Coral", {"", ""}, true},
+    {"CoralStoneA", {"", ""}, true},
+    {"CoralStoneB", {"", ""}, true},
+    {"EnvironmentBox", {"diffuseVertexShader", "diffuseFragmentShader"}, false, "outside"},
+    {"FloorBase_Baked", {"", ""}, true},
+    {"FloorCenter", {"", ""}, true},
+    {"GlobeBase", {"diffuseVertexShader", "diffuseFragmentShader"}},
+    {"GlobeInner",
+     {"innerRefractionMapVertexShader", "innerRefractionMapFragmentShader"},
+     true,
+     "inner"},
+    {"RockA", {"", ""}, true},
+    {"RockB", {"", ""}, true},
+    {"RockC", {"", ""}, true},
+    {"RuinColumn", {"", ""}, true},
+    {"Skybox", {"diffuseVertexShader", "diffuseFragmentShader"}, false, "outside"},
+    {"Stone", {"", ""}, true},
+    {"Stones", {"", ""}, true},
+    {"SunknShip", {"", ""}, true},
+    {"SunknSub", {"", ""}, true},
+    {"SupportBeams", {"", ""}, false, "outside"},
+    {"SeaweedA", {"seaweedVertexShader", "seaweedFragmentShader"}, false, "seaweed", true},
+    {"SeaweedB", {"seaweedVertexShader", "seaweedFragmentShader"}, false, "seaweed", true},
+    {"TreasureChest", {"", ""}, true}};
 
 std::unordered_map<std::string, G_sceneInfo> g_sceneInfoByName;
 
-Fish g_fishTable[] = { { "SmallFishA", 1.0f, 1.5f, 30.0f, 25.0f, 10.0f, 0.0f, 16.0f,{ 10.0f, 1.0f, 2.0f } },
-{ "MediumFishA", 1.0f, 2.0f, 10.0f, 20.0f, 1.0f, 0.0f, 16.0f,{ 10.0f, -2.0f, 2.0f } },
-{ "MediumFishB", 0.5f, 4.0f, 10.0f, 20.0f, 3.0f, -8.0f, 5.0f,{ 10.0f, -2.0f, 2.0f } },
-{ "BigFishA", 0.5f, 0.5f, 50.0f, 3.0f, 1.5f, 0.0f, 16.0f,{ 10.0f, -1.0f, 0.5f }, true, 0.04f,{ 0.0f, 0.1f, 9.0f },{ 0.3f, 0.3f, 1000.0f } },
-{ "BigFishB", 0.5f, 0.5f, 45.0f, 3.0f, 1.0f, 0.0f, 16.0f,{ 10.0f, -0.7f, 0.3f }, true, 0.04f,{ 0.0f, -0.3f, 9.0f },{ 0.3f, 0.3f, 1000.0f } } };
+Fish g_fishTable[] = {
+    {"SmallFishA", 1.0f, 1.5f, 30.0f, 25.0f, 10.0f, 0.0f, 16.0f, {10.0f, 1.0f, 2.0f}},
+    {"MediumFishA", 1.0f, 2.0f, 10.0f, 20.0f, 1.0f, 0.0f, 16.0f, {10.0f, -2.0f, 2.0f}},
+    {"MediumFishB", 0.5f, 4.0f, 10.0f, 20.0f, 3.0f, -8.0f, 5.0f, {10.0f, -2.0f, 2.0f}},
+    {"BigFishA",
+     0.5f,
+     0.5f,
+     50.0f,
+     3.0f,
+     1.5f,
+     0.0f,
+     16.0f,
+     {10.0f, -1.0f, 0.5f},
+     true,
+     0.04f,
+     {0.0f, 0.1f, 9.0f},
+     {0.3f, 0.3f, 1000.0f}},
+    {"BigFishB",
+     0.5f,
+     0.5f,
+     45.0f,
+     3.0f,
+     1.0f,
+     0.0f,
+     16.0f,
+     {10.0f, -0.7f, 0.3f},
+     true,
+     0.04f,
+     {0.0f, -0.3f, 9.0f},
+     {0.3f, 0.3f, 1000.0f}}};
 
-void setGenericConstMatrix(GenericConst *genericConst) {
+void setGenericConstMatrix(GenericConst *genericConst)
+{
     genericConst->viewProjection = &viewProjection;
     genericConst->viewInverse    = &viewInverse;
     genericConst->lightWorldPos  = &lightWorldPos;
@@ -122,12 +152,13 @@ void setGenericConstMatrix(GenericConst *genericConst) {
 void setGenericPer(GenericPer *genericPer)
 {
     genericPer->world                 = &world;
-    genericPer->worldViewProjection  = &worldViewProjection;
+    genericPer->worldViewProjection   = &worldViewProjection;
     genericPer->worldInverse          = &worldInverse;
     genericPer->worldInverseTranspose = &worldInverseTraspose;
 }
 
-void initializeUniforms() {
+void initializeUniforms()
+{
     sandConst.shininess      = sand_shininess;
     sandConst.specularFactor = sand_specularFactor;
 
@@ -140,11 +171,11 @@ void initializeUniforms() {
     seaweedConst.shininess      = seaweed_shininess;
     seaweedConst.specularFactor = seaweed_specularFactor;
 
-    innerConst.shininess                   = inner_shininess;
-    innerConst.specularFactor              = inner_specularFactor;
-    innerConst.eta                         = g_viewSettings.eta;
-    innerConst.refractionFudge             = g_viewSettings.refractionFudge;
-    innerConst.tankColorFudge              = g_viewSettings.tankColorFudge;
+    innerConst.shininess       = inner_shininess;
+    innerConst.specularFactor  = inner_specularFactor;
+    innerConst.eta             = g_viewSettings.eta;
+    innerConst.refractionFudge = g_viewSettings.refractionFudge;
+    innerConst.tankColorFudge  = g_viewSettings.tankColorFudge;
 
     fishConst.genericConst.shininess      = fish_shininess;
     fishConst.genericConst.specularFactor = fish_specularFactor;
@@ -303,7 +334,7 @@ bool initialize(int argc, char **argv)
     LoadScenes();
 
     // "--num-fish" {numfish}: imply rendering fish count.
-    char* pNext;
+    char *pNext;
     for (int i = 1; i < argc; ++i)
     {
         std::string cmd(argv[i]);
@@ -320,47 +351,48 @@ bool initialize(int argc, char **argv)
 
     // Calculate fish count for each float of fish
     std::string floats[3] = {"Big", "Medium", "Small"};
-    int totalFish = g_numFish;
-        int numLeft = totalFish;
-        for (auto &type : floats)
+    int totalFish         = g_numFish;
+    int numLeft           = totalFish;
+    for (auto &type : floats)
+    {
+        for (auto &fishInfo : g_fishTable)
         {
-            for (auto &fishInfo : g_fishTable)
+            std::string &fishName = fishInfo.name;
+            if (fishName.find(type))
             {
-                std::string &fishName = fishInfo.name;
-                if (fishName.find(type))
-                {
-                    continue;
-                }
-                int numfloat = numLeft;
-                if (type == "Big")
-                {
-                    int temp = totalFish < numFishSmall ? 1 : 2;
-                    numfloat = min(numLeft, temp);
-                }
-                else if (type == "Medium")
-                {
-                    if (totalFish < numFishMedium)
-                    {
-                        numfloat = min(numLeft, totalFish / 10);
-                    }
-                    else if (totalFish < numFishBig)
-                    {
-                        numfloat = min(numLeft, numFishLeftSmall);
-                    }
-                    else
-                    {
-                        numfloat = min(numLeft, numFishLeftBig);
-                    }
-                }
-                numLeft = numLeft - numfloat;
-                fishInfo.num = numfloat;
+                continue;
             }
+            int numfloat = numLeft;
+            if (type == "Big")
+            {
+                int temp = totalFish < numFishSmall ? 1 : 2;
+                numfloat = min(numLeft, temp);
+            }
+            else if (type == "Medium")
+            {
+                if (totalFish < numFishMedium)
+                {
+                    numfloat = min(numLeft, totalFish / 10);
+                }
+                else if (totalFish < numFishBig)
+                {
+                    numfloat = min(numLeft, numFishLeftSmall);
+                }
+                else
+                {
+                    numfloat = min(numLeft, numFishLeftBig);
+                }
+            }
+            numLeft      = numLeft - numfloat;
+            fishInfo.num = numfloat;
+        }
     }
 
     return true;
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
 
     // initialize GLFW
     if (!glfwInit())
@@ -378,16 +410,16 @@ int main(int argc, char **argv) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 #endif
-    
+
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
     glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 
-    GLFWmonitor *pMonitor = glfwGetPrimaryMonitor();
+    GLFWmonitor *pMonitor   = glfwGetPrimaryMonitor();
     const GLFWvidmode *mode = glfwGetVideoMode(pMonitor);
-    clientWidth = mode->width;
-    clientHeight = mode->height;
+    clientWidth             = mode->width;
+    clientHeight            = mode->height;
 
     window = glfwCreateWindow(clientWidth, clientHeight, "Aquarium", NULL, NULL);
     if (window == NULL)
@@ -481,7 +513,8 @@ void DrawGroup(const std::multimap<std::string, std::vector<float>> &group,
     }
 }
 
-void render() {
+void render()
+{
     // Update our time
 #ifdef _WIN32
     float now = GetTickCount64() / 1000.0f;
@@ -525,14 +558,14 @@ void render() {
     float nearPlane = 1;
     float farPlane  = 25000.0f;
     float aspect    = static_cast<float>(clientWidth) / static_cast<float>(clientHeight);
-    float top       = tan(matrix::degToRad(g_viewSettings.fieldOfView * g_fovFudge) * 0.5f) * nearPlane;
-    float bottom    = -top;
-    float left      = aspect * bottom;
-    float right     = aspect * top;
-    float width     = abs(right - left);
-    float height    = abs(top - bottom);
-    float xOff      = width * g_net_offset[0] * g_net_offsetMult;
-    float yOff      = height * g_net_offset[1] * g_net_offsetMult;
+    float top = tan(matrix::degToRad(g_viewSettings.fieldOfView * g_fovFudge) * 0.5f) * nearPlane;
+    float bottom = -top;
+    float left   = aspect * bottom;
+    float right  = aspect * top;
+    float width  = abs(right - left);
+    float height = abs(top - bottom);
+    float xOff   = width * g_net_offset[0] * g_net_offsetMult;
+    float yOff   = height * g_net_offset[1] * g_net_offsetMult;
 
     matrix::frustum(projection, left + xOff, right + xOff, bottom + yOff, top + yOff, nearPlane,
                     farPlane);
@@ -559,28 +592,28 @@ void render() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBlendEquation(GL_FUNC_ADD);
     glEnable(GL_CULL_FACE);
-    
+
     matrix::resetPseudoRandom();
 
     glDepthMask(true);
 
     if (g_fog)
     {
-        genericConst.fogPower             = g_viewSettings.fogPower;
-        genericConst.fogMult              = g_viewSettings.fogMult;
-        genericConst.fogOffset            = g_viewSettings.fogOffset;
-        fishConst.genericConst.fogPower   = g_viewSettings.fogPower;
-        fishConst.genericConst.fogMult    = g_viewSettings.fogMult;
-        fishConst.genericConst.fogOffset  = g_viewSettings.fogOffset;
-        innerConst.fogPower               = g_viewSettings.fogPower;
-        innerConst.fogMult                = g_viewSettings.fogMult;
-        innerConst.fogOffset              = g_viewSettings.fogOffset;
-        seaweedConst.fogPower             = g_viewSettings.fogPower;
-        seaweedConst.fogMult              = g_viewSettings.fogMult;
-        seaweedConst.fogOffset            = g_viewSettings.fogOffset;
-        fogColor[0]                     = g_viewSettings.fogRed;
-        fogColor[1]                     = g_viewSettings.fogGreen;
-        fogColor[2]                     = g_viewSettings.fogBlue;
+        genericConst.fogPower            = g_viewSettings.fogPower;
+        genericConst.fogMult             = g_viewSettings.fogMult;
+        genericConst.fogOffset           = g_viewSettings.fogOffset;
+        fishConst.genericConst.fogPower  = g_viewSettings.fogPower;
+        fishConst.genericConst.fogMult   = g_viewSettings.fogMult;
+        fishConst.genericConst.fogOffset = g_viewSettings.fogOffset;
+        innerConst.fogPower              = g_viewSettings.fogPower;
+        innerConst.fogMult               = g_viewSettings.fogMult;
+        innerConst.fogOffset             = g_viewSettings.fogOffset;
+        seaweedConst.fogPower            = g_viewSettings.fogPower;
+        seaweedConst.fogMult             = g_viewSettings.fogMult;
+        seaweedConst.fogOffset           = g_viewSettings.fogOffset;
+        fogColor[0]                      = g_viewSettings.fogRed;
+        fogColor[1]                      = g_viewSettings.fogGreen;
+        fogColor[2]                      = g_viewSettings.fogBlue;
     }
 
     // Draw Scene
@@ -603,13 +636,13 @@ void render() {
             auto &f                 = g["fish"];
             fishConst.constUniforms = fishInfo.constUniforms;
             fish->prepareForDraw(fishConst);
-            float fishBaseClock                  = mClock * f["fishSpeed"];
-            float fishRadius                     = fishInfo.radius;
-            float fishRadiusRange                = fishInfo.radiusRange;
-            float fishSpeed                      = fishInfo.speed;
-            float fishSpeedRange                 = fishInfo.speedRange;
-            float fishTailSpeed                  = fishInfo.tailSpeed * f["fishTailSpeed"];
-            float fishOffset                     = f["fishOffset"];
+            float fishBaseClock   = mClock * f["fishSpeed"];
+            float fishRadius      = fishInfo.radius;
+            float fishRadiusRange = fishInfo.radiusRange;
+            float fishSpeed       = fishInfo.speed;
+            float fishSpeedRange  = fishInfo.speedRange;
+            float fishTailSpeed   = fishInfo.tailSpeed * f["fishTailSpeed"];
+            float fishOffset      = f["fishOffset"];
             // float fishClockSpeed                 = f["fishSpeed"];
             float fishHeight                     = f["fishHeight"] + fishInfo.heightOffset;
             float fishHeightRange                = f["fishHeightRange"] * fishInfo.heightRange;

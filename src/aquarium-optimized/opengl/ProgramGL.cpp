@@ -27,8 +27,8 @@
 #include <string>
 #include <vector>
 
-#include "common/AQUARIUM_ASSERT.h"
 #include "ProgramGL.h"
+#include "common/AQUARIUM_ASSERT.h"
 
 #include "../Buffer.h"
 #include "../Texture.h"
@@ -36,8 +36,8 @@
 ProgramGL::ProgramGL(ContextGL *context, std::string mVId, std::string mFId)
     : Program(mVId, mFId), mProgramId(0u), mContext(context)
 {
-    mProgramId= context->generateProgram();
-    mVAO = context->generateVAO();
+    mProgramId = context->generateProgram();
+    mVAO       = context->generateVAO();
 }
 
 ProgramGL::~ProgramGL()
@@ -88,7 +88,8 @@ void ProgramGL::loadProgram()
 
     bool status = mContext->compileProgram(mProgramId, VertexShaderCode, FragmentShaderCode);
     ASSERT(status);
-    if (!status) {
+    if (!status)
+    {
         std::cout << "Error occurs in compiling program!" << std::endl;
     }
 }
