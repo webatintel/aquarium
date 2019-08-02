@@ -101,7 +101,7 @@ Aquarium::~Aquarium()
     delete mFactory;
 }
 
-BACKENDTYPE Aquarium::getBackendType(const std::string& backendPath)
+BACKENDTYPE Aquarium::getBackendType(const std::string &backendPath)
 {
     if (backendPath == "opengl")
     {

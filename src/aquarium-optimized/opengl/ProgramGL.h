@@ -24,7 +24,7 @@
 
 class ProgramGL : public Program
 {
-public:
+  public:
     ProgramGL() {}
     ProgramGL(ContextGL *, std::string mVId, std::string mFId);
     ~ProgramGL() override;
@@ -42,4 +42,3 @@ public:
 };
 
 #endif
-

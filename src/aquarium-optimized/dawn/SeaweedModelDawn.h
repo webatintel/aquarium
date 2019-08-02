@@ -19,7 +19,11 @@
 class SeaweedModelDawn : public SeaweedModel
 {
   public:
-    SeaweedModelDawn(const Context *context, Aquarium *aquarium, MODELGROUP type, MODELNAME name, bool blend);
+    SeaweedModelDawn(const Context *context,
+                     Aquarium *aquarium,
+                     MODELGROUP type,
+                     MODELNAME name,
+                     bool blend);
     ~SeaweedModelDawn();
 
     void init() override;
@@ -74,7 +78,7 @@ class SeaweedModelDawn : public SeaweedModel
 
     const ContextDawn *mContextDawn;
     ProgramDawn *mProgramDawn;
-    Aquarium * mAquarium;
+    Aquarium *mAquarium;
 
     int instance;
 };

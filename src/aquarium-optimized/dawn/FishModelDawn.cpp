@@ -5,8 +5,8 @@
 //
 // FishModelDawn.cpp: Implements fish model of Dawn.
 
-#include "BufferDawn.h" 
 #include "FishModelDawn.h"
+#include "BufferDawn.h"
 
 FishModelDawn::FishModelDawn(const Context *context,
                              Aquarium *aquarium,
@@ -23,13 +23,13 @@ FishModelDawn::FishModelDawn(const Context *context,
     mLightFactorUniforms.shininess      = 5.0f;
     mLightFactorUniforms.specularFactor = 0.3f;
 
-    const Fish &fishInfo              = fishTable[name - MODELNAME::MODELSMALLFISHA];
+    const Fish &fishInfo               = fishTable[name - MODELNAME::MODELSMALLFISHA];
     mFishVertexUniforms.fishLength     = fishInfo.fishLength;
     mFishVertexUniforms.fishBendAmount = fishInfo.fishBendAmount;
     mFishVertexUniforms.fishWaveLength = fishInfo.fishWaveLength;
 
-    instance      = aquarium->fishCount[fishInfo.modelName - MODELNAME::MODELSMALLFISHA];
-    mFishPers     = new FishPer[instance];
+    instance  = aquarium->fishCount[fishInfo.modelName - MODELNAME::MODELSMALLFISHA];
+    mFishPers = new FishPer[instance];
     if (mEnableDynamicBufferOffset)
     {
         mBindGroupPers = new dawn::BindGroup[1];

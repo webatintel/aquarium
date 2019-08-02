@@ -175,7 +175,8 @@ void GenericModelD3D12::draw()
     if (mTangentBuffer && mBiNormalBuffer && mName != MODELNAME::MODELGLOBEBASE)
     {
         commandList->IASetVertexBuffers(0, 5, mVertexBufferView);
-    } else
+    }
+    else
     {
         commandList->IASetVertexBuffers(0, 3, mVertexBufferView);
     }

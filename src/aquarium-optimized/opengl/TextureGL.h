@@ -45,11 +45,10 @@ class TextureGL : public Texture
     void loadTexture() override;
 
   private:
-
     unsigned int mTarget;
     unsigned int mTextureId;
     unsigned int mFormat;
     ContextGL *mContext;
 };
 
-#endif // !TEXTUREGL_H
+#endif  // !TEXTUREGL_H

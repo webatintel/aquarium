@@ -60,4 +60,4 @@ class SeaweedModelGL : public SeaweedModel
     const ContextGL *mContextGL;
 };
 
-#endif // !SEAWEEDMODELGL_H
+#endif  // !SEAWEEDMODELGL_H

@@ -7,11 +7,15 @@
 
 #include "SeaweedModelDawn.h"
 
-SeaweedModelDawn::SeaweedModelDawn(const Context* context, Aquarium* aquarium, MODELGROUP type, MODELNAME name, bool blend)
+SeaweedModelDawn::SeaweedModelDawn(const Context *context,
+                                   Aquarium *aquarium,
+                                   MODELGROUP type,
+                                   MODELNAME name,
+                                   bool blend)
     : SeaweedModel(type, name, blend), instance(0)
 {
     mContextDawn = static_cast<const ContextDawn *>(context);
-    mAquarium   = aquarium;
+    mAquarium    = aquarium;
 
     mLightFactorUniforms.shininess      = 50.0f;
     mLightFactorUniforms.specularFactor = 1.0f;
@@ -145,7 +149,4 @@ void SeaweedModelDawn::updatePerInstanceUniforms(const WorldUniforms &worldUnifo
     instance++;
 }
 
-void SeaweedModelDawn::updateSeaweedModelTime(float time)
-{
-}
-
+void SeaweedModelDawn::updateSeaweedModelTime(float time) {}

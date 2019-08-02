@@ -20,7 +20,7 @@
 class TextureDawn;
 class BufferDawn;
 class ProgramDawn;
-enum BACKENDTYPE: short;
+enum BACKENDTYPE : short;
 
 class ContextDawn : public Context
 {
@@ -42,7 +42,7 @@ class ContextDawn : public Context
 
     void preFrame() override;
 
-    Model *createModel(Aquarium* aquarium, MODELGROUP type, MODELNAME name, bool blend) override;
+    Model *createModel(Aquarium *aquarium, MODELGROUP type, MODELNAME name, bool blend) override;
     Buffer *createBuffer(int numComponents, std::vector<float> *buffer, bool isIndex) override;
     Buffer *createBuffer(int numComponents,
                          std::vector<unsigned short> *buffer,
@@ -54,11 +54,13 @@ class ContextDawn : public Context
     Texture *createTexture(const std::string &name, const std::vector<std::string> &urls) override;
     dawn::Texture createTexture(const dawn::TextureDescriptor &descriptor) const;
     dawn::Sampler createSampler(const dawn::SamplerDescriptor &descriptor) const;
-    dawn::Buffer createBufferFromData(const void* pixels, int size, dawn::BufferUsageBit usage) const;
+    dawn::Buffer createBufferFromData(const void *pixels,
+                                      int size,
+                                      dawn::BufferUsageBit usage) const;
     dawn::BufferCopyView createBufferCopyView(const dawn::Buffer &buffer,
-        uint32_t offset,
-        uint32_t rowPitch,
-        uint32_t imageHeight) const;
+                                              uint32_t offset,
+                                              uint32_t rowPitch,
+                                              uint32_t imageHeight) const;
     dawn::CommandBuffer copyBufferToTexture(const dawn::BufferCopyView &bufferCopyView,
                                             const dawn::TextureCopyView &textureCopyView,
                                             const dawn::Extent3D &ext3D) const;
@@ -68,7 +70,7 @@ class ContextDawn : public Context
                                                 uint32_t slice,
                                                 dawn::Origin3D origin);
     dawn::ShaderModule createShaderModule(utils::ShaderStage stage, const std::string &str) const;
-    dawn::BindGroupLayout  MakeBindGroupLayout(
+    dawn::BindGroupLayout MakeBindGroupLayout(
         std::initializer_list<dawn::BindGroupLayoutBinding> bindingsInitializer) const;
     dawn::PipelineLayout MakeBasicPipelineLayout(
         std::vector<dawn::BindGroupLayout> bindingsInitializer) const;
@@ -80,13 +82,16 @@ class ContextDawn : public Context
     dawn::TextureView createMultisampledRenderTargetView() const;
     dawn::TextureView createDepthStencilView() const;
     dawn::Buffer createBuffer(uint32_t size, dawn::BufferUsageBit bit) const;
-    void setBufferData(const dawn::Buffer &buffer, uint32_t start, uint32_t size, const void* pixels) const;
+    void setBufferData(const dawn::Buffer &buffer,
+                       uint32_t start,
+                       uint32_t size,
+                       const void *pixels) const;
     dawn::BindGroup makeBindGroup(
         const dawn::BindGroupLayout &layout,
         std::initializer_list<utils::BindingInitializationHelper> bindingsInitializer) const;
 
-    void initGeneralResources(Aquarium* aquarium) override;
-    void updateWorldlUniforms(Aquarium* aquarium) override;
+    void initGeneralResources(Aquarium *aquarium) override;
+    void updateWorldlUniforms(Aquarium *aquarium) override;
     const dawn::Device &getDevice() const { return mDevice; }
     const dawn::RenderPassEncoder &getRenderPass() const { return mRenderPass; }
 

@@ -18,10 +18,7 @@
 #include "common/AQUARIUM_ASSERT.h"
 
 Program::Program(const std::string &vId, const std::string &fId)
-    : program(0u),
-    attribLocs(),
-    uniforms(),
-    textureUnits()
+    : program(0u), attribLocs(), uniforms(), textureUnits()
 {
     createProgramFromTags(vId, fId);
     createSetters();
@@ -45,12 +42,12 @@ void Program::createProgramFromTags(const std::string &vId, const std::string &f
 {
     std::ifstream VertexShaderStream(vId, std::ios::in);
     std::string VertexShaderCode((std::istreambuf_iterator<char>(VertexShaderStream)),
-        std::istreambuf_iterator<char>());
+                                 std::istreambuf_iterator<char>());
     VertexShaderStream.close();
 
     std::ifstream FragmentShaderStream(fId, std::ios::in);
     std::string FragmentShaderCode((std::istreambuf_iterator<char>(FragmentShaderStream)),
-        std::istreambuf_iterator<char>());
+                                   std::istreambuf_iterator<char>());
     FragmentShaderStream.close();
 
     const std::string fogUniforms =
@@ -63,9 +60,11 @@ void Program::createProgramFromTags(const std::string &vId, const std::string &f
         clamp(pow((v_position.z / v_position.w), fogPower) * fogMult - fogOffset,0.0,1.0));)";
 
 #ifdef __APPLE__
-    VertexShaderCode = std::regex_replace(VertexShaderCode, std::regex(R"(#version 450 core)"), R"(#version 410 core)");
-    FragmentShaderCode = std::regex_replace(FragmentShaderCode, std::regex(R"(#version 450 core)"), R"(#version 410 core)");
-    #endif
+    VertexShaderCode   = std::regex_replace(VertexShaderCode, std::regex(R"(#version 450 core)"),
+                                          R"(#version 410 core)");
+    FragmentShaderCode = std::regex_replace(FragmentShaderCode, std::regex(R"(#version 450 core)"),
+                                            R"(#version 410 core)");
+#endif
 
     // enable fog, reflection and normalMaps
     FragmentShaderCode =
@@ -199,7 +198,7 @@ void Program::setUniform(const std::string &name, float v)
         return;
     }
     Uniform *uniform = uniforms[name];
-    GLint loc = uniform->getIndex();
+    GLint loc        = uniform->getIndex();
     ASSERT(uniform->getType() == GL_FLOAT);
     glUniform1f(loc, v);
 

@@ -17,8 +17,8 @@ class ResourceHelper
     const std::string &getImagePath() const { return mImagePath; }
     std::string getModelPath(const std::string &modelName) const;
     std::string getProgramPath() const;
-    const std::string& getBackendName() const { return mBackendName; }
-    const std::string& getShaderVersion() const { return mShaderVersion; }
+    const std::string &getBackendName() const { return mBackendName; }
+    const std::string &getShaderVersion() const { return mShaderVersion; }
 
   private:
     std::string mPath;

@@ -14,9 +14,9 @@
 class SeaweedModel : public Model
 {
   public:
-    SeaweedModel(MODELGROUP type, MODELNAME name, bool blend) : Model(type, name, blend){}
+    SeaweedModel(MODELGROUP type, MODELNAME name, bool blend) : Model(type, name, blend) {}
 
     virtual void updateSeaweedModelTime(float time) = 0;
 };
 
-#endif // !SEAWEEDMODEL_H
+#endif  // !SEAWEEDMODEL_H

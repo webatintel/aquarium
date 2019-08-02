@@ -41,4 +41,3 @@ class ProgramD3D12 : public Program
 };
 
 #endif
-
