@@ -13,7 +13,8 @@
 
 #include "common/AQUARIUM_ASSERT.h"
 
-TextureDawn::~TextureDawn() {
+TextureDawn::~TextureDawn()
+{
 
     DestoryImageData(mPixelVec);
     DestoryImageData(mResizedVec);
@@ -54,16 +55,16 @@ void TextureDawn::loadTexture()
     if (mTextureViewDimension == dawn::TextureViewDimension::Cube)
     {
         dawn::TextureDescriptor descriptor;
-        descriptor.dimension = mTextureDimension;
-        descriptor.size.width = mWidth;
-        descriptor.size.height = mHeight;
-        descriptor.size.depth = 1;
+        descriptor.dimension       = mTextureDimension;
+        descriptor.size.width      = mWidth;
+        descriptor.size.height     = mHeight;
+        descriptor.size.depth      = 1;
         descriptor.arrayLayerCount = 6;
-        descriptor.sampleCount = 1;
-        descriptor.format = mFormat;
+        descriptor.sampleCount     = 1;
+        descriptor.format          = mFormat;
         descriptor.mipLevelCount   = 1;
         descriptor.usage = dawn::TextureUsageBit::CopyDst | dawn::TextureUsageBit::Sampled;
-        mTexture                   = mContext->createTexture(descriptor);
+        mTexture         = mContext->createTexture(descriptor);
 
         for (unsigned int i = 0; i < 6; i++)
         {
@@ -73,18 +74,19 @@ void TextureDawn::loadTexture()
                 mContext->createBufferCopyView(stagingBuffer, 0, mWidth * 4, mHeight);
             dawn::TextureCopyView textureCopyView =
                 mContext->createTextureCopyView(mTexture, 0, i, {0, 0, 0});
-            dawn::Extent3D copySize = { static_cast<uint32_t>(mWidth), static_cast<uint32_t>(mHeight), 1 };
+            dawn::Extent3D copySize = {static_cast<uint32_t>(mWidth),
+                                       static_cast<uint32_t>(mHeight), 1};
             mContext->mCommandBuffers.emplace_back(
                 mContext->copyBufferToTexture(bufferCopyView, textureCopyView, copySize));
         }
 
         dawn::TextureViewDescriptor viewDescriptor;
-        viewDescriptor.nextInChain = nullptr;
-        viewDescriptor.dimension = dawn::TextureViewDimension::Cube;
-        viewDescriptor.format = mFormat;
-        viewDescriptor.baseMipLevel = 0;
+        viewDescriptor.nextInChain     = nullptr;
+        viewDescriptor.dimension       = dawn::TextureViewDimension::Cube;
+        viewDescriptor.format          = mFormat;
+        viewDescriptor.baseMipLevel    = 0;
         viewDescriptor.mipLevelCount   = 1;
-        viewDescriptor.baseArrayLayer = 0;
+        viewDescriptor.baseArrayLayer  = 0;
         viewDescriptor.arrayLayerCount = 6;
 
         mTextureView = mTexture.CreateView(&viewDescriptor);
@@ -92,12 +94,12 @@ void TextureDawn::loadTexture()
         samplerDesc.addressModeU = dawn::AddressMode::ClampToEdge;
         samplerDesc.addressModeV = dawn::AddressMode::ClampToEdge;
         samplerDesc.addressModeW = dawn::AddressMode::ClampToEdge;
-        samplerDesc.minFilter = dawn::FilterMode::Linear;
-        samplerDesc.magFilter = dawn::FilterMode::Linear;
+        samplerDesc.minFilter    = dawn::FilterMode::Linear;
+        samplerDesc.magFilter    = dawn::FilterMode::Linear;
         samplerDesc.mipmapFilter = dawn::FilterMode::Nearest;
         samplerDesc.lodMinClamp  = 0.0f;
         samplerDesc.lodMaxClamp  = 1000.0f;
-        samplerDesc.compare = dawn::CompareFunction::Never;
+        samplerDesc.compare      = dawn::CompareFunction::Never;
 
         mSampler = mContext->createSampler(samplerDesc);
     }
@@ -116,13 +118,13 @@ void TextureDawn::loadTexture()
                        true);
 
         dawn::TextureDescriptor descriptor;
-        descriptor.dimension = mTextureDimension;
-        descriptor.size.width  = resizedWidth;
-        descriptor.size.height = mHeight;
-        descriptor.size.depth = 1;
+        descriptor.dimension       = mTextureDimension;
+        descriptor.size.width      = resizedWidth;
+        descriptor.size.height     = mHeight;
+        descriptor.size.depth      = 1;
         descriptor.arrayLayerCount = 1;
-        descriptor.sampleCount = 1;
-        descriptor.format = mFormat;
+        descriptor.sampleCount     = 1;
+        descriptor.format          = mFormat;
         descriptor.mipLevelCount   = static_cast<uint32_t>(std::floor(
                                        static_cast<float>(std::log2(std::min(mWidth, mHeight))))) +
                                    1;
@@ -132,8 +134,8 @@ void TextureDawn::loadTexture()
         int count = 0;
         for (unsigned int i = 0; i < descriptor.mipLevelCount; ++i, ++count)
         {
-            int height                 = mHeight >> i;
-            int width                  = resizedWidth >> i;
+            int height = mHeight >> i;
+            int width  = resizedWidth >> i;
             if (height == 0)
             {
                 height = 1;
@@ -145,23 +147,22 @@ void TextureDawn::loadTexture()
                 mContext->createBufferCopyView(stagingBuffer, 0, resizedWidth * 4, height);
             dawn::TextureCopyView textureCopyView =
                 mContext->createTextureCopyView(mTexture, i, 0, {0, 0, 0});
-            dawn::Extent3D copySize = {static_cast<uint32_t>(width),
-                                       static_cast<uint32_t>(height),
+            dawn::Extent3D copySize = {static_cast<uint32_t>(width), static_cast<uint32_t>(height),
                                        1};
             mContext->mCommandBuffers.emplace_back(
                 mContext->copyBufferToTexture(bufferCopyView, textureCopyView, copySize));
         }
 
         dawn::TextureViewDescriptor viewDescriptor;
-        viewDescriptor.nextInChain = nullptr;
-        viewDescriptor.dimension = dawn::TextureViewDimension::e2D;
-        viewDescriptor.format = mFormat;
+        viewDescriptor.nextInChain  = nullptr;
+        viewDescriptor.dimension    = dawn::TextureViewDimension::e2D;
+        viewDescriptor.format       = mFormat;
         viewDescriptor.baseMipLevel = 0;
         viewDescriptor.mipLevelCount =
             static_cast<uint32_t>(
                 std::floor(static_cast<float>(std::log2(std::min(mWidth, mHeight))))) +
             1;
-        viewDescriptor.baseArrayLayer = 0;
+        viewDescriptor.baseArrayLayer  = 0;
         viewDescriptor.arrayLayerCount = 1;
 
         mTextureView = mTexture.CreateView(&viewDescriptor);
@@ -169,11 +170,11 @@ void TextureDawn::loadTexture()
         samplerDesc.addressModeU = dawn::AddressMode::ClampToEdge;
         samplerDesc.addressModeV = dawn::AddressMode::ClampToEdge;
         samplerDesc.addressModeW = dawn::AddressMode::ClampToEdge;
-        samplerDesc.minFilter = dawn::FilterMode::Linear;
-        samplerDesc.magFilter = dawn::FilterMode::Linear;
+        samplerDesc.minFilter    = dawn::FilterMode::Linear;
+        samplerDesc.magFilter    = dawn::FilterMode::Linear;
         samplerDesc.lodMinClamp  = 0.0f;
         samplerDesc.lodMaxClamp  = 1000.0f;
-        samplerDesc.compare = dawn::CompareFunction::Never;
+        samplerDesc.compare      = dawn::CompareFunction::Never;
 
         if (isPowerOf2(mWidth) && isPowerOf2(mHeight))
         {
@@ -189,4 +190,3 @@ void TextureDawn::loadTexture()
 
     // TODO(yizhou): check if the pixel destory should delay or fence
 }
-

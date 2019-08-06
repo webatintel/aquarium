@@ -8,17 +8,11 @@
 #ifndef ContextGL_H
 #define ContextGL_H 1
 
-#ifdef EGL_EGL_PROTOTYPES
-#include <angle_gl.h>
 #include "EGL/egl.h"
 #include "EGL/eglext.h"
-#include "EGL/eglplatform.h"
 #include "EGL/eglext_angle.h"
-#include <memory>
-#include "EGLWindow.h"
-#else
-#include "glad/glad.h"
-#endif
+#include "OpenGLFunctions.h"
+#include "OpenGLPlatforms.h"
 
 #include <vector>
 
@@ -28,7 +22,7 @@
 
 class BufferGL;
 class TextureGL;
-enum BACKENDTYPE: short;
+enum BACKENDTYPE : short;
 
 class ContextGL : public Context
 {
@@ -52,7 +46,7 @@ class ContextGL : public Context
 
     Model *createModel(Aquarium *aquarium, MODELGROUP type, MODELNAME name, bool blend) override;
     int getUniformLocation(unsigned int programId, const std::string &name) const;
-    int getAttribLocation(unsigned int programId, const std::string & name) const;
+    int getAttribLocation(unsigned int programId, const std::string &name) const;
     void setUniform(int index, const float *v, int type) const;
     void setTexture(const TextureGL &texture, int index, int unit) const;
     void setAttribs(const BufferGL &bufferGL, int index) const;
@@ -96,11 +90,13 @@ class ContextGL : public Context
   private:
     void initState();
     void initAvailableToggleBitset(BACKENDTYPE backendType) override;
-    static void framebufferResizeCallback(GLFWwindow *window, int width, int height);
 
     GLFWwindow *mWindow;
     std::string mGLSLVersion;
     std::string mRenderer;
+    BACKENDTYPE mBackendType;
+
+    aquarium::OpenGLFunctions gl;
 
 #ifdef EGL_EGL_PROTOTYPES
     EGLBoolean FindEGLConfig(EGLDisplay dpy, const EGLint *attrib_list, EGLConfig *config);

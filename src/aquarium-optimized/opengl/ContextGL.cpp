@@ -30,7 +30,7 @@
 #include <GLFW/glfw3native.h>
 #endif
 
-ContextGL::ContextGL(BACKENDTYPE backendType) : mWindow(nullptr)
+ContextGL::ContextGL(BACKENDTYPE backendType) : mWindow(nullptr), mBackendType(backendType)
 {
     initAvailableToggleBitset(backendType);
 }
@@ -51,31 +51,34 @@ bool ContextGL::initialize(BACKENDTYPE backend,
         return false;
     }
 
-#ifdef GL_GLEXT_PROTOTYPES
-    // TODO(yizhou) : Enable msaa in angle. Render into a multisample Texture and then blit to a
-    // none multisample texture.
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    mResourceHelper = new ResourceHelper("opengl", std::string("100"));
-#else
-    if (toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEMSAAx4)))
+    if (backend == BACKENDTYPE::BACKENDTYPEANGLE)
     {
-        glfwWindowHint(GLFW_SAMPLES, 4);
+        // TODO(yizhou) : Enable msaa in angle. Render into a multisample Texture and then blit to a
+        // none multisample texture.
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+        mResourceHelper = new ResourceHelper("opengl", std::string("100"));
     }
+    else
+    {
+        if (toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEMSAAx4)))
+        {
+            glfwWindowHint(GLFW_SAMPLES, 4);
+        }
 
-    mResourceHelper = new ResourceHelper("opengl", "450");
-
+        mResourceHelper = new ResourceHelper("opengl", "450");
 #ifdef __APPLE__
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-    mGLSLVersion = "#version 410";
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+        mGLSLVersion = "#version 410";
 #elif _WIN32 || __linux__
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
-    mGLSLVersion = "#version 450";
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+        mGLSLVersion = "#version 450";
 #endif
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+    }
 
     GLFWmonitor *pMonitor   = glfwGetPrimaryMonitor();
     const GLFWvidmode *mode = glfwGetVideoMode(pMonitor);
@@ -100,128 +103,119 @@ bool ContextGL::initialize(BACKENDTYPE backend,
     }
 
     setWindowTitle("Aquarium");
-    glfwSetFramebufferSizeCallback(mWindow, framebufferResizeCallback);
-    glfwSetWindowUserPointer(mWindow, this);
 
-#ifndef GL_GLES_PROTOTYPES 
-    glfwWindowHint(GLFW_DECORATED, GL_FALSE);
-    glfwMakeContextCurrent(mWindow);
-#else
-    mGLSLVersion = "#version 300 es";
-
-    std::vector<EGLAttrib> display_attribs;
-
-    display_attribs.push_back(EGL_PLATFORM_ANGLE_TYPE_ANGLE);
-    //display_attribs.push_back(EGL_PLATFORM_ANGLE_TYPE_OPENGL_ANGLE);
-    display_attribs.push_back(EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE);
-    display_attribs.push_back(EGL_PLATFORM_ANGLE_MAX_VERSION_MAJOR_ANGLE);
-    display_attribs.push_back(-1);
-    display_attribs.push_back(EGL_PLATFORM_ANGLE_MAX_VERSION_MINOR_ANGLE);
-    display_attribs.push_back(-1);
-    display_attribs.push_back(EGL_PLATFORM_ANGLE_DEVICE_TYPE_ANGLE);
-    display_attribs.push_back(EGL_PLATFORM_ANGLE_DEVICE_TYPE_HARDWARE_ANGLE);
-    display_attribs.push_back(EGL_NONE);
-
-    HWND hwnd = glfwGetWin32Window(mWindow);
-    mDisplay = eglGetPlatformDisplay(EGL_PLATFORM_ANGLE_ANGLE,
-        reinterpret_cast<void *>(GetDC(hwnd)),
-        &display_attribs[0]);
-    if (mDisplay == EGL_NO_DISPLAY) {
-        std::cout << "EGL display query failed with error " << std::endl;
-    }
-    GLint mEGLMajorVersion = 0;
-    GLint mEGLMinorVersion = 0;
-    if (eglInitialize(mDisplay, &mEGLMajorVersion, &mEGLMinorVersion) == EGL_FALSE)
+    if (backend != BACKENDTYPE::BACKENDTYPEANGLE)
     {
-        return false;
+        glfwWindowHint(GLFW_DECORATED, GL_FALSE);
+        glfwMakeContextCurrent(mWindow);
+        gl.initialize(backend);
     }
-
-    const char *displayExtensions = eglQueryString(mDisplay, EGL_EXTENSIONS);
-
-    std::vector<EGLint> configAttributes = {
-        EGL_RED_SIZE,       8,
-        EGL_GREEN_SIZE,     8,
-        EGL_BLUE_SIZE,      8,
-        EGL_ALPHA_SIZE,     8,
-        EGL_DEPTH_SIZE,     24,
-        EGL_STENCIL_SIZE,   8,
-        EGL_SAMPLE_BUFFERS, 0,
-        EGL_SAMPLES,        EGL_DONT_CARE
-    };
-
-    // Add dynamic attributes
-    bool hasPixelFormatFloat = strstr(displayExtensions, "EGL_EXT_pixel_format_float") != nullptr;
-    if (!hasPixelFormatFloat)
+    else
     {
-        return false;
+        mGLSLVersion = "#version 300 es";
+        std::vector<EGLAttrib> display_attribs;
+
+        display_attribs.push_back(EGL_PLATFORM_ANGLE_TYPE_ANGLE);
+        // display_attribs.push_back(EGL_PLATFORM_ANGLE_TYPE_OPENGL_ANGLE);
+        display_attribs.push_back(EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE);
+        display_attribs.push_back(EGL_PLATFORM_ANGLE_MAX_VERSION_MAJOR_ANGLE);
+        display_attribs.push_back(-1);
+        display_attribs.push_back(EGL_PLATFORM_ANGLE_MAX_VERSION_MINOR_ANGLE);
+        display_attribs.push_back(-1);
+        display_attribs.push_back(EGL_PLATFORM_ANGLE_DEVICE_TYPE_ANGLE);
+        display_attribs.push_back(EGL_PLATFORM_ANGLE_DEVICE_TYPE_HARDWARE_ANGLE);
+        display_attribs.push_back(EGL_NONE);
+
+        HWND hwnd = glfwGetWin32Window(mWindow);
+        mDisplay  = eglGetPlatformDisplay(
+            EGL_PLATFORM_ANGLE_ANGLE, reinterpret_cast<void *>(GetDC(hwnd)), &display_attribs[0]);
+        if (mDisplay == EGL_NO_DISPLAY)
+        {
+            std::cout << "EGL display query failed with error " << std::endl;
+        }
+        GLint mEGLMajorVersion = 0;
+        GLint mEGLMinorVersion = 0;
+        if (eglInitialize(mDisplay, &mEGLMajorVersion, &mEGLMinorVersion) == EGL_FALSE)
+        {
+            return false;
+        }
+
+        const char *displayExtensions = eglQueryString(mDisplay, EGL_EXTENSIONS);
+
+        std::vector<EGLint> configAttributes = {
+            EGL_RED_SIZE,       8,  EGL_GREEN_SIZE,   8,
+            EGL_BLUE_SIZE,      8,  EGL_ALPHA_SIZE,   8,
+            EGL_DEPTH_SIZE,     24, EGL_STENCIL_SIZE, 8,
+            EGL_SAMPLE_BUFFERS, 0,  EGL_SAMPLES,      EGL_DONT_CARE};
+
+        // Add dynamic attributes
+        bool hasPixelFormatFloat =
+            strstr(displayExtensions, "EGL_EXT_pixel_format_float") != nullptr;
+        if (!hasPixelFormatFloat)
+        {
+            return false;
+        }
+        if (hasPixelFormatFloat)
+        {
+            configAttributes.push_back(EGL_COLOR_COMPONENT_TYPE_EXT);
+            configAttributes.push_back(EGL_COLOR_COMPONENT_TYPE_FIXED_EXT);
+        }
+
+        // Finish the attribute list
+        configAttributes.push_back(EGL_NONE);
+
+        if (!FindEGLConfig(mDisplay, configAttributes.data(), &mConfig))
+        {
+            std::cout << "Could not find a suitable EGL config!" << std::endl;
+            return false;
+        }
+
+        GLint mRedBits, mGreenBits, mBlueBits, mSamples, mAlphaBits, mDepthBits, mStencilBits;
+        eglGetConfigAttrib(mDisplay, mConfig, EGL_RED_SIZE, &mRedBits);
+        eglGetConfigAttrib(mDisplay, mConfig, EGL_GREEN_SIZE, &mGreenBits);
+        eglGetConfigAttrib(mDisplay, mConfig, EGL_BLUE_SIZE, &mBlueBits);
+        eglGetConfigAttrib(mDisplay, mConfig, EGL_ALPHA_SIZE, &mAlphaBits);
+        eglGetConfigAttrib(mDisplay, mConfig, EGL_DEPTH_SIZE, &mDepthBits);
+        eglGetConfigAttrib(mDisplay, mConfig, EGL_STENCIL_SIZE, &mStencilBits);
+        eglGetConfigAttrib(mDisplay, mConfig, EGL_SAMPLES, &mSamples);
+
+        std::vector<EGLint> surfaceAttributes;
+        if (strstr(displayExtensions, "EGL_NV_post_sub_buffer") != nullptr)
+        {
+            surfaceAttributes.push_back(EGL_POST_SUB_BUFFER_SUPPORTED_NV);
+            surfaceAttributes.push_back(EGL_TRUE);
+        }
+
+        surfaceAttributes.push_back(EGL_NONE);
+
+        mSurface = eglCreateWindowSurface(
+            mDisplay, mConfig, reinterpret_cast<EGLNativeWindowType>(hwnd), &surfaceAttributes[0]);
+
+        if (eglGetError() != EGL_SUCCESS)
+        {
+            return false;
+        }
+        ASSERT(mSurface != EGL_NO_SURFACE);
+
+        mContext = createContext(EGL_NO_CONTEXT);
+        if (mContext == EGL_NO_CONTEXT)
+        {
+            return false;
+        }
+
+        eglMakeCurrent(mDisplay, mSurface, mSurface, mContext);
+        if (eglGetError() != EGL_SUCCESS)
+        {
+            return false;
+        }
+
+        eglSwapInterval(mDisplay, 0);
+
+        gl.initialize(backend);
     }
-    if (hasPixelFormatFloat)
-    {
-        configAttributes.push_back(EGL_COLOR_COMPONENT_TYPE_EXT);
-        configAttributes.push_back(EGL_COLOR_COMPONENT_TYPE_FIXED_EXT);
-    }
-
-    // Finish the attribute list
-    configAttributes.push_back(EGL_NONE);
-
-    if (!FindEGLConfig(mDisplay, configAttributes.data(), &mConfig))
-    {
-        std::cout << "Could not find a suitable EGL config!" << std::endl;
-        return false;
-    }
-
-    GLint mRedBits, mGreenBits, mBlueBits, mSamples, mAlphaBits, mDepthBits, mStencilBits;
-    eglGetConfigAttrib(mDisplay, mConfig, EGL_RED_SIZE, &mRedBits);
-    eglGetConfigAttrib(mDisplay, mConfig, EGL_GREEN_SIZE, &mGreenBits);
-    eglGetConfigAttrib(mDisplay, mConfig, EGL_BLUE_SIZE, &mBlueBits);
-    eglGetConfigAttrib(mDisplay, mConfig, EGL_ALPHA_SIZE, &mAlphaBits);
-    eglGetConfigAttrib(mDisplay, mConfig, EGL_DEPTH_SIZE, &mDepthBits);
-    eglGetConfigAttrib(mDisplay, mConfig, EGL_STENCIL_SIZE, &mStencilBits);
-    eglGetConfigAttrib(mDisplay, mConfig, EGL_SAMPLES, &mSamples);
-
-    std::vector<EGLint> surfaceAttributes;
-    if (strstr(displayExtensions, "EGL_NV_post_sub_buffer") != nullptr)
-    {
-        surfaceAttributes.push_back(EGL_POST_SUB_BUFFER_SUPPORTED_NV);
-        surfaceAttributes.push_back(EGL_TRUE);
-    }
-
-    surfaceAttributes.push_back(EGL_NONE);
-
-    mSurface = eglCreateWindowSurface(mDisplay, mConfig, reinterpret_cast<EGLNativeWindowType>(hwnd), &surfaceAttributes[0]);
-
-    if (eglGetError() != EGL_SUCCESS)
-    {
-        return false;
-    }
-    ASSERT(mSurface != EGL_NO_SURFACE);
-
-    mContext = createContext(EGL_NO_CONTEXT);
-    if (mContext == EGL_NO_CONTEXT)
-    {
-        return false;
-    }
-
-    eglMakeCurrent(mDisplay, mSurface, mSurface, mContext);
-    if (eglGetError() != EGL_SUCCESS)
-    {
-        return false;
-    }
-
-    eglSwapInterval(mDisplay, 0);
-
-#endif
 
     // Set the window full screen
     // glfwSetWindowPos(window, 0, 0);
-
-    #ifndef EGL_EGL_PROTOTYPES
-    if (!gladLoadGL())
-    {
-        std::cout << "Something went wrong!" << std::endl;
-        exit(-1);
-    }
-    #endif
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -230,9 +224,9 @@ bool ContextGL::initialize(BACKENDTYPE backend,
 
     // Setup Platform/Renderer bindings
     ImGui_ImplGlfw_InitForOpenGL(mWindow, true);
-    ImGui_ImplOpenGL3_Init(mGLSLVersion.c_str());
+    ImGui_ImplOpenGL3_Init(mGLSLVersion.c_str(), gl);
 
-    std::string renderer((const char *)glGetString(GL_RENDERER));
+    std::string renderer((const char *)gl.GetString(GL_RENDERER));
     size_t index = renderer.find("/");
     mRenderer    = renderer.substr(0, index);
     std::cout << mRenderer << std::endl;
@@ -240,7 +234,6 @@ bool ContextGL::initialize(BACKENDTYPE backend,
     return true;
 }
 
-#ifdef GL_GLEXT_PROTOTYPES
 EGLContext ContextGL::createContext(EGLContext share) const
 {
     const char *displayExtensions = eglQueryString(mDisplay, EGL_EXTENSIONS);
@@ -315,15 +308,6 @@ EGLBoolean ContextGL::FindEGLConfig(EGLDisplay dpy, const EGLint *attrib_list, E
 
     return EGL_FALSE;
 }
-#endif
-
-void ContextGL::framebufferResizeCallback(GLFWwindow *window, int width, int height)
-{
-    ContextGL *contextGL     = reinterpret_cast<ContextGL *>(glfwGetWindowUserPointer(window));
-    contextGL->mClientWidth  = width;
-    contextGL->mClientHeight = height;
-    glViewport(0, 0, width, height);
-}
 
 Texture *ContextGL::createTexture(const std::string &name, const std::string &url)
 {
@@ -342,18 +326,18 @@ Texture *ContextGL::createTexture(const std::string &name, const std::vector<std
 unsigned int ContextGL::generateTexture()
 {
     unsigned int texture;
-    glGenTextures(1, &texture);
+    gl.GenTextures(1, &texture);
     return texture;
 }
 
 void ContextGL::bindTexture(unsigned int target, unsigned int textureId)
 {
-    glBindTexture(target, textureId);
+    gl.BindTexture(target, textureId);
 }
 
 void ContextGL::deleteTexture(unsigned int texture)
 {
-    glDeleteTextures(1, &texture);
+    gl.DeleteTextures(1, &texture);
 }
 
 void ContextGL::uploadTexture(unsigned int target,
@@ -362,29 +346,29 @@ void ContextGL::uploadTexture(unsigned int target,
                               int height,
                               unsigned char *pixels)
 {
-    glTexImage2D(target, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, pixels);
-    ASSERT(glGetError() == GL_NO_ERROR);
+    gl.TexImage2D(target, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, pixels);
+    ASSERT(gl.GetError() == GL_NO_ERROR);
 }
 
 void ContextGL::setParameter(unsigned int target, unsigned int pname, int param)
 {
-    glTexParameteri(target, pname, param);
+    gl.TexParameteri(target, pname, param);
 }
 
 void ContextGL::generateMipmap(unsigned int target)
 {
-    glGenerateMipmap(target);
+    gl.GenerateMipmap(target);
 }
 
 void ContextGL::initState()
 {
-    glEnable(GL_DEPTH_TEST);
-    glColorMask(true, true, true, true);
-    glClearColor(0, 0.8f, 1, 0);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glBlendEquation(GL_FUNC_ADD);
-    glEnable(GL_CULL_FACE);
-    glDepthMask(true);
+    gl.Enable(GL_DEPTH_TEST);
+    gl.ColorMask(true, true, true, true);
+    gl.ClearColor(0, 0.8f, 1, 0);
+    gl.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    gl.BlendEquation(GL_FUNC_ADD);
+    gl.Enable(GL_CULL_FACE);
+    gl.DepthMask(true);
 }
 
 void ContextGL::initAvailableToggleBitset(BACKENDTYPE backendType)
@@ -396,7 +380,8 @@ void ContextGL::initAvailableToggleBitset(BACKENDTYPE backendType)
 
 Buffer *ContextGL::createBuffer(int numComponents, std::vector<float> *buf, bool isIndex)
 {
-    BufferGL *buffer = new BufferGL(this, static_cast<int>(buf->size()), numComponents, isIndex, GL_FLOAT, false);
+    BufferGL *buffer =
+        new BufferGL(this, static_cast<int>(buf->size()), numComponents, isIndex, GL_FLOAT, false);
     buffer->loadBuffer(*buf);
 
     return buffer;
@@ -437,11 +422,14 @@ void ContextGL::KeyBoardQuit()
 
 void ContextGL::DoFlush()
 {
-#ifdef GL_GLEXT_PROTOTYPES
-    eglSwapBuffers(mDisplay, mSurface);
-#else
-    glfwSwapBuffers(mWindow);
-#endif
+    if (mBackendType == BACKENDTYPE::BACKENDTYPEANGLE)
+    {
+        eglSwapBuffers(mDisplay, mSurface);
+    }
+    else
+    {
+        glfwSwapBuffers(mWindow);
+    }
     glfwPollEvents();
 }
 
@@ -453,7 +441,7 @@ void ContextGL::Terminate()
 void ContextGL::showWindow()
 {
     glfwGetFramebufferSize(mWindow, &mClientWidth, &mClientHeight);
-    glViewport(0, 0, mClientWidth, mClientHeight);
+    gl.Viewport(0, 0, mClientWidth, mClientHeight);
     glfwShowWindow(mWindow);
 }
 
@@ -469,21 +457,27 @@ void ContextGL::showFPS(const FPSTimer &fpsTimer)
 
         std::ostringstream rendererStream;
         std::string backend = mResourceHelper->getBackendName();
-        for (auto & c: backend ) c = toupper(c);
-#ifdef EGL_EGL_PROTOTYPES
-        rendererStream << mRenderer;
-#else
-        rendererStream << mRenderer << " " << backend << " " << mResourceHelper->getShaderVersion();
-#endif
+        for (auto &c : backend)
+            c = toupper(c);
+        if (mBackendType == BACKENDTYPE::BACKENDTYPEANGLE)
+        {
+            rendererStream << mRenderer;
+        }
+        else
+        {
+            rendererStream << mRenderer << " " << backend << " "
+                           << mResourceHelper->getShaderVersion();
+        }
         std::string renderer = rendererStream.str();
         ImGui::Text(renderer.c_str());
 
         std::ostringstream resolutionStream;
-        resolutionStream <<"Resolution " << mClientWidth << "x" << mClientHeight;
+        resolutionStream << "Resolution " << mClientWidth << "x" << mClientHeight;
         std::string resolution = resolutionStream.str();
         ImGui::Text(resolution.c_str());
 
-        ImGui::PlotLines("[0,100 FPS]", fpsTimer.getHistoryFps(), NUM_HISTORY_DATA, 0, NULL, 0.0f, 100.0f, ImVec2 (0,40));
+        ImGui::PlotLines("[0,100 FPS]", fpsTimer.getHistoryFps(), NUM_HISTORY_DATA, 0, NULL, 0.0f,
+                         100.0f, ImVec2(0, 40));
 
         ImGui::PlotHistogram("[0,100 ms/frame]", fpsTimer.getHistoryFrameTime(), NUM_HISTORY_DATA,
                              0, NULL, 0.0f, 100.0f, ImVec2(0, 40));
@@ -508,15 +502,15 @@ void ContextGL::destoryImgUI()
 
 int ContextGL::getUniformLocation(unsigned int programId, const std::string &name) const
 {
-    GLint index = glGetUniformLocation(programId, name.c_str());
+    GLint index = gl.GetUniformLocation(programId, name.c_str());
     ASSERT(glGetError() == GL_NO_ERROR);
     return index;
 }
 
 int ContextGL::getAttribLocation(unsigned int programId, const std::string &name) const
 {
-    GLint index = glGetAttribLocation(programId, name.c_str());
-    ASSERT(glGetError() == GL_NO_ERROR);
+    GLint index = gl.GetAttribLocation(programId, name.c_str());
+    ASSERT(gl.GetError() == GL_NO_ERROR);
     return index;
 }
 
@@ -524,11 +518,11 @@ void ContextGL::enableBlend(bool flag) const
 {
     if (flag)
     {
-        glEnable(GL_BLEND);
+        gl.Enable(GL_BLEND);
     }
     else
     {
-        glDisable(GL_BLEND);
+        gl.Disable(GL_BLEND);
     }
 }
 
@@ -536,9 +530,9 @@ void ContextGL::drawElements(const BufferGL &buffer) const
 {
     GLint totalComponents = buffer.getTotalComponents();
     GLenum type           = buffer.getType();
-    glDrawElements(GL_TRIANGLES, totalComponents, type, 0);
+    gl.DrawElements(GL_TRIANGLES, totalComponents, type, 0);
 
-    ASSERT(glGetError() == GL_NO_ERROR);
+    ASSERT(gl.GetError() == GL_NO_ERROR);
 }
 
 Model *ContextGL::createModel(Aquarium *aquarium, MODELGROUP type, MODELNAME name, bool blend)
@@ -571,11 +565,11 @@ Model *ContextGL::createModel(Aquarium *aquarium, MODELGROUP type, MODELNAME nam
 
 void ContextGL::preFrame()
 {
-    glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
-    glEnable(GL_DEPTH_TEST);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    gl.ClearColor(0.0f, 1.0f, 0.0f, 1.0f);
+    gl.Enable(GL_DEPTH_TEST);
+    gl.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    ASSERT(glGetError() == GL_NO_ERROR);
+    ASSERT(gl.GetError() == GL_NO_ERROR);
 }
 
 void ContextGL::setUniform(int index, const float *v, int type) const
@@ -585,27 +579,27 @@ void ContextGL::setUniform(int index, const float *v, int type) const
     {
         case GL_FLOAT:
         {
-            glUniform1f(index, *v);
+            gl.Uniform1f(index, *v);
             break;
         }
         case GL_FLOAT_VEC4:
         {
-            glUniform4fv(index, 1, v);
+            gl.Uniform4fv(index, 1, v);
             break;
         }
         case GL_FLOAT_VEC3:
         {
-            glUniform3fv(index, 1, v);
+            gl.Uniform3fv(index, 1, v);
             break;
         }
         case GL_FLOAT_VEC2:
         {
-            glUniform2fv(index, 1, v);
+            gl.Uniform2fv(index, 1, v);
             break;
         }
         case GL_FLOAT_MAT4:
         {
-            glUniformMatrix4fv(index, 1, false, v);
+            gl.UniformMatrix4fv(index, 1, false, v);
             break;
         }
         default:
@@ -614,97 +608,97 @@ void ContextGL::setUniform(int index, const float *v, int type) const
         }
     }
 
-    ASSERT(glGetError() == GL_NO_ERROR);
+    ASSERT(gl.GetError() == GL_NO_ERROR);
 }
 
 void ContextGL::setTexture(const TextureGL &texture, int index, int unit) const
 {
     ASSERT(index != -1);
-    glUniform1i(index, unit);
-    glActiveTexture(GL_TEXTURE0 + unit);
-    glBindTexture(texture.getTarget(), texture.getTextureId());
+    gl.Uniform1i(index, unit);
+    gl.ActiveTexture(GL_TEXTURE0 + unit);
+    gl.BindTexture(texture.getTarget(), texture.getTextureId());
 
-    ASSERT(glGetError() == GL_NO_ERROR);
+    ASSERT(gl.GetError() == GL_NO_ERROR);
 }
 
 void ContextGL::setAttribs(const BufferGL &bufferGL, int index) const
 {
     ASSERT(index != -1);
-    glBindBuffer(bufferGL.getTarget(), bufferGL.getBuffer());
+    gl.BindBuffer(bufferGL.getTarget(), bufferGL.getBuffer());
 
-    glEnableVertexAttribArray(index);
-    glVertexAttribPointer(index, bufferGL.getNumComponents(), bufferGL.getType(),
-                          bufferGL.getNormalize(), bufferGL.getStride(), bufferGL.getOffset());
+    gl.EnableVertexAttribArray(index);
+    gl.VertexAttribPointer(index, bufferGL.getNumComponents(), bufferGL.getType(),
+                           bufferGL.getNormalize(), bufferGL.getStride(), bufferGL.getOffset());
 
-    ASSERT(glGetError() == GL_NO_ERROR);
+    ASSERT(gl.GetError() == GL_NO_ERROR);
 }
 
 void ContextGL::setIndices(const BufferGL &bufferGL) const
 {
-    glBindBuffer(bufferGL.getTarget(), bufferGL.getBuffer());
+    gl.BindBuffer(bufferGL.getTarget(), bufferGL.getBuffer());
 }
 
 unsigned int ContextGL::generateVAO()
 {
     unsigned int vao;
-    glGenVertexArrays(1, &vao);
+    gl.GenVertexArrays(1, &vao);
     return vao;
 }
 
 void ContextGL::bindVAO(unsigned int vao) const
 {
-    glBindVertexArray(vao);
+    gl.BindVertexArray(vao);
 }
 
 void ContextGL::deleteVAO(unsigned int mVAO)
 {
-    glDeleteVertexArrays(1, &mVAO);
+    gl.DeleteVertexArrays(1, &mVAO);
 }
 
 unsigned int ContextGL::generateBuffer()
 {
     unsigned int buf;
-    glGenBuffers(1, &buf);
+    gl.GenBuffers(1, &buf);
     return buf;
 }
 
 void ContextGL::deleteBuffer(unsigned int buf)
 {
-    glDeleteBuffers(1, &buf);
+    gl.DeleteBuffers(1, &buf);
 }
 
 void ContextGL::bindBuffer(unsigned int target, unsigned int buf)
 {
-    glBindBuffer(target, buf);
+    gl.BindBuffer(target, buf);
 }
 
 void ContextGL::uploadBuffer(unsigned int target, const std::vector<float> &buf)
 {
-    glBufferData(target, sizeof(GLfloat) * buf.size(), buf.data(), GL_STATIC_DRAW);
+    gl.BufferData(target, sizeof(GLfloat) * buf.size(), buf.data(), GL_STATIC_DRAW);
 
-    ASSERT(glGetError() == GL_NO_ERROR);
+    ASSERT(gl.GetError() == GL_NO_ERROR);
 }
 
 void ContextGL::uploadBuffer(unsigned int target, const std::vector<unsigned short> &buf)
 {
-    glBufferData(target, sizeof(GLushort) * buf.size(), buf.data(), GL_STATIC_DRAW);
+    gl.BufferData(target, sizeof(GLushort) * buf.size(), buf.data(), GL_STATIC_DRAW);
 
-    ASSERT(glGetError() == GL_NO_ERROR);
+    ASSERT(gl.GetError() == GL_NO_ERROR);
 }
 
 unsigned int ContextGL::generateProgram()
 {
-    return glCreateProgram();
+    return gl.CreateProgram();
 }
 
 void ContextGL::setProgram(unsigned int program)
 {
-    glUseProgram(program);
+    gl.UseProgram(program);
 }
 
 void ContextGL::deleteProgram(unsigned int program)
 {
-    glDeleteProgram(program);
+    gl.DeleteProgram(program);
 }
 
 bool ContextGL::compileProgram(unsigned int programId,
@@ -712,58 +706,59 @@ bool ContextGL::compileProgram(unsigned int programId,
                                const std::string &FragmentShaderCode)
 {
     // Create the shaders
-    GLuint VertexShaderID   = glCreateShader(GL_VERTEX_SHADER);
-    GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+    GLuint VertexShaderID   = gl.CreateShader(GL_VERTEX_SHADER);
+    GLuint FragmentShaderID = gl.CreateShader(GL_FRAGMENT_SHADER);
 
     GLint Result = GL_FALSE;
     int InfoLogLength;
 
     // Compile Vertex Shader
     char const *VertexSourcePointer = VertexShaderCode.c_str();
-    glShaderSource(VertexShaderID, 1, &VertexSourcePointer, nullptr);
-    glCompileShader(VertexShaderID);
+    gl.ShaderSource(VertexShaderID, 1, &VertexSourcePointer, nullptr);
+    gl.CompileShader(VertexShaderID);
 
     // Check Vertex Shader
-    glGetShaderiv(VertexShaderID, GL_COMPILE_STATUS, &Result);
+    gl.GetShaderiv(VertexShaderID, GL_COMPILE_STATUS, &Result);
     if (!Result)
     {
-        glGetShaderiv(VertexShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+        gl.GetShaderiv(VertexShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
         std::vector<char> VertexShaderErrorMessage(InfoLogLength);
-        glGetShaderInfoLog(VertexShaderID, InfoLogLength, nullptr, &VertexShaderErrorMessage[0]);
+        gl.GetShaderInfoLog(VertexShaderID, InfoLogLength, nullptr, &VertexShaderErrorMessage[0]);
         std::cout << stdout << &VertexShaderErrorMessage[0] << std::endl;
     }
 
     // Compile Fragment Shader
     char const *FragmentSourcePointer = FragmentShaderCode.c_str();
-    glShaderSource(FragmentShaderID, 1, &FragmentSourcePointer, nullptr);
-    glCompileShader(FragmentShaderID);
+    gl.ShaderSource(FragmentShaderID, 1, &FragmentSourcePointer, nullptr);
+    gl.CompileShader(FragmentShaderID);
 
     // Check Fragment Shader
-    glGetShaderiv(FragmentShaderID, GL_COMPILE_STATUS, &Result);
+    gl.GetShaderiv(FragmentShaderID, GL_COMPILE_STATUS, &Result);
     if (!Result)
     {
-        glGetShaderiv(FragmentShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+        gl.GetShaderiv(FragmentShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
         std::vector<char> FragmentShaderErrorMessage(InfoLogLength);
-        glGetShaderInfoLog(FragmentShaderID, InfoLogLength, nullptr, &FragmentShaderErrorMessage[0]);
+        gl.GetShaderInfoLog(FragmentShaderID, InfoLogLength, nullptr,
+                            &FragmentShaderErrorMessage[0]);
         std::cout << stdout << &FragmentShaderErrorMessage[0] << std::endl;
     }
 
     // Link the program
-    glAttachShader(programId, VertexShaderID);
-    glAttachShader(programId, FragmentShaderID);
-    glLinkProgram(programId);
+    gl.AttachShader(programId, VertexShaderID);
+    gl.AttachShader(programId, FragmentShaderID);
+    gl.LinkProgram(programId);
 
     // Check the program
-    glGetProgramiv(programId, GL_LINK_STATUS, &Result);
+    gl.GetProgramiv(programId, GL_LINK_STATUS, &Result);
     if (!Result)
     {
-        glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &InfoLogLength);
+        gl.GetProgramiv(programId, GL_INFO_LOG_LENGTH, &InfoLogLength);
         std::vector<char> ProgramErrorMessage(std::max(InfoLogLength, int(1)));
-        glGetProgramInfoLog(programId, InfoLogLength, nullptr, &ProgramErrorMessage[0]);
+        gl.GetProgramInfoLog(programId, InfoLogLength, nullptr, &ProgramErrorMessage[0]);
         std::cout << stdout << &ProgramErrorMessage[0] << std::endl;
     }
-    glDeleteShader(VertexShaderID);
-    glDeleteShader(FragmentShaderID);
+    gl.DeleteShader(VertexShaderID);
+    gl.DeleteShader(FragmentShaderID);
 
     return true;
 }

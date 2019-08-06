@@ -19,6 +19,8 @@ vars = {
   'tools_clang_revision': '210f1dc3ebf8504ae246d925e9110ec427eef43f',
   'spirv_tools_revision': '2090d7a2d26cb9bb0b8738f36a156ed3084a7ab0',
   'spirv_headers_revision': 'de99d4d834aeb51dd9f099baa285bd44fd04bb3d',
+  'shaderc_git': 'https://github.com/google',
+  'shaderc_revision': 'd289a55e46ff1c931ca0d90785218370f5ce68e0',
 }
 
 deps = {
@@ -71,6 +73,9 @@ deps = {
   },
   'third_party/imgui': {
     'url': '{imgui_git}/imgui.git@{imgui_revision}',
+  },
+  'third_party/shaderc': {
+    'url': '{shaderc_git}/shaderc.git@{shaderc_revision}',
   },
 }
 

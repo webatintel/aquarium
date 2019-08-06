@@ -130,9 +130,7 @@ void InnerModelDawn::init()
     mContextDawn->setBufferData(mInnerBuffer, 0, sizeof(InnerUniforms), &mInnerUniforms);
 }
 
-void InnerModelDawn::prepareForDraw() const
-{
-}
+void InnerModelDawn::prepareForDraw() const {}
 
 void InnerModelDawn::draw()
 {

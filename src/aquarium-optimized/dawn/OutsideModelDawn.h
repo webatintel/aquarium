@@ -18,8 +18,12 @@
 
 class OutsideModelDawn : public Model
 {
-public:
-    OutsideModelDawn(const Context *context, Aquarium *aquarium, MODELGROUP type, MODELNAME name, bool blend);
+  public:
+    OutsideModelDawn(const Context *context,
+                     Aquarium *aquarium,
+                     MODELGROUP type,
+                     MODELNAME name,
+                     bool blend);
     ~OutsideModelDawn();
 
     void init() override;

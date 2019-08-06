@@ -53,10 +53,10 @@ class Context
     virtual void DoFlush()                                                                    = 0;
     virtual void Terminate()                                                                  = 0;
     virtual void FlushInit() {}
-    virtual void preFrame()   = 0;
-    virtual void showWindow() = 0;
-    virtual void showFPS(const FPSTimer& fpsTimer)    = 0;
-    virtual void destoryImgUI() = 0;
+    virtual void preFrame()                        = 0;
+    virtual void showWindow()                      = 0;
+    virtual void showFPS(const FPSTimer &fpsTimer) = 0;
+    virtual void destoryImgUI()                    = 0;
 
     int getClientWidth() const { return mClientWidth; }
     int getclientHeight() const { return mClientHeight; }

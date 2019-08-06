@@ -19,7 +19,11 @@
 class InnerModelDawn : public Model
 {
   public:
-    InnerModelDawn(const Context *context, Aquarium *aquarium, MODELGROUP type, MODELNAME name, bool blend);
+    InnerModelDawn(const Context *context,
+                   Aquarium *aquarium,
+                   MODELGROUP type,
+                   MODELNAME name,
+                   bool blend);
     ~InnerModelDawn();
 
     void init() override;
@@ -68,4 +72,4 @@ class InnerModelDawn : public Model
     ProgramDawn *mProgramDawn;
 };
 
-#endif // !INNERMODELDAWN_H
+#endif  // !INNERMODELDAWN_H

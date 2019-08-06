@@ -123,9 +123,7 @@ void OutsideModelDawn::init()
                                 &mLightFactorUniforms);
 }
 
-void OutsideModelDawn::prepareForDraw() const
-{
-}
+void OutsideModelDawn::prepareForDraw() const {}
 
 void OutsideModelDawn::draw()
 {

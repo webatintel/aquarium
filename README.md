@@ -212,9 +212,9 @@ cd aquarium
 gclient sync
 
 # Build on aquarium by ninja on Windows, Linux and macOS.
-# On windows, opengl, d3d12 and dawn backends are enabled by default.
-# On linux and macOS, opengl and dawn are enabled by default.
-# Enable or disable a specific platform, you can add 'enable_opengl', 'enable_d3d12', and 'enable_dawn' to gn args.
+# On Windows, OpenGL, D3D12，ANGLE and Dawn backends are enabled by default.
+# On Linux and macOS, Opengl and Dawn are enabled by default.
+# Enable or disable a specific platform, you can add 'enable_opengl', 'enable_d3d12', 'enable_angle', and 'enable_dawn' to gn args.
 # To build a release version, specify 'is_debug=false'.
 gn gen out/Release --args="is_debug=false"
 ninja -C out/Release aquarium
@@ -228,26 +228,6 @@ build aquarium by vs
 # Build on macOS by xcode
 gn gen out/build --ide=xcode
 build aquarium by xcode
-```
-
-## Build ANGLE backend
-
-Because ANGLE headers have conflicts with other backends, it can only build individually. To build ANGLE version on Windows， please refer to the following steps (ANGLE backend is only supported on Windows now).
-```sh
-# cd the repo
-cd aquarium
-
-# download thirdparty
-gclient sync
-
-#Build aquarium ninja
-gn gen out/Release --args="is_debug=false enable_angle=true"
-ninja -C out/Release aquarium
-
-# Build on Windows by vs
-gn gen out/Release --ide=vs --args="is_debug=false enable_angle=true"
-open out/Release/all.sln using visual studio.
-build aquarium by vs
 ```
 
 # Run
@@ -303,7 +283,6 @@ aquarium.exe --num-fish 10000 --backend dawn_vulkan --discrete-gpu
 # TODO
 * Dawn Vulkan backend doesn't work now. We need to implement recreate swap chain in Dawn.
 * Debug mode of Dawn Metal backend has some issues to be fixed.
-* Extra semicolon in dawn/third_party/shaderc throws warning when build the project. This should be fixed in Dawn.
 * Texture without VK_IMAGE_USAGE_TRANSFER_DST_BIT should not be cleared. This is a warning of Dawn Vulkan backend.
 * Enable dynamic choosing backend for ANGLE backend.
 * Enable MSAA mode for ANGLE backend.

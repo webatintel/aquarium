@@ -24,7 +24,7 @@ class ContextDawn;
 
 class ProgramDawn : public Program
 {
-public:
+  public:
     ProgramDawn() {}
     ProgramDawn(ContextDawn *context, const std::string &mVId, const std::string &mFId);
     ~ProgramDawn() override;
@@ -41,4 +41,3 @@ public:
 };
 
 #endif
-

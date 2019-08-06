@@ -15,9 +15,12 @@
 class Texture
 {
   public:
-    virtual ~Texture(){}
+    virtual ~Texture() {}
     Texture() {}
-    Texture(const std::string &name, const std::vector<std::string> &urls, bool flip) : mUrls(urls), mFlip(flip), mName(name) {}
+    Texture(const std::string &name, const std::vector<std::string> &urls, bool flip)
+        : mUrls(urls), mFlip(flip), mName(name)
+    {
+    }
     Texture(const std::string &name, const std::string &url, bool flip);
     std::string getName() { return mName; }
     virtual void loadTexture() = 0;
@@ -34,8 +37,8 @@ class Texture
 
   protected:
     bool isPowerOf2(int);
-    bool loadImage(const std::vector<std::string> &urls, std::vector<uint8_t *>* pixels);
-    void DestoryImageData(std::vector<uint8_t *>& pixelVec);
+    bool loadImage(const std::vector<std::string> &urls, std::vector<uint8_t *> *pixels);
+    void DestoryImageData(std::vector<uint8_t *> &pixelVec);
     void copyPaddingBuffer(unsigned char *dst,
                            unsigned char *src,
                            int width,
@@ -50,5 +53,4 @@ class Texture
     std::string mName;
 };
 
-#endif // !TEXTURE_H
-
+#endif  // !TEXTURE_H

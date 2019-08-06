@@ -28,7 +28,8 @@ BufferDawn::BufferDawn(ContextDawn *context,
             buffer->push_back(0.0f);
         }
     }
-    mBuf = context->createBufferFromData(buffer->data(), sizeof(float) * static_cast<int>(buffer->size()), mUsageBit);
+    mBuf = context->createBufferFromData(
+        buffer->data(), sizeof(float) * static_cast<int>(buffer->size()), mUsageBit);
 }
 
 BufferDawn::BufferDawn(ContextDawn *context,
