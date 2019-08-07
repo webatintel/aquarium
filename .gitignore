@@ -11,6 +11,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+*.ini
 
 # Third party libraries
 third_party/*

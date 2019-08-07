@@ -123,6 +123,8 @@ enum TOGGLE : short
     UPATEANDDRAWFOREACHMODEL,
     // Support Full Screen mode
     ENABLEFULLSCREENMODE,
+    // Auto test
+    AUTOTEST,
     TOGGLEMAX
 };
 
@@ -387,6 +389,7 @@ struct Global
     float m4t3[16];
     float colorMult[4] = {1, 1, 1, 1};
     float then;
+    float start;
     float mclock;
     float eyeClock;
 };
@@ -457,6 +460,7 @@ class Aquarium
     void updateWorldProjections(const std::vector<float> &w);
     BACKENDTYPE getBackendType(const std::string &backendPath);
     float getElapsedTime();
+    void printAUTOTestFps();
 
     std::unordered_map<std::string, MODELNAME> mModelEnumMap;
     std::unordered_map<std::string, Texture *> mTextureMap;
@@ -465,6 +469,7 @@ class Aquarium
     Context *mContext;
     FPSTimer mFpsTimer;  // object to measure frames per second;
     int mFishCount;
+    int logCount;
     BACKENDTYPE mBackendType;
     ContextFactory *mFactory;
     std::vector<std::string> mSkyUrls;
