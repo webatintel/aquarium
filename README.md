@@ -255,6 +255,7 @@ build aquarium by vs
 # "--num-fish" : specifies how many fishes will be rendered
 # "--backend" : specifies running a certain backend, 'opengl', 'dawn_d3d12', 'dawn_vulkan', 'dawn_metal', 'dawn_opengl', 'angle'
 # "--enable-full-screen-mode" : specifies rendering a full screen mode
+# "--auto-test [count]" : log fps
 
 # run on Windows
 aquarium.exe --num-fish 10000 --backend dawn_d3d12

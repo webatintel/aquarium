@@ -27,6 +27,7 @@
 #include "opengl/ContextGL.h"
 
 #include "rapidjson/document.h"
+#include "rapidjson/filewritestream.h"
 #include "rapidjson/istreamwrapper.h"
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
@@ -277,6 +278,11 @@ bool Aquarium::init(int argc, char **argv)
 
             toggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEFULLSCREENMODE));
         }
+        else if (cmd == "--auto-test")
+        {
+            toggleBitset.set(static_cast<size_t>(TOGGLE::AUTOTEST));
+            logCount = strtol(argv[i++ + 1], &pNext, 10);
+        }
         else
         {
         }
@@ -307,6 +313,12 @@ bool Aquarium::init(int argc, char **argv)
     std::cout << "End loading.\nCost " << getElapsedTime() << "s totally." << std::endl;
     mContext->showWindow();
 
+#ifdef _WIN32
+    g.start = GetTickCount64() / 1000.0f;
+#else
+    g.start   = clock() / 1000000.0f;
+#endif
+
     return true;
 }
 
@@ -318,9 +330,16 @@ void Aquarium::display()
         render();
 
         mContext->DoFlush();
+
+        if (g.then - g.start > 600)
+        {
+            break;
+        }
     }
 
     mContext->Terminate();
+
+    printAUTOTestFps();
 }
 
 void Aquarium::loadReource()
@@ -566,11 +585,24 @@ float Aquarium::getElapsedTime()
     return elapsedTime;
 }
 
+void Aquarium::printAUTOTestFps()
+{
+    std::vector<float> fps = mFpsTimer.getAUTOTestFps();
+
+    std::cout << "Print FPS Data:" << std::endl;
+    for (auto f : fps)
+    {
+        std::cout << f << ";";
+    }
+
+    std::cout << std::endl << "End." << std::endl;
+}
+
 void Aquarium::updateGlobalUniforms()
 {
-
     float elapsedTime = getElapsedTime();
-    mFpsTimer.update(elapsedTime);
+    float renderingTime = g.then - g.start;
+    mFpsTimer.update(elapsedTime, renderingTime, logCount);
 
     g.mclock += elapsedTime * g_speed;
     g.eyeClock += elapsedTime * g_eyeSpeed;

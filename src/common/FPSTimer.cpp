@@ -11,15 +11,16 @@
 
 FPSTimer::FPSTimer()
     : mTotalTime(static_cast<float>(NUM_FRAMES_TO_AVERAGE)),
-    mTimeTable(NUM_FRAMES_TO_AVERAGE,1.0f),
-    mHistoryFPS(NUM_HISTORY_DATA, 1.0f),
-    mHistoryFrameTime(NUM_HISTORY_DATA, 100.0f),
-    mTimeTableCursor(0),
-    mInstantaneousFPS(0.0f),
-    mAverageFPS(0.0f)
+      mTimeTable(NUM_FRAMES_TO_AVERAGE, 1.0f),
+      mHistoryFPS(NUM_HISTORY_DATA, 1.0f),
+      mHistoryFrameTime(NUM_HISTORY_DATA, 100.0f),
+      mTimeTableCursor(0),
+      mAUTOTestCursor(0),
+      mInstantaneousFPS(0.0f),
+      mAverageFPS(0.0f)
 {}
 
-void FPSTimer::update(float elapsedTime)
+void FPSTimer::update(float elapsedTime, float renderingTime, int logCount)
 {
     mTotalTime += elapsedTime - mTimeTable[mTimeTableCursor];
     mTimeTable[mTimeTableCursor] = elapsedTime;
@@ -41,4 +42,14 @@ void FPSTimer::update(float elapsedTime)
 
     mHistoryFPS[NUM_HISTORY_DATA - 1]       = mAverageFPS;
     mHistoryFrameTime[NUM_HISTORY_DATA - 1] = 1000.0f / mAverageFPS;
+
+    ++mAUTOTestCursor;
+    if (renderingTime < 5)
+        return;
+
+    if (mAUTOTestCursor % logCount == 0)
+    {
+        mAUTOTestFPS.push_back(mAverageFPS);
+        mAUTOTestCursor = 0;
+    }
 }
