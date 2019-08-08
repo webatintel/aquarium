@@ -24,16 +24,16 @@ public:
   float getInstantaneousFPS() const { return mInstantaneousFPS; }
   const float *getHistoryFps() const { return mHistoryFPS.data(); }
   const float *getHistoryFrameTime() const { return mHistoryFrameTime.data(); }
-  std::vector<float> &getAUTOTestFps() { return mAUTOTestFPS; }
+  std::vector<float> &getRecordFps() { return mRecordFps; }
 
 private:
   float mTotalTime;
   std::vector<float> mTimeTable;
   std::vector<float> mHistoryFPS;
   std::vector<float> mHistoryFrameTime;
-  std::vector<float> mAUTOTestFPS;
+  std::vector<float> mRecordFps;
   int mTimeTableCursor;
-  int mAUTOTestCursor;
+  int mRecordFpsFrequencyCursor;
   float mInstantaneousFPS;
   float mAverageFPS;
 };

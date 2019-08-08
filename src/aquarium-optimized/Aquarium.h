@@ -123,8 +123,8 @@ enum TOGGLE : short
     UPATEANDDRAWFOREACHMODEL,
     // Support Full Screen mode
     ENABLEFULLSCREENMODE,
-    // Auto test
-    AUTOTEST,
+    // Log fps frequency
+    RECORDFPSFREQUENCY,
     TOGGLEMAX
 };
 
@@ -460,7 +460,7 @@ class Aquarium
     void updateWorldProjections(const std::vector<float> &w);
     BACKENDTYPE getBackendType(const std::string &backendPath);
     float getElapsedTime();
-    void printAUTOTestFps();
+    void printRecordFps();
 
     std::unordered_map<std::string, MODELNAME> mModelEnumMap;
     std::unordered_map<std::string, Texture *> mTextureMap;
