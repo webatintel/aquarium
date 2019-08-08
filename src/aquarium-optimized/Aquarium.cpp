@@ -282,7 +282,14 @@ bool Aquarium::init(int argc, char **argv)
         else if (cmd == "--auto-test")
         {
             toggleBitset.set(static_cast<size_t>(TOGGLE::AUTOTEST));
+            if (argv[i + 1] == nullptr)
+            {
+                std::cout << "Please input an integer to specify how much frequency to log fps."
+                          << std::endl;
+                return false;
+            }
             logCount = strtol(argv[i++ + 1], &pNext, 10);
+            logCount == 0 ? INT_MAX : logCount;
         }
         else
         {
@@ -340,7 +347,10 @@ void Aquarium::display()
 
     mContext->Terminate();
 
-    printAUTOTestFps();
+    if (toggleBitset.test(static_cast<size_t>(TOGGLE::AUTOTEST)))
+    {
+        printAUTOTestFps();
+    }
 }
 
 void Aquarium::loadReource()
@@ -589,6 +599,8 @@ float Aquarium::getElapsedTime()
 void Aquarium::printAUTOTestFps()
 {
     std::vector<float> fps = mFpsTimer.getAUTOTestFps();
+    if (fps.size() == 0)
+        return;
 
     std::cout << "Print FPS Data:" << std::endl;
     for (auto f : fps)
