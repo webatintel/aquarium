@@ -40,6 +40,7 @@ Aquarium::Aquarium()
       mContext(nullptr),
       mFpsTimer(),
       mFishCount(1),
+      logCount(INT_MAX),
       mBackendType(BACKENDTYPE::BACKENDTYPELAST),
       mFactory(nullptr)
 {
