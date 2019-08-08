@@ -7,6 +7,8 @@
 
 #include "FPSTimer.h"
 
+#include "AQUARIUM_ASSERT.h"
+
 #include <cmath>
 
 FPSTimer::FPSTimer()
@@ -47,6 +49,7 @@ void FPSTimer::update(float elapsedTime, float renderingTime, int logCount)
     if (renderingTime < 5)
         return;
 
+    ASSERT(logCount != 0);
     if (mAUTOTestCursor % logCount == 0)
     {
         mAUTOTestFPS.push_back(mAverageFPS);
