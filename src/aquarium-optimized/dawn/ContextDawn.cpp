@@ -278,11 +278,7 @@ void ContextDawn::initAvailableToggleBitset(BACKENDTYPE backendType)
 {
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEMSAAx4));
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEINSTANCEDDRAWS));
-    // DBO on dawn is not supported yet
-    if (backendType != BACKENDTYPE::BACKENDTYPEDAWND3D12)
-    {
-        mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEDYNAMICBUFFEROFFSET));
-    }
+    mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEDYNAMICBUFFEROFFSET));
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::DISCRETEGPU));
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::INTEGRATEDGPU));
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEFULLSCREENMODE));
