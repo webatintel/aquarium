@@ -103,7 +103,7 @@ Aquarium::~Aquarium()
     delete mFactory;
 }
 
-BACKENDTYPE Aquarium::getBackendType(const std::string& backendPath)
+BACKENDTYPE Aquarium::getBackendType(const std::string &backendPath)
 {
     if (backendPath == "opengl")
     {
@@ -279,10 +279,21 @@ bool Aquarium::init(int argc, char **argv)
 
             toggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEFULLSCREENMODE));
         }
-        else if (cmd == "--auto-test")
+        else if (cmd == "--record-fps-frequency")
         {
-            toggleBitset.set(static_cast<size_t>(TOGGLE::AUTOTEST));
+            toggleBitset.set(static_cast<size_t>(TOGGLE::RECORDFPSFREQUENCY));
+            if (argv[i + 1] == nullptr)
+            {
+                std::cout << "Please specify record fps frequency." << std::endl;
+                return false;
+            }
+
             logCount = strtol(argv[i++ + 1], &pNext, 10);
+            if (logCount == 0)
+            {
+                std::cout << "Please input a number after --record-fps-frequency." << std::endl;
+                return false;
+            }
         }
         else
         {
@@ -340,7 +351,10 @@ void Aquarium::display()
 
     mContext->Terminate();
 
-    printAUTOTestFps();
+    if (toggleBitset.test(static_cast<size_t>(TOGGLE::RECORDFPSFREQUENCY)))
+    {
+        printRecordFps();
+    }
 }
 
 void Aquarium::loadReource()
@@ -586,9 +600,15 @@ float Aquarium::getElapsedTime()
     return elapsedTime;
 }
 
-void Aquarium::printAUTOTestFps()
+void Aquarium::printRecordFps()
 {
-    std::vector<float> fps = mFpsTimer.getAUTOTestFps();
+    std::vector<float> fps = mFpsTimer.getRecordFps();
+    if (fps.size() == 0)
+    {
+        std::cout << "No fps data, maybe record frequency count is too large or rendering time is "
+                     "too short." << std::endl;
+        return;
+    }
 
     std::cout << "Print FPS Data:" << std::endl;
     for (auto f : fps)
@@ -601,7 +621,7 @@ void Aquarium::printAUTOTestFps()
 
 void Aquarium::updateGlobalUniforms()
 {
-    float elapsedTime = getElapsedTime();
+    float elapsedTime   = getElapsedTime();
     float renderingTime = g.then - g.start;
     mFpsTimer.update(elapsedTime, renderingTime, logCount);
 
