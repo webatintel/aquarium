@@ -499,7 +499,7 @@ void render() {
     }
     then = now;
 
-    g_fpsTimer.update(elapsedTime);
+    g_fpsTimer.update(elapsedTime, 0, 1);
     std::string text =
         "Aquarium FPS: " + std::to_string(static_cast<unsigned int>(g_fpsTimer.getAverageFPS()));
     glfwSetWindowTitle(window, text.c_str());
