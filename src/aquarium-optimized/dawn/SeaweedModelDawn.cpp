@@ -90,7 +90,7 @@ void SeaweedModelDawn::init()
         &mLightFactorUniforms, sizeof(mLightFactorUniforms),
         dawn::BufferUsageBit::CopyDst | dawn::BufferUsageBit::Uniform);
     mTimeBuffer = mContextDawn->createBufferFromData(
-        &mSeaweedPer, sizeof(mSeaweedPer),
+        &mSeaweedPer, sizeof(mSeaweedPer) * 4,
         dawn::BufferUsageBit::CopyDst | dawn::BufferUsageBit::Uniform);
     mViewBuffer = mContextDawn->createBufferFromData(
         &mWorldUniformPer, sizeof(WorldUniformPer),
