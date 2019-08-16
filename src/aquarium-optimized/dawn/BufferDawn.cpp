@@ -20,14 +20,7 @@ BufferDawn::BufferDawn(ContextDawn *context,
       mOffset(nullptr)
 {
     mSize = numComponents * sizeof(float);
-    if (mTotoalComponents % 4 != 0)
-    {
-        int dummyCount = 4 - mTotoalComponents % 4;
-        for (int i = 0; i < dummyCount; i++)
-        {
-            buffer->push_back(0.0f);
-        }
-    }
+    // Create buffer for vertex buffer. Because float is multiple of 4 bytes, dummy padding isnt' needed.
     mBuf = context->createBufferFromData(buffer->data(), sizeof(float) * static_cast<int>(buffer->size()), mUsageBit);
 }
 
@@ -42,13 +35,11 @@ BufferDawn::BufferDawn(ContextDawn *context,
       mOffset(nullptr)
 {
     mSize = numComponents * sizeof(unsigned short);
-    if (mTotoalComponents % 4 != 0)
+    // Create buffer for index buffer. Because unsigned short is multiple of 2 bytes, in order to align
+    // with 4 bytes of dawn metal, dummy padding need to be added.
+    if (mTotoalComponents % 2 != 0)
     {
-        int dummyCount = 4 - mTotoalComponents % 4;
-        for (int i = 0; i < dummyCount; i++)
-        {
-            buffer->push_back(0.0f);
-        }
+        buffer->push_back(0.0f);
     }
     mBuf = context->createBufferFromData(
         buffer->data(), sizeof(unsigned short) * static_cast<int>(buffer->size()), mUsageBit);
