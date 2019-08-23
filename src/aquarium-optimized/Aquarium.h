@@ -468,7 +468,8 @@ class Aquarium
     Model *mAquariumModels[MODELNAME::MODELMAX];
     Context *mContext;
     FPSTimer mFpsTimer;  // object to measure frames per second;
-    int mFishCount;
+    int mCurFishCount;
+    int mPreFishCount;
     int logCount;
     BACKENDTYPE mBackendType;
     ContextFactory *mFactory;

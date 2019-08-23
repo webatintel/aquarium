@@ -152,7 +152,7 @@ void FishModelInstancedDrawD3D12::init()
         mProgramD3D12->getFSModule(), mPipelineState, mBlend);
 }
 
-void FishModelInstancedDrawD3D12::prepareForDraw() const {}
+void FishModelInstancedDrawD3D12::prepareForDraw() {}
 
 void FishModelInstancedDrawD3D12::draw()
 {
@@ -203,3 +203,7 @@ void FishModelInstancedDrawD3D12::updateFishPerUniforms(float x,
     mFishPers[index].scale            = scale;
     mFishPers[index].time             = time;
 }
+
+void FishModelInstancedDrawD3D12::reallocResource() {}
+
+void FishModelInstancedDrawD3D12::destoryFishResource() {}

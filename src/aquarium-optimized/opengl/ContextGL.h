@@ -44,7 +44,7 @@ class ContextGL : public Context
     void DoFlush() override;
     void Terminate() override;
     void showWindow() override;
-    void showFPS(const FPSTimer &fpsTimer) override;
+    void showFPS(const FPSTimer &fpsTimer, int *fishCount) override;
     void destoryImgUI() override;
 
     void preFrame() override;

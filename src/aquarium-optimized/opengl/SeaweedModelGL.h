@@ -22,7 +22,7 @@ class SeaweedModelGL : public SeaweedModel
                    MODELGROUP type,
                    MODELNAME name,
                    bool blend);
-    void prepareForDraw() const override;
+    void prepareForDraw() override;
     void updatePerInstanceUniforms(const WorldUniforms &worldUniforms) override;
     void init() override;
     void draw() override;

@@ -23,7 +23,7 @@ class InnerModelDawn : public Model
     ~InnerModelDawn();
 
     void init() override;
-    void prepareForDraw() const override;
+    void prepareForDraw() override;
     void draw() override;
     void updatePerInstanceUniforms(const WorldUniforms &WorldUniforms) override;
 

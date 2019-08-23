@@ -27,7 +27,7 @@ class FishModelInstancedDrawDawn : public FishModel
     ~FishModelInstancedDrawDawn();
 
     void init() override;
-    void prepareForDraw() const override;
+    void prepareForDraw() override;
     void draw() override;
 
     void updatePerInstanceUniforms(const WorldUniforms &worldUniforms) override;
@@ -40,6 +40,9 @@ class FishModelInstancedDrawDawn : public FishModel
                                float scale,
                                float time,
                                int index) override;
+
+    void reallocResource() override;
+    void destoryFishResource() override;
 
     struct FishVertexUniforms
     {

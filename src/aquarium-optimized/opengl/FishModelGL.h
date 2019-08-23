@@ -19,7 +19,7 @@ class FishModelGL : public FishModel
 {
   public:
     FishModelGL(const ContextGL *context, Aquarium *aquarium, MODELGROUP type, MODELNAME name, bool blend);
-    void prepareForDraw() const override;
+    void prepareForDraw() override;
     void updatePerInstanceUniforms(const WorldUniforms &worldUniforms) override;
 
     void init() override;
@@ -34,6 +34,9 @@ class FishModelGL : public FishModel
                                float scale,
                                float time,
                                int index) override;
+
+    void reallocResource() override;
+    void destoryFishResource() override;
 
     std::pair<float *, int> mViewInverseUniform;
     std::pair<float *, int> mLightWorldPosUniform;

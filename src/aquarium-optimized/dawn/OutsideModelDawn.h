@@ -23,7 +23,7 @@ public:
     ~OutsideModelDawn();
 
     void init() override;
-    void prepareForDraw() const override;
+    void prepareForDraw() override;
     void draw() override;
 
     void updatePerInstanceUniforms(const WorldUniforms &worldUniforms) override;
@@ -47,7 +47,7 @@ public:
         float specularFactor;
     } mLightFactorUniforms;
 
-    WorldUniforms mWorldUniformPer;
+    WorldUniforms mWorldUniformPer[20];
 
   private:
     utils::ComboVertexInputDescriptor mVertexInputDescriptor;

@@ -175,7 +175,7 @@ void FishModelInstancedDrawDawn::init()
                                 &mFishVertexUniforms);
 }
 
-void FishModelInstancedDrawDawn::prepareForDraw() const {}
+void FishModelInstancedDrawDawn::prepareForDraw() {}
 
 void FishModelInstancedDrawDawn::draw()
 {
@@ -222,6 +222,10 @@ void FishModelInstancedDrawDawn::updateFishPerUniforms(float x,
     mFishPers[index].scale            = scale;
     mFishPers[index].time             = time;
 }
+
+void FishModelInstancedDrawDawn::reallocResource() {}
+
+void FishModelInstancedDrawDawn::destoryFishResource() {}
 
 FishModelInstancedDrawDawn::~FishModelInstancedDrawDawn()
 {

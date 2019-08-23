@@ -22,6 +22,8 @@ class BufferDawn;
 class ProgramDawn;
 enum BACKENDTYPE: short;
 
+static char buf2[64];
+
 class ContextDawn : public Context
 {
   public:
@@ -37,7 +39,7 @@ class ContextDawn : public Context
     void FlushInit() override;
     void Terminate() override;
     void showWindow() override;
-    void showFPS(const FPSTimer &fpsTimer) override;
+    void showFPS(const FPSTimer &fpsTimer, int *fishCount) override;
     void destoryImgUI() override;
 
     void preFrame() override;
@@ -137,6 +139,8 @@ class ContextDawn : public Context
     bool mEnableMSAA;
     std::string mRenderer;
     std::string mBackendType;
+
+    bool show_option_window;
 };
 
 #endif

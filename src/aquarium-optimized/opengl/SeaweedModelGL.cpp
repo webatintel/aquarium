@@ -75,7 +75,7 @@ void SeaweedModelGL::draw()
     mContextGL->drawElements(*mIndicesBuffer);
 }
 
-void SeaweedModelGL::prepareForDraw() const
+void SeaweedModelGL::prepareForDraw()
 {
     mProgram->setProgram();
     mContextGL->enableBlend(mBlend);
