@@ -457,7 +457,7 @@ void ContextGL::showWindow()
     glfwShowWindow(mWindow);
 }
 
-void ContextGL::showFPS(const FPSTimer &fpsTimer)
+void ContextGL::showFPS(const FPSTimer &fpsTimer, int *fishCount)
 {
     // Start the Dear ImGui frame
     ImGui_ImplOpenGL3_NewFrame();

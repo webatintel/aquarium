@@ -18,7 +18,7 @@ class InnerModelGL : public Model
 {
   public:
     InnerModelGL(const ContextGL *context, Aquarium *aquarium, MODELGROUP type, MODELNAME name, bool blend);
-    void prepareForDraw() const override;
+    void prepareForDraw() override;
     void updatePerInstanceUniforms(const WorldUniforms &worldUniforms) override;
     void init() override;
     void draw() override;

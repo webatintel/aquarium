@@ -29,7 +29,7 @@ class FishModelD3D12 : public FishModel
     ~FishModelD3D12();
 
     void init() override;
-    void prepareForDraw() const override;
+    void prepareForDraw() override;
     void draw() override;
 
     void updatePerInstanceUniforms(const WorldUniforms &worldUniforms) override;
@@ -42,6 +42,9 @@ class FishModelD3D12 : public FishModel
                                float scale,
                                float time,
                                int index) override;
+
+    void reallocResource() override;
+    void destoryFishResource() override;
 
     struct FishVertexUniforms
     {

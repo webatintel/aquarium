@@ -26,7 +26,7 @@ class InnerModelD3D12 : public Model
                     bool blend);
 
     void init() override;
-    void prepareForDraw() const override;
+    void prepareForDraw() override;
     void draw() override;
     void updatePerInstanceUniforms(const WorldUniforms &worldUniforms) override;
 

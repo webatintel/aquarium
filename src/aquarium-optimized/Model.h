@@ -32,7 +32,7 @@ class Model
     Model(MODELGROUP type, MODELNAME name, bool blend)
         : mProgram(nullptr), mBlend(blend), mName(name) {}
     virtual ~Model();
-    virtual void prepareForDraw() const     = 0;
+    virtual void prepareForDraw()                                              = 0;
     virtual void updatePerInstanceUniforms(const WorldUniforms &worldUniforms) = 0;
     virtual void draw() = 0;
 

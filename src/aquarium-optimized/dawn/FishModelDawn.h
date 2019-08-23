@@ -27,7 +27,7 @@ class FishModelDawn : public FishModel
     ~FishModelDawn();
 
     void init() override;
-    void prepareForDraw() const override;
+    void prepareForDraw() override;
     void draw() override;
 
     void updatePerInstanceUniforms(const WorldUniforms &worldUniforms) override;
@@ -40,6 +40,9 @@ class FishModelDawn : public FishModel
                                float scale,
                                float time,
                                int index) override;
+
+    void reallocResource() override;
+    void destoryFishResource() override;
 
     struct FishVertexUniforms
     {
@@ -93,12 +96,11 @@ class FishModelDawn : public FishModel
 
     dawn::Buffer mFishPersBuffer;
 
-    int instance;
-
     ProgramDawn *mProgramDawn;
     const ContextDawn *mContextDawn;
 
     bool mEnableDynamicBufferOffset;
+    Aquarium *mAquarium;
 };
 
 #endif

@@ -102,7 +102,7 @@ void SeaweedModelD3D12::init()
         mProgramD3D12->getFSModule(), mPipelineState, mBlend);
 }
 
-void SeaweedModelD3D12::prepareForDraw() const
+void SeaweedModelD3D12::prepareForDraw()
 {
     CD3DX12_RANGE readRangeView(0, 0);
     UINT8 *m_pCbvDataBeginView;

@@ -466,7 +466,7 @@ void ContextD3D12::showWindow()
     glfwShowWindow(mWindow);
 }
 
-void ContextD3D12::showFPS(const FPSTimer &fpsTimer)
+void ContextD3D12::showFPS(const FPSTimer &fpsTimer, int *fishCount)
 {
     // Start the Dear ImGui frame
     ImGui_ImplDX12_NewFrame();

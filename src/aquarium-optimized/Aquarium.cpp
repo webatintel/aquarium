@@ -39,7 +39,8 @@ Aquarium::Aquarium()
       mAquariumModels(),
       mContext(nullptr),
       mFpsTimer(),
-      mFishCount(1),
+      mCurFishCount(1),
+      mPreFishCount(1),
       logCount(INT_MAX),
       mBackendType(BACKENDTYPE::BACKENDTYPELAST),
       mFactory(nullptr)
@@ -202,8 +203,8 @@ bool Aquarium::init(int argc, char **argv)
         std::string cmd(argv[i]);
         if (cmd == "--num-fish")
         {
-            mFishCount = strtol(argv[i++ + 1], &pNext, 10);
-            if (mFishCount < 0)
+            mCurFishCount = strtol(argv[i++ + 1], &pNext, 10);
+            if (mCurFishCount < 0)
             {
                 std::cerr << "Fish count should larger or equal to 0." << std::endl;
                 return false;
@@ -542,7 +543,7 @@ void Aquarium::loadModel(const G_sceneInfo &info)
 void Aquarium::calculateFishCount()
 {
     // Calculate fish count for each type of fish
-    int numLeft = mFishCount;
+    int numLeft = mCurFishCount;
     for (int i = 0; i < FISHENUM::MAX; ++i)
     {
         for (auto &fishInfo : fishTable)
@@ -554,16 +555,16 @@ void Aquarium::calculateFishCount()
             int numfloat = numLeft;
             if (i == FISHENUM::BIG)
             {
-                int temp = mFishCount < g_numFishSmall ? 1 : 2;
+                int temp = mCurFishCount < g_numFishSmall ? 1 : 2;
                 numfloat = std::min(numLeft, temp);
             }
             else if (i == FISHENUM::MEDIUM)
             {
-                if (mFishCount < g_numFishMedium)
+                if (mCurFishCount < g_numFishMedium)
                 {
-                    numfloat = std::min(numLeft, mFishCount / 10);
+                    numfloat = std::min(numLeft, mCurFishCount / 10);
                 }
-                else if (mFishCount < g_numFishBig)
+                else if (mCurFishCount < g_numFishBig)
                 {
                     numfloat = std::min(numLeft, g_numFishLeftSmall);
                 }
@@ -693,7 +694,21 @@ void Aquarium::render()
 
     drawOutside();
 
-    mContext->showFPS(mFpsTimer);
+    mContext->showFPS(mFpsTimer, &mCurFishCount);
+
+    // TODO(yizhou): Functionality of reallocate fish count during rendering
+    // is implemented for Aquarium Dawn backend, and instanced draw isn't implemented yet.
+    // To try this functionality now, use composition of "--backend dawn_xxx", or
+    // "--backend dawn_xxx --disable-dyanmic-buffer-offset"
+    if ((mBackendType == BACKENDTYPE::BACKENDTYPEDAWND3D12 ||
+         mBackendType == BACKENDTYPE::BACKENDTYPEDAWNVULKAN ||
+         mBackendType == BACKENDTYPE::BACKENDTYPEDAWNMETAL) &&
+        !toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEINSTANCEDDRAWS)))
+        if (mCurFishCount != mPreFishCount)
+        {
+            calculateFishCount();
+            mPreFishCount = mCurFishCount;
+        }
 }
 
 void Aquarium::drawBackground()
@@ -735,10 +750,7 @@ void Aquarium::drawFishes()
         const Fish &fishInfo = fishTable[i - begin];
         int numFish          = fishCount[i - begin];
 
-        if (updateAndDrawForEachFish)
-        {
-            model->prepareForDraw();
-        }
+        model->prepareForDraw();
 
         float fishBaseClock   = g.mclock * g_fishSpeed;
         float fishRadius      = fishInfo.radius;

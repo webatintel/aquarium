@@ -55,7 +55,7 @@ class Context
     virtual void FlushInit() {}
     virtual void preFrame()   = 0;
     virtual void showWindow() = 0;
-    virtual void showFPS(const FPSTimer& fpsTimer)    = 0;
+    virtual void showFPS(const FPSTimer &fpsTimer, int *fishCount) = 0;
     virtual void destoryImgUI() = 0;
 
     int getClientWidth() const { return mClientWidth; }

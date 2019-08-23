@@ -23,7 +23,7 @@ class SeaweedModelDawn : public SeaweedModel
     ~SeaweedModelDawn();
 
     void init() override;
-    void prepareForDraw() const override;
+    void prepareForDraw() override;
     void draw() override;
 
     void updatePerInstanceUniforms(const WorldUniforms &worldUniforms) override;

@@ -104,7 +104,7 @@ void FishModelGL::draw()
     mContextGL->drawElements(*mIndicesBuffer);
 }
 
-void FishModelGL::prepareForDraw() const
+void FishModelGL::prepareForDraw()
 {
     mProgram->setProgram();
     mContextGL->enableBlend(mBlend);
@@ -179,3 +179,7 @@ void FishModelGL::updateFishPerUniforms(float x,
     mScaleUniform.first            = scale;
     mTimeUniform.first             = time;
 }
+
+void FishModelGL::reallocResource() {}
+
+void FishModelGL::destoryFishResource() {}

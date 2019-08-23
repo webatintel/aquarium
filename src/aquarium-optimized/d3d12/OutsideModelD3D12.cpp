@@ -93,7 +93,7 @@ void OutsideModelD3D12::init()
         mProgramD3D12->getFSModule(), mPipelineState, mBlend);
 }
 
-void OutsideModelD3D12::prepareForDraw() const {}
+void OutsideModelD3D12::prepareForDraw() {}
 
 void OutsideModelD3D12::draw()
 {

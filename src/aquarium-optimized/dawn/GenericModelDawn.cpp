@@ -205,7 +205,7 @@ void GenericModelDawn::init()
                                 &mLightFactorUniforms);
 }
 
-void GenericModelDawn::prepareForDraw() const
+void GenericModelDawn::prepareForDraw()
 {
     mContextDawn->setBufferData(mWorldBuffer, 0, sizeof(WorldUniformPer), &mWorldUniformPer);
 }
