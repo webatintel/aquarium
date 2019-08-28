@@ -49,7 +49,7 @@ void FishModelInstancedDrawDawn::init()
     mIndicesBuffer  = static_cast<BufferDawn *>(bufferMap["indices"]);
 
     mFishPersBuffer = mContextDawn->createBuffer(
-        sizeof(FishPer) * instance, dawn::BufferUsageBit::Vertex | dawn::BufferUsageBit::CopyDst);
+        sizeof(FishPer) * instance, dawn::BufferUsage::Vertex | dawn::BufferUsage::CopyDst);
 
     mVertexInputDescriptor.cBuffers[0].attributeCount    = 1;
     mVertexInputDescriptor.cBuffers[0].stride            = mPositionBuffer->getDataSize();
@@ -103,29 +103,29 @@ void FishModelInstancedDrawDawn::init()
     if (mSkyboxTexture && mReflectionTexture)
     {
         mGroupLayoutModel = mContextDawn->MakeBindGroupLayout({
-            {0, dawn::ShaderStageBit::Vertex, dawn::BindingType::UniformBuffer},
-            {1, dawn::ShaderStageBit::Fragment, dawn::BindingType::UniformBuffer},
-            {2, dawn::ShaderStageBit::Fragment, dawn::BindingType::Sampler},
-            {3, dawn::ShaderStageBit::Fragment, dawn::BindingType::Sampler},
-            {4, dawn::ShaderStageBit::Fragment, dawn::BindingType::SampledTexture},
-            {5, dawn::ShaderStageBit::Fragment, dawn::BindingType::SampledTexture},
-            {6, dawn::ShaderStageBit::Fragment, dawn::BindingType::SampledTexture},
-            {7, dawn::ShaderStageBit::Fragment, dawn::BindingType::SampledTexture},
+            {0, dawn::ShaderStage::Vertex, dawn::BindingType::UniformBuffer},
+            {1, dawn::ShaderStage::Fragment, dawn::BindingType::UniformBuffer},
+            {2, dawn::ShaderStage::Fragment, dawn::BindingType::Sampler},
+            {3, dawn::ShaderStage::Fragment, dawn::BindingType::Sampler},
+            {4, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture},
+            {5, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture},
+            {6, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture},
+            {7, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture},
         });
     }
     else
     {
         mGroupLayoutModel = mContextDawn->MakeBindGroupLayout({
-            {0, dawn::ShaderStageBit::Vertex, dawn::BindingType::UniformBuffer},
-            {1, dawn::ShaderStageBit::Fragment, dawn::BindingType::UniformBuffer},
-            {2, dawn::ShaderStageBit::Fragment, dawn::BindingType::Sampler},
-            {3, dawn::ShaderStageBit::Fragment, dawn::BindingType::SampledTexture},
-            {4, dawn::ShaderStageBit::Fragment, dawn::BindingType::SampledTexture},
+            {0, dawn::ShaderStage::Vertex, dawn::BindingType::UniformBuffer},
+            {1, dawn::ShaderStage::Fragment, dawn::BindingType::UniformBuffer},
+            {2, dawn::ShaderStage::Fragment, dawn::BindingType::Sampler},
+            {3, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture},
+            {4, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture},
         });
     }
 
     mGroupLayoutPer = mContextDawn->MakeBindGroupLayout({
-        {0, dawn::ShaderStageBit::Vertex, dawn::BindingType::UniformBuffer},
+        {0, dawn::ShaderStage::Vertex, dawn::BindingType::UniformBuffer},
     });
 
     mPipelineLayout = mContextDawn->MakeBasicPipelineLayout({
@@ -138,12 +138,12 @@ void FishModelInstancedDrawDawn::init()
     mPipeline = mContextDawn->createRenderPipeline(mPipelineLayout, mProgramDawn,
                                                    mVertexInputDescriptor, mBlend);
 
-    mFishVertexBuffer = mContextDawn->createBufferFromData(
-        &mFishVertexUniforms, sizeof(FishVertexUniforms),
-        dawn::BufferUsageBit::CopyDst | dawn::BufferUsageBit::Uniform);
-    mLightFactorBuffer = mContextDawn->createBufferFromData(
-        &mLightFactorUniforms, sizeof(LightFactorUniforms),
-        dawn::BufferUsageBit::CopyDst | dawn::BufferUsageBit::Uniform);
+    mFishVertexBuffer =
+        mContextDawn->createBufferFromData(&mFishVertexUniforms, sizeof(FishVertexUniforms),
+                                           dawn::BufferUsage::CopyDst | dawn::BufferUsage::Uniform);
+    mLightFactorBuffer =
+        mContextDawn->createBufferFromData(&mLightFactorUniforms, sizeof(LightFactorUniforms),
+                                           dawn::BufferUsage::CopyDst | dawn::BufferUsage::Uniform);
 
     // Fish models includes small, medium and big. Some of them contains reflection and skybox
     // texture, but some doesn't.

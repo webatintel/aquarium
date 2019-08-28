@@ -89,7 +89,7 @@ void ImGui_ImplDawn_RenderDrawData(ImDrawData *draw_data)
 
         dawn::BufferDescriptor descriptor;
         descriptor.size  = mVertexBufferSize * sizeof(ImDrawVert);
-        descriptor.usage = dawn::BufferUsageBit::Vertex | dawn::BufferUsageBit::CopyDst;
+        descriptor.usage = dawn::BufferUsage::Vertex | dawn::BufferUsage::CopyDst;
 
         mVertexBuffer = mContextDawn->mDevice.CreateBuffer(&descriptor);
     }
@@ -102,7 +102,7 @@ void ImGui_ImplDawn_RenderDrawData(ImDrawData *draw_data)
 
         dawn::BufferDescriptor descriptor;
         descriptor.size  = mIndexBufferSize * sizeof(ImDrawIdx);
-        descriptor.usage = dawn::BufferUsageBit::Index | dawn::BufferUsageBit::CopyDst;
+        descriptor.usage = dawn::BufferUsage::Index | dawn::BufferUsage::CopyDst;
 
         mIndexBuffer = mContextDawn->mDevice.CreateBuffer(&descriptor);
     }
@@ -191,11 +191,11 @@ static void ImGui_ImplDawn_CreateFontsTexture()
         descriptor.sampleCount     = 1;
         descriptor.format          = mFormat;
         descriptor.mipLevelCount   = 1;
-        descriptor.usage = dawn::TextureUsageBit::CopyDst | dawn::TextureUsageBit::Sampled;
+        descriptor.usage           = dawn::TextureUsage::CopyDst | dawn::TextureUsage::Sampled;
         mTexture                   = mContextDawn->createTexture(descriptor);
 
         mStagingBuffer = mContextDawn->createBufferFromData(pixels, width * height * 4,
-                                                            dawn::BufferUsageBit::CopySrc);
+                                                            dawn::BufferUsage::CopySrc);
         dawn::BufferCopyView bufferCopyView =
             mContextDawn->createBufferCopyView(mStagingBuffer, 0, width * 4, height);
         dawn::TextureCopyView textureCopyView =
@@ -258,9 +258,9 @@ bool ImGui_ImplDawn_CreateDeviceObjects()
 
     // Create bind group layout
     dawn::BindGroupLayout layout = mContextDawn->MakeBindGroupLayout(
-        {{0, dawn::ShaderStageBit::Vertex, dawn::BindingType::UniformBuffer},
-         {1, dawn::ShaderStageBit::Fragment, dawn::BindingType::Sampler},
-         {2, dawn::ShaderStageBit::Fragment, dawn::BindingType::SampledTexture}});
+        {{0, dawn::ShaderStage::Vertex, dawn::BindingType::UniformBuffer},
+         {1, dawn::ShaderStage::Fragment, dawn::BindingType::Sampler},
+         {2, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture}});
 
     dawn::PipelineLayout mPipelineLayout = mContextDawn->MakeBasicPipelineLayout({layout});
 
@@ -326,8 +326,8 @@ bool ImGui_ImplDawn_CreateDeviceObjects()
     // Create uniform buffer
     dawn::BufferDescriptor descriptor;
     descriptor.size  = sizeof(VERTEX_CONSTANT_BUFFER);
-    descriptor.usage = dawn::BufferUsageBit::CopyDst | dawn::BufferUsageBit::Uniform |
-                       dawn::BufferUsageBit::Uniform;
+    descriptor.usage =
+        dawn::BufferUsage::CopyDst | dawn::BufferUsage::Uniform | dawn::BufferUsage::Uniform;
 
     mConstantBuffer = mContextDawn->mDevice.CreateBuffer(&descriptor);
 

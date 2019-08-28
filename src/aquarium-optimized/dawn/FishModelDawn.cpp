@@ -84,37 +84,37 @@ void FishModelDawn::init()
     if (mSkyboxTexture && mReflectionTexture)
     {
         mGroupLayoutModel = mContextDawn->MakeBindGroupLayout({
-            {0, dawn::ShaderStageBit::Vertex, dawn::BindingType::UniformBuffer},
-            {1, dawn::ShaderStageBit::Fragment, dawn::BindingType::UniformBuffer},
-            {2, dawn::ShaderStageBit::Fragment, dawn::BindingType::Sampler},
-            {3, dawn::ShaderStageBit::Fragment, dawn::BindingType::Sampler},
-            {4, dawn::ShaderStageBit::Fragment, dawn::BindingType::SampledTexture},
-            {5, dawn::ShaderStageBit::Fragment, dawn::BindingType::SampledTexture},
-            {6, dawn::ShaderStageBit::Fragment, dawn::BindingType::SampledTexture},
-            {7, dawn::ShaderStageBit::Fragment, dawn::BindingType::SampledTexture},
+            {0, dawn::ShaderStage::Vertex, dawn::BindingType::UniformBuffer},
+            {1, dawn::ShaderStage::Fragment, dawn::BindingType::UniformBuffer},
+            {2, dawn::ShaderStage::Fragment, dawn::BindingType::Sampler},
+            {3, dawn::ShaderStage::Fragment, dawn::BindingType::Sampler},
+            {4, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture},
+            {5, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture},
+            {6, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture},
+            {7, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture},
         });
     }
     else
     {
         mGroupLayoutModel = mContextDawn->MakeBindGroupLayout({
-            {0, dawn::ShaderStageBit::Vertex, dawn::BindingType::UniformBuffer},
-            {1, dawn::ShaderStageBit::Fragment, dawn::BindingType::UniformBuffer},
-            {2, dawn::ShaderStageBit::Fragment, dawn::BindingType::Sampler},
-            {3, dawn::ShaderStageBit::Fragment, dawn::BindingType::SampledTexture},
-            {4, dawn::ShaderStageBit::Fragment, dawn::BindingType::SampledTexture},
+            {0, dawn::ShaderStage::Vertex, dawn::BindingType::UniformBuffer},
+            {1, dawn::ShaderStage::Fragment, dawn::BindingType::UniformBuffer},
+            {2, dawn::ShaderStage::Fragment, dawn::BindingType::Sampler},
+            {3, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture},
+            {4, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture},
         });
     }
 
     if (mEnableDynamicBufferOffset)
     {
         mGroupLayoutPer = mContextDawn->MakeBindGroupLayout({
-            {0, dawn::ShaderStageBit::Vertex, dawn::BindingType::UniformBuffer, true},
+            {0, dawn::ShaderStage::Vertex, dawn::BindingType::UniformBuffer, true},
         });
     }
     else
     {
         mGroupLayoutPer = mContextDawn->MakeBindGroupLayout({
-            {0, dawn::ShaderStageBit::Vertex, dawn::BindingType::UniformBuffer},
+            {0, dawn::ShaderStage::Vertex, dawn::BindingType::UniformBuffer},
         });
     }
 
@@ -128,12 +128,12 @@ void FishModelDawn::init()
     mPipeline = mContextDawn->createRenderPipeline(mPipelineLayout, mProgramDawn,
                                                    mVertexInputDescriptor, mBlend);
 
-    mFishVertexBuffer = mContextDawn->createBufferFromData(
-        &mFishVertexUniforms, sizeof(FishVertexUniforms),
-        dawn::BufferUsageBit::CopyDst | dawn::BufferUsageBit::Uniform);
-    mLightFactorBuffer = mContextDawn->createBufferFromData(
-        &mLightFactorUniforms, sizeof(LightFactorUniforms),
-        dawn::BufferUsageBit::CopyDst | dawn::BufferUsageBit::Uniform);
+    mFishVertexBuffer =
+        mContextDawn->createBufferFromData(&mFishVertexUniforms, sizeof(FishVertexUniforms),
+                                           dawn::BufferUsage::CopyDst | dawn::BufferUsage::Uniform);
+    mLightFactorBuffer =
+        mContextDawn->createBufferFromData(&mLightFactorUniforms, sizeof(LightFactorUniforms),
+                                           dawn::BufferUsage::CopyDst | dawn::BufferUsage::Uniform);
 
     // Fish models includes small, medium and big. Some of them contains reflection and skybox
     // texture, but some doesn't.
@@ -256,9 +256,9 @@ void FishModelDawn::reallocResource()
         mBindGroupPers = new dawn::BindGroup[mCurInstance];
     }
 
-    mFishPersBuffer = mContextDawn->createBufferFromData(
-        mFishPers, sizeof(FishPer) * mCurInstance,
-        dawn::BufferUsageBit::CopyDst | dawn::BufferUsageBit::Uniform);
+    mFishPersBuffer =
+        mContextDawn->createBufferFromData(mFishPers, sizeof(FishPer) * mCurInstance,
+                                           dawn::BufferUsage::CopyDst | dawn::BufferUsage::Uniform);
 
     if (mEnableDynamicBufferOffset)
     {

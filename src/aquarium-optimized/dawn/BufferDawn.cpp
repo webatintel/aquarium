@@ -14,14 +14,15 @@ BufferDawn::BufferDawn(ContextDawn *context,
                        int numComponents,
                        std::vector<float> *buffer,
                        bool isIndex)
-    : mUsageBit(isIndex ? dawn::BufferUsageBit::Index : dawn::BufferUsageBit::Vertex),
+    : mUsage(isIndex ? dawn::BufferUsage::Index : dawn::BufferUsage::Vertex),
       mTotoalComponents(totalCmoponents),
       mStride(0),
       mOffset(nullptr)
 {
     mSize = numComponents * sizeof(float);
     // Create buffer for vertex buffer. Because float is multiple of 4 bytes, dummy padding isnt' needed.
-    mBuf = context->createBufferFromData(buffer->data(), sizeof(float) * static_cast<int>(buffer->size()), mUsageBit);
+    mBuf = context->createBufferFromData(buffer->data(),
+                                         sizeof(float) * static_cast<int>(buffer->size()), mUsage);
 }
 
 BufferDawn::BufferDawn(ContextDawn *context,
@@ -29,7 +30,7 @@ BufferDawn::BufferDawn(ContextDawn *context,
                        int numComponents,
                        std::vector<unsigned short> *buffer,
                        bool isIndex)
-    : mUsageBit(isIndex ? dawn::BufferUsageBit::Index : dawn::BufferUsageBit::Vertex),
+    : mUsage(isIndex ? dawn::BufferUsage::Index : dawn::BufferUsage::Vertex),
       mTotoalComponents(totalCmoponents),
       mStride(0),
       mOffset(nullptr)
@@ -42,7 +43,7 @@ BufferDawn::BufferDawn(ContextDawn *context,
         buffer->push_back(0.0f);
     }
     mBuf = context->createBufferFromData(
-        buffer->data(), sizeof(unsigned short) * static_cast<int>(buffer->size()), mUsageBit);
+        buffer->data(), sizeof(unsigned short) * static_cast<int>(buffer->size()), mUsage);
 }
 
 BufferDawn::~BufferDawn()

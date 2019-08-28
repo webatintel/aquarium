@@ -41,6 +41,6 @@ void ProgramDawn::loadProgram()
     FragmentShaderCode =
         std::regex_replace(FragmentShaderCode, std::regex(R"(\n.*?// #noNormalMap)"), "");
 
-    mVsModule = context->createShaderModule(utils::ShaderStage::Vertex, VertexShaderCode);
-    mFsModule = context->createShaderModule(utils::ShaderStage::Fragment, FragmentShaderCode);
+    mVsModule = context->createShaderModule(utils::SingleShaderStage::Vertex, VertexShaderCode);
+    mFsModule = context->createShaderModule(utils::SingleShaderStage::Fragment, FragmentShaderCode);
 }

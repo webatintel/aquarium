@@ -62,13 +62,13 @@ void TextureDawn::loadTexture()
         descriptor.sampleCount = 1;
         descriptor.format = mFormat;
         descriptor.mipLevelCount   = 1;
-        descriptor.usage = dawn::TextureUsageBit::CopyDst | dawn::TextureUsageBit::Sampled;
+        descriptor.usage           = dawn::TextureUsage::CopyDst | dawn::TextureUsage::Sampled;
         mTexture                   = mContext->createTexture(descriptor);
 
         for (unsigned int i = 0; i < 6; i++)
         {
             dawn::Buffer stagingBuffer = mContext->createBufferFromData(
-                mPixelVec[i], mWidth * mHeight * 4, dawn::BufferUsageBit::CopySrc);
+                mPixelVec[i], mWidth * mHeight * 4, dawn::BufferUsage::CopySrc);
             dawn::BufferCopyView bufferCopyView =
                 mContext->createBufferCopyView(stagingBuffer, 0, mWidth * 4, mHeight);
             dawn::TextureCopyView textureCopyView =
@@ -126,7 +126,7 @@ void TextureDawn::loadTexture()
         descriptor.mipLevelCount   = static_cast<uint32_t>(std::floor(
                                        static_cast<float>(std::log2(std::min(mWidth, mHeight))))) +
                                    1;
-        descriptor.usage = dawn::TextureUsageBit::CopyDst | dawn::TextureUsageBit::Sampled;
+        descriptor.usage = dawn::TextureUsage::CopyDst | dawn::TextureUsage::Sampled;
         mTexture         = mContext->createTexture(descriptor);
 
         int count = 0;
@@ -140,7 +140,7 @@ void TextureDawn::loadTexture()
             }
 
             dawn::Buffer stagingBuffer = mContext->createBufferFromData(
-                mResizedVec[i], resizedWidth * height * 4, dawn::BufferUsageBit::CopySrc);
+                mResizedVec[i], resizedWidth * height * 4, dawn::BufferUsage::CopySrc);
             dawn::BufferCopyView bufferCopyView =
                 mContext->createBufferCopyView(stagingBuffer, 0, resizedWidth * 4, height);
             dawn::TextureCopyView textureCopyView =
