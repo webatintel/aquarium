@@ -264,8 +264,8 @@ bool ImGui_ImplDawn_CreateDeviceObjects()
 
     dawn::PipelineLayout mPipelineLayout = mContextDawn->MakeBasicPipelineLayout({layout});
 
-    const ResourceHelper *resourceHelper = mContextDawn->getResourceHelper();
-    const std::string &programPath       = resourceHelper->getProgramPath();
+    ResourceHelper *resourceHelper = mContextDawn->getResourceHelper();
+    std::string programPath        = resourceHelper->getProgramPath();
     mProgramDawn = new ProgramDawn(mContextDawn, programPath + "imguiVertexShader",
                                    programPath + "imguiFragmentShader");
     mProgramDawn->loadProgram();

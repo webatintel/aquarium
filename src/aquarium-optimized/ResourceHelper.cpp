@@ -5,6 +5,7 @@
 //
 #include "ResourceHelper.h"
 
+#include <iostream>
 #include <sstream>
 
 #ifdef _WIN32
@@ -26,8 +27,10 @@ const std::vector<std::string> skyBoxUrls = {
     "GlobeOuter_EM_positive_x.jpg", "GlobeOuter_EM_negative_x.jpg", "GlobeOuter_EM_positive_y.jpg",
     "GlobeOuter_EM_negative_y.jpg", "GlobeOuter_EM_positive_z.jpg", "GlobeOuter_EM_negative_z.jpg"};
 
-ResourceHelper::ResourceHelper(const std::string &mBackendName, const std::string &mShaderVersion)
-    : mBackendName(mBackendName), mShaderVersion(mShaderVersion)
+ResourceHelper::ResourceHelper(const std::string &mBackendName,
+                               const std::string &mShaderVersion,
+                               BACKENDTYPE backendType)
+    : mBackendName(mBackendName), mBackendType(backendType), mShaderVersion(mShaderVersion)
 {
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
     TCHAR temp[200];
@@ -57,6 +60,49 @@ ResourceHelper::ResourceHelper(const std::string &mBackendName, const std::strin
     std::ostringstream imageStream;
     imageStream << mPath << resourceFolder << slash;
     mImagePath = imageStream.str();
+
+    std::ostringstream programStream;
+    programStream << mPath << shaderFolder << slash << mBackendName << slash << mShaderVersion
+                  << slash;
+    mProgramPath = programStream.str();
+
+    switch (mBackendType)
+    {
+        case BACKENDTYPE::BACKENDTYPEDAWND3D12:
+        {
+            mBackendTypeStr = "Dawn D3D12";
+            break;
+        }
+        case BACKENDTYPE::BACKENDTYPEDAWNVULKAN:
+        {
+            mBackendTypeStr = "Dawn Vulkan";
+            break;
+        }
+        case BACKENDTYPE::BACKENDTYPEDAWNMETAL:
+        {
+            mBackendTypeStr = "Dawn Metal";
+            break;
+        }
+        case BACKENDTYPE::BACKENDTYPEANGLE:
+        {
+            mBackendTypeStr = "ANGLE";
+            break;
+        }
+        case BACKENDTYPE::BACKENDTYPEOPENGL:
+        {
+            mBackendTypeStr = "OPENGL";
+            break;
+        }
+        case BACKENDTYPE::BACKENDTYPED3D12:
+        {
+            mBackendTypeStr = "D3D12";
+            break;
+        }
+        default:
+        {
+            std::cerr << "Backend type can not reached." << std::endl;
+        }
+    }
 }
 
 void ResourceHelper::getSkyBoxUrls(std::vector<std::string> *skyUrls) const
@@ -74,15 +120,29 @@ std::string ResourceHelper::getModelPath(const std::string &modelName) const
 {
     std::ostringstream modelStream;
     modelStream << mImagePath << modelName << ".js";
-    std::string modelPath = modelStream.str();
-    return modelPath;
+    return modelStream.str();
 }
 
-std::string ResourceHelper::getProgramPath() const
+const std::string &ResourceHelper::getProgramPath() const
 {
-    std::ostringstream programStream;
-    programStream << mPath << shaderFolder << slash << mBackendName << slash << mShaderVersion
-                  << slash;
-    std::string programPath = programStream.str();
-    return programPath;
+    return mProgramPath;
+}
+
+const std::string &ResourceHelper::getRendererInfo() const
+{
+    return mRendererInfo;
+}
+
+void ResourceHelper::setRenderer(const std::string &renderer)
+{
+    mRenderer = renderer;
+
+    std::ostringstream rendererInfoStream;
+#ifdef EGL_EGL_PROTOTYPES
+    rendererInfoStream << mRenderer;
+#else
+    rendererInfoStream << mRenderer << " " << mBackendTypeStr << " " << mShaderVersion;
+#endif
+
+    mRendererInfo = rendererInfoStream.str();
 }

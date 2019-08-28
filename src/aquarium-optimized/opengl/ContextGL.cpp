@@ -55,14 +55,14 @@ bool ContextGL::initialize(BACKENDTYPE backend,
     // TODO(yizhou) : Enable msaa in angle. Render into a multisample Texture and then blit to a
     // none multisample texture.
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    mResourceHelper = new ResourceHelper("opengl", std::string("100"));
+    mResourceHelper = new ResourceHelper("opengl", std::string("100"), backend);
 #else
     if (toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEMSAAx4)))
     {
         glfwWindowHint(GLFW_SAMPLES, 4);
     }
 
-    mResourceHelper = new ResourceHelper("opengl", "450");
+    mResourceHelper = new ResourceHelper("opengl", "450", backend);
 
 #ifdef __APPLE__
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -234,8 +234,9 @@ bool ContextGL::initialize(BACKENDTYPE backend,
 
     std::string renderer((const char *)glGetString(GL_RENDERER));
     size_t index = renderer.find("/");
-    mRenderer    = renderer.substr(0, index);
-    std::cout << mRenderer << std::endl;
+    renderer     = renderer.substr(0, index);
+    std::cout << renderer << std::endl;
+    mResourceHelper->setRenderer(renderer);
 
     return true;
 }
@@ -461,40 +462,7 @@ void ContextGL::showFPS(const FPSTimer &fpsTimer, int *fishCount)
 {
     // Start the Dear ImGui frame
     ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
-
-    {
-        ImGui::Begin("Aquarium Native");
-
-        std::ostringstream rendererStream;
-        std::string backend = mResourceHelper->getBackendName();
-        for (auto & c: backend ) c = toupper(c);
-#ifdef EGL_EGL_PROTOTYPES
-        rendererStream << mRenderer;
-#else
-        rendererStream << mRenderer << " " << backend << " " << mResourceHelper->getShaderVersion();
-#endif
-        std::string renderer = rendererStream.str();
-        ImGui::Text(renderer.c_str());
-
-        std::ostringstream resolutionStream;
-        resolutionStream <<"Resolution " << mClientWidth << "x" << mClientHeight;
-        std::string resolution = resolutionStream.str();
-        ImGui::Text(resolution.c_str());
-
-        ImGui::PlotLines("[0,100 FPS]", fpsTimer.getHistoryFps(), NUM_HISTORY_DATA, 0, NULL, 0.0f, 100.0f, ImVec2 (0,40));
-
-        ImGui::PlotHistogram("[0,100 ms/frame]", fpsTimer.getHistoryFrameTime(), NUM_HISTORY_DATA,
-                             0, NULL, 0.0f, 100.0f, ImVec2(0, 40));
-
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
-                    1000.0f / fpsTimer.getAverageFPS(), fpsTimer.getAverageFPS());
-        ImGui::End();
-    }
-
-    // Rendering
-    ImGui::Render();
+    renderImgui(fpsTimer, fishCount);
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
