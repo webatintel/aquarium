@@ -151,6 +151,11 @@ bool Aquarium::init(int argc, char **argv)
 {
     mFactory = new ContextFactory();
 
+    #ifdef __EMSCRIPTEN__
+    mBackendType = BACKENDTYPE::BACKENDTYPEANGLE;
+    mContext = mFactory->createContext(mBackendType);
+    toggleBitset.set(static_cast<size_t>(TOGGLE::UPATEANDDRAWFOREACHMODEL));
+#else
     // Create context of different backends through the cmd args.
     // "--backend" {backend}: create different backends. currently opengl is supported.
     // "--num-fish" {numfish}: imply rendering fish count.
@@ -345,6 +350,7 @@ bool Aquarium::init(int argc, char **argv)
         {
         }
     }
+#endif  // #ifdef __EMSCRIPTEN__
 
     if (!mContext->initialize(mBackendType, toggleBitset, windowWidth, windowHeight))
     {
@@ -371,7 +377,10 @@ bool Aquarium::init(int argc, char **argv)
     mContext->Flush();
 
     std::cout << "End loading.\nCost " << getElapsedTime() << "s totally." << std::endl;
+
+    #ifndef __EMSCRIPTEN__
     mContext->showWindow();
+    #endif
 
     resetFpsTime();
 
@@ -390,8 +399,21 @@ void Aquarium::resetFpsTime()
     g.fpsCount      = 0;
 }
 
+#ifdef __EMSCRIPTEN__
+void loop_fn(void* arg)
+{
+    Aquarium* aquarium = reinterpret_cast<Aquarium *>(arg);
+    aquarium->render();
+
+    aquarium->getContext()->DoFlush();
+}
+#endif
+
 void Aquarium::display()
 {
+#ifdef __EMSCRIPTEN__
+    emscripten_set_main_loop_arg(loop_fn, this, 0, true);
+#else
     while (!mContext->ShouldQuit())
     {
         mContext->KeyBoardQuit();
@@ -404,6 +426,7 @@ void Aquarium::display()
             break;
         }
     }
+#endif
 
     mContext->Terminate();
 

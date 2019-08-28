@@ -25,9 +25,11 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
+#ifndef __EMSCRIPTEN__
 #ifdef EGL_EGL_PROTOTYPES
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
+#endif
 #endif
 
 ContextGL::ContextGL(BACKENDTYPE backendType) : mWindow(nullptr)
@@ -53,7 +55,7 @@ bool ContextGL::initialize(BACKENDTYPE backend,
         return false;
     }
 
-#ifdef GL_GLEXT_PROTOTYPES
+#if defined(GL_GLEXT_PROTOTYPES) || defined(__EMSCRIPTEN__)
     // TODO(yizhou) : Enable msaa in angle. Render into a multisample Texture and then blit to a
     // none multisample texture.
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -79,6 +81,15 @@ bool ContextGL::initialize(BACKENDTYPE backend,
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
+#ifdef __EMSCRIPTEN__
+    mClientWidth            = 1366;
+    mClientHeight           = 768;
+
+    glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+    mWindow = glfwCreateWindow(mClientWidth, mClientHeight, "Aquarium", nullptr, nullptr);
+    mGLSLVersion = "#version 300 es";
+
+#else
     GLFWmonitor *pMonitor   = glfwGetPrimaryMonitor();
     const GLFWvidmode *mode = glfwGetVideoMode(pMonitor);
     mClientWidth            = mode->width;
@@ -95,6 +106,7 @@ bool ContextGL::initialize(BACKENDTYPE backend,
     {
         mWindow = glfwCreateWindow(mClientWidth, mClientHeight, "Aquarium", nullptr, nullptr);
     }
+#endif
 
     if (mWindow == nullptr)
     {
@@ -105,9 +117,10 @@ bool ContextGL::initialize(BACKENDTYPE backend,
 
     setWindowTitle("Aquarium");
     glfwSetFramebufferSizeCallback(mWindow, framebufferResizeCallback);
+    //glfwSetWindowSizeCallback(mWindow, windowSizeCallback);
     glfwSetWindowUserPointer(mWindow, this);
 
-#ifndef GL_GLES_PROTOTYPES 
+#if defined(ENABLE_OPENGL_BACKEND)  || defined(__EMSCRIPTEN__)
     glfwWindowHint(GLFW_DECORATED, GL_FALSE);
     glfwMakeContextCurrent(mWindow);
 #else
@@ -214,12 +227,12 @@ bool ContextGL::initialize(BACKENDTYPE backend,
 
     eglSwapInterval(mDisplay, 0);
 
-#endif
+#endif //     #ifdef GL_GLES_PROTOTYPES
 
     // Set the window full screen
     // glfwSetWindowPos(window, 0, 0);
 
-    #ifndef EGL_EGL_PROTOTYPES
+    #ifdef ENABLE_OPENGL_BACKEND
     if (!gladLoadGL())
     {
         std::cout << "Something went wrong!" << std::endl;
@@ -447,8 +460,10 @@ bool ContextGL::ShouldQuit()
 
 void ContextGL::KeyBoardQuit()
 {
+    #ifndef __EMSCRIPTEN__
     if (glfwGetKey(mWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(mWindow, GL_TRUE);
+    #endif
 }
 
 void ContextGL::DoFlush(const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset)
@@ -560,6 +575,8 @@ void ContextGL::preFrame()
     glEnable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+    // Imgui changes the scissor size, so  we have to change it back for this application.
+    glScissor(0, 0, mClientWidth, mClientHeight);
     ASSERT(glGetError() == GL_NO_ERROR);
 }
 

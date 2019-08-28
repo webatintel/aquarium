@@ -17,6 +17,9 @@
 #include "EGL/eglext_angle.h"
 #include "EGL/eglplatform.h"
 #include "EGLWindow.h"
+#elif __EMSCRIPTEN__
+#include <GLES3/gl3.h>
+#include <emscripten.h>
 #else
 #include "glad/glad.h"
 #endif

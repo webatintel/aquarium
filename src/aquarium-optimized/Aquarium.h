@@ -443,6 +443,8 @@ class Aquarium
     Texture *getSkybox() { return mTextureMap["skybox"]; }
     int getCurFishCount() const { return mCurFishCount; }
     int getPreFishCount() const { return mPreFishCount; }
+    void render();
+    Context *getContext() { return mContext; }
 
     std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> toggleBitset;
     LightWorldPositionUniform lightWorldPositionUniform;
@@ -453,7 +455,6 @@ class Aquarium
     int fishCount[5];
 
   private:
-    void render();
     void loadReource();
     void loadPlacement();
     void loadModels();

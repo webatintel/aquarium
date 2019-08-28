@@ -53,6 +53,20 @@ ResourceHelper::ResourceHelper(const std::string &mBackendName,
     pathStream << mPath.substr(0, nPos) << slash << ".." << slash << ".." << slash;
     mPath = pathStream.str();
 
+    std::ostringstream programStream;
+    programStream << mPath << shaderFolder << slash << mBackendName << slash << mShaderVersion
+                  << slash;
+    mProgramPath = programStream.str();
+
+#ifdef __EMSCRIPTEN__
+    std::ostringstream placementStream;
+    placementStream << resourceFolder << slash << "PropPlacement.js";
+    mPropPlacementPath = placementStream.str();
+
+    std::ostringstream imageStream;
+    imageStream << resourceFolder << slash;
+    mImagePath = imageStream.str();
+#else
     std::ostringstream placementStream;
     placementStream << mPath << resourceFolder << slash << "PropPlacement.js";
     mPropPlacementPath = placementStream.str();
@@ -60,11 +74,9 @@ ResourceHelper::ResourceHelper(const std::string &mBackendName,
     std::ostringstream imageStream;
     imageStream << mPath << resourceFolder << slash;
     mImagePath = imageStream.str();
+#endif
 
-    std::ostringstream programStream;
-    programStream << mPath << shaderFolder << slash << mBackendName << slash << mShaderVersion
-                  << slash;
-    mProgramPath = programStream.str();
+
 
     switch (mBackendType)
     {

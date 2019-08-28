@@ -165,13 +165,6 @@ bool ImGui_ImplOpenGL3_Init(const char *glsl_version)
     strcpy(g_GlslVersionString, glsl_version);
     strcat(g_GlslVersionString, "\n");
 
-    // Make a dummy GL call (we don't actually need the result)
-    // IF YOU GET A CRASH HERE: it probably means that you haven't initialized the OpenGL function
-    // loader used by this code. Desktop OpenGL 3/4 need a function loader. See the
-    // IMGUI_IMPL_OPENGL_LOADER_xxx explanation above.
-    GLint current_texture;
-    glGetIntegerv(GL_TEXTURE_BINDING_2D, &current_texture);
-
     return true;
 }
 
@@ -259,57 +252,6 @@ void ImGui_ImplOpenGL3_RenderDrawData(ImDrawData *draw_data)
     if (fb_width <= 0 || fb_height <= 0)
         return;
 
-    // Backup GL state
-    GLenum last_active_texture;
-    glGetIntegerv(GL_ACTIVE_TEXTURE, (GLint *)&last_active_texture);
-    glActiveTexture(GL_TEXTURE0);
-    GLint last_program;
-    glGetIntegerv(GL_CURRENT_PROGRAM, &last_program);
-    GLint last_texture;
-    glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture);
-#ifdef GL_SAMPLER_BINDING
-    GLint last_sampler;
-    glGetIntegerv(GL_SAMPLER_BINDING, &last_sampler);
-#endif
-    GLint last_array_buffer;
-    glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &last_array_buffer);
-#ifndef IMGUI_IMPL_OPENGL_ES2
-    GLint last_vertex_array_object;
-    glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &last_vertex_array_object);
-#endif
-#ifdef GL_POLYGON_MODE
-    GLint last_polygon_mode[2];
-    glGetIntegerv(GL_POLYGON_MODE, last_polygon_mode);
-#endif
-    GLint last_viewport[4];
-    glGetIntegerv(GL_VIEWPORT, last_viewport);
-    GLint last_scissor_box[4];
-    glGetIntegerv(GL_SCISSOR_BOX, last_scissor_box);
-    GLenum last_blend_src_rgb;
-    glGetIntegerv(GL_BLEND_SRC_RGB, (GLint *)&last_blend_src_rgb);
-    GLenum last_blend_dst_rgb;
-    glGetIntegerv(GL_BLEND_DST_RGB, (GLint *)&last_blend_dst_rgb);
-    GLenum last_blend_src_alpha;
-    glGetIntegerv(GL_BLEND_SRC_ALPHA, (GLint *)&last_blend_src_alpha);
-    GLenum last_blend_dst_alpha;
-    glGetIntegerv(GL_BLEND_DST_ALPHA, (GLint *)&last_blend_dst_alpha);
-    GLenum last_blend_equation_rgb;
-    glGetIntegerv(GL_BLEND_EQUATION_RGB, (GLint *)&last_blend_equation_rgb);
-    GLenum last_blend_equation_alpha;
-    glGetIntegerv(GL_BLEND_EQUATION_ALPHA, (GLint *)&last_blend_equation_alpha);
-    GLboolean last_enable_blend        = glIsEnabled(GL_BLEND);
-    GLboolean last_enable_cull_face    = glIsEnabled(GL_CULL_FACE);
-    GLboolean last_enable_depth_test   = glIsEnabled(GL_DEPTH_TEST);
-    GLboolean last_enable_scissor_test = glIsEnabled(GL_SCISSOR_TEST);
-    bool clip_origin_lower_left        = true;
-#if defined(GL_CLIP_ORIGIN) && !defined(__APPLE__)
-    GLenum last_clip_origin = 0;
-    glGetIntegerv(GL_CLIP_ORIGIN,
-                  (GLint *)&last_clip_origin);  // Support for GL 4.5's glClipControl(GL_UPPER_LEFT)
-    if (last_clip_origin == GL_UPPER_LEFT)
-        clip_origin_lower_left = false;
-#endif
-
     // Setup desired GL state
     // Recreate the VAO every time (this is to easily allow multiple GL contexts to be rendered to.
     // VAO are not shared among GL contexts) The renderer would actually work without any VAO bound,
@@ -364,15 +306,8 @@ void ImGui_ImplOpenGL3_RenderDrawData(ImDrawData *draw_data)
                     clip_rect.w >= 0.0f)
                 {
                     // Apply scissor/clipping rectangle
-                    if (clip_origin_lower_left)
-                        glScissor((int)clip_rect.x, (int)(fb_height - clip_rect.w),
-                                  (int)(clip_rect.z - clip_rect.x),
-                                  (int)(clip_rect.w - clip_rect.y));
-                    else
-                        glScissor(
-                            (int)clip_rect.x, (int)clip_rect.y, (int)clip_rect.z,
-                            (int)clip_rect
-                                .w);  // Support for GL 4.5 rarely used glClipControl(GL_UPPER_LEFT)
+                    glScissor((int)clip_rect.x, (int)(fb_height - clip_rect.w),
+                              (int)(clip_rect.z - clip_rect.x), (int)(clip_rect.w - clip_rect.y));
 
                     // Bind texture, Draw
                     glBindTexture(GL_TEXTURE_2D, (GLuint)(intptr_t)pcmd->TextureId);
@@ -398,42 +333,7 @@ void ImGui_ImplOpenGL3_RenderDrawData(ImDrawData *draw_data)
 #endif
 
     // Restore modified GL state
-    glUseProgram(last_program);
-    glBindTexture(GL_TEXTURE_2D, last_texture);
-#ifdef GL_SAMPLER_BINDING
-    glBindSampler(0, last_sampler);
-#endif
-    glActiveTexture(last_active_texture);
-#ifndef IMGUI_IMPL_OPENGL_ES2
-    glBindVertexArray(last_vertex_array_object);
-#endif
-    glBindBuffer(GL_ARRAY_BUFFER, last_array_buffer);
-    glBlendEquationSeparate(last_blend_equation_rgb, last_blend_equation_alpha);
-    glBlendFuncSeparate(last_blend_src_rgb, last_blend_dst_rgb, last_blend_src_alpha,
-                        last_blend_dst_alpha);
-    if (last_enable_blend)
-        glEnable(GL_BLEND);
-    else
-        glDisable(GL_BLEND);
-    if (last_enable_cull_face)
-        glEnable(GL_CULL_FACE);
-    else
-        glDisable(GL_CULL_FACE);
-    if (last_enable_depth_test)
-        glEnable(GL_DEPTH_TEST);
-    else
-        glDisable(GL_DEPTH_TEST);
-    if (last_enable_scissor_test)
-        glEnable(GL_SCISSOR_TEST);
-    else
-        glDisable(GL_SCISSOR_TEST);
-#ifdef GL_POLYGON_MODE
-    glPolygonMode(GL_FRONT_AND_BACK, (GLenum)last_polygon_mode[0]);
-#endif
-    glViewport(last_viewport[0], last_viewport[1], (GLsizei)last_viewport[2],
-               (GLsizei)last_viewport[3]);
-    glScissor(last_scissor_box[0], last_scissor_box[1], (GLsizei)last_scissor_box[2],
-              (GLsizei)last_scissor_box[3]);
+    glDisable(GL_SCISSOR_TEST);
 }
 
 bool ImGui_ImplOpenGL3_CreateFontsTexture()
@@ -451,8 +351,6 @@ bool ImGui_ImplOpenGL3_CreateFontsTexture()
                    // memory.
 
     // Upload texture to graphics system
-    GLint last_texture;
-    glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture);
     glGenTextures(1, &g_FontTexture);
     glBindTexture(GL_TEXTURE_2D, g_FontTexture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -464,9 +362,6 @@ bool ImGui_ImplOpenGL3_CreateFontsTexture()
 
     // Store our identifier
     io.Fonts->TexID = (ImTextureID)(intptr_t)g_FontTexture;
-
-    // Restore state
-    glBindTexture(GL_TEXTURE_2D, last_texture);
 
     return true;
 }
@@ -526,14 +421,6 @@ static bool CheckProgram(GLuint handle, const char *desc)
 
 bool ImGui_ImplOpenGL3_CreateDeviceObjects()
 {
-    // Backup GL state
-    GLint last_texture, last_array_buffer;
-    glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture);
-    glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &last_array_buffer);
-#ifndef IMGUI_IMPL_OPENGL_ES2
-    GLint last_vertex_array;
-    glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &last_vertex_array);
-#endif
 
     // Parse GLSL version string
     int glsl_version = 130;
@@ -693,13 +580,6 @@ bool ImGui_ImplOpenGL3_CreateDeviceObjects()
     glGenBuffers(1, &g_ElementsHandle);
 
     ImGui_ImplOpenGL3_CreateFontsTexture();
-
-    // Restore modified GL state
-    glBindTexture(GL_TEXTURE_2D, last_texture);
-    glBindBuffer(GL_ARRAY_BUFFER, last_array_buffer);
-#ifndef IMGUI_IMPL_OPENGL_ES2
-    glBindVertexArray(last_vertex_array);
-#endif
 
     return true;
 }

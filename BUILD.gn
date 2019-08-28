@@ -101,7 +101,8 @@ executable("aquarium") {
     deps += [ "third_party:glad" ]
 
     include_dirs += [ "third_party/glad/include" ]
-    defines += [ "IMGUI_IMPL_OPENGL_LOADER_GLAD", ]
+    defines += [ "IMGUI_IMPL_OPENGL_LOADER_GLAD",
+                 "ENABLE_OPENGL_BACKEND", ]
   }
 
   if (enable_dawn) {
