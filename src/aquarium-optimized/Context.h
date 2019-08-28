@@ -30,11 +30,12 @@ enum MODELNAME : short;
 enum TOGGLE : short;
 
 struct Global;
+static char fishCountInputBuffer[64];
 
 class Context
 {
   public:
-    Context() {}
+    Context() : show_option_window(false) {}
     virtual ~Context() {}
     virtual bool initialize(
         BACKENDTYPE backend,
@@ -70,9 +71,11 @@ class Context
     virtual void initGeneralResources(Aquarium *aquarium) {}
     virtual void updateWorldlUniforms(Aquarium *aquarium) {}
 
-    const ResourceHelper *getResourceHelper() { return mResourceHelper; }
+    ResourceHelper *getResourceHelper() { return mResourceHelper; }
 
   protected:
+    void renderImgui(const FPSTimer &fpsTimer, int *fishCount);
+
     int mClientWidth;
     int mClientHeight;
 
@@ -80,6 +83,9 @@ class Context
 
     std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> mAvailableToggleBitset;
     virtual void initAvailableToggleBitset(BACKENDTYPE backendType) = 0;
+
+  private:
+    bool show_option_window;
 };
 
 #endif

@@ -22,6 +22,7 @@ executable("aquarium") {
     "src/aquarium-optimized/Aquarium.h",
     "src/aquarium-optimized/Buffer.h",
     "src/aquarium-optimized/Context.h",
+    "src/aquarium-optimized/Context.cpp",
     "src/aquarium-optimized/ContextFactory.cpp",
     "src/aquarium-optimized/ContextFactory.h",
     "src/aquarium-optimized/FishModel.h",

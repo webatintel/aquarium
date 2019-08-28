@@ -100,7 +100,6 @@ class ContextGL : public Context
 
     GLFWwindow *mWindow;
     std::string mGLSLVersion;
-    std::string mRenderer;
 
 #ifdef EGL_EGL_PROTOTYPES
     EGLBoolean FindEGLConfig(EGLDisplay dpy, const EGLint *attrib_list, EGLConfig *config);

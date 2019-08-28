@@ -67,7 +67,7 @@ ContextD3D12::ContextD3D12(BACKENDTYPE backendType)
         mBufferSerias[n] = 0;
     }
 
-    mResourceHelper = new ResourceHelper("d3d12", "");
+    mResourceHelper = new ResourceHelper("d3d12", "", backendType);
     initAvailableToggleBitset(backendType);
 }
 

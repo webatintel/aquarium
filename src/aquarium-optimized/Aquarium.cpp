@@ -427,9 +427,9 @@ void Aquarium::loadModels()
 void Aquarium::loadModel(const G_sceneInfo &info)
 {
     const ResourceHelper *resourceHelper = mContext->getResourceHelper();
-    const std::string &imagePath         = resourceHelper->getImagePath();
-    const std::string &programPath       = resourceHelper->getProgramPath();
-    const std::string &modelPath         = resourceHelper->getModelPath(std::string(info.namestr));
+    std::string imagePath          = resourceHelper->getImagePath();
+    std::string programPath        = resourceHelper->getProgramPath();
+    std::string modelPath          = resourceHelper->getModelPath(std::string(info.namestr));
 
     std::ifstream ModelStream(modelPath, std::ios::in);
     rapidjson::IStreamWrapper is(ModelStream);
@@ -697,12 +697,15 @@ void Aquarium::render()
     mContext->showFPS(mFpsTimer, &mCurFishCount);
 
     // TODO(yizhou): Functionality of reallocate fish count during rendering
-    // is implemented for Aquarium Dawn backend, and instanced draw isn't implemented yet.
+    // is implemented for Aquarium Dawn, OpenGL and ANGLE backend, and instanced draw isn't
+    // implemented yet.
     // To try this functionality now, use composition of "--backend dawn_xxx", or
     // "--backend dawn_xxx --disable-dyanmic-buffer-offset"
     if ((mBackendType == BACKENDTYPE::BACKENDTYPEDAWND3D12 ||
          mBackendType == BACKENDTYPE::BACKENDTYPEDAWNVULKAN ||
-         mBackendType == BACKENDTYPE::BACKENDTYPEDAWNMETAL) &&
+         mBackendType == BACKENDTYPE::BACKENDTYPEDAWNMETAL ||
+         mBackendType == BACKENDTYPE::BACKENDTYPEOPENGL ||
+         mBackendType == BACKENDTYPE::BACKENDTYPEANGLE) &&
         !toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEINSTANCEDDRAWS)))
         if (mCurFishCount != mPreFishCount)
         {

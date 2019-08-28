@@ -22,8 +22,6 @@ class BufferDawn;
 class ProgramDawn;
 enum BACKENDTYPE: short;
 
-static char buf2[64];
-
 class ContextDawn : public Context
 {
   public:
@@ -137,10 +135,6 @@ class ContextDawn : public Context
     dawn::Buffer mFogBuffer;
 
     bool mEnableMSAA;
-    std::string mRenderer;
-    std::string mBackendType;
-
-    bool show_option_window;
 };
 
 #endif

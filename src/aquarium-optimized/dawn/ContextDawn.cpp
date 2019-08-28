@@ -6,9 +6,7 @@
 // DeviceDawn.cpp: Implements accessing functions to the graphics API of Dawn.
 
 #include <array>
-#include <cstring>
 #include <iostream>
-#include <sstream>
 #include <string>
 #include <vector>
 #include <dawn/dawn.h>
@@ -29,10 +27,8 @@
 #include "TextureDawn.h"
 
 #include "common/Constants.h"
-#include "imgui.h"
 #include "imgui_impl_dawn.h"
 #include "imgui_impl_glfw.h"
-#include "imgui_internal.h"
 #include "utils/BackendBinding.h"
 #include "utils/ComboRenderPipelineDescriptor.h"
 
@@ -53,10 +49,9 @@ ContextDawn::ContextDawn(BACKENDTYPE backendType)
       mPipeline(nullptr),
       mBindGroup(nullptr),
       mPreferredSwapChainFormat(dawn::TextureFormat::RGBA8Unorm),
-      mEnableMSAA(false),
-      show_option_window(false)
+      mEnableMSAA(false)
 {
-    mResourceHelper = new ResourceHelper("dawn", "");
+    mResourceHelper = new ResourceHelper("dawn", "", backendType);
     initAvailableToggleBitset(backendType);
 }
 
@@ -100,25 +95,21 @@ bool ContextDawn::initialize(
         case BACKENDTYPE::BACKENDTYPEDAWND3D12:
         {
             backendType = dawn_native::BackendType::D3D12;
-            mBackendType = "Dawn D3D12";
             break;
         }
         case BACKENDTYPE::BACKENDTYPEDAWNVULKAN:
         {
             backendType = dawn_native::BackendType::Vulkan;
-            mBackendType = "Dawn Vulkan";
             break;
         }
         case BACKENDTYPE::BACKENDTYPEDAWNMETAL:
         {
             backendType = dawn_native::BackendType::Metal;
-            mBackendType = "Dawn Metal";
             break;
         }
         case BACKENDTYPE::BACKENDTYPEOPENGL:
         {
             backendType = dawn_native::BackendType::OpenGL;
-            mBackendType = "Dawn OpenGL";
             break;
         }
         default:
@@ -197,8 +188,9 @@ bool ContextDawn::initialize(
                          mClientHeight);
 
     dawn_native::PCIInfo info = backendAdapter.GetPCIInfo();
-    mRenderer                 = info.name;
-    std::cout << mRenderer << std::endl;
+    std::string renderer      = info.name;
+    std::cout << renderer << std::endl;
+    mResourceHelper->setRenderer(renderer);
 
     // When MSAA is enabled, we create an intermediate multisampled texture to render the scene to.
     if (mEnableMSAA)
@@ -595,73 +587,7 @@ void ContextDawn::showFPS(const FPSTimer &fpsTimer, int *fishCount)
 {
     // Start the Dear ImGui frame
     ImGui_ImplDawn_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
-
-    if (show_option_window)
-    {
-        ImGui::SetNextWindowPos(ImVec2(500, 30), ImGuiCond_Appearing);
-        ImGui::SetNextWindowSize(ImVec2(300, 500), ImGuiCond_Appearing);
-
-        ImGuiWindowFlags window_flags = 0;
-        ImGui::Begin("Option Window", &show_option_window, window_flags);
-
-        ImGui::Text("Number of Fish");
-        static int selected  = -1;
-        int fishSelection[6] = {1, 10000, 20000, 30000, 50000, 100000};
-        char buf[6][32];
-        for (int n = 0; n < 6; n++)
-        {
-            sprintf(buf[n], "%d", fishSelection[n]);
-            if (ImGui::Selectable(buf[n], selected == n))
-            {
-                selected   = n;
-                *fishCount = fishSelection[selected];
-                memset(buf2, 0, 64);
-            }
-        }
-
-        char *pNext;
-        ImGui::InputText("Specify fish count", buf2, 64, ImGuiInputTextFlags_CharsDecimal);
-        int inputFishCount = strtol(buf2, &pNext, 10);
-
-        if (inputFishCount != 0)
-        {
-            *fishCount = inputFishCount;
-        }
-
-        ImGui::End();
-    }
-
-    {
-        ImGui::Begin("Aquarium Native");
-
-        std::ostringstream rendererStream;
-        rendererStream << mRenderer << " " << mBackendType << " "
-                       << mResourceHelper->getShaderVersion();
-        std::string renderer = rendererStream.str();
-        ImGui::Text(renderer.c_str());
-
-        std::ostringstream resolutionStream;
-        resolutionStream << "Resolution " << mClientWidth << "x" << mClientHeight;
-        std::string resolution = resolutionStream.str();
-        ImGui::Text(resolution.c_str());
-
-        ImGui::PlotLines("[0,100 FPS]", fpsTimer.getHistoryFps(), NUM_HISTORY_DATA, 0, NULL, 0.0f,
-                         100.0f, ImVec2(0, 40));
-
-        ImGui::PlotHistogram("[0,100 ms/frame]", fpsTimer.getHistoryFrameTime(), NUM_HISTORY_DATA,
-                             0, NULL, 0.0f, 100.0f, ImVec2(0, 40));
-
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
-                    1000.0f / fpsTimer.getAverageFPS(), fpsTimer.getAverageFPS());
-
-        ImGui::Checkbox("Option Window", &show_option_window);
-
-        ImGui::End();
-    }
-
-    ImGui::Render();
+    renderImgui(fpsTimer, fishCount);
     ImGui_ImplDawn_RenderDrawData(ImGui::GetDrawData());
 }
 
