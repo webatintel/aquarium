@@ -36,12 +36,12 @@ class BufferDawn : public Buffer
 
     uint32_t getStride() const { return mStride; }
     const void *getOffset() const { return mOffset; }
-    dawn::BufferUsageBit getUsageBit() const { return mUsageBit; }
+    dawn::BufferUsage getUsageBit() const { return mUsage; }
     int getDataSize() { return mSize; }
 
   private:
     dawn::Buffer mBuf;
-    dawn::BufferUsageBit mUsageBit;
+    dawn::BufferUsage mUsage;
     int mTotoalComponents;
     uint32_t mStride;
     void *mOffset;

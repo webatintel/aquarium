@@ -184,7 +184,7 @@ bool ContextDawn::initialize(
 
     mPreferredSwapChainFormat =
         static_cast<dawn::TextureFormat>(binding->GetPreferredSwapChainTextureFormat());
-    mSwapchain.Configure(mPreferredSwapChainFormat, kSwapchainBackBufferUsageBit, mClientWidth,
+    mSwapchain.Configure(mPreferredSwapChainFormat, kSwapchainBackBufferUsage, mClientWidth,
                          mClientHeight);
 
     dawn_native::PCIInfo info = backendAdapter.GetPCIInfo();
@@ -302,7 +302,9 @@ dawn::Sampler ContextDawn::createSampler(const dawn::SamplerDescriptor &descript
     return mDevice.CreateSampler(&descriptor);
 }
 
-dawn::Buffer ContextDawn::createBufferFromData(const void *pixels, int size, dawn::BufferUsageBit usage) const
+dawn::Buffer ContextDawn::createBufferFromData(const void *pixels,
+                                               int size,
+                                               dawn::BufferUsage usage) const
 {
     return utils::CreateBufferFromData(mDevice, pixels, size, usage);
 }
@@ -332,7 +334,7 @@ dawn::CommandBuffer ContextDawn::copyBufferToTexture(const dawn::BufferCopyView 
     return copy;
 }
 
-dawn::ShaderModule ContextDawn::createShaderModule(utils::ShaderStage stage,
+dawn::ShaderModule ContextDawn::createShaderModule(utils::SingleShaderStage stage,
                                                    const std::string &str) const
 {
     return utils::CreateShaderModule(mDevice, stage, str.c_str());
@@ -429,9 +431,9 @@ dawn::TextureView ContextDawn::createMultisampledRenderTargetView() const
     descriptor.sampleCount     = 4;
     descriptor.format          = mPreferredSwapChainFormat;
     descriptor.mipLevelCount   = 1;
-    descriptor.usage           = dawn::TextureUsageBit::OutputAttachment;
+    descriptor.usage           = dawn::TextureUsage::OutputAttachment;
 
-    return mDevice.CreateTexture(&descriptor).CreateDefaultView();
+    return mDevice.CreateTexture(&descriptor).CreateView();
 }
 
 dawn::TextureView ContextDawn::createDepthStencilView() const
@@ -445,12 +447,12 @@ dawn::TextureView ContextDawn::createDepthStencilView() const
     descriptor.sampleCount     = mEnableMSAA ? 4 : 1;
     descriptor.format          = dawn::TextureFormat::Depth24PlusStencil8;
     descriptor.mipLevelCount   = 1;
-    descriptor.usage           = dawn::TextureUsageBit::OutputAttachment;
+    descriptor.usage           = dawn::TextureUsage::OutputAttachment;
     auto depthStencilTexture   = mDevice.CreateTexture(&descriptor);
-    return depthStencilTexture.CreateDefaultView();
+    return depthStencilTexture.CreateView();
 }
 
-dawn::Buffer ContextDawn::createBuffer(uint32_t size, dawn::BufferUsageBit bit) const
+dawn::Buffer ContextDawn::createBuffer(uint32_t size, dawn::BufferUsage bit) const
 {
     dawn::BufferDescriptor descriptor;
     descriptor.size = size;
@@ -476,16 +478,14 @@ void ContextDawn::initGeneralResources(Aquarium* aquarium)
 {
     // initilize general uniform buffers
     groupLayoutGeneral = MakeBindGroupLayout({
-        { 0, dawn::ShaderStageBit::Fragment, dawn::BindingType::UniformBuffer },
-        { 1, dawn::ShaderStageBit::Fragment, dawn::BindingType::UniformBuffer },
+        {0, dawn::ShaderStage::Fragment, dawn::BindingType::UniformBuffer},
+        {1, dawn::ShaderStage::Fragment, dawn::BindingType::UniformBuffer},
     });
 
-    mLightBuffer =
-        createBufferFromData(&aquarium->lightUniforms, sizeof(aquarium->lightUniforms),
-                             dawn::BufferUsageBit::CopyDst | dawn::BufferUsageBit::Uniform);
-    mFogBuffer =
-        createBufferFromData(&aquarium->fogUniforms, sizeof(aquarium->fogUniforms),
-                             dawn::BufferUsageBit::CopyDst | dawn::BufferUsageBit::Uniform);
+    mLightBuffer = createBufferFromData(&aquarium->lightUniforms, sizeof(aquarium->lightUniforms),
+                                        dawn::BufferUsage::CopyDst | dawn::BufferUsage::Uniform);
+    mFogBuffer   = createBufferFromData(&aquarium->fogUniforms, sizeof(aquarium->fogUniforms),
+                                      dawn::BufferUsage::CopyDst | dawn::BufferUsage::Uniform);
 
     bindGroupGeneral =
         makeBindGroup(groupLayoutGeneral, {{0, mLightBuffer, 0, sizeof(aquarium->lightUniforms)},
@@ -495,13 +495,13 @@ void ContextDawn::initGeneralResources(Aquarium* aquarium)
     setBufferData(mFogBuffer, 0, sizeof(FogUniforms), &aquarium->fogUniforms);
 
     // initilize world uniform buffers
-    groupLayoutWorld = MakeBindGroupLayout({ 
-        { 0, dawn::ShaderStageBit::Vertex, dawn::BindingType::UniformBuffer },
+    groupLayoutWorld = MakeBindGroupLayout({
+        {0, dawn::ShaderStage::Vertex, dawn::BindingType::UniformBuffer},
     });
 
     mLightWorldPositionBuffer = createBufferFromData(
         &aquarium->lightWorldPositionUniform, sizeof(aquarium->lightWorldPositionUniform),
-        dawn::BufferUsageBit::CopyDst | dawn::BufferUsageBit::Uniform);
+        dawn::BufferUsage::CopyDst | dawn::BufferUsage::Uniform);
 
     bindGroupWorld = makeBindGroup(
         groupLayoutWorld,
@@ -606,7 +606,7 @@ void ContextDawn::preFrame()
             mSceneRenderTargetView = createMultisampledRenderTargetView();
         }
         mSceneDepthStencilView = createDepthStencilView();
-        mSwapchain.Configure(mPreferredSwapChainFormat, kSwapchainBackBufferUsageBit, mClientWidth,
+        mSwapchain.Configure(mPreferredSwapChainFormat, kSwapchainBackBufferUsage, mClientWidth,
                              mClientHeight);
 
         mIsSwapchainOutOfDate = false;
@@ -620,14 +620,13 @@ void ContextDawn::preFrame()
         // If MSAA is enabled, we render to a multisampled texture and then resolve to the backbuffer
         mRenderPassDescriptor = utils::ComboRenderPassDescriptor({mSceneRenderTargetView},
                                                                  mSceneDepthStencilView);
-        mRenderPassDescriptor.cColorAttachmentsInfoPtr[0]->resolveTarget =
-            mBackbuffer.CreateDefaultView();
+        mRenderPassDescriptor.cColorAttachmentsInfoPtr[0]->resolveTarget = mBackbuffer.CreateView();
     }
     else
     {
         // When MSAA is off, we render directly to the backbuffer
-        mRenderPassDescriptor = utils::ComboRenderPassDescriptor({mBackbuffer.CreateDefaultView()},
-                                                                 mSceneDepthStencilView);
+        mRenderPassDescriptor =
+            utils::ComboRenderPassDescriptor({mBackbuffer.CreateView()}, mSceneDepthStencilView);
     }
 
     mRenderPass = mCommandEncoder.BeginRenderPass(&mRenderPassDescriptor);

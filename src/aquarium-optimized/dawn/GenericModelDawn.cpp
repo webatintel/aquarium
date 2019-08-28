@@ -114,35 +114,35 @@ void GenericModelDawn::init()
     if (mSkyboxTexture && mReflectionTexture && mName != MODELNAME::MODELGLOBEBASE)
     {
         mGroupLayoutModel = mContextDawn->MakeBindGroupLayout({
-            {0, dawn::ShaderStageBit::Fragment, dawn::BindingType::UniformBuffer},
-            {1, dawn::ShaderStageBit::Fragment, dawn::BindingType::Sampler},
-            {2, dawn::ShaderStageBit::Fragment, dawn::BindingType::Sampler},
-            {3, dawn::ShaderStageBit::Fragment, dawn::BindingType::SampledTexture},
-            {4, dawn::ShaderStageBit::Fragment, dawn::BindingType::SampledTexture},
-            {5, dawn::ShaderStageBit::Fragment, dawn::BindingType::SampledTexture},
-            {6, dawn::ShaderStageBit::Fragment, dawn::BindingType::SampledTexture},
+            {0, dawn::ShaderStage::Fragment, dawn::BindingType::UniformBuffer},
+            {1, dawn::ShaderStage::Fragment, dawn::BindingType::Sampler},
+            {2, dawn::ShaderStage::Fragment, dawn::BindingType::Sampler},
+            {3, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture},
+            {4, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture},
+            {5, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture},
+            {6, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture},
         });
     }
     else if (mNormalTexture && mName != MODELNAME::MODELGLOBEBASE)
     {
         mGroupLayoutModel = mContextDawn->MakeBindGroupLayout({
-            {0, dawn::ShaderStageBit::Fragment, dawn::BindingType::UniformBuffer},
-            {1, dawn::ShaderStageBit::Fragment, dawn::BindingType::Sampler},
-            {2, dawn::ShaderStageBit::Fragment, dawn::BindingType::SampledTexture},
-            {3, dawn::ShaderStageBit::Fragment, dawn::BindingType::SampledTexture},
+            {0, dawn::ShaderStage::Fragment, dawn::BindingType::UniformBuffer},
+            {1, dawn::ShaderStage::Fragment, dawn::BindingType::Sampler},
+            {2, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture},
+            {3, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture},
         });
     }
     else
     {
         mGroupLayoutModel = mContextDawn->MakeBindGroupLayout({
-            {0, dawn::ShaderStageBit::Fragment, dawn::BindingType::UniformBuffer},
-            {1, dawn::ShaderStageBit::Fragment, dawn::BindingType::Sampler},
-            {2, dawn::ShaderStageBit::Fragment, dawn::BindingType::SampledTexture},
+            {0, dawn::ShaderStage::Fragment, dawn::BindingType::UniformBuffer},
+            {1, dawn::ShaderStage::Fragment, dawn::BindingType::Sampler},
+            {2, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture},
         });
     }
 
     mGroupLayoutPer = mContextDawn->MakeBindGroupLayout({
-        {0, dawn::ShaderStageBit::Vertex, dawn::BindingType::UniformBuffer},
+        {0, dawn::ShaderStage::Vertex, dawn::BindingType::UniformBuffer},
     });
 
     mPipelineLayout = mContextDawn->MakeBasicPipelineLayout({
@@ -155,12 +155,12 @@ void GenericModelDawn::init()
     mPipeline = mContextDawn->createRenderPipeline(mPipelineLayout, mProgramDawn,
                                                    mVertexInputDescriptor, mBlend);
 
-    mLightFactorBuffer = mContextDawn->createBufferFromData(
-        &mLightFactorUniforms, sizeof(mLightFactorUniforms),
-        dawn::BufferUsageBit::CopyDst | dawn::BufferUsageBit::Uniform);
-    mWorldBuffer = mContextDawn->createBufferFromData(
-        &mWorldUniformPer, sizeof(mWorldUniformPer),
-        dawn::BufferUsageBit::CopyDst | dawn::BufferUsageBit::Uniform);
+    mLightFactorBuffer =
+        mContextDawn->createBufferFromData(&mLightFactorUniforms, sizeof(mLightFactorUniforms),
+                                           dawn::BufferUsage::CopyDst | dawn::BufferUsage::Uniform);
+    mWorldBuffer =
+        mContextDawn->createBufferFromData(&mWorldUniformPer, sizeof(mWorldUniformPer),
+                                           dawn::BufferUsage::CopyDst | dawn::BufferUsage::Uniform);
 
     // Generic models use reflection, normal or diffuse shaders, of which grouplayouts are
     // diiferent in texture binding. MODELGLOBEBASE use diffuse shader though it contains

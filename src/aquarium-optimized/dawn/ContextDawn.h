@@ -54,7 +54,7 @@ class ContextDawn : public Context
     Texture *createTexture(const std::string &name, const std::vector<std::string> &urls) override;
     dawn::Texture createTexture(const dawn::TextureDescriptor &descriptor) const;
     dawn::Sampler createSampler(const dawn::SamplerDescriptor &descriptor) const;
-    dawn::Buffer createBufferFromData(const void* pixels, int size, dawn::BufferUsageBit usage) const;
+    dawn::Buffer createBufferFromData(const void *pixels, int size, dawn::BufferUsage usage) const;
     dawn::BufferCopyView createBufferCopyView(const dawn::Buffer &buffer,
         uint32_t offset,
         uint32_t rowPitch,
@@ -67,7 +67,8 @@ class ContextDawn : public Context
                                                 uint32_t level,
                                                 uint32_t slice,
                                                 dawn::Origin3D origin);
-    dawn::ShaderModule createShaderModule(utils::ShaderStage stage, const std::string &str) const;
+    dawn::ShaderModule createShaderModule(utils::SingleShaderStage stage,
+                                          const std::string &str) const;
     dawn::BindGroupLayout  MakeBindGroupLayout(
         std::initializer_list<dawn::BindGroupLayoutBinding> bindingsInitializer) const;
     dawn::PipelineLayout MakeBasicPipelineLayout(
@@ -79,7 +80,7 @@ class ContextDawn : public Context
         bool enableBlend) const;
     dawn::TextureView createMultisampledRenderTargetView() const;
     dawn::TextureView createDepthStencilView() const;
-    dawn::Buffer createBuffer(uint32_t size, dawn::BufferUsageBit bit) const;
+    dawn::Buffer createBuffer(uint32_t size, dawn::BufferUsage bit) const;
     void setBufferData(const dawn::Buffer &buffer, uint32_t start, uint32_t size, const void* pixels) const;
     dawn::BindGroup makeBindGroup(
         const dawn::BindGroupLayout &layout,
@@ -111,8 +112,8 @@ class ContextDawn : public Context
 
     // TODO(jiawei.shao@intel.com): remove dawn::TextureUsageBit::CopyDst when the bug in Dawn is
     // fixed.
-    static constexpr dawn::TextureUsageBit kSwapchainBackBufferUsageBit =
-        dawn::TextureUsageBit::OutputAttachment | dawn::TextureUsageBit::CopyDst;
+    static constexpr dawn::TextureUsage kSwapchainBackBufferUsage =
+        dawn::TextureUsage::OutputAttachment | dawn::TextureUsage::CopyDst;
 
     bool mIsSwapchainOutOfDate = false;
     GLFWwindow *mWindow;

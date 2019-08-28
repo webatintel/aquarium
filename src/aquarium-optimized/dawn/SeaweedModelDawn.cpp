@@ -66,14 +66,14 @@ void SeaweedModelDawn::init()
     mVertexInputDescriptor.indexFormat                   = dawn::IndexFormat::Uint16;
 
     mGroupLayoutModel = mContextDawn->MakeBindGroupLayout({
-        {0, dawn::ShaderStageBit::Fragment, dawn::BindingType::UniformBuffer},
-        {1, dawn::ShaderStageBit::Fragment, dawn::BindingType::Sampler},
-        {2, dawn::ShaderStageBit::Fragment, dawn::BindingType::SampledTexture},
+        {0, dawn::ShaderStage::Fragment, dawn::BindingType::UniformBuffer},
+        {1, dawn::ShaderStage::Fragment, dawn::BindingType::Sampler},
+        {2, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture},
     });
 
     mGroupLayoutPer = mContextDawn->MakeBindGroupLayout({
-        {0, dawn::ShaderStageBit::Vertex, dawn::BindingType::UniformBuffer},
-        {1, dawn::ShaderStageBit::Vertex, dawn::BindingType::UniformBuffer},
+        {0, dawn::ShaderStage::Vertex, dawn::BindingType::UniformBuffer},
+        {1, dawn::ShaderStage::Vertex, dawn::BindingType::UniformBuffer},
     });
 
     mPipelineLayout = mContextDawn->MakeBasicPipelineLayout({
@@ -86,15 +86,15 @@ void SeaweedModelDawn::init()
     mPipeline = mContextDawn->createRenderPipeline(mPipelineLayout, mProgramDawn,
                                                    mVertexInputDescriptor, mBlend);
 
-    mLightFactorBuffer = mContextDawn->createBufferFromData(
-        &mLightFactorUniforms, sizeof(mLightFactorUniforms),
-        dawn::BufferUsageBit::CopyDst | dawn::BufferUsageBit::Uniform);
-    mTimeBuffer = mContextDawn->createBufferFromData(
-        &mSeaweedPer, sizeof(mSeaweedPer) * 4,
-        dawn::BufferUsageBit::CopyDst | dawn::BufferUsageBit::Uniform);
-    mViewBuffer = mContextDawn->createBufferFromData(
-        &mWorldUniformPer, sizeof(WorldUniformPer),
-        dawn::BufferUsageBit::CopyDst | dawn::BufferUsageBit::Uniform);
+    mLightFactorBuffer =
+        mContextDawn->createBufferFromData(&mLightFactorUniforms, sizeof(mLightFactorUniforms),
+                                           dawn::BufferUsage::CopyDst | dawn::BufferUsage::Uniform);
+    mTimeBuffer =
+        mContextDawn->createBufferFromData(&mSeaweedPer, sizeof(mSeaweedPer) * 4,
+                                           dawn::BufferUsage::CopyDst | dawn::BufferUsage::Uniform);
+    mViewBuffer =
+        mContextDawn->createBufferFromData(&mWorldUniformPer, sizeof(WorldUniformPer),
+                                           dawn::BufferUsage::CopyDst | dawn::BufferUsage::Uniform);
 
     mBindGroupModel = mContextDawn->makeBindGroup(
         mGroupLayoutModel, {

@@ -80,14 +80,14 @@ void OutsideModelDawn::init()
     mVertexInputDescriptor.indexFormat                   = dawn::IndexFormat::Uint16;
 
     mGroupLayoutPer = mContextDawn->MakeBindGroupLayout({
-        {0, dawn::ShaderStageBit::Vertex, dawn::BindingType::UniformBuffer},
+        {0, dawn::ShaderStage::Vertex, dawn::BindingType::UniformBuffer},
     });
 
     // Outside models use diffuse shaders.
     mGroupLayoutModel = mContextDawn->MakeBindGroupLayout({
-        {0, dawn::ShaderStageBit::Fragment, dawn::BindingType::UniformBuffer},
-        {1, dawn::ShaderStageBit::Fragment, dawn::BindingType::Sampler},
-        {2, dawn::ShaderStageBit::Fragment, dawn::BindingType::SampledTexture},
+        {0, dawn::ShaderStage::Fragment, dawn::BindingType::UniformBuffer},
+        {1, dawn::ShaderStage::Fragment, dawn::BindingType::Sampler},
+        {2, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture},
     });
 
     mPipelineLayout = mContextDawn->MakeBasicPipelineLayout({
@@ -100,12 +100,12 @@ void OutsideModelDawn::init()
     mPipeline = mContextDawn->createRenderPipeline(mPipelineLayout, mProgramDawn,
                                                    mVertexInputDescriptor, mBlend);
 
-    mLightFactorBuffer = mContextDawn->createBufferFromData(
-        &mLightFactorUniforms, sizeof(mLightFactorUniforms),
-        dawn::BufferUsageBit::CopyDst | dawn::BufferUsageBit::Uniform);
-    mViewBuffer = mContextDawn->createBufferFromData(
-        &mWorldUniformPer, sizeof(WorldUniforms) * 20,
-        dawn::BufferUsageBit::CopyDst | dawn::BufferUsageBit::Uniform);
+    mLightFactorBuffer =
+        mContextDawn->createBufferFromData(&mLightFactorUniforms, sizeof(mLightFactorUniforms),
+                                           dawn::BufferUsage::CopyDst | dawn::BufferUsage::Uniform);
+    mViewBuffer =
+        mContextDawn->createBufferFromData(&mWorldUniformPer, sizeof(WorldUniforms) * 20,
+                                           dawn::BufferUsage::CopyDst | dawn::BufferUsage::Uniform);
 
     mBindGroupModel = mContextDawn->makeBindGroup(
         mGroupLayoutModel, {
