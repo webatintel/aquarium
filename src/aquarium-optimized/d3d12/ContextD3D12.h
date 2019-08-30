@@ -99,6 +99,7 @@ class ContextD3D12 : public Context
                        int TexturePixelSize,
                        int mipLevels,
                        int arraySize);
+    void FlushPreviousFrames();
 
     Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList;
 
@@ -169,7 +170,6 @@ class ContextD3D12 : public Context
     D3D12_RENDER_TARGET_VIEW_DESC mSceneRenderTargetView;
 
     bool mEnableMSAA;
-    std::string mRenderer;
 };
 
 #endif

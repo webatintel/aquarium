@@ -13,7 +13,7 @@ FishModelD3D12::FishModelD3D12(Context *context,
                                MODELGROUP type,
                                MODELNAME name,
                                bool blend)
-    : FishModel(type, name, blend), instance(0)
+    : FishModel(type, name, blend), mFishPers(nullptr), mAquarium(aquarium)
 {
     mContextD3D12 = static_cast<ContextD3D12 *>(context);
 
@@ -25,20 +25,17 @@ FishModelD3D12::FishModelD3D12(Context *context,
     mLightFactorUniforms.shininess      = 5.0f;
     mLightFactorUniforms.specularFactor = 0.3f;
 
-    instance = aquarium->fishCount[fishInfo.modelName - MODELNAME::MODELSMALLFISHA];
-    mFishPers = new FishPer[instance];
+    mCurInstance = aquarium->fishCount[fishInfo.modelName - MODELNAME::MODELSMALLFISHA];
+    mPreInstance = mCurInstance;
 }
 
 FishModelD3D12::~FishModelD3D12()
 {
-    delete mFishPers;
+    destoryFishResource();
 }
 
 void FishModelD3D12::init()
 {
-    if (instance == 0)
-        return;
-
     mProgramD3D12 = static_cast<ProgramD3D12 *>(mProgram);
 
     mDiffuseTexture    = static_cast<TextureD3D12 *>(textureMap["diffuse"]);
@@ -58,11 +55,6 @@ void FishModelD3D12::init()
     mVertexBufferView[2] = mTexCoordBuffer->mVertexBufferView;
     mVertexBufferView[3] = mTangentBuffer->mVertexBufferView;
     mVertexBufferView[4] = mBiNormalBuffer->mVertexBufferView;
-
-    mFishPersBuffer = mContextD3D12->createUploadBuffer(
-        mFishPers, mContextD3D12->CalcConstantBufferByteSize(sizeof(FishPer) * instance));
-    mFishPersBufferView.BufferLocation = mFishPersBuffer->GetGPUVirtualAddress();
-    mFishPersBufferView.SizeInBytes    = mContextD3D12->CalcConstantBufferByteSize(sizeof(FishPer));
 
     mInputElementDescs = {
         {"TEXCOORD", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,
@@ -141,19 +133,31 @@ void FishModelD3D12::init()
     mContextD3D12->createGraphicsPipelineState(
         mInputElementDescs, mRootSignature, mProgramD3D12->getVSModule(),
         mProgramD3D12->getFSModule(), mPipelineState, mBlend);
+
+    reallocResource();
 }
 
-void FishModelD3D12::prepareForDraw() {}
+void FishModelD3D12::prepareForDraw()
+{
+    const Fish &fishInfo = fishTable[mName - MODELNAME::MODELSMALLFISHA];
+    mCurInstance         = mAquarium->fishCount[fishInfo.modelName - MODELNAME::MODELSMALLFISHA];
+    if (mCurInstance != mPreInstance)
+    {
+        destoryFishResource();
+        reallocResource();
+        mPreInstance = mCurInstance;
+    }
+}
 
 void FishModelD3D12::draw()
 {
-    if (instance == 0)
+    if (mCurInstance == 0)
         return;
 
     CD3DX12_RANGE readRange(0, 0);
     UINT8 *m_pCbvDataBegin;
     mFishPersBuffer->Map(0, &readRange, reinterpret_cast<void **>(&m_pCbvDataBegin));
-    memcpy(m_pCbvDataBegin, mFishPers, sizeof(FishPer) * instance);
+    memcpy(m_pCbvDataBegin, mFishPers, sizeof(FishPer) * mCurInstance);
 
     auto &commandList = mContextD3D12->mCommandList;
 
@@ -170,7 +174,7 @@ void FishModelD3D12::draw()
     commandList->IASetVertexBuffers(0, 5, mVertexBufferView);
     commandList->IASetIndexBuffer(&mIndicesBuffer->mIndexBufferView);
 
-    for (int i = 0; i < instance; i++)
+    for (int i = 0; i < mCurInstance; i++)
     {
         commandList->SetGraphicsRootConstantBufferView(
             4, mFishPersBufferView.BufferLocation + i * mFishPersBufferView.SizeInBytes);
@@ -200,6 +204,27 @@ void FishModelD3D12::updateFishPerUniforms(float x,
     mFishPers[index].time             = time;
 }
 
-void FishModelD3D12::reallocResource() {}
+void FishModelD3D12::reallocResource()
+{
+    if (mCurInstance == 0)
+        return;
 
-void FishModelD3D12::destoryFishResource() {}
+    mFishPers = new FishPer[mCurInstance];
+
+    mFishPersBuffer = mContextD3D12->createUploadBuffer(
+        mFishPers, mContextD3D12->CalcConstantBufferByteSize(sizeof(FishPer) * mCurInstance));
+    mFishPersBufferView.BufferLocation = mFishPersBuffer->GetGPUVirtualAddress();
+    mFishPersBufferView.SizeInBytes    = mContextD3D12->CalcConstantBufferByteSize(sizeof(FishPer));
+}
+
+void FishModelD3D12::destoryFishResource()
+{
+    mContextD3D12->FlushPreviousFrames();
+
+    mFishPersBuffer.Reset();
+    if (mFishPers != nullptr)
+    {
+        delete mFishPers;
+        mFishPers = nullptr;
+    }
+}

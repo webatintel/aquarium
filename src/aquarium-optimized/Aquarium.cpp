@@ -697,16 +697,10 @@ void Aquarium::render()
     mContext->showFPS(mFpsTimer, &mCurFishCount);
 
     // TODO(yizhou): Functionality of reallocate fish count during rendering
-    // is implemented for Aquarium Dawn, OpenGL and ANGLE backend, and instanced draw isn't
-    // implemented yet.
+    // isn't supported for instanced draw.
     // To try this functionality now, use composition of "--backend dawn_xxx", or
     // "--backend dawn_xxx --disable-dyanmic-buffer-offset"
-    if ((mBackendType == BACKENDTYPE::BACKENDTYPEDAWND3D12 ||
-         mBackendType == BACKENDTYPE::BACKENDTYPEDAWNVULKAN ||
-         mBackendType == BACKENDTYPE::BACKENDTYPEDAWNMETAL ||
-         mBackendType == BACKENDTYPE::BACKENDTYPEOPENGL ||
-         mBackendType == BACKENDTYPE::BACKENDTYPEANGLE) &&
-        !toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEINSTANCEDDRAWS)))
+    if (!toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEINSTANCEDDRAWS)))
         if (mCurFishCount != mPreFishCount)
         {
             calculateFishCount();

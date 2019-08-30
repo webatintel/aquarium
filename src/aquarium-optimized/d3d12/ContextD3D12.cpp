@@ -325,8 +325,10 @@ bool ContextD3D12::GetHardwareAdapter(
                                             _uuidof(ID3D12Device), nullptr)))
             {
                 std::wstring str = desc.Description;
-                mRenderer        = std::string(str.begin(), str.end());
-                std::cout << mRenderer << std::endl;
+                std::string renderer = std::string(str.begin(), str.end());
+                std::cout << renderer << std::endl;
+                mResourceHelper->setRenderer(renderer);
+
                 break;
             }
         }
@@ -470,36 +472,7 @@ void ContextD3D12::showFPS(const FPSTimer &fpsTimer, int *fishCount)
 {
     // Start the Dear ImGui frame
     ImGui_ImplDX12_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
-    {
-        ImGui::Begin("Aquarium Native");
-
-        std::ostringstream rendererStream;
-        std::string backend = mResourceHelper->getBackendName();
-        for (auto &c : backend)
-            c = toupper(c);
-        rendererStream << mRenderer << " " << backend << " " << mResourceHelper->getShaderVersion();
-        std::string renderer = rendererStream.str();
-        ImGui::Text(renderer.c_str());
-
-        std::ostringstream resolutionStream;
-        resolutionStream << "Resolution " << mClientWidth << "x" << mClientHeight;
-        std::string resolution = resolutionStream.str();
-        ImGui::Text(resolution.c_str());
-
-        ImGui::PlotLines("[0,100 FPS]", fpsTimer.getHistoryFps(), NUM_HISTORY_DATA, 0, NULL, 0.0f,
-                         100.0f, ImVec2(0, 40));
-
-        ImGui::PlotHistogram("[0,100 ms/frame]", fpsTimer.getHistoryFrameTime(), NUM_HISTORY_DATA,
-                             0, NULL, 0.0f, 100.0f, ImVec2(0, 40));
-
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
-                    1000.0f / fpsTimer.getAverageFPS(), fpsTimer.getAverageFPS());
-        ImGui::End();
-    }
-
-    ImGui::Render();
+    renderImgui(fpsTimer, fishCount);
     ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), mCommandList.Get());
 }
 
@@ -761,6 +734,24 @@ void ContextD3D12::WaitForPreviousFrame()
     int prepreIndex   = (m_frameIndex + 1) % 3;
     UINT prepreSerias = mBufferSerias[prepreIndex];
     if (mFence->GetCompletedValue() < prepreSerias)
+    {
+        ThrowIfFailed(mFence->SetEventOnCompletion(fence, mFenceEvent));
+        WaitForSingleObject(mFenceEvent, INFINITE);
+    }
+
+    // Get frame index for the next frame
+    m_frameIndex = mSwapChain->GetCurrentBackBufferIndex();
+}
+
+void ContextD3D12::FlushPreviousFrames()
+{
+    mFenceValue++;
+    // Signal and increment the fence value.
+    const UINT64 fence = mFenceValue;
+    ThrowIfFailed(mCommandQueue->Signal(mFence.Get(), fence));
+    mBufferSerias[m_frameIndex] = mFenceValue;
+
+    if (mFence->GetCompletedValue() < mFenceValue)
     {
         ThrowIfFailed(mFence->SetEventOnCompletion(fence, mFenceEvent));
         WaitForSingleObject(mFenceEvent, INFINITE);

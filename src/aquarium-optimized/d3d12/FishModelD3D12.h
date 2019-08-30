@@ -104,10 +104,9 @@ class FishModelD3D12 : public FishModel
 
     ComPtr<ID3D12PipelineState> mPipelineState;
 
-    int instance;
-
     ProgramD3D12 *mProgramD3D12;
     ContextD3D12 *mContextD3D12;
+    Aquarium *mAquarium;
 };
 
 #endif
