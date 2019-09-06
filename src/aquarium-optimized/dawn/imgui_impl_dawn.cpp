@@ -306,7 +306,7 @@ bool ImGui_ImplDawn_CreateDeviceObjects()
     // create graphics mPipeline
     utils::ComboRenderPipelineDescriptor mPipelineDescriptor(mContextDawn->mDevice);
     mPipelineDescriptor.layout                    = mPipelineLayout;
-    mPipelineDescriptor.cVertexStage.module       = mVsModule;
+    mPipelineDescriptor.vertexStage.module        = mVsModule;
     mPipelineDescriptor.cFragmentStage.module     = mFsModule;
     mPipelineDescriptor.vertexInput               = &mVertexInputDescriptor;
     mPipelineDescriptor.depthStencilState         = &mPipelineDescriptor.cDepthStencilState;
