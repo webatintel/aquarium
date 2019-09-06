@@ -402,7 +402,7 @@ dawn::RenderPipeline ContextDawn::createRenderPipeline(
     // test
     utils::ComboRenderPipelineDescriptor descriptor(mDevice);
     descriptor.layout                               = mPipelineLayout;
-    descriptor.cVertexStage.module                  = mVsModule;
+    descriptor.vertexStage.module                   = mVsModule;
     descriptor.cFragmentStage.module                = mFsModule;
     descriptor.vertexInput                          = &mVertexInputDescriptor;
     descriptor.depthStencilState                    = &descriptor.cDepthStencilState;
