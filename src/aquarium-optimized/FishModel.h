@@ -29,9 +29,6 @@ class FishModel : public Model
                                        float time,
                                        int index) = 0;
 
-    virtual void reallocResource()     = 0;
-    virtual void destoryFishResource() = 0;
-
   protected:
     int mPreInstance;
     int mCurInstance;

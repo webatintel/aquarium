@@ -91,6 +91,11 @@ class ContextDawn : public Context
     const dawn::Device &getDevice() const { return mDevice; }
     const dawn::RenderPassEncoder &getRenderPass() const { return mRenderPass; }
 
+    void reallocResource(int preTotalInstance,
+                         int curTotalInstance,
+                         bool enableDynamicBufferOffset) override;
+    void updateAllFishData() override;
+
     std::vector<dawn::CommandBuffer> mCommandBuffers;
     dawn::Queue queue;
 
@@ -98,6 +103,21 @@ class ContextDawn : public Context
     dawn::BindGroup bindGroupGeneral;
     dawn::BindGroupLayout groupLayoutWorld;
     dawn::BindGroup bindGroupWorld;
+
+    dawn::BindGroupLayout groupLayoutFishPer;
+    dawn::Buffer fishPersBuffer;
+    dawn::BindGroup *bindGroupFishPers;
+
+    struct FishPer
+    {
+        float worldPosition[3];
+        float scale;
+        float nextPosition[3];
+        float time;
+        float padding[56];  // TODO(yizhou): the padding is to align with 256 byte offset.
+    };
+
+    FishPer *fishPers;
 
     dawn::Device mDevice;
 
@@ -109,6 +129,7 @@ class ContextDawn : public Context
         const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset);
     void initAvailableToggleBitset(BACKENDTYPE backendType) override;
     static void framebufferResizeCallback(GLFWwindow *window, int width, int height);
+    void destoryFishResource();
 
     // TODO(jiawei.shao@intel.com): remove dawn::TextureUsageBit::CopyDst when the bug in Dawn is
     // fixed.
@@ -136,6 +157,9 @@ class ContextDawn : public Context
     dawn::Buffer mFogBuffer;
 
     bool mEnableMSAA;
+    int mPreTotalInstance;
+    int mCurTotalInstance;
+    bool mEnableDynamicBufferOffset;
 };
 
 #endif

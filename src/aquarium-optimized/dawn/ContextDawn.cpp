@@ -36,6 +36,14 @@
 
 ContextDawn::ContextDawn(BACKENDTYPE backendType)
     : queue(nullptr),
+      groupLayoutGeneral(nullptr),
+      bindGroupGeneral(nullptr),
+      groupLayoutWorld(nullptr),
+      bindGroupWorld(nullptr),
+      groupLayoutFishPer(nullptr),
+      fishPersBuffer(nullptr),
+      bindGroupFishPers(nullptr),
+      fishPers(nullptr),
       mDevice(nullptr),
       mWindow(nullptr),
       mInstance(),
@@ -79,6 +87,10 @@ ContextDawn::~ContextDawn()
     bindGroupGeneral         = nullptr;
     groupLayoutWorld         = nullptr;
     bindGroupWorld           = nullptr;
+
+    groupLayoutFishPer = nullptr;
+    destoryFishResource();
+
     mSwapchain               = nullptr;
     queue                    = nullptr;
     mDevice                  = nullptr;
@@ -276,6 +288,7 @@ void ContextDawn::initAvailableToggleBitset(BACKENDTYPE backendType)
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::DISCRETEGPU));
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::INTEGRATEDGPU));
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEFULLSCREENMODE));
+    mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC));
 }
 
 Texture *ContextDawn::createTexture(const std::string &name, const std::string &url)
@@ -511,6 +524,23 @@ void ContextDawn::initGeneralResources(Aquarium* aquarium)
 
     setBufferData(mLightWorldPositionBuffer, 0, sizeof(LightWorldPositionUniform),
                   &aquarium->lightWorldPositionUniform);
+
+    bool enableDynamicBufferOffset =
+        aquarium->toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEDYNAMICBUFFEROFFSET));
+    if (enableDynamicBufferOffset)
+    {
+        groupLayoutFishPer = MakeBindGroupLayout({
+            {0, dawn::ShaderStage::Vertex, dawn::BindingType::UniformBuffer, true},
+        });
+    }
+    else
+    {
+        groupLayoutFishPer = MakeBindGroupLayout({
+            {0, dawn::ShaderStage::Vertex, dawn::BindingType::UniformBuffer},
+        });
+    }
+    reallocResource(aquarium->getPreFishCount(), aquarium->getCurFishCount(),
+                    enableDynamicBufferOffset);
 }
 
 void ContextDawn::updateWorldlUniforms(Aquarium* aquarium)
@@ -663,3 +693,92 @@ Model * ContextDawn::createModel(Aquarium* aquarium, MODELGROUP type, MODELNAME 
     return model;
 }
 
+void ContextDawn::reallocResource(int preTotalInstance,
+                                  int curTotalInstance,
+                                  bool enableDynamicBufferOffset)
+{
+    mPreTotalInstance          = preTotalInstance;
+    mCurTotalInstance          = curTotalInstance;
+    mEnableDynamicBufferOffset = enableDynamicBufferOffset;
+
+    if (curTotalInstance == 0)
+        return;
+
+    // If current fish number > pre fish number, allocate a new bigger buffer.
+    // If current fish number <= prefish number, do not allocate a new one.
+    // TODO(yizhou) : optimize the buffer allocation strategy.
+    if (preTotalInstance >= curTotalInstance)
+    {
+        return;
+    }
+
+    destoryFishResource();
+
+    fishPers = new FishPer[curTotalInstance];
+
+    if (enableDynamicBufferOffset)
+    {
+        bindGroupFishPers = new dawn::BindGroup[1];
+    }
+    else
+    {
+        bindGroupFishPers = new dawn::BindGroup[curTotalInstance];
+    }
+
+    fishPersBuffer = createBufferFromData(fishPers, sizeof(FishPer) * curTotalInstance,
+                                          dawn::BufferUsage::CopyDst | dawn::BufferUsage::Uniform);
+
+    if (enableDynamicBufferOffset)
+    {
+        bindGroupFishPers[0] =
+            makeBindGroup(groupLayoutFishPer, {{0, fishPersBuffer, 0, sizeof(FishPer)}});
+    }
+    else
+    {
+        for (int i = 0; i < curTotalInstance; i++)
+        {
+            bindGroupFishPers[i] = makeBindGroup(
+                groupLayoutFishPer, {{0, fishPersBuffer, sizeof(FishPer) * i, sizeof(FishPer)}});
+        }
+    }
+}
+
+void ContextDawn::updateAllFishData()
+{
+    setBufferData(fishPersBuffer, 0, sizeof(FishPer) * mCurTotalInstance, fishPers);
+}
+
+void ContextDawn::destoryFishResource()
+{
+    fishPersBuffer = nullptr;
+    if (fishPers != nullptr)
+    {
+        delete fishPers;
+        fishPers = nullptr;
+    }
+    if (mEnableDynamicBufferOffset)
+    {
+        if (bindGroupFishPers != nullptr)
+        {
+            if (bindGroupFishPers[0].Get() != nullptr)
+            {
+                bindGroupFishPers[0] = nullptr;
+            }
+        }
+    }
+    else
+    {
+        if (bindGroupFishPers != nullptr)
+        {
+            for (int i = 0; i < mPreTotalInstance; i++)
+            {
+                if (bindGroupFishPers[i].Get() != nullptr)
+                {
+                    bindGroupFishPers[i] = nullptr;
+                }
+            }
+        }
+    }
+
+    bindGroupFishPers = nullptr;
+}

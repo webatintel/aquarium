@@ -58,6 +58,10 @@ class Context
     virtual void showWindow() = 0;
     virtual void showFPS(const FPSTimer &fpsTimer, int *fishCount) = 0;
     virtual void destoryImgUI() = 0;
+    virtual void reallocResource(int preTotalInstance,
+                                 int curTotalInstance,
+                                 bool enableDynamicBufferOffset)   = 0;
+    virtual void updateAllFishData()                               = 0;
 
     int getClientWidth() const { return mClientWidth; }
     int getclientHeight() const { return mClientHeight; }

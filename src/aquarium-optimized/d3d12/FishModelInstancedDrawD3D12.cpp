@@ -204,6 +204,3 @@ void FishModelInstancedDrawD3D12::updateFishPerUniforms(float x,
     mFishPers[index].time             = time;
 }
 
-void FishModelInstancedDrawD3D12::reallocResource() {}
-
-void FishModelInstancedDrawD3D12::destoryFishResource() {}

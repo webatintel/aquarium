@@ -100,6 +100,10 @@ class ContextD3D12 : public Context
                        int mipLevels,
                        int arraySize);
     void FlushPreviousFrames();
+    void reallocResource(int preTotalInstance,
+                         int curTotalInstance,
+                         bool enableDynamicBufferOffset) override;
+    void updateAllFishData() override;
 
     Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList;
 

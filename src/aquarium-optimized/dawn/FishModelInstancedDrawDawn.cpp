@@ -223,10 +223,6 @@ void FishModelInstancedDrawDawn::updateFishPerUniforms(float x,
     mFishPers[index].time             = time;
 }
 
-void FishModelInstancedDrawDawn::reallocResource() {}
-
-void FishModelInstancedDrawDawn::destoryFishResource() {}
-
 FishModelInstancedDrawDawn::~FishModelInstancedDrawDawn()
 {
     mPipeline          = nullptr;

@@ -761,6 +761,14 @@ void ContextD3D12::FlushPreviousFrames()
     m_frameIndex = mSwapChain->GetCurrentBackBufferIndex();
 }
 
+void ContextD3D12::reallocResource(int preTotalInstance,
+                                   int curTotalInstance,
+                                   bool enableDynamicBufferOffset)
+{
+}
+
+void ContextD3D12::updateAllFishData() {}
+
 void ContextD3D12::createDepthStencilView()
 {
     D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};

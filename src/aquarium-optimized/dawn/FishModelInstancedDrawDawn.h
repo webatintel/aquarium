@@ -41,9 +41,6 @@ class FishModelInstancedDrawDawn : public FishModel
                                float time,
                                int index) override;
 
-    void reallocResource() override;
-    void destoryFishResource() override;
-
     struct FishVertexUniforms
     {
         float fishLength;

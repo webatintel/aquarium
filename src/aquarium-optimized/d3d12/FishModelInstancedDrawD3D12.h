@@ -42,8 +42,6 @@ class FishModelInstancedDrawD3D12 : public FishModel
                                float scale,
                                float time,
                                int index) override;
-    void reallocResource() override;
-    void destoryFishResource() override;
 
     struct FishVertexUniforms
     {
