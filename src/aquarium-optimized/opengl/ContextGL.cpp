@@ -383,7 +383,10 @@ void ContextGL::reallocResource(int preTotalInstance,
 {
 }
 
-void ContextGL::updateAllFishData() {}
+void ContextGL::updateAllFishData(
+    const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset)
+{
+}
 
 void ContextGL::initState()
 {

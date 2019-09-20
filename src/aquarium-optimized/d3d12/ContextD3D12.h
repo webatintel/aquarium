@@ -37,7 +37,7 @@ class ContextD3D12 : public Context
     void showFPS(const FPSTimer &fpsTimer, int *fishCount) override;
     void destoryImgUI() override;
 
-    void FlushInit() override;
+    void Flush() override;
     void preFrame() override;
 
     Model *createModel(Aquarium *aquarium, MODELGROUP type, MODELNAME name, bool blend) override;
@@ -103,7 +103,8 @@ class ContextD3D12 : public Context
     void reallocResource(int preTotalInstance,
                          int curTotalInstance,
                          bool enableDynamicBufferOffset) override;
-    void updateAllFishData() override;
+    void updateAllFishData(
+        const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset) override;
 
     Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList;
 

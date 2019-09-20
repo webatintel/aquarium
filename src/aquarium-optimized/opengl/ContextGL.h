@@ -95,7 +95,8 @@ class ContextGL : public Context
     void reallocResource(int preTotalInstance,
                          int curTotalInstance,
                          bool enableDynamicBufferOffset) override;
-    void updateAllFishData() override;
+    void updateAllFishData(
+        const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset) override;
 
   private:
     void initState();

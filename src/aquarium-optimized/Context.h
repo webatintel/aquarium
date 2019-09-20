@@ -53,7 +53,7 @@ class Context
     virtual void KeyBoardQuit()                                                               = 0;
     virtual void DoFlush()                                                                    = 0;
     virtual void Terminate()                                                                  = 0;
-    virtual void FlushInit() {}
+    virtual void Flush() {}
     virtual void preFrame()   = 0;
     virtual void showWindow() = 0;
     virtual void showFPS(const FPSTimer &fpsTimer, int *fishCount) = 0;
@@ -61,7 +61,8 @@ class Context
     virtual void reallocResource(int preTotalInstance,
                                  int curTotalInstance,
                                  bool enableDynamicBufferOffset)   = 0;
-    virtual void updateAllFishData()                               = 0;
+    virtual void updateAllFishData(
+        const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset) = 0;
 
     int getClientWidth() const { return mClientWidth; }
     int getclientHeight() const { return mClientHeight; }

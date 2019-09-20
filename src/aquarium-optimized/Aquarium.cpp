@@ -302,6 +302,16 @@ bool Aquarium::init(int argc, char **argv)
                 return false;
             }
         }
+        else if (cmd == "--buffer-mapping-async")
+        {
+            if (!availableToggleBitset.test(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC)))
+            {
+                std::cerr << "Full screen mode isn't supported for the backend." << std::endl;
+                return false;
+            }
+
+            toggleBitset.set(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC));
+        }
         else
         {
         }
@@ -329,7 +339,7 @@ bool Aquarium::init(int argc, char **argv)
 
     setupModelEnumMap();
     loadReource();
-    mContext->FlushInit();
+    mContext->Flush();
 
     std::cout << "End loading.\nCost " << getElapsedTime() << "s totally." << std::endl;
     mContext->showWindow();
@@ -814,7 +824,7 @@ void Aquarium::drawFishes()
     // Update all fish data by buffer mapping for Dawn backend except instanced draw.
     if (toggleBitset.test(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC)))
     {
-        mContext->updateAllFishData();
+        mContext->updateAllFishData(toggleBitset);
     }
 }
 

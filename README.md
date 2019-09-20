@@ -295,6 +295,10 @@ aquarium.exe --num-fish 10000 --backend dawn_vulkan --disable-dynamic-buffer-off
 aquarium.exe --num-fish 10000 --backend dawn_d3d12 --integrated-gpu
 aquarium.exe --num-fish 10000 --backend dawn_vulkan --discrete-gpu
 
+# "--buffer-mapping-aync" : Test buffer mapping async mode to update fish positions.
+# This mode is only implemented for Dawn backend.
+aquarium.exe --num-fish 10000 --backend dawn_d3d12 --buffer-mapping-async
+
 # aquarium-direct-map only has OpenGL backend
 # Enable MSAA
 ./aquarium-direct-map  --num-fish 10000 --backend opengl --enable-msaa
