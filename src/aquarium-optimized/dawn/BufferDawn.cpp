@@ -21,8 +21,17 @@ BufferDawn::BufferDawn(ContextDawn *context,
 {
     mSize = numComponents * sizeof(float);
     // Create buffer for vertex buffer. Because float is multiple of 4 bytes, dummy padding isnt' needed.
-    mBuf = context->createBufferFromData(buffer->data(),
-                                         sizeof(float) * static_cast<int>(buffer->size()), mUsage);
+    int bufferSize = sizeof(float) * static_cast<int>(buffer->size());
+    mBuf           = context->createBuffer(bufferSize, mUsage | dawn::BufferUsage::CopyDst);
+
+    dawn::CreateBufferMappedResult result = context->CreateBufferMapped(
+        dawn::BufferUsage::MapWrite | dawn::BufferUsage::CopySrc, bufferSize);
+    memcpy(result.data, buffer->data(), bufferSize);
+    result.buffer.Unmap();
+
+    dawn::CommandBuffer command =
+        context->copyBufferToBuffer(result.buffer, 0, mBuf, 0, bufferSize);
+    context->mCommandBuffers.emplace_back(command);
 }
 
 BufferDawn::BufferDawn(ContextDawn *context,
@@ -42,8 +51,18 @@ BufferDawn::BufferDawn(ContextDawn *context,
     {
         buffer->push_back(0.0f);
     }
-    mBuf = context->createBufferFromData(
-        buffer->data(), sizeof(unsigned short) * static_cast<int>(buffer->size()), mUsage);
+
+    int bufferSize = sizeof(unsigned short) * static_cast<int>(buffer->size());
+    mBuf           = context->createBuffer(bufferSize, mUsage | dawn::BufferUsage::CopyDst);
+
+    dawn::CreateBufferMappedResult result = context->CreateBufferMapped(
+        dawn::BufferUsage::MapWrite | dawn::BufferUsage::CopySrc, bufferSize);
+    memcpy(result.data, buffer->data(), bufferSize);
+    result.buffer.Unmap();
+
+    dawn::CommandBuffer command =
+        context->copyBufferToBuffer(result.buffer, 0, mBuf, 0, bufferSize);
+    context->mCommandBuffers.emplace_back(command);
 }
 
 BufferDawn::~BufferDawn()
