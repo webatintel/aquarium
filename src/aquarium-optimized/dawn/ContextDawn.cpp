@@ -782,6 +782,19 @@ void ContextDawn::reallocResource(int preTotalInstance,
     }
 }
 
+dawn::CreateBufferMappedResult ContextDawn::CreateBufferMapped(dawn::BufferUsage usage,
+                                                               uint64_t size)
+{
+    dawn::BufferDescriptor descriptor;
+    descriptor.nextInChain = nullptr;
+    descriptor.size        = size;
+    descriptor.usage       = usage;
+
+    dawn::CreateBufferMappedResult result = mDevice.CreateBufferMapped(&descriptor);
+    ASSERT(result.dataLength == size);
+    return result;
+}
+
 void ContextDawn::MapWriteCallback(DawnBufferMapAsyncStatus status,
                                    void *data,
                                    uint64_t,
