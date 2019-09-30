@@ -37,7 +37,6 @@ void main() {
   v_surfaceToView = (lightWorldPositionUniform.viewInverse[3] - (worldUniforms.worlds[gl_InstanceIndex].world * position)).xyz;
   v_binormal = (worldUniforms.worlds[gl_InstanceIndex].worldInverseTranspose * vec4(binormal, 0)).xyz;  // #normalMap
   v_tangent = (worldUniforms.worlds[gl_InstanceIndex].worldInverseTranspose * vec4(tangent, 0)).xyz;  // #normalMap
-  v_position.y = -v_position.y;
   gl_Position = v_position;
 }
 

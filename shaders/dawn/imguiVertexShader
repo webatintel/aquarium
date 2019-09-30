@@ -16,6 +16,5 @@ void main()
     v_uv = UV;
     v_color = Color;
     v_position = projUniform.ProjMtx * vec4(Position.xy,0.f,1.f);
-    v_position.y = -v_position.y;
     gl_Position = v_position;
 }

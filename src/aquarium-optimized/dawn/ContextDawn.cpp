@@ -439,8 +439,9 @@ dawn::RenderPipeline ContextDawn::createRenderPipeline(
     descriptor.vertexInput                          = &mVertexInputDescriptor;
     descriptor.depthStencilState                    = &descriptor.cDepthStencilState;
     descriptor.cDepthStencilState.format            = dawn::TextureFormat::Depth24PlusStencil8;
-    descriptor.cColorStates[0]                      = &ColorStateDescriptor;
-    descriptor.cColorStates[0]->format              = mPreferredSwapChainFormat;
+    descriptor.colorStateCount                      = 1;
+    descriptor.cColorStates[0]                      = ColorStateDescriptor;
+    descriptor.cColorStates[0].format               = mPreferredSwapChainFormat;
     descriptor.cDepthStencilState.depthWriteEnabled = true;
     descriptor.cDepthStencilState.depthCompare      = dawn::CompareFunction::Less;
     descriptor.primitiveTopology                    = dawn::PrimitiveTopology::TriangleList;
@@ -687,7 +688,7 @@ void ContextDawn::preFrame()
         // If MSAA is enabled, we render to a multisampled texture and then resolve to the backbuffer
         mRenderPassDescriptor = utils::ComboRenderPassDescriptor({mSceneRenderTargetView},
                                                                  mSceneDepthStencilView);
-        mRenderPassDescriptor.cColorAttachmentsInfoPtr[0]->resolveTarget = mBackbuffer.CreateView();
+        mRenderPassDescriptor.cColorAttachments[0].resolveTarget = mBackbuffer.CreateView();
     }
     else
     {
