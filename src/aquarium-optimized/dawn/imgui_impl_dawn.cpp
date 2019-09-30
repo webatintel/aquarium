@@ -311,8 +311,8 @@ bool ImGui_ImplDawn_CreateDeviceObjects()
     mPipelineDescriptor.vertexInput               = &mVertexInputDescriptor;
     mPipelineDescriptor.depthStencilState         = &mPipelineDescriptor.cDepthStencilState;
     mPipelineDescriptor.cDepthStencilState.format = dawn::TextureFormat::Depth24PlusStencil8;
-    mPipelineDescriptor.cColorStates[0]           = &ColorStateDescriptor;
-    mPipelineDescriptor.cColorStates[0]->format   = mFormat;
+    mPipelineDescriptor.cColorStates[0]           = ColorStateDescriptor;
+    mPipelineDescriptor.cColorStates[0].format    = mFormat;
     mPipelineDescriptor.cDepthStencilState.depthWriteEnabled = false;
     mPipelineDescriptor.cDepthStencilState.depthCompare      = dawn::CompareFunction::Always;
     mPipelineDescriptor.primitiveTopology  = dawn::PrimitiveTopology::TriangleList;

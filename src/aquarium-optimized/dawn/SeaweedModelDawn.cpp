@@ -68,7 +68,8 @@ void SeaweedModelDawn::init()
     mGroupLayoutModel = mContextDawn->MakeBindGroupLayout({
         {0, dawn::ShaderStage::Fragment, dawn::BindingType::UniformBuffer},
         {1, dawn::ShaderStage::Fragment, dawn::BindingType::Sampler},
-        {2, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture},
+        {2, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture, false, false,
+         dawn::TextureViewDimension::e2D, dawn::TextureComponentType::Float},
     });
 
     mGroupLayoutPer = mContextDawn->MakeBindGroupLayout({

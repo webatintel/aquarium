@@ -8,7 +8,7 @@ vars = {
   'chromium_git': 'https://chromium.googlesource.com',
   'github_git': 'https://github.com',
   'dawn_git': 'https://dawn.googlesource.com',
-  'dawn_revision': '22c3ff73c199468dd1ba2c2f5e3383c3bf04c959',
+  'dawn_revision': '52bd6b7da6a758888e99436656e836f178b762af',
   'imgui_git': 'https://github.com/ocornut',
   'imgui_revision': 'e16564e67a2e88d4cbe3afa6594650712790fba3',
   'angle_root': 'third_party/angle',

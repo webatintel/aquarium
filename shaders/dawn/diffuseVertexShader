@@ -32,6 +32,5 @@ void main() {
   v_normal = (worldUniforms.worlds[gl_InstanceIndex].worldInverseTranspose * vec4(normal, 0)).xyz;
   v_surfaceToLight = lightWorldPositionUniform.lightWorldPos - (worldUniforms.worlds[gl_InstanceIndex].world * position).xyz;
   v_surfaceToView = (lightWorldPositionUniform.viewInverse[3] - (worldUniforms.worlds[gl_InstanceIndex].world * position)).xyz;
-  v_position.y = -v_position.y;
   gl_Position = v_position;
 }

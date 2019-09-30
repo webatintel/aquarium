@@ -117,10 +117,14 @@ void GenericModelDawn::init()
             {0, dawn::ShaderStage::Fragment, dawn::BindingType::UniformBuffer},
             {1, dawn::ShaderStage::Fragment, dawn::BindingType::Sampler},
             {2, dawn::ShaderStage::Fragment, dawn::BindingType::Sampler},
-            {3, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture},
-            {4, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture},
-            {5, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture},
-            {6, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture},
+            {3, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture, false, false,
+             dawn::TextureViewDimension::e2D, dawn::TextureComponentType::Float},
+            {4, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture, false, false,
+             dawn::TextureViewDimension::e2D, dawn::TextureComponentType::Float},
+            {5, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture, false, false,
+             dawn::TextureViewDimension::e2D, dawn::TextureComponentType::Float},
+            {6, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture, false, false,
+             dawn::TextureViewDimension::Cube, dawn::TextureComponentType::Float},
         });
     }
     else if (mNormalTexture && mName != MODELNAME::MODELGLOBEBASE)
@@ -128,8 +132,10 @@ void GenericModelDawn::init()
         mGroupLayoutModel = mContextDawn->MakeBindGroupLayout({
             {0, dawn::ShaderStage::Fragment, dawn::BindingType::UniformBuffer},
             {1, dawn::ShaderStage::Fragment, dawn::BindingType::Sampler},
-            {2, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture},
-            {3, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture},
+            {2, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture, false, false,
+             dawn::TextureViewDimension::e2D, dawn::TextureComponentType::Float},
+            {3, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture, false, false,
+             dawn::TextureViewDimension::e2D, dawn::TextureComponentType::Float},
         });
     }
     else
@@ -137,7 +143,8 @@ void GenericModelDawn::init()
         mGroupLayoutModel = mContextDawn->MakeBindGroupLayout({
             {0, dawn::ShaderStage::Fragment, dawn::BindingType::UniformBuffer},
             {1, dawn::ShaderStage::Fragment, dawn::BindingType::Sampler},
-            {2, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture},
+            {2, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture, false, false,
+             dawn::TextureViewDimension::e2D, dawn::TextureComponentType::Float},
         });
     }
 
