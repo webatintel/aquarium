@@ -16,10 +16,12 @@
 
 #include "../FishModel.h"
 
+struct FishPer;
+
 class FishModelDawn : public FishModel
 {
   public:
-    FishModelDawn(const Context *context,
+    FishModelDawn(Context *context,
                   Aquarium *aquarium,
                   MODELGROUP type,
                   MODELNAME name,
@@ -41,9 +43,6 @@ class FishModelDawn : public FishModel
                                float time,
                                int index) override;
 
-    void reallocResource() override;
-    void destoryFishResource() override;
-
     struct FishVertexUniforms
     {
         float fishLength;
@@ -56,16 +55,6 @@ class FishModelDawn : public FishModel
         float shininess;
         float specularFactor;
     } mLightFactorUniforms;
-
-    struct FishPer
-    {
-        float worldPosition[3];
-        float scale;
-        float nextPosition[3];
-        float time;
-        float padding[56];  // TODO(yizhou): the padding is to align with 256 byte offset.
-    };
-    FishPer *mFishPers;
 
     TextureDawn *mDiffuseTexture;
     TextureDawn *mNormalTexture;
@@ -85,22 +74,20 @@ class FishModelDawn : public FishModel
     dawn::RenderPipeline mPipeline;
 
     dawn::BindGroupLayout mGroupLayoutModel;
-    dawn::BindGroupLayout mGroupLayoutPer;
     dawn::PipelineLayout mPipelineLayout;
 
     dawn::BindGroup mBindGroupModel;
-    dawn::BindGroup *mBindGroupPers;
 
     dawn::Buffer mFishVertexBuffer;
     dawn::Buffer mLightFactorBuffer;
 
-    dawn::Buffer mFishPersBuffer;
-
     ProgramDawn *mProgramDawn;
-    const ContextDawn *mContextDawn;
+    ContextDawn *mContextDawn;
 
     bool mEnableDynamicBufferOffset;
     Aquarium *mAquarium;
+
+    int mFishPerOffset;
 };
 
 #endif

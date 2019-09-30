@@ -8,14 +8,16 @@
 #include "BufferDawn.h" 
 #include "FishModelDawn.h"
 
-FishModelDawn::FishModelDawn(const Context *context,
+#include <iostream>
+
+FishModelDawn::FishModelDawn(Context *context,
                              Aquarium *aquarium,
                              MODELGROUP type,
                              MODELNAME name,
                              bool blend)
-    : FishModel(type, name, blend), mFishPers(nullptr), mBindGroupPers(nullptr), mAquarium(aquarium)
+    : FishModel(type, name, blend), mAquarium(aquarium), mFishPerOffset(0)
 {
-    mContextDawn = static_cast<const ContextDawn *>(context);
+    mContextDawn = static_cast<ContextDawn *>(context);
 
     mEnableDynamicBufferOffset =
         aquarium->toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEDYNAMICBUFFEROFFSET));
@@ -105,24 +107,11 @@ void FishModelDawn::init()
         });
     }
 
-    if (mEnableDynamicBufferOffset)
-    {
-        mGroupLayoutPer = mContextDawn->MakeBindGroupLayout({
-            {0, dawn::ShaderStage::Vertex, dawn::BindingType::UniformBuffer, true},
-        });
-    }
-    else
-    {
-        mGroupLayoutPer = mContextDawn->MakeBindGroupLayout({
-            {0, dawn::ShaderStage::Vertex, dawn::BindingType::UniformBuffer},
-        });
-    }
-
     mPipelineLayout = mContextDawn->MakeBasicPipelineLayout({
         mContextDawn->groupLayoutGeneral,
         mContextDawn->groupLayoutWorld,
         mGroupLayoutModel,
-        mGroupLayoutPer,
+        mContextDawn->groupLayoutFishPer,
     });
 
     mPipeline = mContextDawn->createRenderPipeline(mPipelineLayout, mProgramDawn,
@@ -163,20 +152,19 @@ void FishModelDawn::init()
                                 &mLightFactorUniforms);
     mContextDawn->setBufferData(mFishVertexBuffer, 0, sizeof(FishVertexUniforms),
                                 &mFishVertexUniforms);
-
-    reallocResource();
 }
 
 void FishModelDawn::prepareForDraw()
 {
+    mFishPerOffset = 0;
+    for (int i = 0; i < mName - MODELNAME::MODELSMALLFISHA; i++)
+    {
+        const Fish &fishInfo = fishTable[i];
+        mFishPerOffset += mAquarium->fishCount[fishInfo.modelName - MODELNAME::MODELSMALLFISHA];
+    }
+
     const Fish &fishInfo = fishTable[mName - MODELNAME::MODELSMALLFISHA];
     mCurInstance         = mAquarium->fishCount[fishInfo.modelName - MODELNAME::MODELSMALLFISHA];
-    if (mCurInstance != mPreInstance)
-    {
-        destoryFishResource();
-        reallocResource();
-        mPreInstance = mCurInstance;
-    }
 }
 
 void FishModelDawn::draw()
@@ -185,8 +173,6 @@ void FishModelDawn::draw()
         return;
 
     uint64_t vertexBufferOffsets[1] = {0};
-
-    mContextDawn->setBufferData(mFishPersBuffer, 0, sizeof(FishPer) * mCurInstance, mFishPers);
 
     dawn::RenderPassEncoder pass = mContextDawn->getRenderPass();
     pass.SetPipeline(mPipeline);
@@ -204,8 +190,8 @@ void FishModelDawn::draw()
     {
         for (int i = 0; i < mCurInstance; i++)
         {
-            uint64_t offset = 256u * i;
-            pass.SetBindGroup(3, mBindGroupPers[0], 1, &offset);
+            uint64_t offset = 256u * (i + mFishPerOffset);
+            pass.SetBindGroup(3, mContextDawn->bindGroupFishPers[0], 1, &offset);
             pass.DrawIndexed(mIndicesBuffer->getTotalComponents(), 1, 0, 0, 0);
         }
     }
@@ -213,7 +199,7 @@ void FishModelDawn::draw()
     {
         for (int i = 0; i < mCurInstance; i++)
         {
-            pass.SetBindGroup(3, mBindGroupPers[i], 0, nullptr);
+            pass.SetBindGroup(3, mContextDawn->bindGroupFishPers[i + mFishPerOffset], 0, nullptr);
             pass.DrawIndexed(mIndicesBuffer->getTotalComponents(), 1, 0, 0, 0);
         }
     }
@@ -231,92 +217,21 @@ void FishModelDawn::updateFishPerUniforms(float x,
                                           float time,
                                           int index)
 {
-    mFishPers[index].worldPosition[0] = x;
-    mFishPers[index].worldPosition[1] = y;
-    mFishPers[index].worldPosition[2] = z;
-    mFishPers[index].nextPosition[0]  = nextX;
-    mFishPers[index].nextPosition[1]  = nextY;
-    mFishPers[index].nextPosition[2]  = nextZ;
-    mFishPers[index].scale            = scale;
-    mFishPers[index].time             = time;
-}
-
-void FishModelDawn::reallocResource()
-{
-    if (mCurInstance == 0)
-        return;
-
-    mFishPers = new FishPer[mCurInstance];
-    if (mEnableDynamicBufferOffset)
-    {
-        mBindGroupPers = new dawn::BindGroup[1];
-    }
-    else
-    {
-        mBindGroupPers = new dawn::BindGroup[mCurInstance];
-    }
-
-    mFishPersBuffer =
-        mContextDawn->createBufferFromData(mFishPers, sizeof(FishPer) * mCurInstance,
-                                           dawn::BufferUsage::CopyDst | dawn::BufferUsage::Uniform);
-
-    if (mEnableDynamicBufferOffset)
-    {
-        mBindGroupPers[0] = mContextDawn->makeBindGroup(mGroupLayoutPer,
-                                                        {{0, mFishPersBuffer, 0, sizeof(FishPer)}});
-    }
-    else
-    {
-        for (int i = 0; i < mCurInstance; i++)
-        {
-            mBindGroupPers[i] = mContextDawn->makeBindGroup(
-                mGroupLayoutPer, {{0, mFishPersBuffer, sizeof(FishPer) * i, sizeof(FishPer)}});
-        }
-    }
-}
-
-void FishModelDawn::destoryFishResource()
-{
-    mFishPersBuffer = nullptr;
-    if (mFishPers != nullptr)
-    {
-        delete mFishPers;
-        mFishPers = nullptr;
-    }
-    if (mEnableDynamicBufferOffset)
-    {
-        if (mBindGroupPers != nullptr)
-        {
-            if (mBindGroupPers[0].Get() != nullptr)
-            {
-                mBindGroupPers[0] = nullptr;
-            }
-        }
-    }
-    else
-    {
-        if (mBindGroupPers != nullptr)
-        {
-            for (int i = 0; i < mPreInstance; i++)
-            {
-                if (mBindGroupPers[i].Get() != nullptr)
-                {
-                    mBindGroupPers[i] = nullptr;
-                }
-            }
-        }
-    }
-
-    mBindGroupPers = nullptr;
+    index += mFishPerOffset;
+    mContextDawn->fishPers[index].worldPosition[0] = x;
+    mContextDawn->fishPers[index].worldPosition[1] = y;
+    mContextDawn->fishPers[index].worldPosition[2] = z;
+    mContextDawn->fishPers[index].nextPosition[0]  = nextX;
+    mContextDawn->fishPers[index].nextPosition[1]  = nextY;
+    mContextDawn->fishPers[index].nextPosition[2]  = nextZ;
+    mContextDawn->fishPers[index].scale            = scale;
+    mContextDawn->fishPers[index].time             = time;
 }
 
 FishModelDawn::~FishModelDawn()
 {
-    destoryFishResource();
-
     mPipeline          = nullptr;
     mGroupLayoutModel  = nullptr;
-    mGroupLayoutPer    = nullptr;
     mPipelineLayout    = nullptr;
     mBindGroupModel    = nullptr;
     mFishVertexBuffer  = nullptr;

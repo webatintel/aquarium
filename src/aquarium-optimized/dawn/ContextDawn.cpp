@@ -26,16 +26,27 @@
 #include "SeaweedModelDawn.h"
 #include "TextureDawn.h"
 
+#include "common/AQUARIUM_ASSERT.h"
 #include "common/Constants.h"
 #include "imgui_impl_dawn.h"
 #include "imgui_impl_glfw.h"
 #include "utils/BackendBinding.h"
 #include "utils/ComboRenderPipelineDescriptor.h"
+#include "utils/SystemUtils.h"
 
 #include "../Aquarium.h"
 
 ContextDawn::ContextDawn(BACKENDTYPE backendType)
     : queue(nullptr),
+      groupLayoutGeneral(nullptr),
+      bindGroupGeneral(nullptr),
+      groupLayoutWorld(nullptr),
+      bindGroupWorld(nullptr),
+      groupLayoutFishPer(nullptr),
+      fishPersBuffer(nullptr),
+      bindGroupFishPers(nullptr),
+      stagingBuffer(nullptr),
+      fishPers(nullptr),
       mDevice(nullptr),
       mWindow(nullptr),
       mInstance(),
@@ -49,7 +60,8 @@ ContextDawn::ContextDawn(BACKENDTYPE backendType)
       mPipeline(nullptr),
       mBindGroup(nullptr),
       mPreferredSwapChainFormat(dawn::TextureFormat::RGBA8Unorm),
-      mEnableMSAA(false)
+      mEnableMSAA(false),
+      mappedData(nullptr)
 {
     mResourceHelper = new ResourceHelper("dawn", "", backendType);
     initAvailableToggleBitset(backendType);
@@ -79,6 +91,12 @@ ContextDawn::~ContextDawn()
     bindGroupGeneral         = nullptr;
     groupLayoutWorld         = nullptr;
     bindGroupWorld           = nullptr;
+
+    groupLayoutFishPer = nullptr;
+    destoryFishResource();
+
+    stagingBuffer = nullptr;
+
     mSwapchain               = nullptr;
     queue                    = nullptr;
     mDevice                  = nullptr;
@@ -276,6 +294,7 @@ void ContextDawn::initAvailableToggleBitset(BACKENDTYPE backendType)
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::DISCRETEGPU));
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::INTEGRATEDGPU));
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEFULLSCREENMODE));
+    mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC));
 }
 
 Texture *ContextDawn::createTexture(const std::string &name, const std::string &url)
@@ -331,6 +350,19 @@ dawn::CommandBuffer ContextDawn::copyBufferToTexture(const dawn::BufferCopyView 
     dawn::CommandEncoder encoder = mDevice.CreateCommandEncoder();
     encoder.CopyBufferToTexture(&bufferCopyView, &textureCopyView, &ext3D);
     dawn::CommandBuffer copy = encoder.Finish();
+    return copy;
+}
+
+dawn::CommandBuffer ContextDawn::copyBufferToBuffer(dawn::Buffer const &srcBuffer,
+                                                    uint64_t srcOffset,
+                                                    dawn::Buffer const &destBuffer,
+                                                    uint64_t destOffset,
+                                                    uint64_t size)
+{
+    dawn::CommandEncoder encoder = mDevice.CreateCommandEncoder();
+    encoder.CopyBufferToBuffer(srcBuffer, srcOffset, destBuffer, destOffset, size);
+    dawn::CommandBuffer copy = encoder.Finish();
+
     return copy;
 }
 
@@ -511,6 +543,29 @@ void ContextDawn::initGeneralResources(Aquarium* aquarium)
 
     setBufferData(mLightWorldPositionBuffer, 0, sizeof(LightWorldPositionUniform),
                   &aquarium->lightWorldPositionUniform);
+
+    bool enableDynamicBufferOffset =
+        aquarium->toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEDYNAMICBUFFEROFFSET));
+    if (enableDynamicBufferOffset)
+    {
+        groupLayoutFishPer = MakeBindGroupLayout({
+            {0, dawn::ShaderStage::Vertex, dawn::BindingType::UniformBuffer, true},
+        });
+    }
+    else
+    {
+        groupLayoutFishPer = MakeBindGroupLayout({
+            {0, dawn::ShaderStage::Vertex, dawn::BindingType::UniformBuffer},
+        });
+    }
+    reallocResource(aquarium->getPreFishCount(), aquarium->getCurFishCount(),
+                    enableDynamicBufferOffset);
+
+    // Create a big buffer for buffer mapping async
+    // TODO(yizhou): Use the staging buffer to upload more data, such as vertex buffers and world
+    // uniforms
+    stagingBuffer = createBuffer(sizeof(FishPer) * aquarium->getCurFishCount(),
+                                 dawn::BufferUsage::MapWrite | dawn::BufferUsage::CopySrc);
 }
 
 void ContextDawn::updateWorldlUniforms(Aquarium* aquarium)
@@ -561,16 +616,28 @@ void ContextDawn::DoFlush()
 {
     mRenderPass.EndPass();
     dawn::CommandBuffer cmd = mCommandEncoder.Finish();
-    queue.Submit(1, &cmd);
+    mCommandBuffers.emplace_back(cmd);
+
+    // Wait for staging buffer uploading
+    while (mappedData == nullptr)
+    {
+        WaitABit();
+    }
+    mappedData = nullptr;
+
+    stagingBuffer.Unmap();
+
+    Flush();
 
     mSwapchain.Present(mBackbuffer);
 
     glfwPollEvents();
 }
 
-void ContextDawn::FlushInit()
+void ContextDawn::Flush()
 {
     queue.Submit(mCommandBuffers.size(), mCommandBuffers.data());
+    mCommandBuffers.clear();
 }
 
 void ContextDawn::Terminate()
@@ -663,3 +730,135 @@ Model * ContextDawn::createModel(Aquarium* aquarium, MODELGROUP type, MODELNAME 
     return model;
 }
 
+void ContextDawn::reallocResource(int preTotalInstance,
+                                  int curTotalInstance,
+                                  bool enableDynamicBufferOffset)
+{
+    mPreTotalInstance          = preTotalInstance;
+    mCurTotalInstance          = curTotalInstance;
+    mEnableDynamicBufferOffset = enableDynamicBufferOffset;
+
+    if (curTotalInstance == 0)
+        return;
+
+    // If current fish number > pre fish number, allocate a new bigger buffer.
+    // If current fish number <= prefish number, do not allocate a new one.
+    // TODO(yizhou) : optimize the buffer allocation strategy.
+    if (preTotalInstance >= curTotalInstance)
+    {
+        return;
+    }
+
+    destoryFishResource();
+
+    fishPers = new FishPer[curTotalInstance];
+
+    if (enableDynamicBufferOffset)
+    {
+        bindGroupFishPers = new dawn::BindGroup[1];
+    }
+    else
+    {
+        bindGroupFishPers = new dawn::BindGroup[curTotalInstance];
+    }
+
+    fishPersBuffer = createBufferFromData(fishPers, sizeof(FishPer) * curTotalInstance,
+                                          dawn::BufferUsage::CopyDst | dawn::BufferUsage::Uniform);
+
+    // TODO(yizhou): the staging buffer should be bigger to hold other uniform buffers in the
+    // future. But now we only use the buffer to upload fish buffer, so the size is the same as fish
+    // buffer.
+    stagingBuffer = createBuffer(sizeof(FishPer) * curTotalInstance,
+                                 dawn::BufferUsage::MapWrite | dawn::BufferUsage::CopySrc);
+
+    if (enableDynamicBufferOffset)
+    {
+        bindGroupFishPers[0] =
+            makeBindGroup(groupLayoutFishPer, {{0, fishPersBuffer, 0, sizeof(FishPer)}});
+    }
+    else
+    {
+        for (int i = 0; i < curTotalInstance; i++)
+        {
+            bindGroupFishPers[i] = makeBindGroup(
+                groupLayoutFishPer, {{0, fishPersBuffer, sizeof(FishPer) * i, sizeof(FishPer)}});
+        }
+    }
+}
+
+void ContextDawn::MapWriteCallback(DawnBufferMapAsyncStatus status,
+                                   void *data,
+                                   uint64_t,
+                                   void *userdata)
+{
+    ASSERT(status == DAWN_BUFFER_MAP_ASYNC_STATUS_SUCCESS);
+    ASSERT(data != nullptr);
+    ContextDawn *contextDawn = static_cast<ContextDawn *>(userdata);
+
+    int size                = contextDawn->mCurTotalInstance;
+    contextDawn->mappedData = data;
+    memcpy(contextDawn->mappedData, contextDawn->fishPers,
+           sizeof(FishPer) * size);
+
+    // Create a command buffer that copy from the staging buffer to dest buffer.
+    dawn::CommandBuffer command = contextDawn->copyBufferToBuffer(
+        contextDawn->stagingBuffer, 0, contextDawn->fishPersBuffer, 0, sizeof(FishPer) * size);
+    contextDawn->mCommandBuffers.emplace_back(command);
+}
+
+void ContextDawn::WaitABit()
+{
+    mDevice.Tick();
+
+    utils::USleep(100);
+}
+
+void ContextDawn::updateAllFishData(
+    const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset)
+{
+    if (toggleBitset.test(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC)))
+    {
+        stagingBuffer.MapWriteAsync(MapWriteCallback, this);
+    }
+    else
+    {
+        setBufferData(fishPersBuffer, 0, sizeof(FishPer) * mCurTotalInstance, fishPers);
+    }
+}
+
+void ContextDawn::destoryFishResource()
+{
+    fishPersBuffer = nullptr;
+    stagingBuffer  = nullptr;
+
+    if (fishPers != nullptr)
+    {
+        delete fishPers;
+        fishPers = nullptr;
+    }
+    if (mEnableDynamicBufferOffset)
+    {
+        if (bindGroupFishPers != nullptr)
+        {
+            if (bindGroupFishPers[0].Get() != nullptr)
+            {
+                bindGroupFishPers[0] = nullptr;
+            }
+        }
+    }
+    else
+    {
+        if (bindGroupFishPers != nullptr)
+        {
+            for (int i = 0; i < mPreTotalInstance; i++)
+            {
+                if (bindGroupFishPers[i].Get() != nullptr)
+                {
+                    bindGroupFishPers[i] = nullptr;
+                }
+            }
+        }
+    }
+
+    bindGroupFishPers = nullptr;
+}

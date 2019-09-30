@@ -92,6 +92,11 @@ class ContextGL : public Context
                        unsigned char *pixel);
     void setParameter(unsigned int target, unsigned int pname, int param);
     void generateMipmap(unsigned int target);
+    void reallocResource(int preTotalInstance,
+                         int curTotalInstance,
+                         bool enableDynamicBufferOffset) override;
+    void updateAllFishData(
+        const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset) override;
 
   private:
     void initState();

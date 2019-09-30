@@ -377,6 +377,17 @@ void ContextGL::generateMipmap(unsigned int target)
     glGenerateMipmap(target);
 }
 
+void ContextGL::reallocResource(int preTotalInstance,
+                                int curTotalInstance,
+                                bool enableDynamicBufferOffset)
+{
+}
+
+void ContextGL::updateAllFishData(
+    const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset)
+{
+}
+
 void ContextGL::initState()
 {
     glEnable(GL_DEPTH_TEST);

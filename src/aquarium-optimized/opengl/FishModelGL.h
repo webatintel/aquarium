@@ -35,9 +35,6 @@ class FishModelGL : public FishModel
                                float time,
                                int index) override;
 
-    void reallocResource() override;
-    void destoryFishResource() override;
-
     std::pair<float *, int> mViewInverseUniform;
     std::pair<float *, int> mLightWorldPosUniform;
     std::pair<float *, int> mLightColorUniform;

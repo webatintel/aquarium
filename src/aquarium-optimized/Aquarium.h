@@ -125,6 +125,8 @@ enum TOGGLE : short
     ENABLEFULLSCREENMODE,
     // Log fps frequency
     RECORDFPSFREQUENCY,
+    // Use async buffer mapping to upload data
+    BUFFERMAPPINGASYNC,
     TOGGLEMAX
 };
 
@@ -433,6 +435,8 @@ class Aquarium
     bool init(int argc, char **argv);
     void display();
     Texture *getSkybox() { return mTextureMap["skybox"]; }
+    int getCurFishCount() const { return mCurFishCount; }
+    int getPreFishCount() const { return mPreFishCount; }
 
     std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> toggleBitset;
     LightWorldPositionUniform lightWorldPositionUniform;

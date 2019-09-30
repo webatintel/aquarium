@@ -180,6 +180,3 @@ void FishModelGL::updateFishPerUniforms(float x,
     mTimeUniform.first             = time;
 }
 
-void FishModelGL::reallocResource() {}
-
-void FishModelGL::destoryFishResource() {}

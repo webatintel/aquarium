@@ -34,7 +34,7 @@ class ContextDawn : public Context
     bool ShouldQuit() override;
     void KeyBoardQuit() override;
     void DoFlush() override;
-    void FlushInit() override;
+    void Flush() override;
     void Terminate() override;
     void showWindow() override;
     void showFPS(const FPSTimer &fpsTimer, int *fishCount) override;
@@ -62,6 +62,11 @@ class ContextDawn : public Context
     dawn::CommandBuffer copyBufferToTexture(const dawn::BufferCopyView &bufferCopyView,
                                             const dawn::TextureCopyView &textureCopyView,
                                             const dawn::Extent3D &ext3D) const;
+    dawn::CommandBuffer copyBufferToBuffer(dawn::Buffer const &srcBuffer,
+                                           uint64_t srcOffset,
+                                           dawn::Buffer const &destBuffer,
+                                           uint64_t destOffset,
+                                           uint64_t size);
 
     dawn::TextureCopyView createTextureCopyView(dawn::Texture texture,
                                                 uint32_t level,
@@ -91,6 +96,12 @@ class ContextDawn : public Context
     const dawn::Device &getDevice() const { return mDevice; }
     const dawn::RenderPassEncoder &getRenderPass() const { return mRenderPass; }
 
+    void reallocResource(int preTotalInstance,
+                         int curTotalInstance,
+                         bool enableDynamicBufferOffset) override;
+    void updateAllFishData(
+        const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset) override;
+
     std::vector<dawn::CommandBuffer> mCommandBuffers;
     dawn::Queue queue;
 
@@ -98,6 +109,23 @@ class ContextDawn : public Context
     dawn::BindGroup bindGroupGeneral;
     dawn::BindGroupLayout groupLayoutWorld;
     dawn::BindGroup bindGroupWorld;
+
+    dawn::BindGroupLayout groupLayoutFishPer;
+    dawn::Buffer fishPersBuffer;
+    dawn::BindGroup *bindGroupFishPers;
+
+    dawn::Buffer stagingBuffer;
+
+    struct FishPer
+    {
+        float worldPosition[3];
+        float scale;
+        float nextPosition[3];
+        float time;
+        float padding[56];  // TODO(yizhou): the padding is to align with 256 byte offset.
+    };
+
+    FishPer *fishPers;
 
     dawn::Device mDevice;
 
@@ -109,6 +137,10 @@ class ContextDawn : public Context
         const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset);
     void initAvailableToggleBitset(BACKENDTYPE backendType) override;
     static void framebufferResizeCallback(GLFWwindow *window, int width, int height);
+    void destoryFishResource();
+
+    static void MapWriteCallback(DawnBufferMapAsyncStatus status, void *, uint64_t, void *userdata);
+    void WaitABit();
 
     // TODO(jiawei.shao@intel.com): remove dawn::TextureUsageBit::CopyDst when the bug in Dawn is
     // fixed.
@@ -136,6 +168,11 @@ class ContextDawn : public Context
     dawn::Buffer mFogBuffer;
 
     bool mEnableMSAA;
+    int mPreTotalInstance;
+    int mCurTotalInstance;
+    bool mEnableDynamicBufferOffset;
+
+    void *mappedData;
 };
 
 #endif

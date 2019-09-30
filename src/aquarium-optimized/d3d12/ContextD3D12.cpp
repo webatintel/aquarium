@@ -416,7 +416,7 @@ void ContextD3D12::DoFlush()
     glfwPollEvents();
 }
 
-void ContextD3D12::FlushInit()
+void ContextD3D12::Flush()
 {
     // Close the command list and execute it to begin the initial GPU setup.
     ThrowIfFailed(mCommandList->Close());
@@ -759,6 +759,17 @@ void ContextD3D12::FlushPreviousFrames()
 
     // Get frame index for the next frame
     m_frameIndex = mSwapChain->GetCurrentBackBufferIndex();
+}
+
+void ContextD3D12::reallocResource(int preTotalInstance,
+                                   int curTotalInstance,
+                                   bool enableDynamicBufferOffset)
+{
+}
+
+void ContextD3D12::updateAllFishData(
+    const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset)
+{
 }
 
 void ContextD3D12::createDepthStencilView()

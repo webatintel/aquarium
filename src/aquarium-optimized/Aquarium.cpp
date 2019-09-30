@@ -40,7 +40,7 @@ Aquarium::Aquarium()
       mContext(nullptr),
       mFpsTimer(),
       mCurFishCount(1),
-      mPreFishCount(1),
+      mPreFishCount(0),
       logCount(INT_MAX),
       mBackendType(BACKENDTYPE::BACKENDTYPELAST),
       mFactory(nullptr)
@@ -197,6 +197,10 @@ bool Aquarium::init(int argc, char **argv)
     {
         toggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEDYNAMICBUFFEROFFSET));
     }
+    if (availableToggleBitset.test(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC)))
+    {
+        toggleBitset.set(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC));
+    }
 
     for (int i = 1; i < argc; ++i)
     {
@@ -227,6 +231,8 @@ bool Aquarium::init(int argc, char **argv)
                 return false;
             }
             toggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEINSTANCEDDRAWS));
+            // Disable map write aync for instanced draw mode
+            toggleBitset.reset(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC));
         }
         else if (cmd == "--disable-dynamic-buffer-offset")
         {
@@ -296,6 +302,16 @@ bool Aquarium::init(int argc, char **argv)
                 return false;
             }
         }
+        else if (cmd == "--buffer-mapping-async")
+        {
+            if (!availableToggleBitset.test(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC)))
+            {
+                std::cerr << "Full screen mode isn't supported for the backend." << std::endl;
+                return false;
+            }
+
+            toggleBitset.set(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC));
+        }
         else
         {
         }
@@ -318,10 +334,12 @@ bool Aquarium::init(int argc, char **argv)
 
     // Init general buffer and binding groups for dawn backend.
     mContext->initGeneralResources(this);
+    // Avoid resource allocation in the first render loop
+    mPreFishCount = mCurFishCount;
 
     setupModelEnumMap();
     loadReource();
-    mContext->FlushInit();
+    mContext->Flush();
 
     std::cout << "End loading.\nCost " << getElapsedTime() << "s totally." << std::endl;
     mContext->showWindow();
@@ -686,6 +704,20 @@ void Aquarium::render()
 
     drawBackground();
 
+    // TODO(yizhou): Functionality of reallocate fish count during rendering
+    // isn't supported for instanced draw.
+    // To try this functionality now, use composition of "--backend dawn_xxx", or
+    // "--backend dawn_xxx --disable-dyanmic-buffer-offset"
+    if (!toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEINSTANCEDDRAWS)))
+        if (mCurFishCount != mPreFishCount)
+        {
+            calculateFishCount();
+            bool enableDynamicBufferOffset =
+                toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEDYNAMICBUFFEROFFSET));
+            mContext->reallocResource(mPreFishCount, mCurFishCount, enableDynamicBufferOffset);
+            mPreFishCount = mCurFishCount;
+        }
+
     drawFishes();
 
     drawInner();
@@ -695,17 +727,6 @@ void Aquarium::render()
     drawOutside();
 
     mContext->showFPS(mFpsTimer, &mCurFishCount);
-
-    // TODO(yizhou): Functionality of reallocate fish count during rendering
-    // isn't supported for instanced draw.
-    // To try this functionality now, use composition of "--backend dawn_xxx", or
-    // "--backend dawn_xxx --disable-dyanmic-buffer-offset"
-    if (!toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEINSTANCEDDRAWS)))
-        if (mCurFishCount != mPreFishCount)
-        {
-            calculateFishCount();
-            mPreFishCount = mCurFishCount;
-        }
 }
 
 void Aquarium::drawBackground()
@@ -798,6 +819,12 @@ void Aquarium::drawFishes()
         {
             model->draw();
         }
+    }
+
+    // Update all fish data by buffer mapping for Dawn backend except instanced draw.
+    if (toggleBitset.test(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC)))
+    {
+        mContext->updateAllFishData(toggleBitset);
     }
 }
 
