@@ -113,5 +113,5 @@ src/aquarium-optimized/opengl/imgui_impl_opengl3.cpp
 
 #target_compile_options(aquarium PRIVATE -s USE_SDL=2)
 target_link_libraries(aquarium ${THIRDPARTY_LIBS})
-SET_PROPERTY(TARGET aquarium APPEND_STRING PROPERTY LINK_FLAGS "-s USE_GLFW=3 -s USE_SDL=0 -s STRICT=1 -s USE_WEBGL2=1 -lGL -lglfw -s MAIN_MODULE=1 -s FULL_ES3=1 --preload-file ../../assets --preload-file ../../shaders -s TOTAL_MEMORY=512MB -s DISABLE_EXCEPTION_CATCHING=0")
+SET_PROPERTY(TARGET aquarium APPEND_STRING PROPERTY LINK_FLAGS "-s USE_GLFW=3 -s USE_SDL=0 -s STRICT=1 -s USE_WEBGL2=1 -lGL -lglfw -s --preload-file ../../assets --preload-file ../../shaders -s TOTAL_MEMORY=512MB -s DISABLE_EXCEPTION_CATCHING=0 --profiling -g4")
 SET_PROPERTY(TARGET aquarium PROPERTY SUFFIX ".html")

@@ -155,6 +155,7 @@ bool Aquarium::init(int argc, char **argv)
     mBackendType = BACKENDTYPE::BACKENDTYPEANGLE;
     mContext = mFactory->createContext(mBackendType);
     toggleBitset.set(static_cast<size_t>(TOGGLE::UPATEANDDRAWFOREACHMODEL));
+    mCurFishCount = 30000;
 #else
     // Create context of different backends through the cmd args.
     // "--backend" {backend}: create different backends. currently opengl is supported.
