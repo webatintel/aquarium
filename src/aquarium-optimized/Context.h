@@ -51,7 +51,8 @@ class Context
     virtual void setWindowTitle(const std::string &text)                                      = 0;
     virtual bool ShouldQuit()                                                                 = 0;
     virtual void KeyBoardQuit()                                                               = 0;
-    virtual void DoFlush()                                                                    = 0;
+    virtual void DoFlush(
+        const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset) = 0;
     virtual void Terminate()                                                                  = 0;
     virtual void Flush() {}
     virtual void preFrame()   = 0;

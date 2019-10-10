@@ -613,20 +613,23 @@ void ContextDawn::KeyBoardQuit()
 }
 
 // Submit commands of the frame
-void ContextDawn::DoFlush()
+void ContextDawn::DoFlush(const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset)
 {
     mRenderPass.EndPass();
     dawn::CommandBuffer cmd = mCommandEncoder.Finish();
     mCommandBuffers.emplace_back(cmd);
 
     // Wait for staging buffer uploading
-    while (mappedData == nullptr)
+    if (toggleBitset.test(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC)))
     {
-        WaitABit();
-    }
-    mappedData = nullptr;
+        while (mappedData == nullptr)
+        {
+            WaitABit();
+        }
+        mappedData = nullptr;
 
-    stagingBuffer.Unmap();
+        stagingBuffer.Unmap();
+    }
 
     Flush();
 

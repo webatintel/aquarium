@@ -377,7 +377,7 @@ void ContextD3D12::initAvailableToggleBitset(BACKENDTYPE backendType)
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEFULLSCREENMODE));
 }
 
-void ContextD3D12::DoFlush()
+void ContextD3D12::DoFlush(const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset)
 {
     // Resolve MSAA texture to non MSAA texture, and then present.
     if (mEnableMSAA)
