@@ -197,10 +197,6 @@ bool Aquarium::init(int argc, char **argv)
     {
         toggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEDYNAMICBUFFEROFFSET));
     }
-    if (availableToggleBitset.test(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC)))
-    {
-        toggleBitset.set(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC));
-    }
 
     for (int i = 1; i < argc; ++i)
     {
@@ -360,7 +356,7 @@ void Aquarium::display()
         mContext->KeyBoardQuit();
         render();
 
-        mContext->DoFlush();
+        mContext->DoFlush(toggleBitset);
 
         if (g.then - g.start > 600)
         {
@@ -821,11 +817,7 @@ void Aquarium::drawFishes()
         }
     }
 
-    // Update all fish data by buffer mapping for Dawn backend except instanced draw.
-    if (toggleBitset.test(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC)))
-    {
-        mContext->updateAllFishData(toggleBitset);
-    }
+    mContext->updateAllFishData(toggleBitset);
 }
 
 void Aquarium::drawInner()

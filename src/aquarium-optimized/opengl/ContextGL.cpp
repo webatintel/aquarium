@@ -447,7 +447,7 @@ void ContextGL::KeyBoardQuit()
         glfwSetWindowShouldClose(mWindow, GL_TRUE);
 }
 
-void ContextGL::DoFlush()
+void ContextGL::DoFlush(const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset)
 {
 #ifdef GL_GLEXT_PROTOTYPES
     eglSwapBuffers(mDisplay, mSurface);
