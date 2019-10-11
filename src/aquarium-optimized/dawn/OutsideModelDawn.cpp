@@ -127,22 +127,20 @@ void OutsideModelDawn::prepareForDraw() {}
 
 void OutsideModelDawn::draw()
 {
-    uint64_t vertexBufferOffsets[1] = {0};
-
     dawn::RenderPassEncoder pass = mContextDawn->getRenderPass();
     pass.SetPipeline(mPipeline);
     pass.SetBindGroup(0, mContextDawn->bindGroupGeneral, 0, nullptr);
     pass.SetBindGroup(1, mContextDawn->bindGroupWorld, 0, nullptr);
     pass.SetBindGroup(2, mBindGroupModel, 0, nullptr);
     pass.SetBindGroup(3, mBindGroupPer, 0, nullptr);
-    pass.SetVertexBuffers(0, 1, &mPositionBuffer->getBuffer(), vertexBufferOffsets);
-    pass.SetVertexBuffers(1, 1, &mNormalBuffer->getBuffer(), vertexBufferOffsets);
-    pass.SetVertexBuffers(2, 1, &mTexCoordBuffer->getBuffer(), vertexBufferOffsets);
+    pass.SetVertexBuffer(0, mPositionBuffer->getBuffer());
+    pass.SetVertexBuffer(1, mNormalBuffer->getBuffer());
+    pass.SetVertexBuffer(2, mTexCoordBuffer->getBuffer());
     // diffuseShader doesn't have to input tangent buffer or binormal buffer.
     if (mTangentBuffer && mBiNormalBuffer)
     {
-        pass.SetVertexBuffers(3, 1, &mTangentBuffer->getBuffer(), vertexBufferOffsets);
-        pass.SetVertexBuffers(4, 1, &mBiNormalBuffer->getBuffer(), vertexBufferOffsets);
+        pass.SetVertexBuffer(3, mTangentBuffer->getBuffer());
+        pass.SetVertexBuffer(4, mBiNormalBuffer->getBuffer());
     }
     pass.SetIndexBuffer(mIndicesBuffer->getBuffer(), 0);
     pass.DrawIndexed(mIndicesBuffer->getTotalComponents(), 1, 0, 0, 0);
