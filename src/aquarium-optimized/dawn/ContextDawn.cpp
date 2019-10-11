@@ -397,14 +397,6 @@ dawn::RenderPipeline ContextDawn::createRenderPipeline(
     const dawn::ShaderModule &mVsModule = mProgramDawn->getVSModule();
     const dawn::ShaderModule &mFsModule = mProgramDawn->getFSModule();
 
-    dawn::PipelineStageDescriptor cVertexStage;
-    cVertexStage.entryPoint = "main";
-    cVertexStage.module     = mVsModule;
-
-    dawn::PipelineStageDescriptor cFragmentStage;
-    cFragmentStage.entryPoint = "main";
-    cFragmentStage.module     = mFsModule;
-
     dawn::BlendDescriptor blendDescriptor;
     blendDescriptor.operation = dawn::BlendOperation::Add;
     if (enableBlend)

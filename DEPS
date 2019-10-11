@@ -8,17 +8,18 @@ vars = {
   'chromium_git': 'https://chromium.googlesource.com',
   'github_git': 'https://github.com',
   'dawn_git': 'https://dawn.googlesource.com',
-  'dawn_revision': '52bd6b7da6a758888e99436656e836f178b762af',
+  'dawn_revision': '3b05a6e03160c1516a7e565b5cebe69dc0325bd5',
   'imgui_git': 'https://github.com/ocornut',
   'imgui_revision': 'e16564e67a2e88d4cbe3afa6594650712790fba3',
   'angle_root': 'third_party/angle',
   'angle_revision': '6c824a1bc17b286b86cf05a0228ec549875351eb',
-  'glslang_revision': '11805e41d992a9950a9f7f84c505bb7305fbd09f',
-  'build_revision': '54ea0e7fd122348de2f73ac21d1b6eafb9b78969',
-  'buildtools_revision': 'd5c58b84d50d256968271db459cd29b22bff1ba2',
-  'tools_clang_revision': '210f1dc3ebf8504ae246d925e9110ec427eef43f',
-  'spirv_tools_revision': '2090d7a2d26cb9bb0b8738f36a156ed3084a7ab0',
-  'spirv_headers_revision': 'de99d4d834aeb51dd9f099baa285bd44fd04bb3d',
+  'glslang_revision': '4b97a1108114107a8082a55e9e0721a40f9536d3',
+  'build_revision': 'f3d0ca5f46b7b190dbbdc6be508ca11dd5c54302',
+  'buildtools_revision': '74cfb57006f83cfe050817526db359d5c8a11628',
+  'tools_clang_revision': '3605577b67603ec5776afcfada9e0ff4ea05cf0e',
+  'spirv_tools_revision': '253806adc4c654c087ffe1e8e64b538d00989b16',
+  'spirv_headers_revision': 'b252a50953ac4375cb1864e94f4b0234db9d215d',
+  'shaderc_revision': '65adcb504d024bb29f0ad8279b6a215d5f679832',
 }
 
 deps = {
@@ -71,6 +72,10 @@ deps = {
   },
   'third_party/imgui': {
     'url': '{imgui_git}/imgui.git@{imgui_revision}',
+  },
+  'third_party/shaderc': {
+    'url': '{chromium_git}/external/github.com/google/shaderc@{shaderc_revision}',
+    'condition': 'dawn_standalone',
   },
 }
 

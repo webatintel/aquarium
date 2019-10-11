@@ -62,11 +62,9 @@ static void ImGui_ImplDawn_SetupRenderState(ImDrawData *draw_data,
     // Setup viewport
     // pass.SetViewport(0.0f, 0.0f, draw_data->DisplaySize.x, draw_data->DisplaySize.y, 0.0f, 1.0f);
 
-    uint64_t vertexBufferOffsets[1] = {0};
-
     pass.SetPipeline(mPipeline);
     pass.SetBindGroup(0, mBindGroup, 0, nullptr);
-    pass.SetVertexBuffers(0, 1, &mVertexBuffer, vertexBufferOffsets);
+    pass.SetVertexBuffer(0, mVertexBuffer);
     pass.SetIndexBuffer(mIndexBuffer, 0);
 }
 
@@ -272,14 +270,6 @@ bool ImGui_ImplDawn_CreateDeviceObjects()
 
     const dawn::ShaderModule &mVsModule = mProgramDawn->getVSModule();
     const dawn::ShaderModule &mFsModule = mProgramDawn->getFSModule();
-
-    dawn::PipelineStageDescriptor cVertexStage;
-    cVertexStage.entryPoint = "main";
-    cVertexStage.module     = mVsModule;
-
-    dawn::PipelineStageDescriptor cFragmentStage;
-    cFragmentStage.entryPoint = "main";
-    cFragmentStage.module     = mFsModule;
 
     dawn::BlendDescriptor blendDescriptor;
     blendDescriptor.operation = dawn::BlendOperation::Add;
