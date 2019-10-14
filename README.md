@@ -299,6 +299,12 @@ aquarium.exe --num-fish 10000 --backend dawn_vulkan --discrete-gpu
 # This mode is only implemented for Dawn backend.
 aquarium.exe --num-fish 10000 --backend dawn_d3d12 --buffer-mapping-async
 
+# "--enable-full-screen-mode" : Render aquarium in full screen mode instead of window mode.
+aquarium.exe --num-fish 10000 --backend dawn_d3d12 --enable-full-screen-mode
+
+# "--record-fps-frequency [count]" : Run aquarium 10 min and print fps log when exit.
+aquarium.exe --num-fish 10000 --backend dawn_d3d12 --record-fps-frequency [count]
+
 # aquarium-direct-map only has OpenGL backend
 # Enable MSAA
 ./aquarium-direct-map  --num-fish 10000 --backend opengl --enable-msaa
