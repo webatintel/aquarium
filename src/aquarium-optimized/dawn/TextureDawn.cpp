@@ -67,10 +67,13 @@ void TextureDawn::loadTexture()
 
         for (unsigned int i = 0; i < 6; i++)
         {
-            dawn::Buffer stagingBuffer = mContext->createBufferFromData(
-                mPixelVec[i], mWidth * mHeight * 4, dawn::BufferUsage::CopySrc);
+            dawn::CreateBufferMappedResult result = mContext->CreateBufferMapped(
+                dawn::BufferUsage::CopySrc | dawn::BufferUsage::MapWrite, mWidth * mHeight * 4);
+            memcpy(result.data, mPixelVec[i], mWidth * mHeight * 4);
+            result.buffer.Unmap();
+
             dawn::BufferCopyView bufferCopyView =
-                mContext->createBufferCopyView(stagingBuffer, 0, mWidth * 4, mHeight);
+                mContext->createBufferCopyView(result.buffer, 0, mWidth * 4, mHeight);
             dawn::TextureCopyView textureCopyView =
                 mContext->createTextureCopyView(mTexture, 0, i, {0, 0, 0});
             dawn::Extent3D copySize = { static_cast<uint32_t>(mWidth), static_cast<uint32_t>(mHeight), 1 };
@@ -139,10 +142,14 @@ void TextureDawn::loadTexture()
                 height = 1;
             }
 
-            dawn::Buffer stagingBuffer = mContext->createBufferFromData(
-                mResizedVec[i], resizedWidth * height * 4, dawn::BufferUsage::CopySrc);
+            dawn::CreateBufferMappedResult result = mContext->CreateBufferMapped(
+                dawn::BufferUsage::CopySrc | dawn::BufferUsage::MapWrite,
+                resizedWidth * height * 4);
+            memcpy(result.data, mResizedVec[i], resizedWidth * height * 4);
+            result.buffer.Unmap();
+
             dawn::BufferCopyView bufferCopyView =
-                mContext->createBufferCopyView(stagingBuffer, 0, resizedWidth * 4, height);
+                mContext->createBufferCopyView(result.buffer, 0, resizedWidth * 4, height);
             dawn::TextureCopyView textureCopyView =
                 mContext->createTextureCopyView(mTexture, i, 0, {0, 0, 0});
             dawn::Extent3D copySize = {static_cast<uint32_t>(width),

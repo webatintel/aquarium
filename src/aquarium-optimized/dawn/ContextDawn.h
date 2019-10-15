@@ -101,6 +101,7 @@ class ContextDawn : public Context
                          bool enableDynamicBufferOffset) override;
     void updateAllFishData(
         const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset) override;
+    dawn::CreateBufferMappedResult CreateBufferMapped(dawn::BufferUsage usage, uint64_t size);
 
     std::vector<dawn::CommandBuffer> mCommandBuffers;
     dawn::Queue queue;
