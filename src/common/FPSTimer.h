@@ -11,7 +11,6 @@
 
 #include <vector>
 
-constexpr int NUM_FRAMES_TO_AVERAGE = 16;
 constexpr int NUM_HISTORY_DATA = 100;
 
 class FPSTimer
@@ -19,23 +18,18 @@ class FPSTimer
 public:
   FPSTimer();
 
-  void update(float elapsedTime, float renderingTime, int logCount);
-  float getAverageFPS() const { return mAverageFPS; }
-  float getInstantaneousFPS() const { return mInstantaneousFPS; }
+  void update(double renderingTime, int fpsCount, int logCount);
+  double getAverageFPS() const { return mAverageFPS; }
   const float *getHistoryFps() const { return mHistoryFPS.data(); }
   const float *getHistoryFrameTime() const { return mHistoryFrameTime.data(); }
   std::vector<float> &getRecordFps() { return mRecordFps; }
 
 private:
-  float mTotalTime;
-  std::vector<float> mTimeTable;
   std::vector<float> mHistoryFPS;
   std::vector<float> mHistoryFrameTime;
   std::vector<float> mRecordFps;
-  int mTimeTableCursor;
   int mRecordFpsFrequencyCursor;
-  float mInstantaneousFPS;
-  float mAverageFPS;
+  double mAverageFPS;
 };
 
 #endif

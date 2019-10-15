@@ -46,9 +46,11 @@ Aquarium::Aquarium()
       mBackendType(BACKENDTYPE::BACKENDTYPELAST),
       mFactory(nullptr)
 {
-    g.then     = 0.0f;
-    g.mclock   = 0.0f;
-    g.eyeClock = 0.0f;
+    g.then          = 0.0;
+    g.mclock        = 0.0;
+    g.eyeClock      = 0.0;
+    g.lastUpdateFps = 0.0;
+    g.fpsCount      = 0;
 
     lightUniforms.lightColor[0] = 1.0f;
     lightUniforms.lightColor[1] = 1.0f;
@@ -356,13 +358,21 @@ bool Aquarium::init(int argc, char **argv)
     std::cout << "End loading.\nCost " << getElapsedTime() << "s totally." << std::endl;
     mContext->showWindow();
 
-#ifdef _WIN32
-    g.start = GetTickCount64() / 1000.0f;
-#else
-    g.start   = clock() / 1000000.0f;
-#endif
+    resetFpsTime();
 
     return true;
+}
+
+void Aquarium::resetFpsTime()
+{
+#ifdef _WIN32
+    g.start = GetTickCount64() / 1000.0;
+#else
+    g.start = clock() / 1000000.0;
+#endif
+    g.then          = g.start;
+    g.lastUpdateFps = g.then;
+    g.fpsCount      = 0;
 }
 
 void Aquarium::display()
@@ -457,9 +467,9 @@ void Aquarium::loadModels()
 void Aquarium::loadModel(const G_sceneInfo &info)
 {
     const ResourceHelper *resourceHelper = mContext->getResourceHelper();
-    std::string imagePath          = resourceHelper->getImagePath();
-    std::string programPath        = resourceHelper->getProgramPath();
-    std::string modelPath          = resourceHelper->getModelPath(std::string(info.namestr));
+    std::string imagePath                = resourceHelper->getImagePath();
+    std::string programPath              = resourceHelper->getProgramPath();
+    std::string modelPath                = resourceHelper->getModelPath(std::string(info.namestr));
 
     std::ifstream ModelStream(modelPath, std::ios::in);
     rapidjson::IStreamWrapper is(ModelStream);
@@ -609,18 +619,18 @@ void Aquarium::calculateFishCount()
     }
 }
 
-float Aquarium::getElapsedTime()
+double Aquarium::getElapsedTime()
 {
     // Update our time
 #ifdef _WIN32
-    float now = GetTickCount64() / 1000.0f;
+    double now = GetTickCount64() / 1000.0;
 #else
-    float now = clock() / 1000000.0f;
+    double now = clock() / 1000000.0;
 #endif
-    float elapsedTime = 0.0f;
-    if (g.then == 0.0f)
+    double elapsedTime = 0.0;
+    if (g.then == 0.0)
     {
-        elapsedTime = 0.0f;
+        elapsedTime = 0.0;
     }
     else
     {
@@ -637,7 +647,8 @@ void Aquarium::printRecordFps()
     if (fps.size() == 0)
     {
         std::cout << "No fps data, maybe record frequency count is too large or rendering time is "
-                     "too short." << std::endl;
+                     "too short."
+                  << std::endl;
         return;
     }
 
@@ -652,10 +663,15 @@ void Aquarium::printRecordFps()
 
 void Aquarium::updateGlobalUniforms()
 {
-    float elapsedTime   = getElapsedTime();
-    float renderingTime = g.then - g.start;
-    mFpsTimer.update(elapsedTime, renderingTime, logCount);
-
+    double elapsedTime   = getElapsedTime();
+    double renderingTime = g.then - g.start;
+    g.fpsCount++;
+    // Update fps every 50ms
+    if (g.then - g.lastUpdateFps > FPSUPDATEINTERVAL)
+    {
+        mFpsTimer.update(renderingTime, g.fpsCount, logCount);
+        g.lastUpdateFps = g.then;
+    }
     g.mclock += elapsedTime * g_speed;
     g.eyeClock += elapsedTime * g_eyeSpeed;
 
@@ -728,6 +744,8 @@ void Aquarium::render()
                 toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEDYNAMICBUFFEROFFSET));
             mContext->reallocResource(mPreFishCount, mCurFishCount, enableDynamicBufferOffset);
             mPreFishCount = mCurFishCount;
+
+            resetFpsTime();
         }
 
     drawFishes();

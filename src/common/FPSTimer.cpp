@@ -12,42 +12,23 @@
 #include <cmath>
 
 FPSTimer::FPSTimer()
-    : mTotalTime(static_cast<float>(NUM_FRAMES_TO_AVERAGE)),
-      mTimeTable(NUM_FRAMES_TO_AVERAGE, 1.0f),
-      mHistoryFPS(NUM_HISTORY_DATA, 1.0f),
-      mHistoryFrameTime(NUM_HISTORY_DATA, 100.0f),
-      mTimeTableCursor(0),
+    : mHistoryFPS(NUM_HISTORY_DATA, 1.0),
+      mHistoryFrameTime(NUM_HISTORY_DATA, 100.0),
       mRecordFpsFrequencyCursor(0),
-      mInstantaneousFPS(0.0f),
-      mAverageFPS(0.0f)
+      mAverageFPS(0.0)
 {}
 
-void FPSTimer::update(float elapsedTime, float renderingTime, int logCount)
+void FPSTimer::update(double renderingTime, int fpsCount, int logCount)
 {
-    mTotalTime += elapsedTime - mTimeTable[mTimeTableCursor];
-    mTimeTable[mTimeTableCursor] = elapsedTime;
-
-    ++mTimeTableCursor;
-    if (mTimeTableCursor == NUM_FRAMES_TO_AVERAGE)
-    {
-        mTimeTableCursor = 0;
-    }
-
-    mInstantaneousFPS = floor(1.0f / elapsedTime + 0.5f);
-    mAverageFPS = floor((1.0f / (mTotalTime / static_cast<float>(NUM_FRAMES_TO_AVERAGE))) + 0.5f);
+    mAverageFPS = floor((1.0 / (renderingTime / fpsCount)) + 0.5);
 
     for (int i = 0; i < NUM_HISTORY_DATA; i++)
     {
         mHistoryFPS[i]       = mHistoryFPS[i + 1];
         mHistoryFrameTime[i] = mHistoryFrameTime[i + 1];
     }
-
     mHistoryFPS[NUM_HISTORY_DATA - 1]       = mAverageFPS;
-    mHistoryFrameTime[NUM_HISTORY_DATA - 1] = 1000.0f / mAverageFPS;
-
-    ++mRecordFpsFrequencyCursor;
-    if (renderingTime < 5)
-        return;
+    mHistoryFrameTime[NUM_HISTORY_DATA - 1] = 1000.0 / mAverageFPS;
 
     ASSERT(logCount != 0);
     if (mRecordFpsFrequencyCursor % logCount == 0)
@@ -55,4 +36,5 @@ void FPSTimer::update(float elapsedTime, float renderingTime, int logCount)
         mRecordFps.push_back(mAverageFPS);
         mRecordFpsFrequencyCursor = 0;
     }
+    mRecordFpsFrequencyCursor++;
 }
