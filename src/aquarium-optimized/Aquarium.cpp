@@ -302,11 +302,21 @@ bool Aquarium::init(int argc, char **argv)
         {
             if (!availableToggleBitset.test(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC)))
             {
-                std::cerr << "Full screen mode isn't supported for the backend." << std::endl;
+                std::cerr << "Buffer mapping async isn't supported for the backend." << std::endl;
                 return false;
             }
 
             toggleBitset.set(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC));
+        }
+        else if (cmd == "--turn-off-vsync")
+        {
+            if (!availableToggleBitset.test(static_cast<size_t>(TOGGLE::TURNOFFVSYNC)))
+            {
+                std::cerr << "Turn off vsync isn't supported for the backend." << std::endl;
+                return false;
+            }
+
+            toggleBitset.set(static_cast<size_t>(TOGGLE::TURNOFFVSYNC));
         }
         else
         {

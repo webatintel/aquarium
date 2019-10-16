@@ -127,6 +127,8 @@ enum TOGGLE : short
     RECORDFPSFREQUENCY,
     // Use async buffer mapping to upload data
     BUFFERMAPPINGASYNC,
+    // Turn off vsync, donot limit fps to 60
+    TURNOFFVSYNC,
     TOGGLEMAX
 };
 
