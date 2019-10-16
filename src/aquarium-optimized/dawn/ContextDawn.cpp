@@ -12,6 +12,7 @@
 #include <dawn/dawn.h>
 #include <dawn/dawn_wsi.h>
 #include <dawn/dawncpp.h>
+#include <dawn/dawn_proc.h>
 #include <dawn_native/DawnNative.h>
 #include <shaderc/shaderc.hpp>
 
@@ -192,7 +193,7 @@ bool ContextDawn::initialize(
         return false;
     }
 
-    dawnSetProcs(&backendProcs);
+    dawnProcSetProcs(&backendProcs);
     mDevice = dawn::Device::Acquire(backendDevice);
 
     queue = mDevice.CreateQueue();
