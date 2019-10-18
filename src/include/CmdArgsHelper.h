@@ -19,7 +19,8 @@ const char *cmdArgsStrAquarium = R"(Options and arguments:
 --enable-full-screen-mode       : Render aquarium in full screen mode instead of window mode.
 --integrated-gpu        : Choose integrated gpu to render the application. This is only supported on Dawn and D3D12 backend.
 --num-fish [count]      : specifies how many fishes will be rendered.
---record-fps-frequency [count]  : Run aquarium 10 min and print fps log when exit.)";
+--record-fps-frequency [count]  : Record fps every count frame and print fps log when exit.
+--test-time [second]    : Render the application for some second and then exit, and the application will run 5 min by default.)";
 
 const char *cmdArgsStrAquariumDirectMap = R"(Options and arguments:
 --backend               : specifies running a certain backend, only 'opengl' is supported for aquarium-direct-map.
