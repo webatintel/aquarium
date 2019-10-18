@@ -305,6 +305,9 @@ aquarium.exe --num-fish 10000 --backend dawn_d3d12 --enable-full-screen-mode
 # "--record-fps-frequency [count]" : Run aquarium 10 min and print fps log when exit.
 aquarium.exe --num-fish 10000 --backend dawn_d3d12 --record-fps-frequency [count]
 
+# "--test-time [second]" : Render the application for some second and then exit, and the application will run 5 min by default.
+aquarium.exe --num-fish 10000 --backend dawn_d3d12 --test-time 30
+
 # aquarium-direct-map only has OpenGL backend
 # Enable MSAA
 ./aquarium-direct-map  --num-fish 10000 --backend opengl --enable-msaa

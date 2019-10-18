@@ -42,6 +42,7 @@ Aquarium::Aquarium()
       mCurFishCount(1),
       mPreFishCount(0),
       logCount(INT_MAX),
+      mTestTime(300),
       mBackendType(BACKENDTYPE::BACKENDTYPELAST),
       mFactory(nullptr)
 {
@@ -318,6 +319,11 @@ bool Aquarium::init(int argc, char **argv)
 
             toggleBitset.set(static_cast<size_t>(TOGGLE::TURNOFFVSYNC));
         }
+        else if (cmd == "--test-time")
+        {
+
+            mTestTime = strtol(argv[i++ + 1], &pNext, 10);
+        }
         else
         {
         }
@@ -368,7 +374,7 @@ void Aquarium::display()
 
         mContext->DoFlush(toggleBitset);
 
-        if (g.then - g.start > 600)
+        if (g.then - g.start > mTestTime)
         {
             break;
         }
