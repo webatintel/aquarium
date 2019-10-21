@@ -12,7 +12,9 @@
 
 #include <sstream>
 
-void Context::renderImgui(const FPSTimer &fpsTimer, int *fishCount)
+void Context::renderImgui(const FPSTimer &fpsTimer,
+                          int *fishCount,
+                          std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> *toggleBitset)
 {
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
@@ -72,6 +74,33 @@ void Context::renderImgui(const FPSTimer &fpsTimer, int *fishCount)
 
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
                     1000.0f / fpsTimer.getAverageFPS(), fpsTimer.getAverageFPS());
+
+        if (toggleBitset->test(static_cast<size_t>(TOGGLE::ENABLEMSAAx4)))
+        {
+            ImGui::Text("MSAAx4: ON");
+        }
+        else
+        {
+            ImGui::Text("MSAAx4: OFF");
+        }
+
+        if (toggleBitset->test(static_cast<size_t>(TOGGLE::ENABLEDYNAMICBUFFEROFFSET)))
+        {
+            ImGui::Text("DBO: ON");
+        }
+        else
+        {
+            ImGui::Text("DBO: OFF");
+        }
+
+        if (toggleBitset->test(static_cast<size_t>(TOGGLE::ENABLEINSTANCEDDRAWS)))
+        {
+            ImGui::Text("INSTANCEDDRAWS: ON");
+        }
+        else
+        {
+            ImGui::Text("INSTANCEDDRAWS: OFF");
+        }
 
         ImGui::Checkbox("Option Window", &show_option_window);
 
