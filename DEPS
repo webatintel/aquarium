@@ -8,7 +8,7 @@ vars = {
   'chromium_git': 'https://chromium.googlesource.com',
   'github_git': 'https://github.com',
   'dawn_git': 'https://dawn.googlesource.com',
-  'dawn_revision': 'fd90d767ba58faedc1fa74363ebcb2eb99159ba1',
+  'dawn_revision': '5c2f5f3961cba2d6a98e3a9a2656685fb4f77f80',
   'imgui_git': 'https://github.com/ocornut',
   'imgui_revision': 'e16564e67a2e88d4cbe3afa6594650712790fba3',
   'angle_root': 'third_party/angle',
@@ -20,6 +20,8 @@ vars = {
   'spirv_tools_revision': '253806adc4c654c087ffe1e8e64b538d00989b16',
   'spirv_headers_revision': 'b252a50953ac4375cb1864e94f4b0234db9d215d',
   'shaderc_revision': '65adcb504d024bb29f0ad8279b6a215d5f679832',
+  'jsoncpp_revision': '571788934b5ee8643d53e5d054534abbe6006168',
+  'jsoncpp_source_revision': '645250b6690785be60ab6780ce4b58698d884d11',
 }
 
 deps = {
@@ -75,6 +77,14 @@ deps = {
   },
   'third_party/shaderc': {
     'url': '{chromium_git}/external/github.com/google/shaderc@{shaderc_revision}',
+    'condition': 'dawn_standalone',
+  },
+  'third_party/jsoncpp': {
+    'url': '{chromium_git}/chromium/src/third_party/jsoncpp@{jsoncpp_revision}',
+    'condition': 'dawn_standalone',
+  },
+  'third_party/jsoncpp/source': {
+    'url' : '{chromium_git}/external/github.com/open-source-parsers/jsoncpp@{jsoncpp_source_revision}',
     'condition': 'dawn_standalone',
   },
 }
