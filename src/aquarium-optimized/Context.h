@@ -57,7 +57,9 @@ class Context
     virtual void Flush() {}
     virtual void preFrame()   = 0;
     virtual void showWindow() = 0;
-    virtual void showFPS(const FPSTimer &fpsTimer, int *fishCount) = 0;
+    virtual void showFPS(const FPSTimer &fpsTimer,
+                         int *fishCount,
+                         std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> *toggleBitset) = 0;
     virtual void destoryImgUI() = 0;
     virtual void reallocResource(int preTotalInstance,
                                  int curTotalInstance,
@@ -80,7 +82,9 @@ class Context
     ResourceHelper *getResourceHelper() { return mResourceHelper; }
 
   protected:
-    void renderImgui(const FPSTimer &fpsTimer, int *fishCount);
+    void renderImgui(const FPSTimer &fpsTimer,
+                     int *fishCount,
+                     std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> *toggleBitset);
 
     int mClientWidth;
     int mClientHeight;

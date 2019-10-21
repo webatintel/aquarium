@@ -468,11 +468,13 @@ void ContextD3D12::showWindow()
     glfwShowWindow(mWindow);
 }
 
-void ContextD3D12::showFPS(const FPSTimer &fpsTimer, int *fishCount)
+void ContextD3D12::showFPS(const FPSTimer &fpsTimer,
+                           int *fishCount,
+                           std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> *toggleBitset)
 {
     // Start the Dear ImGui frame
     ImGui_ImplDX12_NewFrame();
-    renderImgui(fpsTimer, fishCount);
+    renderImgui(fpsTimer, fishCount, toggleBitset);
     ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), mCommandList.Get());
 }
 
