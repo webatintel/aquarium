@@ -177,6 +177,7 @@ class ContextD3D12 : public Context
     D3D12_RENDER_TARGET_VIEW_DESC mSceneRenderTargetView;
 
     bool mEnableMSAA;
+    UINT mVsync;
 };
 
 #endif
