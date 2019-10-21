@@ -60,7 +60,8 @@ ContextD3D12::ContextD3D12(BACKENDTYPE backendType)
       mLightView({}),
       mFogView({}),
       mSceneRenderTargetView({}),
-      mEnableMSAA(false)
+      mEnableMSAA(false),
+      mVsync(1u)
 {
     for (UINT n = 0; n < mFrameCount; n++)
     {
@@ -82,6 +83,7 @@ bool ContextD3D12::initialize(
     const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset)
 {
     mEnableMSAA = toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEMSAAx4));
+    mVsync      = toggleBitset.test(static_cast<size_t>(TOGGLE::TURNOFFVSYNC)) ? 0 : 1;
 
     // initialise GLFW
     if (!glfwInit())
@@ -375,6 +377,7 @@ void ContextD3D12::initAvailableToggleBitset(BACKENDTYPE backendType)
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::DISCRETEGPU));
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::INTEGRATEDGPU));
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEFULLSCREENMODE));
+    mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::TURNOFFVSYNC));
 }
 
 void ContextD3D12::DoFlush(const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset)
@@ -409,7 +412,7 @@ void ContextD3D12::DoFlush(const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEM
     mCommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
     // Present the frame.
-    ThrowIfFailed(mSwapChain->Present(1, 0));
+    ThrowIfFailed(mSwapChain->Present(mVsync, 0));
 
     WaitForPreviousFrame();
 
@@ -435,7 +438,7 @@ void ContextD3D12::Flush()
             ThrowIfFailed(HRESULT_FROM_WIN32(GetLastError()));
         }
 
-        ThrowIfFailed(mSwapChain->Present(1, 0));
+        ThrowIfFailed(mSwapChain->Present(mVsync, 0));
         m_frameIndex = mSwapChain->GetCurrentBackBufferIndex();
 
         WaitForPreviousFrame();
