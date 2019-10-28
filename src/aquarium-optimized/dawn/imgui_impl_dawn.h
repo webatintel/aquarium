@@ -8,7 +8,7 @@
 
 #include "ContextDawn.h"
 #include "imgui.h"
-#include "utils/DawnHelpers.h"
+#include "utils/WGPUHelpers.h"
 
 IMGUI_IMPL_API bool ImGui_ImplDawn_Init(ContextDawn *context,
                                         dawn::TextureFormat rtv_format,

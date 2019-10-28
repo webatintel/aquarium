@@ -13,7 +13,7 @@
 #include <dawn_native/DawnNative.h>
 
 #include "GLFW/glfw3.h"
-#include "utils/DawnHelpers.h"
+#include "utils/WGPUHelpers.h"
 
 #include "../Context.h"
 
