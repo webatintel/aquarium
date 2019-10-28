@@ -56,7 +56,7 @@ void Context::renderImgui(const FPSTimer &fpsTimer,
     }
 
     {
-        ImGui::Begin("Aquarium Native");
+        ImGui::Begin("Aquarium");
 
         std::string rendererInfo = mResourceHelper->getRendererInfo();
         ImGui::Text(rendererInfo.c_str());
