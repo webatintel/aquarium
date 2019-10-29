@@ -37,9 +37,10 @@ class Context
   public:
     Context() : show_option_window(false) {}
     virtual ~Context() {}
-    virtual bool initialize(
-        BACKENDTYPE backend,
-        const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset)              = 0;
+    virtual bool initialize(BACKENDTYPE backend,
+                            const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset,
+                            int windowWidth,
+                            int windowHeight)                                                 = 0;
     virtual Texture *createTexture(const std::string &name, const std::string &url)           = 0;
     virtual Texture *createTexture(const std::string &name,
                                    const std::vector<std::string> &urls)                      = 0;
@@ -85,6 +86,7 @@ class Context
     void renderImgui(const FPSTimer &fpsTimer,
                      int *fishCount,
                      std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> *toggleBitset);
+    void setWindowSize(int windowWidth, int windowHeight);
 
     int mClientWidth;
     int mClientHeight;

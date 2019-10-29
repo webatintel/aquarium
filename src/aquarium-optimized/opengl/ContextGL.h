@@ -35,9 +35,10 @@ class ContextGL : public Context
   public:
     ContextGL(BACKENDTYPE backendType);
     ~ContextGL();
-    bool initialize(
-        BACKENDTYPE backend,
-        const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset) override;
+    bool initialize(BACKENDTYPE backend,
+                    const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset,
+                    int windowWidth,
+                    int windowHeight) override;
     void setWindowTitle(const std::string &text) override;
     bool ShouldQuit() override;
     void KeyBoardQuit() override;

@@ -20,7 +20,10 @@ const char *cmdArgsStrAquarium = R"(Options and arguments:
 --integrated-gpu        : Choose integrated gpu to render the application. This is only supported on Dawn and D3D12 backend.
 --num-fish [count]      : specifies how many fishes will be rendered.
 --record-fps-frequency [count]  : Record fps every count frame and print fps log when exit.
---test-time [second]    : Render the application for some second and then exit, and the application will run 5 min by default.)";
+--test-time [second]    : Render the application for some second and then exit, and the application will run 5 min by default.
+--window-width [width]) : Set window width.
+--window-height [height]: Set window height.";
+
 
 const char *cmdArgsStrAquariumDirectMap = R"(Options and arguments:
 --backend               : specifies running a certain backend, only 'opengl' is supported for aquarium-direct-map.

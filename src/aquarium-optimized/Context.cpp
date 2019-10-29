@@ -109,3 +109,15 @@ void Context::renderImgui(const FPSTimer &fpsTimer,
 
     ImGui::Render();
 }
+
+void Context::setWindowSize(int windowWidth, int windowHeight)
+{
+    if (windowWidth != 0)
+    {
+        mClientWidth = windowWidth;
+    }
+    if (windowHeight != 0)
+    {
+        mClientHeight = windowHeight;
+    }
+}

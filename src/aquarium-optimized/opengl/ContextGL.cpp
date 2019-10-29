@@ -42,7 +42,9 @@ ContextGL::~ContextGL()
 }
 
 bool ContextGL::initialize(BACKENDTYPE backend,
-                           const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset)
+                           const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset,
+                           int windowWidth,
+                           int windowHeight)
 {
     // initialise GLFW
     if (!glfwInit())
@@ -81,6 +83,8 @@ bool ContextGL::initialize(BACKENDTYPE backend,
     const GLFWvidmode *mode = glfwGetVideoMode(pMonitor);
     mClientWidth            = mode->width;
     mClientHeight           = mode->height;
+
+    setWindowSize(windowWidth, windowHeight);
 
     glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
     if (toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEFULLSCREENMODE)))
