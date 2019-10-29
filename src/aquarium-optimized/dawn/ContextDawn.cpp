@@ -105,7 +105,9 @@ ContextDawn::~ContextDawn()
 
 bool ContextDawn::initialize(
     BACKENDTYPE backend,
-    const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset)
+    const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset,
+    int windowWidth,
+    int windowHeight)
 {
     dawn_native::BackendType backendType = dawn_native::BackendType::Null;
 
@@ -155,6 +157,8 @@ bool ContextDawn::initialize(
     const GLFWvidmode *mode = glfwGetVideoMode(pMonitor);
     mClientWidth            = mode->width;
     mClientHeight           = mode->height;
+
+    setWindowSize(windowWidth, windowHeight);
 
     if (toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEFULLSCREENMODE)))
     {

@@ -80,7 +80,9 @@ ContextD3D12::~ContextD3D12()
 
 bool ContextD3D12::initialize(
     BACKENDTYPE backend,
-    const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset)
+    const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset,
+    int windowWidth,
+    int windowHeight)
 {
     mEnableMSAA = toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEMSAAx4));
     mVsync      = toggleBitset.test(static_cast<size_t>(TOGGLE::TURNOFFVSYNC)) ? 0 : 1;
@@ -101,6 +103,8 @@ bool ContextD3D12::initialize(
     const GLFWvidmode *mode = glfwGetVideoMode(pMonitor);
     mClientWidth            = mode->width;
     mClientHeight           = mode->height;
+
+    setWindowSize(windowWidth, windowHeight);
 
     if (toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEFULLSCREENMODE)))
     {
