@@ -7,7 +7,11 @@
 
 #include "SeaweedModelDawn.h"
 
-SeaweedModelDawn::SeaweedModelDawn(const Context* context, Aquarium* aquarium, MODELGROUP type, MODELNAME name, bool blend)
+SeaweedModelDawn::SeaweedModelDawn(const Context *context,
+                                   Aquarium *aquarium,
+                                   MODELGROUP type,
+                                   MODELNAME name,
+                                   bool blend)
     : SeaweedModel(type, name, blend), instance(0)
 {
     mContextDawn = static_cast<const ContextDawn *>(context);
@@ -46,35 +50,35 @@ void SeaweedModelDawn::init()
 
     mVertexInputDescriptor.cBuffers[0].attributeCount    = 1;
     mVertexInputDescriptor.cBuffers[0].stride            = mPositionBuffer->getDataSize();
-    mVertexInputDescriptor.cAttributes[0].format         = dawn::VertexFormat::Float3;
+    mVertexInputDescriptor.cAttributes[0].format         = wgpu::VertexFormat::Float3;
     mVertexInputDescriptor.cAttributes[0].shaderLocation = 0;
     mVertexInputDescriptor.cAttributes[0].offset         = 0;
     mVertexInputDescriptor.cBuffers[0].attributes        = &mVertexInputDescriptor.cAttributes[0];
     mVertexInputDescriptor.cBuffers[1].attributeCount    = 1;
     mVertexInputDescriptor.cBuffers[1].stride            = mNormalBuffer->getDataSize();
-    mVertexInputDescriptor.cAttributes[1].format         = dawn::VertexFormat::Float3;
+    mVertexInputDescriptor.cAttributes[1].format         = wgpu::VertexFormat::Float3;
     mVertexInputDescriptor.cAttributes[1].shaderLocation = 1;
     mVertexInputDescriptor.cAttributes[1].offset         = 0;
     mVertexInputDescriptor.cBuffers[1].attributes        = &mVertexInputDescriptor.cAttributes[1];
     mVertexInputDescriptor.cBuffers[2].attributeCount    = 1;
     mVertexInputDescriptor.cBuffers[2].stride            = mTexCoordBuffer->getDataSize();
-    mVertexInputDescriptor.cAttributes[2].format         = dawn::VertexFormat::Float2;
+    mVertexInputDescriptor.cAttributes[2].format         = wgpu::VertexFormat::Float2;
     mVertexInputDescriptor.cAttributes[2].shaderLocation = 2;
     mVertexInputDescriptor.cAttributes[2].offset         = 0;
     mVertexInputDescriptor.cBuffers[2].attributes        = &mVertexInputDescriptor.cAttributes[2];
     mVertexInputDescriptor.bufferCount                   = 3;
-    mVertexInputDescriptor.indexFormat                   = dawn::IndexFormat::Uint16;
+    mVertexInputDescriptor.indexFormat                   = wgpu::IndexFormat::Uint16;
 
     mGroupLayoutModel = mContextDawn->MakeBindGroupLayout({
-        {0, dawn::ShaderStage::Fragment, dawn::BindingType::UniformBuffer},
-        {1, dawn::ShaderStage::Fragment, dawn::BindingType::Sampler},
-        {2, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture, false, false,
-         dawn::TextureViewDimension::e2D, dawn::TextureComponentType::Float},
+        {0, wgpu::ShaderStage::Fragment, wgpu::BindingType::UniformBuffer},
+        {1, wgpu::ShaderStage::Fragment, wgpu::BindingType::Sampler},
+        {2, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture, false, false,
+         wgpu::TextureViewDimension::e2D, wgpu::TextureComponentType::Float},
     });
 
     mGroupLayoutPer = mContextDawn->MakeBindGroupLayout({
-        {0, dawn::ShaderStage::Vertex, dawn::BindingType::UniformBuffer},
-        {1, dawn::ShaderStage::Vertex, dawn::BindingType::UniformBuffer},
+        {0, wgpu::ShaderStage::Vertex, wgpu::BindingType::UniformBuffer},
+        {1, wgpu::ShaderStage::Vertex, wgpu::BindingType::UniformBuffer},
     });
 
     mPipelineLayout = mContextDawn->MakeBasicPipelineLayout({
@@ -89,13 +93,13 @@ void SeaweedModelDawn::init()
 
     mLightFactorBuffer =
         mContextDawn->createBufferFromData(&mLightFactorUniforms, sizeof(mLightFactorUniforms),
-                                           dawn::BufferUsage::CopyDst | dawn::BufferUsage::Uniform);
+                                           wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
     mTimeBuffer =
         mContextDawn->createBufferFromData(&mSeaweedPer, sizeof(mSeaweedPer) * 4,
-                                           dawn::BufferUsage::CopyDst | dawn::BufferUsage::Uniform);
+                                           wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
     mViewBuffer =
         mContextDawn->createBufferFromData(&mWorldUniformPer, sizeof(WorldUniformPer),
-                                           dawn::BufferUsage::CopyDst | dawn::BufferUsage::Uniform);
+                                           wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
 
     mBindGroupModel = mContextDawn->makeBindGroup(
         mGroupLayoutModel, {
@@ -122,7 +126,7 @@ void SeaweedModelDawn::prepareForDraw()
 
 void SeaweedModelDawn::draw()
 {
-    dawn::RenderPassEncoder pass = mContextDawn->getRenderPass();
+    wgpu::RenderPassEncoder pass = mContextDawn->getRenderPass();
     pass.SetPipeline(mPipeline);
     pass.SetBindGroup(0, mContextDawn->bindGroupGeneral, 0, nullptr);
     pass.SetBindGroup(1, mContextDawn->bindGroupWorld, 0, nullptr);

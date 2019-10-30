@@ -9,7 +9,7 @@
 #ifndef TEXTUREDAWN_H
 #define TEXTUREDAWN_H
 
-#include <dawn/dawncpp.h>
+#include <dawn/webgpu_cpp.h>
 
 #include "../Texture.h"
 
@@ -24,21 +24,21 @@ class TextureDawn : public Texture
                 const std::string &name,
                 const std::vector<std::string> &urls);
 
-    const dawn::Texture &getTextureId() const { return mTexture; }
-    const dawn::Sampler &getSampler() const { return mSampler; }
-    dawn::TextureDimension getTextureDimension() { return mTextureDimension; }
-    dawn::TextureViewDimension getTextureViewDimension() { return mTextureViewDimension; }
-    dawn::TextureView getTextureView() { return mTextureView; }
+    const wgpu::Texture &getTextureId() const { return mTexture; }
+    const wgpu::Sampler &getSampler() const { return mSampler; }
+    wgpu::TextureDimension getTextureDimension() { return mTextureDimension; }
+    wgpu::TextureViewDimension getTextureViewDimension() { return mTextureViewDimension; }
+    wgpu::TextureView getTextureView() { return mTextureView; }
 
     void loadTexture() override;
 
   private:
-    dawn::TextureDimension mTextureDimension;  // texture 2D or CubeMap
-    dawn::TextureViewDimension mTextureViewDimension;
-    dawn::Texture mTexture;
-    dawn::Sampler mSampler;
-    dawn::TextureFormat mFormat;
-    dawn::TextureView mTextureView;
+    wgpu::TextureDimension mTextureDimension;  // texture 2D or CubeMap
+    wgpu::TextureViewDimension mTextureViewDimension;
+    wgpu::Texture mTexture;
+    wgpu::Sampler mSampler;
+    wgpu::TextureFormat mFormat;
+    wgpu::TextureView mTextureView;
     std::vector<unsigned char *> mPixelVec;
     std::vector<unsigned char *> mResizedVec;
     ContextDawn *mContext;

@@ -30,12 +30,12 @@ public:
     ~ProgramDawn() override;
 
     void loadProgram();
-    dawn::ShaderModule getVSModule() { return mVsModule; }
-    dawn::ShaderModule getFSModule() { return mFsModule; }
+    wgpu::ShaderModule getVSModule() { return mVsModule; }
+    wgpu::ShaderModule getFSModule() { return mFsModule; }
 
   private:
-    dawn::ShaderModule mVsModule;
-    dawn::ShaderModule mFsModule;
+    wgpu::ShaderModule mVsModule;
+    wgpu::ShaderModule mFsModule;
 
     ContextDawn *context;
 };

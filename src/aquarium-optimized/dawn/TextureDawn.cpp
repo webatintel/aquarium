@@ -24,11 +24,11 @@ TextureDawn::~TextureDawn() {
 
 TextureDawn::TextureDawn(ContextDawn *context, const std::string &name, const std::string &url)
     : Texture(name, url, true),
-      mTextureDimension(dawn::TextureDimension::e2D),
-      mTextureViewDimension(dawn::TextureViewDimension::e2D),
+      mTextureDimension(wgpu::TextureDimension::e2D),
+      mTextureViewDimension(wgpu::TextureViewDimension::e2D),
       mTexture(nullptr),
       mSampler(nullptr),
-      mFormat(dawn::TextureFormat::RGBA8Unorm),
+      mFormat(wgpu::TextureFormat::RGBA8Unorm),
       mTextureView(nullptr),
       mContext(context)
 {
@@ -38,22 +38,22 @@ TextureDawn::TextureDawn(ContextDawn *context,
                          const std::string &name,
                          const std::vector<std::string> &urls)
     : Texture(name, urls, false),
-      mTextureDimension(dawn::TextureDimension::e2D),
-      mTextureViewDimension(dawn::TextureViewDimension::Cube),
-      mFormat(dawn::TextureFormat::RGBA8Unorm),
+      mTextureDimension(wgpu::TextureDimension::e2D),
+      mTextureViewDimension(wgpu::TextureViewDimension::Cube),
+      mFormat(wgpu::TextureFormat::RGBA8Unorm),
       mContext(context)
 {
 }
 
 void TextureDawn::loadTexture()
 {
-    dawn::SamplerDescriptor samplerDesc;
+    wgpu::SamplerDescriptor samplerDesc;
     const int kPadding = 256;
     loadImage(mUrls, &mPixelVec);
 
-    if (mTextureViewDimension == dawn::TextureViewDimension::Cube)
+    if (mTextureViewDimension == wgpu::TextureViewDimension::Cube)
     {
-        dawn::TextureDescriptor descriptor;
+        wgpu::TextureDescriptor descriptor;
         descriptor.dimension = mTextureDimension;
         descriptor.size.width = mWidth;
         descriptor.size.height = mHeight;
@@ -62,28 +62,29 @@ void TextureDawn::loadTexture()
         descriptor.sampleCount = 1;
         descriptor.format = mFormat;
         descriptor.mipLevelCount   = 1;
-        descriptor.usage           = dawn::TextureUsage::CopyDst | dawn::TextureUsage::Sampled;
+        descriptor.usage           = wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::Sampled;
         mTexture                   = mContext->createTexture(descriptor);
 
         for (unsigned int i = 0; i < 6; i++)
         {
-            dawn::CreateBufferMappedResult result = mContext->CreateBufferMapped(
-                dawn::BufferUsage::CopySrc | dawn::BufferUsage::MapWrite, mWidth * mHeight * 4);
+            wgpu::CreateBufferMappedResult result = mContext->CreateBufferMapped(
+                wgpu::BufferUsage::CopySrc | wgpu::BufferUsage::MapWrite, mWidth * mHeight * 4);
             memcpy(result.data, mPixelVec[i], mWidth * mHeight * 4);
             result.buffer.Unmap();
 
-            dawn::BufferCopyView bufferCopyView =
+            wgpu::BufferCopyView bufferCopyView =
                 mContext->createBufferCopyView(result.buffer, 0, mWidth * 4, mHeight);
-            dawn::TextureCopyView textureCopyView =
+            wgpu::TextureCopyView textureCopyView =
                 mContext->createTextureCopyView(mTexture, 0, i, {0, 0, 0});
-            dawn::Extent3D copySize = { static_cast<uint32_t>(mWidth), static_cast<uint32_t>(mHeight), 1 };
+            wgpu::Extent3D copySize = {static_cast<uint32_t>(mWidth),
+                                       static_cast<uint32_t>(mHeight), 1};
             mContext->mCommandBuffers.emplace_back(
                 mContext->copyBufferToTexture(bufferCopyView, textureCopyView, copySize));
         }
 
-        dawn::TextureViewDescriptor viewDescriptor;
+        wgpu::TextureViewDescriptor viewDescriptor;
         viewDescriptor.nextInChain = nullptr;
-        viewDescriptor.dimension = dawn::TextureViewDimension::Cube;
+        viewDescriptor.dimension       = wgpu::TextureViewDimension::Cube;
         viewDescriptor.format = mFormat;
         viewDescriptor.baseMipLevel = 0;
         viewDescriptor.mipLevelCount   = 1;
@@ -92,19 +93,19 @@ void TextureDawn::loadTexture()
 
         mTextureView = mTexture.CreateView(&viewDescriptor);
 
-        samplerDesc.addressModeU = dawn::AddressMode::ClampToEdge;
-        samplerDesc.addressModeV = dawn::AddressMode::ClampToEdge;
-        samplerDesc.addressModeW = dawn::AddressMode::ClampToEdge;
-        samplerDesc.minFilter = dawn::FilterMode::Linear;
-        samplerDesc.magFilter = dawn::FilterMode::Linear;
-        samplerDesc.mipmapFilter = dawn::FilterMode::Nearest;
+        samplerDesc.addressModeU = wgpu::AddressMode::ClampToEdge;
+        samplerDesc.addressModeV = wgpu::AddressMode::ClampToEdge;
+        samplerDesc.addressModeW = wgpu::AddressMode::ClampToEdge;
+        samplerDesc.minFilter    = wgpu::FilterMode::Linear;
+        samplerDesc.magFilter    = wgpu::FilterMode::Linear;
+        samplerDesc.mipmapFilter = wgpu::FilterMode::Nearest;
         samplerDesc.lodMinClamp  = 0.0f;
         samplerDesc.lodMaxClamp  = 1000.0f;
-        samplerDesc.compare = dawn::CompareFunction::Never;
+        samplerDesc.compare      = wgpu::CompareFunction::Never;
 
         mSampler = mContext->createSampler(samplerDesc);
     }
-    else  // dawn::TextureViewDimension::e2D
+    else  // wgpu::TextureViewDimension::e2D
     {
         int resizedWidth;
         if (mWidth % kPadding == 0)
@@ -118,7 +119,7 @@ void TextureDawn::loadTexture()
         generateMipmap(mPixelVec[0], mWidth, mHeight, 0, mResizedVec, resizedWidth, mHeight, 0, 4,
                        true);
 
-        dawn::TextureDescriptor descriptor;
+        wgpu::TextureDescriptor descriptor;
         descriptor.dimension = mTextureDimension;
         descriptor.size.width  = resizedWidth;
         descriptor.size.height = mHeight;
@@ -129,7 +130,7 @@ void TextureDawn::loadTexture()
         descriptor.mipLevelCount   = static_cast<uint32_t>(std::floor(
                                        static_cast<float>(std::log2(std::min(mWidth, mHeight))))) +
                                    1;
-        descriptor.usage = dawn::TextureUsage::CopyDst | dawn::TextureUsage::Sampled;
+        descriptor.usage = wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::Sampled;
         mTexture         = mContext->createTexture(descriptor);
 
         int count = 0;
@@ -142,26 +143,25 @@ void TextureDawn::loadTexture()
                 height = 1;
             }
 
-            dawn::CreateBufferMappedResult result = mContext->CreateBufferMapped(
-                dawn::BufferUsage::CopySrc | dawn::BufferUsage::MapWrite,
+            wgpu::CreateBufferMappedResult result = mContext->CreateBufferMapped(
+                wgpu::BufferUsage::CopySrc | wgpu::BufferUsage::MapWrite,
                 resizedWidth * height * 4);
             memcpy(result.data, mResizedVec[i], resizedWidth * height * 4);
             result.buffer.Unmap();
 
-            dawn::BufferCopyView bufferCopyView =
+            wgpu::BufferCopyView bufferCopyView =
                 mContext->createBufferCopyView(result.buffer, 0, resizedWidth * 4, height);
-            dawn::TextureCopyView textureCopyView =
+            wgpu::TextureCopyView textureCopyView =
                 mContext->createTextureCopyView(mTexture, i, 0, {0, 0, 0});
-            dawn::Extent3D copySize = {static_cast<uint32_t>(width),
-                                       static_cast<uint32_t>(height),
+            wgpu::Extent3D copySize = {static_cast<uint32_t>(width), static_cast<uint32_t>(height),
                                        1};
             mContext->mCommandBuffers.emplace_back(
                 mContext->copyBufferToTexture(bufferCopyView, textureCopyView, copySize));
         }
 
-        dawn::TextureViewDescriptor viewDescriptor;
+        wgpu::TextureViewDescriptor viewDescriptor;
         viewDescriptor.nextInChain = nullptr;
-        viewDescriptor.dimension = dawn::TextureViewDimension::e2D;
+        viewDescriptor.dimension    = wgpu::TextureViewDimension::e2D;
         viewDescriptor.format = mFormat;
         viewDescriptor.baseMipLevel = 0;
         viewDescriptor.mipLevelCount =
@@ -173,22 +173,22 @@ void TextureDawn::loadTexture()
 
         mTextureView = mTexture.CreateView(&viewDescriptor);
 
-        samplerDesc.addressModeU = dawn::AddressMode::ClampToEdge;
-        samplerDesc.addressModeV = dawn::AddressMode::ClampToEdge;
-        samplerDesc.addressModeW = dawn::AddressMode::ClampToEdge;
-        samplerDesc.minFilter = dawn::FilterMode::Linear;
-        samplerDesc.magFilter = dawn::FilterMode::Linear;
+        samplerDesc.addressModeU = wgpu::AddressMode::ClampToEdge;
+        samplerDesc.addressModeV = wgpu::AddressMode::ClampToEdge;
+        samplerDesc.addressModeW = wgpu::AddressMode::ClampToEdge;
+        samplerDesc.minFilter    = wgpu::FilterMode::Linear;
+        samplerDesc.magFilter    = wgpu::FilterMode::Linear;
         samplerDesc.lodMinClamp  = 0.0f;
         samplerDesc.lodMaxClamp  = 1000.0f;
-        samplerDesc.compare = dawn::CompareFunction::Never;
+        samplerDesc.compare      = wgpu::CompareFunction::Never;
 
         if (isPowerOf2(mWidth) && isPowerOf2(mHeight))
         {
-            samplerDesc.mipmapFilter = dawn::FilterMode::Linear;
+            samplerDesc.mipmapFilter = wgpu::FilterMode::Linear;
         }
         else
         {
-            samplerDesc.mipmapFilter = dawn::FilterMode::Nearest;
+            samplerDesc.mipmapFilter = wgpu::FilterMode::Nearest;
         }
 
         mSampler = mContext->createSampler(samplerDesc);

@@ -11,7 +11,7 @@
 
 #include "ContextDawn.h"
 #include "ProgramDawn.h"
-#include "dawn/dawncpp.h"
+#include "dawn/webgpu_cpp.h"
 #include "utils/ComboRenderPipelineDescriptor.h"
 
 #include "../Model.h"
@@ -52,17 +52,17 @@ class InnerModelDawn : public Model
 
   private:
     utils::ComboVertexInputDescriptor mVertexInputDescriptor;
-    dawn::RenderPipeline mPipeline;
+    wgpu::RenderPipeline mPipeline;
 
-    dawn::BindGroupLayout mGroupLayoutModel;
-    dawn::BindGroupLayout mGroupLayoutPer;
-    dawn::PipelineLayout mPipelineLayout;
+    wgpu::BindGroupLayout mGroupLayoutModel;
+    wgpu::BindGroupLayout mGroupLayoutPer;
+    wgpu::PipelineLayout mPipelineLayout;
 
-    dawn::BindGroup mBindGroupModel;
-    dawn::BindGroup mBindGroupPer;
+    wgpu::BindGroup mBindGroupModel;
+    wgpu::BindGroup mBindGroupPer;
 
-    dawn::Buffer mInnerBuffer;
-    dawn::Buffer mViewBuffer;
+    wgpu::Buffer mInnerBuffer;
+    wgpu::Buffer mViewBuffer;
 
     const ContextDawn *mContextDawn;
     ProgramDawn *mProgramDawn;

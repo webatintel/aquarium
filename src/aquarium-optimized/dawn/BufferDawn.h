@@ -9,8 +9,8 @@
 #ifndef BUFFERDAWN_H
 #define BUFFERDAWN_H 1
 
+#include <dawn/webgpu_cpp.h>
 #include <vector>
-#include <dawn/dawncpp.h>
 
 #include "../Buffer.h"
 
@@ -31,17 +31,17 @@ class BufferDawn : public Buffer
                bool isIndex);
     ~BufferDawn() override;
 
-    const dawn::Buffer &getBuffer() const { return mBuf; }
+    const wgpu::Buffer &getBuffer() const { return mBuf; }
     int getTotalComponents() const { return mTotoalComponents; }
 
     uint32_t getStride() const { return mStride; }
     const void *getOffset() const { return mOffset; }
-    dawn::BufferUsage getUsageBit() const { return mUsage; }
+    wgpu::BufferUsage getUsageBit() const { return mUsage; }
     int getDataSize() { return mSize; }
 
   private:
-    dawn::Buffer mBuf;
-    dawn::BufferUsage mUsage;
+    wgpu::Buffer mBuf;
+    wgpu::BufferUsage mUsage;
     int mTotoalComponents;
     uint32_t mStride;
     void *mOffset;
