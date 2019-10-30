@@ -21,8 +21,7 @@ const char *cmdArgsStrAquarium = R"(Options and arguments:
 --num-fish [count]      : specifies how many fishes will be rendered.
 --record-fps-frequency [count]  : Record fps every count frame and print fps log when exit.
 --test-time [second]    : Render the application for some second and then exit, and the application will run 5 min by default.
---window-width [width]) : Set window width.
---window-height [height]: Set window height.";
+--window-size=[width],[height]  : Input window size.";
 
 
 const char *cmdArgsStrAquariumDirectMap = R"(Options and arguments:
