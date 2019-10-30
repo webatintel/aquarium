@@ -52,64 +52,64 @@ void FishModelDawn::init()
 
     mVertexInputDescriptor.cBuffers[0].attributeCount    = 1;
     mVertexInputDescriptor.cBuffers[0].stride            = mPositionBuffer->getDataSize();
-    mVertexInputDescriptor.cAttributes[0].format         = dawn::VertexFormat::Float3;
+    mVertexInputDescriptor.cAttributes[0].format         = wgpu::VertexFormat::Float3;
     mVertexInputDescriptor.cAttributes[0].shaderLocation = 0;
     mVertexInputDescriptor.cAttributes[0].offset         = 0;
     mVertexInputDescriptor.cBuffers[0].attributes        = &mVertexInputDescriptor.cAttributes[0];
     mVertexInputDescriptor.cBuffers[1].attributeCount    = 1;
     mVertexInputDescriptor.cBuffers[1].stride            = mNormalBuffer->getDataSize();
-    mVertexInputDescriptor.cAttributes[1].format         = dawn::VertexFormat::Float3;
+    mVertexInputDescriptor.cAttributes[1].format         = wgpu::VertexFormat::Float3;
     mVertexInputDescriptor.cAttributes[1].shaderLocation = 1;
     mVertexInputDescriptor.cAttributes[1].offset         = 0;
     mVertexInputDescriptor.cBuffers[1].attributes        = &mVertexInputDescriptor.cAttributes[1];
     mVertexInputDescriptor.cBuffers[2].attributeCount    = 1;
     mVertexInputDescriptor.cBuffers[2].stride            = mTexCoordBuffer->getDataSize();
-    mVertexInputDescriptor.cAttributes[2].format         = dawn::VertexFormat::Float2;
+    mVertexInputDescriptor.cAttributes[2].format         = wgpu::VertexFormat::Float2;
     mVertexInputDescriptor.cAttributes[2].shaderLocation = 2;
     mVertexInputDescriptor.cAttributes[2].offset         = 0;
     mVertexInputDescriptor.cBuffers[2].attributes        = &mVertexInputDescriptor.cAttributes[2];
     mVertexInputDescriptor.cBuffers[3].attributeCount    = 1;
     mVertexInputDescriptor.cBuffers[3].stride            = mTangentBuffer->getDataSize();
-    mVertexInputDescriptor.cAttributes[3].format         = dawn::VertexFormat::Float3;
+    mVertexInputDescriptor.cAttributes[3].format         = wgpu::VertexFormat::Float3;
     mVertexInputDescriptor.cAttributes[3].shaderLocation = 3;
     mVertexInputDescriptor.cAttributes[3].offset         = 0;
     mVertexInputDescriptor.cBuffers[3].attributes        = &mVertexInputDescriptor.cAttributes[3];
     mVertexInputDescriptor.cBuffers[4].attributeCount    = 1;
     mVertexInputDescriptor.cBuffers[4].stride            = mBiNormalBuffer->getDataSize();
-    mVertexInputDescriptor.cAttributes[4].format         = dawn::VertexFormat::Float3;
+    mVertexInputDescriptor.cAttributes[4].format         = wgpu::VertexFormat::Float3;
     mVertexInputDescriptor.cAttributes[4].shaderLocation = 4;
     mVertexInputDescriptor.cAttributes[4].offset         = 0;
     mVertexInputDescriptor.cBuffers[4].attributes        = &mVertexInputDescriptor.cAttributes[4];
     mVertexInputDescriptor.bufferCount                   = 5;
-    mVertexInputDescriptor.indexFormat                   = dawn::IndexFormat::Uint16;
+    mVertexInputDescriptor.indexFormat                   = wgpu::IndexFormat::Uint16;
 
     if (mSkyboxTexture && mReflectionTexture)
     {
         mGroupLayoutModel = mContextDawn->MakeBindGroupLayout({
-            {0, dawn::ShaderStage::Vertex, dawn::BindingType::UniformBuffer},
-            {1, dawn::ShaderStage::Fragment, dawn::BindingType::UniformBuffer},
-            {2, dawn::ShaderStage::Fragment, dawn::BindingType::Sampler},
-            {3, dawn::ShaderStage::Fragment, dawn::BindingType::Sampler},
-            {4, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture, false, false,
-             dawn::TextureViewDimension::e2D, dawn::TextureComponentType::Float},
-            {5, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture, false, false,
-             dawn::TextureViewDimension::e2D, dawn::TextureComponentType::Float},
-            {6, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture, false, false,
-             dawn::TextureViewDimension::e2D, dawn::TextureComponentType::Float},
-            {7, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture, false, false,
-             dawn::TextureViewDimension::Cube, dawn::TextureComponentType::Float},
+            {0, wgpu::ShaderStage::Vertex, wgpu::BindingType::UniformBuffer},
+            {1, wgpu::ShaderStage::Fragment, wgpu::BindingType::UniformBuffer},
+            {2, wgpu::ShaderStage::Fragment, wgpu::BindingType::Sampler},
+            {3, wgpu::ShaderStage::Fragment, wgpu::BindingType::Sampler},
+            {4, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture, false, false,
+             wgpu::TextureViewDimension::e2D, wgpu::TextureComponentType::Float},
+            {5, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture, false, false,
+             wgpu::TextureViewDimension::e2D, wgpu::TextureComponentType::Float},
+            {6, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture, false, false,
+             wgpu::TextureViewDimension::e2D, wgpu::TextureComponentType::Float},
+            {7, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture, false, false,
+             wgpu::TextureViewDimension::Cube, wgpu::TextureComponentType::Float},
         });
     }
     else
     {
         mGroupLayoutModel = mContextDawn->MakeBindGroupLayout({
-            {0, dawn::ShaderStage::Vertex, dawn::BindingType::UniformBuffer},
-            {1, dawn::ShaderStage::Fragment, dawn::BindingType::UniformBuffer},
-            {2, dawn::ShaderStage::Fragment, dawn::BindingType::Sampler},
-            {3, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture, false, false,
-             dawn::TextureViewDimension::e2D, dawn::TextureComponentType::Float},
-            {4, dawn::ShaderStage::Fragment, dawn::BindingType::SampledTexture, false, false,
-             dawn::TextureViewDimension::e2D, dawn::TextureComponentType::Float},
+            {0, wgpu::ShaderStage::Vertex, wgpu::BindingType::UniformBuffer},
+            {1, wgpu::ShaderStage::Fragment, wgpu::BindingType::UniformBuffer},
+            {2, wgpu::ShaderStage::Fragment, wgpu::BindingType::Sampler},
+            {3, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture, false, false,
+             wgpu::TextureViewDimension::e2D, wgpu::TextureComponentType::Float},
+            {4, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture, false, false,
+             wgpu::TextureViewDimension::e2D, wgpu::TextureComponentType::Float},
         });
     }
 
@@ -125,10 +125,10 @@ void FishModelDawn::init()
 
     mFishVertexBuffer =
         mContextDawn->createBufferFromData(&mFishVertexUniforms, sizeof(FishVertexUniforms),
-                                           dawn::BufferUsage::CopyDst | dawn::BufferUsage::Uniform);
+                                           wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
     mLightFactorBuffer =
         mContextDawn->createBufferFromData(&mLightFactorUniforms, sizeof(LightFactorUniforms),
-                                           dawn::BufferUsage::CopyDst | dawn::BufferUsage::Uniform);
+                                           wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
 
     // Fish models includes small, medium and big. Some of them contains reflection and skybox
     // texture, but some doesn't.
@@ -178,7 +178,7 @@ void FishModelDawn::draw()
     if (mCurInstance == 0)
         return;
 
-    dawn::RenderPassEncoder pass = mContextDawn->getRenderPass();
+    wgpu::RenderPassEncoder pass = mContextDawn->getRenderPass();
     pass.SetPipeline(mPipeline);
     pass.SetBindGroup(0, mContextDawn->bindGroupGeneral, 0, nullptr);
     pass.SetBindGroup(1, mContextDawn->bindGroupWorld, 0, nullptr);

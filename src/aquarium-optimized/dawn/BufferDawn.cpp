@@ -14,7 +14,7 @@ BufferDawn::BufferDawn(ContextDawn *context,
                        int numComponents,
                        std::vector<float> *buffer,
                        bool isIndex)
-    : mUsage(isIndex ? dawn::BufferUsage::Index : dawn::BufferUsage::Vertex),
+    : mUsage(isIndex ? wgpu::BufferUsage::Index : wgpu::BufferUsage::Vertex),
       mTotoalComponents(totalCmoponents),
       mStride(0),
       mOffset(nullptr)
@@ -22,14 +22,14 @@ BufferDawn::BufferDawn(ContextDawn *context,
     mSize = numComponents * sizeof(float);
     // Create buffer for vertex buffer. Because float is multiple of 4 bytes, dummy padding isnt' needed.
     int bufferSize = sizeof(float) * static_cast<int>(buffer->size());
-    mBuf           = context->createBuffer(bufferSize, mUsage | dawn::BufferUsage::CopyDst);
+    mBuf           = context->createBuffer(bufferSize, mUsage | wgpu::BufferUsage::CopyDst);
 
-    dawn::CreateBufferMappedResult result = context->CreateBufferMapped(
-        dawn::BufferUsage::MapWrite | dawn::BufferUsage::CopySrc, bufferSize);
+    wgpu::CreateBufferMappedResult result = context->CreateBufferMapped(
+        wgpu::BufferUsage::MapWrite | wgpu::BufferUsage::CopySrc, bufferSize);
     memcpy(result.data, buffer->data(), bufferSize);
     result.buffer.Unmap();
 
-    dawn::CommandBuffer command =
+    wgpu::CommandBuffer command =
         context->copyBufferToBuffer(result.buffer, 0, mBuf, 0, bufferSize);
     context->mCommandBuffers.emplace_back(command);
 }
@@ -39,7 +39,7 @@ BufferDawn::BufferDawn(ContextDawn *context,
                        int numComponents,
                        std::vector<unsigned short> *buffer,
                        bool isIndex)
-    : mUsage(isIndex ? dawn::BufferUsage::Index : dawn::BufferUsage::Vertex),
+    : mUsage(isIndex ? wgpu::BufferUsage::Index : wgpu::BufferUsage::Vertex),
       mTotoalComponents(totalCmoponents),
       mStride(0),
       mOffset(nullptr)
@@ -53,14 +53,14 @@ BufferDawn::BufferDawn(ContextDawn *context,
     }
 
     int bufferSize = sizeof(unsigned short) * static_cast<int>(buffer->size());
-    mBuf           = context->createBuffer(bufferSize, mUsage | dawn::BufferUsage::CopyDst);
+    mBuf           = context->createBuffer(bufferSize, mUsage | wgpu::BufferUsage::CopyDst);
 
-    dawn::CreateBufferMappedResult result = context->CreateBufferMapped(
-        dawn::BufferUsage::MapWrite | dawn::BufferUsage::CopySrc, bufferSize);
+    wgpu::CreateBufferMappedResult result = context->CreateBufferMapped(
+        wgpu::BufferUsage::MapWrite | wgpu::BufferUsage::CopySrc, bufferSize);
     memcpy(result.data, buffer->data(), bufferSize);
     result.buffer.Unmap();
 
-    dawn::CommandBuffer command =
+    wgpu::CommandBuffer command =
         context->copyBufferToBuffer(result.buffer, 0, mBuf, 0, bufferSize);
     context->mCommandBuffers.emplace_back(command);
 }

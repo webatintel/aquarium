@@ -11,7 +11,7 @@
 
 #include "ContextDawn.h"
 #include "ProgramDawn.h"
-#include "dawn/dawncpp.h"
+#include "dawn/webgpu_cpp.h"
 #include "utils/ComboRenderPipelineDescriptor.h"
 
 #include "../FishModel.h"
@@ -71,15 +71,15 @@ class FishModelDawn : public FishModel
 
   private:
     utils::ComboVertexInputDescriptor mVertexInputDescriptor;
-    dawn::RenderPipeline mPipeline;
+    wgpu::RenderPipeline mPipeline;
 
-    dawn::BindGroupLayout mGroupLayoutModel;
-    dawn::PipelineLayout mPipelineLayout;
+    wgpu::BindGroupLayout mGroupLayoutModel;
+    wgpu::PipelineLayout mPipelineLayout;
 
-    dawn::BindGroup mBindGroupModel;
+    wgpu::BindGroup mBindGroupModel;
 
-    dawn::Buffer mFishVertexBuffer;
-    dawn::Buffer mLightFactorBuffer;
+    wgpu::Buffer mFishVertexBuffer;
+    wgpu::Buffer mLightFactorBuffer;
 
     ProgramDawn *mProgramDawn;
     ContextDawn *mContextDawn;
