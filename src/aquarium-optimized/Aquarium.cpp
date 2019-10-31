@@ -329,13 +329,17 @@ bool Aquarium::init(int argc, char **argv)
 
             mTestTime = strtol(argv[i++ + 1], &pNext, 10);
         }
-        else if (cmd == "--window-width")
+        else if (cmd.find("--window-size") != std::string::npos)
         {
-            windowWidth = strtol(argv[i++ + 1], &pNext, 10);
-        }
-        else if (cmd == "--window-height")
-        {
-            windowHeight = strtol(argv[i++ + 1], &pNext, 10);
+            size_t pos1  = cmd.find("=");
+            size_t pos2  = cmd.find(",");
+            windowWidth  = strtol(cmd.substr(pos1 + 1, pos2 - pos1).c_str(), &pNext, 10);
+            windowHeight = strtol(cmd.substr(pos2 + 1).c_str(), &pNext, 10);
+            if (windowWidth == 0 || windowHeight == 0)
+            {
+                std::cerr << "Please input window size with the format: "
+                             "'--window-size=[width],[height].' ";
+            }
         }
         else
         {
