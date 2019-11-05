@@ -194,7 +194,7 @@ void FishModelDawn::draw()
     {
         for (int i = 0; i < mCurInstance; i++)
         {
-            uint64_t offset = 256u * (i + mFishPerOffset);
+            uint32_t offset = 256u * (i + mFishPerOffset);
             pass.SetBindGroup(3, mContextDawn->bindGroupFishPers[0], 1, &offset);
             pass.DrawIndexed(mIndicesBuffer->getTotalComponents(), 1, 0, 0, 0);
         }
