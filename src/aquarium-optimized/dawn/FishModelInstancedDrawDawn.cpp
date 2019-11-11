@@ -51,54 +51,54 @@ void FishModelInstancedDrawDawn::init()
     mFishPersBuffer = mContextDawn->createBuffer(
         sizeof(FishPer) * instance, wgpu::BufferUsage::Vertex | wgpu::BufferUsage::CopyDst);
 
-    mVertexInputDescriptor.cBuffers[0].attributeCount    = 1;
-    mVertexInputDescriptor.cBuffers[0].stride            = mPositionBuffer->getDataSize();
-    mVertexInputDescriptor.cAttributes[0].format         = wgpu::VertexFormat::Float3;
-    mVertexInputDescriptor.cAttributes[0].shaderLocation = 0;
-    mVertexInputDescriptor.cAttributes[0].offset         = 0;
-    mVertexInputDescriptor.cBuffers[0].attributes        = &mVertexInputDescriptor.cAttributes[0];
-    mVertexInputDescriptor.cBuffers[1].attributeCount    = 1;
-    mVertexInputDescriptor.cBuffers[1].stride            = mNormalBuffer->getDataSize();
-    mVertexInputDescriptor.cAttributes[1].format         = wgpu::VertexFormat::Float3;
-    mVertexInputDescriptor.cAttributes[1].shaderLocation = 1;
-    mVertexInputDescriptor.cAttributes[1].offset         = 0;
-    mVertexInputDescriptor.cBuffers[1].attributes        = &mVertexInputDescriptor.cAttributes[1];
-    mVertexInputDescriptor.cBuffers[2].attributeCount    = 1;
-    mVertexInputDescriptor.cBuffers[2].stride            = mTexCoordBuffer->getDataSize();
-    mVertexInputDescriptor.cAttributes[2].format         = wgpu::VertexFormat::Float2;
-    mVertexInputDescriptor.cAttributes[2].shaderLocation = 2;
-    mVertexInputDescriptor.cAttributes[2].offset         = 0;
-    mVertexInputDescriptor.cBuffers[2].attributes        = &mVertexInputDescriptor.cAttributes[2];
-    mVertexInputDescriptor.cBuffers[3].attributeCount    = 1;
-    mVertexInputDescriptor.cBuffers[3].stride            = mTangentBuffer->getDataSize();
-    mVertexInputDescriptor.cAttributes[3].format         = wgpu::VertexFormat::Float3;
-    mVertexInputDescriptor.cAttributes[3].shaderLocation = 3;
-    mVertexInputDescriptor.cAttributes[3].offset         = 0;
-    mVertexInputDescriptor.cBuffers[3].attributes        = &mVertexInputDescriptor.cAttributes[3];
-    mVertexInputDescriptor.cBuffers[4].attributeCount    = 1;
-    mVertexInputDescriptor.cBuffers[4].stride            = mBiNormalBuffer->getDataSize();
-    mVertexInputDescriptor.cAttributes[4].format         = wgpu::VertexFormat::Float3;
-    mVertexInputDescriptor.cAttributes[4].shaderLocation = 4;
-    mVertexInputDescriptor.cAttributes[4].offset         = offsetof(FishPer, worldPosition);
-    mVertexInputDescriptor.cBuffers[4].attributes        = &mVertexInputDescriptor.cAttributes[4];
-    mVertexInputDescriptor.cBuffers[5].attributeCount    = 4;
-    mVertexInputDescriptor.cBuffers[5].stride            = sizeof(FishPer);
-    mVertexInputDescriptor.cAttributes[5].format         = wgpu::VertexFormat::Float3;
-    mVertexInputDescriptor.cAttributes[5].shaderLocation = 5;
-    mVertexInputDescriptor.cAttributes[5].offset         = 0;
-    mVertexInputDescriptor.cAttributes[6].format         = wgpu::VertexFormat::Float;
-    mVertexInputDescriptor.cAttributes[6].shaderLocation = 6;
-    mVertexInputDescriptor.cAttributes[6].offset         = offsetof(FishPer, scale);
-    mVertexInputDescriptor.cAttributes[7].format         = wgpu::VertexFormat::Float3;
-    mVertexInputDescriptor.cAttributes[7].shaderLocation = 7;
-    mVertexInputDescriptor.cAttributes[7].offset         = offsetof(FishPer, nextPosition);
-    mVertexInputDescriptor.cAttributes[8].format         = wgpu::VertexFormat::Float;
-    mVertexInputDescriptor.cAttributes[8].shaderLocation = 8;
-    mVertexInputDescriptor.cAttributes[9].offset         = offsetof(FishPer, time);
-    mVertexInputDescriptor.cBuffers[5].attributes        = &mVertexInputDescriptor.cAttributes[5];
-    mVertexInputDescriptor.cBuffers[5].stepMode          = wgpu::InputStepMode::Instance;
-    mVertexInputDescriptor.bufferCount                   = 6;
-    mVertexInputDescriptor.indexFormat                   = wgpu::IndexFormat::Uint16;
+    mVertexStateDescriptor.cVertexBuffers[0].attributeCount = 1;
+    mVertexStateDescriptor.cVertexBuffers[0].arrayStride    = mPositionBuffer->getDataSize();
+    mVertexStateDescriptor.cAttributes[0].format            = wgpu::VertexFormat::Float3;
+    mVertexStateDescriptor.cAttributes[0].shaderLocation    = 0;
+    mVertexStateDescriptor.cAttributes[0].offset            = 0;
+    mVertexStateDescriptor.cVertexBuffers[0].attributes = &mVertexStateDescriptor.cAttributes[0];
+    mVertexStateDescriptor.cVertexBuffers[1].attributeCount = 1;
+    mVertexStateDescriptor.cVertexBuffers[1].arrayStride    = mNormalBuffer->getDataSize();
+    mVertexStateDescriptor.cAttributes[1].format            = wgpu::VertexFormat::Float3;
+    mVertexStateDescriptor.cAttributes[1].shaderLocation    = 1;
+    mVertexStateDescriptor.cAttributes[1].offset            = 0;
+    mVertexStateDescriptor.cVertexBuffers[1].attributes = &mVertexStateDescriptor.cAttributes[1];
+    mVertexStateDescriptor.cVertexBuffers[2].attributeCount = 1;
+    mVertexStateDescriptor.cVertexBuffers[2].arrayStride    = mTexCoordBuffer->getDataSize();
+    mVertexStateDescriptor.cAttributes[2].format            = wgpu::VertexFormat::Float2;
+    mVertexStateDescriptor.cAttributes[2].shaderLocation    = 2;
+    mVertexStateDescriptor.cAttributes[2].offset            = 0;
+    mVertexStateDescriptor.cVertexBuffers[2].attributes = &mVertexStateDescriptor.cAttributes[2];
+    mVertexStateDescriptor.cVertexBuffers[3].attributeCount = 1;
+    mVertexStateDescriptor.cVertexBuffers[3].arrayStride    = mTangentBuffer->getDataSize();
+    mVertexStateDescriptor.cAttributes[3].format            = wgpu::VertexFormat::Float3;
+    mVertexStateDescriptor.cAttributes[3].shaderLocation    = 3;
+    mVertexStateDescriptor.cAttributes[3].offset            = 0;
+    mVertexStateDescriptor.cVertexBuffers[3].attributes = &mVertexStateDescriptor.cAttributes[3];
+    mVertexStateDescriptor.cVertexBuffers[4].attributeCount = 1;
+    mVertexStateDescriptor.cVertexBuffers[4].arrayStride    = mBiNormalBuffer->getDataSize();
+    mVertexStateDescriptor.cAttributes[4].format            = wgpu::VertexFormat::Float3;
+    mVertexStateDescriptor.cAttributes[4].shaderLocation    = 4;
+    mVertexStateDescriptor.cAttributes[4].offset            = offsetof(FishPer, worldPosition);
+    mVertexStateDescriptor.cVertexBuffers[4].attributes = &mVertexStateDescriptor.cAttributes[4];
+    mVertexStateDescriptor.cVertexBuffers[5].attributeCount = 4;
+    mVertexStateDescriptor.cVertexBuffers[5].arrayStride    = sizeof(FishPer);
+    mVertexStateDescriptor.cAttributes[5].format            = wgpu::VertexFormat::Float3;
+    mVertexStateDescriptor.cAttributes[5].shaderLocation    = 5;
+    mVertexStateDescriptor.cAttributes[5].offset            = 0;
+    mVertexStateDescriptor.cAttributes[6].format            = wgpu::VertexFormat::Float;
+    mVertexStateDescriptor.cAttributes[6].shaderLocation    = 6;
+    mVertexStateDescriptor.cAttributes[6].offset            = offsetof(FishPer, scale);
+    mVertexStateDescriptor.cAttributes[7].format            = wgpu::VertexFormat::Float3;
+    mVertexStateDescriptor.cAttributes[7].shaderLocation    = 7;
+    mVertexStateDescriptor.cAttributes[7].offset            = offsetof(FishPer, nextPosition);
+    mVertexStateDescriptor.cAttributes[8].format            = wgpu::VertexFormat::Float;
+    mVertexStateDescriptor.cAttributes[8].shaderLocation    = 8;
+    mVertexStateDescriptor.cAttributes[9].offset            = offsetof(FishPer, time);
+    mVertexStateDescriptor.cVertexBuffers[5].attributes = &mVertexStateDescriptor.cAttributes[5];
+    mVertexStateDescriptor.cVertexBuffers[5].stepMode   = wgpu::InputStepMode::Instance;
+    mVertexStateDescriptor.vertexBufferCount            = 6;
+    mVertexStateDescriptor.indexFormat                  = wgpu::IndexFormat::Uint16;
 
     if (mSkyboxTexture && mReflectionTexture)
     {
@@ -142,7 +142,7 @@ void FishModelInstancedDrawDawn::init()
     });
 
     mPipeline = mContextDawn->createRenderPipeline(mPipelineLayout, mProgramDawn,
-                                                   mVertexInputDescriptor, mBlend);
+                                                   mVertexStateDescriptor, mBlend);
 
     mFishVertexBuffer =
         mContextDawn->createBufferFromData(&mFishVertexUniforms, sizeof(FishVertexUniforms),

@@ -54,61 +54,69 @@ void GenericModelDawn::init()
     // normal and reflection textures.
     if (mNormalTexture && mName != MODELNAME::MODELGLOBEBASE)
     {
-        mVertexInputDescriptor.cBuffers[0].attributeCount    = 1;
-        mVertexInputDescriptor.cBuffers[0].stride            = mPositionBuffer->getDataSize();
-        mVertexInputDescriptor.cAttributes[0].format         = wgpu::VertexFormat::Float3;
-        mVertexInputDescriptor.cAttributes[0].shaderLocation = 0;
-        mVertexInputDescriptor.cAttributes[0].offset         = 0;
-        mVertexInputDescriptor.cBuffers[0].attributes     = &mVertexInputDescriptor.cAttributes[0];
-        mVertexInputDescriptor.cBuffers[1].attributeCount = 1;
-        mVertexInputDescriptor.cBuffers[1].stride         = mNormalBuffer->getDataSize();
-        mVertexInputDescriptor.cAttributes[1].format      = wgpu::VertexFormat::Float3;
-        mVertexInputDescriptor.cAttributes[1].shaderLocation = 1;
-        mVertexInputDescriptor.cAttributes[1].offset         = 0;
-        mVertexInputDescriptor.cBuffers[1].attributes     = &mVertexInputDescriptor.cAttributes[1];
-        mVertexInputDescriptor.cBuffers[2].attributeCount = 1;
-        mVertexInputDescriptor.cBuffers[2].stride         = mTexCoordBuffer->getDataSize();
-        mVertexInputDescriptor.cAttributes[2].format      = wgpu::VertexFormat::Float2;
-        mVertexInputDescriptor.cAttributes[2].shaderLocation = 2;
-        mVertexInputDescriptor.cAttributes[2].offset         = 0;
-        mVertexInputDescriptor.cBuffers[2].attributes     = &mVertexInputDescriptor.cAttributes[2];
-        mVertexInputDescriptor.cBuffers[3].attributeCount = 1;
-        mVertexInputDescriptor.cBuffers[3].stride         = mTangentBuffer->getDataSize();
-        mVertexInputDescriptor.cAttributes[3].format      = wgpu::VertexFormat::Float3;
-        mVertexInputDescriptor.cAttributes[3].shaderLocation = 3;
-        mVertexInputDescriptor.cAttributes[3].offset         = 0;
-        mVertexInputDescriptor.cBuffers[3].attributes     = &mVertexInputDescriptor.cAttributes[3];
-        mVertexInputDescriptor.cBuffers[4].attributeCount = 1;
-        mVertexInputDescriptor.cBuffers[4].stride         = mBiNormalBuffer->getDataSize();
-        mVertexInputDescriptor.cAttributes[4].format      = wgpu::VertexFormat::Float3;
-        mVertexInputDescriptor.cAttributes[4].shaderLocation = 4;
-        mVertexInputDescriptor.cAttributes[4].offset         = 0;
-        mVertexInputDescriptor.cBuffers[4].attributes = &mVertexInputDescriptor.cAttributes[4];
-        mVertexInputDescriptor.bufferCount            = 5;
-        mVertexInputDescriptor.indexFormat            = wgpu::IndexFormat::Uint16;
+        mVertexStateDescriptor.cVertexBuffers[0].attributeCount = 1;
+        mVertexStateDescriptor.cVertexBuffers[0].arrayStride    = mPositionBuffer->getDataSize();
+        mVertexStateDescriptor.cAttributes[0].format            = wgpu::VertexFormat::Float3;
+        mVertexStateDescriptor.cAttributes[0].shaderLocation    = 0;
+        mVertexStateDescriptor.cAttributes[0].offset            = 0;
+        mVertexStateDescriptor.cVertexBuffers[0].attributes =
+            &mVertexStateDescriptor.cAttributes[0];
+        mVertexStateDescriptor.cVertexBuffers[1].attributeCount = 1;
+        mVertexStateDescriptor.cVertexBuffers[1].arrayStride    = mNormalBuffer->getDataSize();
+        mVertexStateDescriptor.cAttributes[1].format            = wgpu::VertexFormat::Float3;
+        mVertexStateDescriptor.cAttributes[1].shaderLocation    = 1;
+        mVertexStateDescriptor.cAttributes[1].offset            = 0;
+        mVertexStateDescriptor.cVertexBuffers[1].attributes =
+            &mVertexStateDescriptor.cAttributes[1];
+        mVertexStateDescriptor.cVertexBuffers[2].attributeCount = 1;
+        mVertexStateDescriptor.cVertexBuffers[2].arrayStride    = mTexCoordBuffer->getDataSize();
+        mVertexStateDescriptor.cAttributes[2].format            = wgpu::VertexFormat::Float2;
+        mVertexStateDescriptor.cAttributes[2].shaderLocation    = 2;
+        mVertexStateDescriptor.cAttributes[2].offset            = 0;
+        mVertexStateDescriptor.cVertexBuffers[2].attributes =
+            &mVertexStateDescriptor.cAttributes[2];
+        mVertexStateDescriptor.cVertexBuffers[3].attributeCount = 1;
+        mVertexStateDescriptor.cVertexBuffers[3].arrayStride    = mTangentBuffer->getDataSize();
+        mVertexStateDescriptor.cAttributes[3].format            = wgpu::VertexFormat::Float3;
+        mVertexStateDescriptor.cAttributes[3].shaderLocation    = 3;
+        mVertexStateDescriptor.cAttributes[3].offset            = 0;
+        mVertexStateDescriptor.cVertexBuffers[3].attributes =
+            &mVertexStateDescriptor.cAttributes[3];
+        mVertexStateDescriptor.cVertexBuffers[4].attributeCount = 1;
+        mVertexStateDescriptor.cVertexBuffers[4].arrayStride    = mBiNormalBuffer->getDataSize();
+        mVertexStateDescriptor.cAttributes[4].format            = wgpu::VertexFormat::Float3;
+        mVertexStateDescriptor.cAttributes[4].shaderLocation    = 4;
+        mVertexStateDescriptor.cAttributes[4].offset            = 0;
+        mVertexStateDescriptor.cVertexBuffers[4].attributes =
+            &mVertexStateDescriptor.cAttributes[4];
+        mVertexStateDescriptor.vertexBufferCount = 5;
+        mVertexStateDescriptor.indexFormat       = wgpu::IndexFormat::Uint16;
     }
     else
     {
-        mVertexInputDescriptor.cBuffers[0].attributeCount    = 1;
-        mVertexInputDescriptor.cBuffers[0].stride            = mPositionBuffer->getDataSize();
-        mVertexInputDescriptor.cAttributes[0].format         = wgpu::VertexFormat::Float3;
-        mVertexInputDescriptor.cAttributes[0].shaderLocation = 0;
-        mVertexInputDescriptor.cAttributes[0].offset         = 0;
-        mVertexInputDescriptor.cBuffers[0].attributes     = &mVertexInputDescriptor.cAttributes[0];
-        mVertexInputDescriptor.cBuffers[1].attributeCount = 1;
-        mVertexInputDescriptor.cBuffers[1].stride         = mNormalBuffer->getDataSize();
-        mVertexInputDescriptor.cAttributes[1].format      = wgpu::VertexFormat::Float3;
-        mVertexInputDescriptor.cAttributes[1].shaderLocation = 1;
-        mVertexInputDescriptor.cAttributes[1].offset         = 0;
-        mVertexInputDescriptor.cBuffers[1].attributes     = &mVertexInputDescriptor.cAttributes[1];
-        mVertexInputDescriptor.cBuffers[2].attributeCount = 1;
-        mVertexInputDescriptor.cBuffers[2].stride         = mTexCoordBuffer->getDataSize();
-        mVertexInputDescriptor.cAttributes[2].format      = wgpu::VertexFormat::Float2;
-        mVertexInputDescriptor.cAttributes[2].shaderLocation = 2;
-        mVertexInputDescriptor.cAttributes[2].offset         = 0;
-        mVertexInputDescriptor.cBuffers[2].attributes = &mVertexInputDescriptor.cAttributes[2];
-        mVertexInputDescriptor.bufferCount            = 3;
-        mVertexInputDescriptor.indexFormat            = wgpu::IndexFormat::Uint16;
+        mVertexStateDescriptor.cVertexBuffers[0].attributeCount = 1;
+        mVertexStateDescriptor.cVertexBuffers[0].arrayStride    = mPositionBuffer->getDataSize();
+        mVertexStateDescriptor.cAttributes[0].format            = wgpu::VertexFormat::Float3;
+        mVertexStateDescriptor.cAttributes[0].shaderLocation    = 0;
+        mVertexStateDescriptor.cAttributes[0].offset            = 0;
+        mVertexStateDescriptor.cVertexBuffers[0].attributes =
+            &mVertexStateDescriptor.cAttributes[0];
+        mVertexStateDescriptor.cVertexBuffers[1].attributeCount = 1;
+        mVertexStateDescriptor.cVertexBuffers[1].arrayStride    = mNormalBuffer->getDataSize();
+        mVertexStateDescriptor.cAttributes[1].format            = wgpu::VertexFormat::Float3;
+        mVertexStateDescriptor.cAttributes[1].shaderLocation    = 1;
+        mVertexStateDescriptor.cAttributes[1].offset            = 0;
+        mVertexStateDescriptor.cVertexBuffers[1].attributes =
+            &mVertexStateDescriptor.cAttributes[1];
+        mVertexStateDescriptor.cVertexBuffers[2].attributeCount = 1;
+        mVertexStateDescriptor.cVertexBuffers[2].arrayStride    = mTexCoordBuffer->getDataSize();
+        mVertexStateDescriptor.cAttributes[2].format            = wgpu::VertexFormat::Float2;
+        mVertexStateDescriptor.cAttributes[2].shaderLocation    = 2;
+        mVertexStateDescriptor.cAttributes[2].offset            = 0;
+        mVertexStateDescriptor.cVertexBuffers[2].attributes =
+            &mVertexStateDescriptor.cAttributes[2];
+        mVertexStateDescriptor.vertexBufferCount = 3;
+        mVertexStateDescriptor.indexFormat       = wgpu::IndexFormat::Uint16;
     }
 
     if (mSkyboxTexture && mReflectionTexture && mName != MODELNAME::MODELGLOBEBASE)
@@ -160,7 +168,7 @@ void GenericModelDawn::init()
     });
 
     mPipeline = mContextDawn->createRenderPipeline(mPipelineLayout, mProgramDawn,
-                                                   mVertexInputDescriptor, mBlend);
+                                                   mVertexStateDescriptor, mBlend);
 
     mLightFactorBuffer =
         mContextDawn->createBufferFromData(&mLightFactorUniforms, sizeof(mLightFactorUniforms),

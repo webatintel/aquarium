@@ -84,7 +84,7 @@ class ContextDawn : public Context
     wgpu::RenderPipeline createRenderPipeline(
         wgpu::PipelineLayout mPipelineLayout,
         ProgramDawn *mProgramDawn,
-        const wgpu::VertexInputDescriptor &mVertexInputDescriptor,
+        const wgpu::VertexStateDescriptor &mVertexInputDescriptor,
         bool enableBlend) const;
     wgpu::TextureView createMultisampledRenderTargetView() const;
     wgpu::TextureView createDepthStencilView() const;

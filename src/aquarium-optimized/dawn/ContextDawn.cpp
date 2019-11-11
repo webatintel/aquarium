@@ -180,6 +180,12 @@ bool ContextDawn::initialize(
     glfwGetFramebufferSize(mWindow, &mClientWidth, &mClientHeight);
 
     mInstance = std::make_unique<dawn_native::Instance>();
+
+	// Enable debug layer in Debug mode
+	#if defined(_DEBUG)
+	mInstance->EnableBackendValidation(true);
+	#endif
+
     utils::DiscoverAdapter(mInstance.get(), mWindow, backendType);
 
     dawn_native::Adapter backendAdapter;
@@ -414,7 +420,7 @@ wgpu::PipelineLayout ContextDawn::MakeBasicPipelineLayout(
 wgpu::RenderPipeline ContextDawn::createRenderPipeline(
     wgpu::PipelineLayout mPipelineLayout,
     ProgramDawn *mProgramDawn,
-    const wgpu::VertexInputDescriptor &mVertexInputDescriptor,
+    const wgpu::VertexStateDescriptor &mVertexStateDescriptor,
     bool enableBlend) const
 {
     const wgpu::ShaderModule &mVsModule = mProgramDawn->getVSModule();
@@ -451,7 +457,7 @@ wgpu::RenderPipeline ContextDawn::createRenderPipeline(
     descriptor.layout                               = mPipelineLayout;
     descriptor.vertexStage.module                   = mVsModule;
     descriptor.cFragmentStage.module                = mFsModule;
-    descriptor.vertexInput                          = &mVertexInputDescriptor;
+    descriptor.vertexState                          = &mVertexStateDescriptor;
     descriptor.depthStencilState                    = &descriptor.cDepthStencilState;
     descriptor.cDepthStencilState.format            = wgpu::TextureFormat::Depth24PlusStencil8;
     descriptor.colorStateCount                      = 1;

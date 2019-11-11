@@ -58,7 +58,7 @@ class SeaweedModelDawn : public SeaweedModel
     WorldUniformPer mWorldUniformPer;
 
   private:
-    utils::ComboVertexInputDescriptor mVertexInputDescriptor;
+    utils::ComboVertexStateDescriptor mVertexStateDescriptor;
     wgpu::RenderPipeline mPipeline;
 
     wgpu::BindGroupLayout mGroupLayoutModel;

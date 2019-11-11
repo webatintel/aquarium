@@ -50,7 +50,7 @@ public:
     WorldUniforms mWorldUniformPer[20];
 
   private:
-    utils::ComboVertexInputDescriptor mVertexInputDescriptor;
+    utils::ComboVertexStateDescriptor mVertexStateDescriptor;
     wgpu::RenderPipeline mPipeline;
 
     wgpu::BindGroupLayout mGroupLayoutModel;

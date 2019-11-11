@@ -237,22 +237,22 @@ bool ImGui_ImplDawn_CreateDeviceObjects()
     if (!mContextDawn->mDevice)
         return false;
 
-    utils::ComboVertexInputDescriptor mVertexInputDescriptor;
-    mVertexInputDescriptor.cBuffers[0].attributeCount    = 3;
-    mVertexInputDescriptor.cBuffers[0].stride            = sizeof(ImDrawVert);
-    mVertexInputDescriptor.cAttributes[0].format         = wgpu::VertexFormat::Float2;
-    mVertexInputDescriptor.cAttributes[0].shaderLocation = 0;
-    mVertexInputDescriptor.cAttributes[0].offset         = 0;
-    mVertexInputDescriptor.cAttributes[1].format         = wgpu::VertexFormat::Float2;
-    mVertexInputDescriptor.cAttributes[1].shaderLocation = 1;
-    mVertexInputDescriptor.cAttributes[1].offset         = IM_OFFSETOF(ImDrawVert, uv);
-    mVertexInputDescriptor.cAttributes[2].format         = wgpu::VertexFormat::UChar4Norm;
-    mVertexInputDescriptor.cAttributes[2].shaderLocation = 2;
-    mVertexInputDescriptor.cAttributes[2].offset         = IM_OFFSETOF(ImDrawVert, col);
+    utils::ComboVertexStateDescriptor mVertexStateDescriptor;
+    mVertexStateDescriptor.cVertexBuffers[0].attributeCount = 3;
+    mVertexStateDescriptor.cVertexBuffers[0].arrayStride    = sizeof(ImDrawVert);
+    mVertexStateDescriptor.cAttributes[0].format            = wgpu::VertexFormat::Float2;
+    mVertexStateDescriptor.cAttributes[0].shaderLocation    = 0;
+    mVertexStateDescriptor.cAttributes[0].offset            = 0;
+    mVertexStateDescriptor.cAttributes[1].format            = wgpu::VertexFormat::Float2;
+    mVertexStateDescriptor.cAttributes[1].shaderLocation    = 1;
+    mVertexStateDescriptor.cAttributes[1].offset            = IM_OFFSETOF(ImDrawVert, uv);
+    mVertexStateDescriptor.cAttributes[2].format            = wgpu::VertexFormat::UChar4Norm;
+    mVertexStateDescriptor.cAttributes[2].shaderLocation    = 2;
+    mVertexStateDescriptor.cAttributes[2].offset            = IM_OFFSETOF(ImDrawVert, col);
 
-    mVertexInputDescriptor.cBuffers[0].attributes = &mVertexInputDescriptor.cAttributes[0];
-    mVertexInputDescriptor.bufferCount            = 1;
-    mVertexInputDescriptor.indexFormat            = wgpu::IndexFormat::Uint16;
+    mVertexStateDescriptor.cVertexBuffers[0].attributes = &mVertexStateDescriptor.cAttributes[0];
+    mVertexStateDescriptor.vertexBufferCount            = 1;
+    mVertexStateDescriptor.indexFormat                  = wgpu::IndexFormat::Uint16;
 
     // Create bind group layout
     wgpu::BindGroupLayout layout = mContextDawn->MakeBindGroupLayout(
@@ -298,7 +298,7 @@ bool ImGui_ImplDawn_CreateDeviceObjects()
     mPipelineDescriptor.layout                    = mPipelineLayout;
     mPipelineDescriptor.vertexStage.module        = mVsModule;
     mPipelineDescriptor.cFragmentStage.module     = mFsModule;
-    mPipelineDescriptor.vertexInput               = &mVertexInputDescriptor;
+    mPipelineDescriptor.cVertexState              = mVertexStateDescriptor;
     mPipelineDescriptor.depthStencilState         = &mPipelineDescriptor.cDepthStencilState;
     mPipelineDescriptor.cDepthStencilState.format = wgpu::TextureFormat::Depth24PlusStencil8;
     mPipelineDescriptor.cColorStates[0]           = ColorStateDescriptor;

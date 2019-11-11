@@ -77,7 +77,7 @@ class FishModelInstancedDrawDawn : public FishModel
     BufferDawn *mIndicesBuffer;
 
   private:
-    utils::ComboVertexInputDescriptor mVertexInputDescriptor;
+    utils::ComboVertexStateDescriptor mVertexStateDescriptor;
     wgpu::RenderPipeline mPipeline;
 
     wgpu::BindGroupLayout mGroupLayoutModel;
