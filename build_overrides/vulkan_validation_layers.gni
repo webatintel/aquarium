@@ -1,0 +1,15 @@
+#
+# Copyright (c) 2019 The Aquarium Project Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+
+vulkan_headers_dir = "//third_party/vulkan-headers"
+vvl_spirv_tools_dir = "//third_party/SPIRV-Tools"
+vvl_glslang_dir = "//third_party/glslang"
+
+# Subdirectories for generated files
+vulkan_data_subdir = "vulkandata"
+vulkan_gen_subdir = ""
+
+

@@ -4,4 +4,4 @@
 # found in the LICENSE file.
 #
 
-glslang_spirv_tools_dir = "//third_party/spirv-tools"
+glslang_spirv_tools_dir = "//third_party/SPIRV-Tools"
