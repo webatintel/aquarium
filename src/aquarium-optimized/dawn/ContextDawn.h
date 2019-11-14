@@ -163,7 +163,7 @@ class ContextDawn : public Context
     wgpu::RenderPassEncoder mRenderPass;
     utils::ComboRenderPassDescriptor mRenderPassDescriptor;
 
-    wgpu::Texture mBackbuffer;
+    wgpu::TextureView mBackbufferView;
     wgpu::TextureView mSceneRenderTargetView;
     wgpu::TextureView mSceneDepthStencilView;
     wgpu::RenderPipeline mPipeline;

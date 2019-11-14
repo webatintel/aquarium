@@ -55,7 +55,6 @@ ContextDawn::ContextDawn(BACKENDTYPE backendType)
       mCommandEncoder(nullptr),
       mRenderPass(nullptr),
       mRenderPassDescriptor({}),
-      mBackbuffer(nullptr),
       mSceneRenderTargetView(nullptr),
       mSceneDepthStencilView(nullptr),
       mPipeline(nullptr),
@@ -78,7 +77,7 @@ ContextDawn::~ContextDawn()
 
     mSceneRenderTargetView   = nullptr;
     mSceneDepthStencilView   = nullptr;
-    mBackbuffer              = nullptr;
+    mBackbufferView           = nullptr;
     mPipeline                = nullptr;
     mBindGroup               = nullptr;
     mLightWorldPositionBuffer = nullptr;
@@ -657,7 +656,7 @@ void ContextDawn::DoFlush(const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMA
 
     Flush();
 
-    mSwapchain.Present(mBackbuffer);
+    mSwapchain.Present();
 
     glfwPollEvents();
 }
@@ -710,20 +709,20 @@ void ContextDawn::preFrame()
     }
 
     mCommandEncoder = mDevice.CreateCommandEncoder();
-    mBackbuffer     = mSwapchain.GetNextTexture();
+    mBackbufferView = mSwapchain.GetCurrentTextureView();
 
     if (mEnableMSAA)
     {
         // If MSAA is enabled, we render to a multisampled texture and then resolve to the backbuffer
         mRenderPassDescriptor = utils::ComboRenderPassDescriptor({mSceneRenderTargetView},
                                                                  mSceneDepthStencilView);
-        mRenderPassDescriptor.cColorAttachments[0].resolveTarget = mBackbuffer.CreateView();
+        mRenderPassDescriptor.cColorAttachments[0].resolveTarget = mBackbufferView;
     }
     else
     {
         // When MSAA is off, we render directly to the backbuffer
         mRenderPassDescriptor =
-            utils::ComboRenderPassDescriptor({mBackbuffer.CreateView()}, mSceneDepthStencilView);
+            utils::ComboRenderPassDescriptor({mBackbufferView}, mSceneDepthStencilView);
     }
 
     mRenderPass = mCommandEncoder.BeginRenderPass(&mRenderPassDescriptor);
