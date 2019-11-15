@@ -71,7 +71,7 @@ deps = {
   'third_party/SPIRV-Tools': {
     'url': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Tools@{spirv_tools_revision}',
   },
-  'third_party/SPIRV-Headers': {
+  'third_party/spirv-headers': {
     'url': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Headers@{spirv_headers_revision}',
   },
   'third_party/imgui': {
