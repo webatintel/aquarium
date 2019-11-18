@@ -21,6 +21,8 @@ executable("aquarium") {
     "src/aquarium-optimized/Aquarium.cpp",
     "src/aquarium-optimized/Aquarium.h",
     "src/aquarium-optimized/Buffer.h",
+    "src/aquarium-optimized/BufferManager.h",
+    "src/aquarium-optimized/BufferManager.cpp",
     "src/aquarium-optimized/Context.h",
     "src/aquarium-optimized/Context.cpp",
     "src/aquarium-optimized/ContextFactory.cpp",
@@ -139,6 +141,8 @@ executable("aquarium") {
       "src/aquarium-optimized/dawn/TextureDawn.h",
       "src/aquarium-optimized/dawn/imgui_impl_dawn.cpp",
       "src/aquarium-optimized/dawn/imgui_impl_dawn.h",
+      "src/aquarium-optimized/dawn/BufferManagerDawn.h",
+      "src/aquarium-optimized/dawn/BufferManagerDawn.cpp",
     ]
 
     deps += [

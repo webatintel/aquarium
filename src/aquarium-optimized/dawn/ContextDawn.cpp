@@ -61,15 +61,18 @@ ContextDawn::ContextDawn(BACKENDTYPE backendType)
       mBindGroup(nullptr),
       mPreferredSwapChainFormat(wgpu::TextureFormat::RGBA8Unorm),
       mEnableMSAA(false),
+      bufferManager(nullptr),
       mappedData(nullptr)
 {
     mResourceHelper = new ResourceHelper("dawn", "", backendType);
+    bufferManager   = new BufferManagerDawn(this);
     initAvailableToggleBitset(backendType);
 }
 
 ContextDawn::~ContextDawn()
 {
     delete mResourceHelper;
+    delete bufferManager;
     if (mWindow != nullptr)
     {
         destoryImgUI();
@@ -391,7 +394,7 @@ wgpu::CommandBuffer ContextDawn::copyBufferToBuffer(wgpu::Buffer const &srcBuffe
                                                     uint64_t srcOffset,
                                                     wgpu::Buffer const &destBuffer,
                                                     uint64_t destOffset,
-                                                    uint64_t size)
+                                                    uint64_t size) const
 {
     wgpu::CommandEncoder encoder = mDevice.CreateCommandEncoder();
     encoder.CopyBufferToBuffer(srcBuffer, srcOffset, destBuffer, destOffset, size);
@@ -646,19 +649,23 @@ void ContextDawn::KeyBoardQuit()
 void ContextDawn::DoFlush(const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset)
 {
     mRenderPass.EndPass();
-    wgpu::CommandBuffer cmd = mCommandEncoder.Finish();
-    mCommandBuffers.emplace_back(cmd);
 
-    // Wait for staging buffer uploading
-    if (toggleBitset.test(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC)))
-    {
-        while (mappedData == nullptr)
+	bufferManager->flush();
+        Flush();
+
+        wgpu::CommandBuffer cmd = mCommandEncoder.Finish();
+        mCommandBuffers.emplace_back(cmd);
+
+        // Wait for staging buffer uploading
+        if (toggleBitset.test(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC)))
         {
-            WaitABit();
-        }
-        mappedData = nullptr;
+            while (mappedData == nullptr)
+            {
+                WaitABit();
+            }
+            mappedData = nullptr;
 
-        stagingBuffer.Unmap();
+            stagingBuffer.Unmap();
     }
 
     Flush();
@@ -810,14 +817,18 @@ void ContextDawn::reallocResource(int preTotalInstance,
         bindGroupFishPers = new wgpu::BindGroup[curTotalInstance];
     }
 
-    fishPersBuffer = createBufferFromData(fishPers, sizeof(FishPer) * curTotalInstance,
-                                          wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
+    //fishPersBuffer = createBufferFromData(fishPers, sizeof(FishPer) * curTotalInstance,
+    //                                      wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
+    size_t size    = sizeof(FishPer) * curTotalInstance;
+    fishPersBuffer = createBuffer(size, wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
+    RingBufferDawn* ringBuffer = bufferManager->allocate(size);
+    ringBuffer->push(fishPersBuffer, 0, fishPers, size);
 
     // TODO(yizhou): the staging buffer should be bigger to hold other uniform buffers in the
     // future. But now we only use the buffer to upload fish buffer, so the size is the same as fish
     // buffer.
-    stagingBuffer = createBuffer(sizeof(FishPer) * curTotalInstance,
-                                 wgpu::BufferUsage::MapWrite | wgpu::BufferUsage::CopySrc);
+    //stagingBuffer = createBuffer(sizeof(FishPer) * curTotalInstance,
+    //                             wgpu::BufferUsage::MapWrite | wgpu::BufferUsage::CopySrc);
 
     if (enableDynamicBufferOffset)
     {
@@ -835,7 +846,7 @@ void ContextDawn::reallocResource(int preTotalInstance,
 }
 
 wgpu::CreateBufferMappedResult ContextDawn::CreateBufferMapped(wgpu::BufferUsage usage,
-                                                               uint64_t size)
+                                                               uint64_t size) const
 {
     wgpu::BufferDescriptor descriptor;
     descriptor.nextInChain = nullptr;
@@ -922,4 +933,6 @@ void ContextDawn::destoryFishResource()
     }
 
     bindGroupFishPers = nullptr;
+
+	bufferManager->destroyBufferPool();
 }
