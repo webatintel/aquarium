@@ -108,6 +108,8 @@ enum FISHENUM : short
 
 enum TOGGLE : short
 {
+    // Stop rendering after specified time.
+    AUTOSTOP,
     // Enable 4 times MSAA.
     ENABLEMSAAx4,
     // Go through instanced draw.

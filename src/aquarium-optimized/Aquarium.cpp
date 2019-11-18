@@ -328,6 +328,7 @@ bool Aquarium::init(int argc, char **argv)
         {
 
             mTestTime = strtol(argv[i++ + 1], &pNext, 10);
+            toggleBitset.set(static_cast<size_t>(TOGGLE::AUTOSTOP));
         }
         else if (cmd.find("--window-size") != std::string::npos)
         {
@@ -399,7 +400,8 @@ void Aquarium::display()
 
         mContext->DoFlush(toggleBitset);
 
-        if (g.then - g.start > mTestTime)
+        if (toggleBitset.test(static_cast<size_t>(TOGGLE::AUTOSTOP)) &&
+            (g.then - g.start) > mTestTime)
         {
             break;
         }
