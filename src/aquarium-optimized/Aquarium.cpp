@@ -42,7 +42,7 @@ Aquarium::Aquarium()
       mCurFishCount(1),
       mPreFishCount(0),
       logCount(INT_MAX),
-      mTestTime(300),
+      mTestTime(INT_MAX),
       mBackendType(BACKENDTYPE::BACKENDTYPELAST),
       mFactory(nullptr)
 {

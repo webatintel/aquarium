@@ -208,6 +208,9 @@ Aquarium uses gn to build on Linux, macOS and Windows.
 # cd the repo
 cd aquarium
 
+# update repo
+git pull
+
 # Download thirdparty
 gclient sync
 
