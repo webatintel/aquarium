@@ -309,7 +309,7 @@ bool initialize(int argc, char **argv)
         std::string cmd(argv[i]);
         if (cmd == "--h" || cmd == "-h")
         {
-            std::cout << cmdArgsStrAquariumDirectMap << std::endl;
+            std::cout << cmdArgsStrAquarium << std::endl;
             return false;
         }
         else if (cmd == "--num-fish")
