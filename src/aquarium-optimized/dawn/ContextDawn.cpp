@@ -194,17 +194,18 @@ bool ContextDawn::initialize(
     }
 
     WGPUDevice backendDevice;
+    dawn_native::DeviceDescriptor descriptor;
     if (toggleBitset.test(static_cast<size_t>(TOGGLE::TURNOFFVSYNC)))
     {
         const char *kValidToggleName = "turn_off_vsync";
-        dawn_native::DeviceDescriptor descriptor;
         descriptor.forceEnabledToggles.push_back(kValidToggleName);
-        backendDevice = backendAdapter.CreateDevice(&descriptor);
     }
-    else
+    else if (toggleBitset.test(static_cast<size_t>(TOGGLE::DISABLERENDERPASS)))
     {
-        backendDevice = backendAdapter.CreateDevice();
+        const char *kValidToggleName = "use_d3d12_render_pass";
+        descriptor.forceDisabledToggles.push_back(kValidToggleName);
     }
+    backendDevice = backendAdapter.CreateDevice(&descriptor);
 
     DawnProcTable backendProcs = dawn_native::GetProcs();
 
@@ -318,6 +319,7 @@ void ContextDawn::initAvailableToggleBitset(BACKENDTYPE backendType)
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEFULLSCREENMODE));
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC));
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::TURNOFFVSYNC));
+    mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::DISABLERENDERPASS));
 }
 
 Texture *ContextDawn::createTexture(const std::string &name, const std::string &url)

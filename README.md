@@ -314,6 +314,14 @@ aquarium.exe --num-fish 10000 --backend dawn_d3d12 --test-time 30
 #"--window-size=[width],[height]" : Set window size.
 aquarium.exe --num-fish 10000 --backend dawn_d3d12 --window-size=2560,1440
 
+#“--turn-off-vsync” : Unlimit 60 fps.
+aquarium.exe --num-fish 10000 --backend dawn_vulkan --turn-off-vsync
+
+#“--disable-renderpass” : Turn off render pass for dawn_d3d12 backend. Render pass is only supported on Intel gen 10
+# or more advanced platforms. This feature is supported on versions of Windows prior to build 1809, or dawn will
+# emulate a render pass.
+aquarium.exe --num-fish 10000 --backend dawn_d3d12 --disable-renderpass
+
 # aquarium-direct-map only has OpenGL backend
 # Enable MSAA
 ./aquarium-direct-map  --num-fish 10000 --backend opengl --enable-msaa
