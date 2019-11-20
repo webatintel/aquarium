@@ -342,6 +342,19 @@ bool Aquarium::init(int argc, char **argv)
                              "'--window-size=[width],[height].' ";
             }
         }
+        else if (cmd == "--disable-renderpass")
+        {
+            if (!availableToggleBitset.test(static_cast<size_t>(TOGGLE::DISABLERENDERPASS)))
+            {
+                std::cerr << "Render pass is only supported for dawn_d3d12 backend. This feature "
+                             "is only supported on Intel gen 10 or more advanced platforms. "
+                             "Windows 1809 or prior version is also required."
+                          << std::endl;
+                return false;
+            }
+
+            toggleBitset.set(static_cast<size_t>(TOGGLE::DISABLERENDERPASS));
+        }
         else
         {
         }

@@ -22,6 +22,7 @@ class ResourceHelper
     std::string getModelPath(const std::string &modelName) const;
     const std::string &getProgramPath() const;
     const std::string &getBackendName() const { return mBackendName; }
+    BACKENDTYPE getBackendType() const { return mBackendType; }
     const std::string &getShaderVersion() const { return mShaderVersion; }
     const std::string &getRendererInfo() const;
     void setRenderer(const std::string &renderer);

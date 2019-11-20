@@ -118,6 +118,8 @@ enum TOGGLE : short
     // By default, the app will enable dynamic buffer offset.
     // The toggle is to disable dbo feature.
     ENABLEDYNAMICBUFFEROFFSET,
+    // Turn off render pass on dawn_d3d12
+    DISABLERENDERPASS,
     // Select integrated gpu if available.
     INTEGRATEDGPU,
     // Select discrete gpu if available.

@@ -6,6 +6,7 @@
 
 #include "Context.h"
 
+#include "Aquarium.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_internal.h"
@@ -100,6 +101,18 @@ void Context::renderImgui(const FPSTimer &fpsTimer,
         else
         {
             ImGui::Text("INSTANCEDDRAWS: OFF");
+        }
+
+        if (mResourceHelper->getBackendType() == BACKENDTYPE::BACKENDTYPEDAWND3D12)
+        {
+            if (toggleBitset->test(static_cast<size_t>(TOGGLE::DISABLERENDERPASS)))
+            {
+                ImGui::Text("RENDERPASS: OFF");
+            }
+            else
+            {
+                ImGui::Text("RENDERPASS: ON");
+            }
         }
 
         ImGui::Checkbox("Option Window", &show_option_window);
