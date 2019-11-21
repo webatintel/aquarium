@@ -105,7 +105,7 @@ void Context::renderImgui(const FPSTimer &fpsTimer,
 
         if (mResourceHelper->getBackendType() == BACKENDTYPE::BACKENDTYPEDAWND3D12)
         {
-            if (toggleBitset->test(static_cast<size_t>(TOGGLE::DISABLERENDERPASS)))
+            if (toggleBitset->test(static_cast<size_t>(TOGGLE::DISABLED3D12RENDERPASS)))
             {
                 ImGui::Text("RENDERPASS: OFF");
             }

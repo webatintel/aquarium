@@ -119,7 +119,7 @@ enum TOGGLE : short
     // The toggle is to disable dbo feature.
     ENABLEDYNAMICBUFFEROFFSET,
     // Turn off render pass on dawn_d3d12
-    DISABLERENDERPASS,
+    DISABLED3D12RENDERPASS,
     // Select integrated gpu if available.
     INTEGRATEDGPU,
     // Select discrete gpu if available.

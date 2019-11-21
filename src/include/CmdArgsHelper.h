@@ -22,7 +22,7 @@ const char *cmdArgsStrAquarium = R"(Options and arguments:
 --record-fps-frequency [count]  : Record fps every count frame and print fps log when exit.
 --test-time [second]    : Render the application for some second and then exit, and the application will run 5 min by default.
 --turn-off-vsync        : Unlimit 60 fps. 
---disable-renderpass   : Turn off render pass for dawn_d3d12 backend.
+--disable-d3d12-render-pass   : Turn off render pass for dawn_d3d12 backend.
 --window-size=[width],[height]  : Input window size.";
 
 
