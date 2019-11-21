@@ -41,6 +41,7 @@ executable("aquarium") {
   deps = [
     "third_party:stb",
     "third_party:imgui",
+    "third_party:glfw",
   ]
 
   include_dirs = [
@@ -49,6 +50,7 @@ executable("aquarium") {
     "src",
     "third_party/imgui",
     "third_party/imgui/examples",
+    "third_party/glfw/include",
   ]
 
   if(enable_angle || enable_opengl) {
@@ -145,12 +147,6 @@ executable("aquarium") {
 
     include_dirs += [
       "third_party/dawn/third_party/shaderc/libshaderc/include",
-    ]
-  } else {
-    deps += [ "third_party:glfw" ]
-
-    include_dirs += [
-      "third_party/glfw/include",
     ]
   }
 
