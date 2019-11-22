@@ -115,6 +115,20 @@ void Context::renderImgui(const FPSTimer &fpsTimer,
             }
         }
 
+        if (mResourceHelper->getBackendType() == BACKENDTYPE::BACKENDTYPEDAWND3D12 ||
+            mResourceHelper->getBackendType() == BACKENDTYPE::BACKENDTYPEDAWNVULKAN ||
+            mResourceHelper->getBackendType() == BACKENDTYPE::BACKENDTYPEDAWNMETAL)
+        {
+            if (toggleBitset->test(static_cast<size_t>(TOGGLE::DISABLEDAWNVALIDATION)))
+            {
+                ImGui::Text("VALIDATION: OFF");
+            }
+            else
+            {
+                ImGui::Text("VALIDATION: ON");
+            }
+        }
+
         ImGui::Checkbox("Option Window", &show_option_window);
 
         ImGui::End();

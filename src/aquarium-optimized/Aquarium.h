@@ -120,6 +120,8 @@ enum TOGGLE : short
     ENABLEDYNAMICBUFFEROFFSET,
     // Turn off render pass on dawn_d3d12
     DISABLED3D12RENDERPASS,
+    // Turn off dawn validation,
+    DISABLEDAWNVALIDATION,
     // Select integrated gpu if available.
     INTEGRATEDGPU,
     // Select discrete gpu if available.

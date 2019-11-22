@@ -197,13 +197,18 @@ bool ContextDawn::initialize(
     dawn_native::DeviceDescriptor descriptor;
     if (toggleBitset.test(static_cast<size_t>(TOGGLE::TURNOFFVSYNC)))
     {
-        const char *kValidToggleName = "turn_off_vsync";
-        descriptor.forceEnabledToggles.push_back(kValidToggleName);
+        const char *turnOffVsync = "turn_off_vsync";
+        descriptor.forceEnabledToggles.push_back(turnOffVsync);
     }
-    else if (toggleBitset.test(static_cast<size_t>(TOGGLE::DISABLED3D12RENDERPASS)))
+    if (toggleBitset.test(static_cast<size_t>(TOGGLE::DISABLED3D12RENDERPASS)))
     {
-        const char *kValidToggleName = "use_d3d12_render_pass";
-        descriptor.forceDisabledToggles.push_back(kValidToggleName);
+        const char *useD3D12RenderPass = "use_d3d12_render_pass";
+        descriptor.forceDisabledToggles.push_back(useD3D12RenderPass);
+    }
+    if (toggleBitset.test(static_cast<size_t>(TOGGLE::DISABLEDAWNVALIDATION)))
+    {
+        const char *skipValidation = "skip_validation";
+        descriptor.forceEnabledToggles.push_back(skipValidation);
     }
     backendDevice = backendAdapter.CreateDevice(&descriptor);
 
@@ -320,6 +325,7 @@ void ContextDawn::initAvailableToggleBitset(BACKENDTYPE backendType)
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC));
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::TURNOFFVSYNC));
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::DISABLED3D12RENDERPASS));
+    mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::DISABLEDAWNVALIDATION));
 }
 
 Texture *ContextDawn::createTexture(const std::string &name, const std::string &url)
