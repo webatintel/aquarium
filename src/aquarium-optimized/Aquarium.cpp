@@ -355,6 +355,16 @@ bool Aquarium::init(int argc, char **argv)
 
             toggleBitset.set(static_cast<size_t>(TOGGLE::DISABLED3D12RENDERPASS));
         }
+        else if (cmd == "--disable-dawn-validation")
+        {
+            if (!availableToggleBitset.test(static_cast<size_t>(TOGGLE::DISABLEDAWNVALIDATION)))
+            {
+                std::cerr << "Disable validation for Dawn backend." << std::endl;
+                return false;
+            }
+
+            toggleBitset.set(static_cast<size_t>(TOGGLE::DISABLEDAWNVALIDATION));
+        }
         else
         {
         }

@@ -23,6 +23,7 @@ const char *cmdArgsStrAquarium = R"(Options and arguments:
 --test-time [second]    : Render the application for some second and then exit, and the application will run 5 min by default.
 --turn-off-vsync        : Unlimit 60 fps. 
 --disable-d3d12-render-pass   : Turn off render pass for dawn_d3d12 backend.
+--disable-dawn-validation : Turn off dawn validation.
 --window-size=[width],[height]  : Input window size.";
 
 

@@ -322,6 +322,9 @@ aquarium.exe --num-fish 10000 --backend dawn_vulkan --turn-off-vsync
 # emulate a render pass.
 aquarium.exe --num-fish 10000 --backend dawn_d3d12 --disable-d3d12-render-pass
 
+#“--disable-dawn-validation” : Disable Dawn validation.
+aquarium.exe --num-fish 10000 --backend dawn_d3d12 --disable-dawn-validation
+
 # aquarium-direct-map only has OpenGL backend
 # Enable MSAA
 ./aquarium-direct-map  --num-fish 10000 --backend opengl --enable-msaa
