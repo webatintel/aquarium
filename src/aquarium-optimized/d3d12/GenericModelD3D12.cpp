@@ -75,13 +75,16 @@ void GenericModelD3D12::init()
     mLightFactorBuffer = mContextD3D12->createDefaultBuffer(
         &mLightFactorUniforms,
         mContextD3D12->CalcConstantBufferByteSize(sizeof(LightFactorUniforms)),
-        mLightFactorUploadBuffer);
+        D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, mLightFactorUploadBuffer);
     mLightFactorView.BufferLocation = mLightFactorBuffer->GetGPUVirtualAddress();
     mLightFactorView.SizeInBytes    = mContextD3D12->CalcConstantBufferByteSize(
         sizeof(LightFactorUniforms));  // CB size is required to be 256-byte aligned.
     mContextD3D12->buildCbvDescriptor(mLightFactorView, &mLightFactorGPUHandle);
-    mWorldBuffer = mContextD3D12->createUploadBuffer(
-        &mWorldUniformPer, mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniformPer)));
+    mWorldBuffer = mContextD3D12->createDefaultBuffer(
+        &mWorldUniformPer,
+        mContextD3D12->CalcConstantBufferByteSize(
+            mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniformPer))),
+        D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, mWorldUploadBuffer);
     mWorldBufferView.BufferLocation = mWorldBuffer->GetGPUVirtualAddress();
     mWorldBufferView.SizeInBytes =
         mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniformPer));
@@ -149,39 +152,39 @@ void GenericModelD3D12::init()
 // Update constant buffer per frame
 void GenericModelD3D12::prepareForDraw()
 {
-    CD3DX12_RANGE readRange(0, 0);
-    UINT8 *m_pCbvDataBegin;
-    mWorldBuffer->Map(0, &readRange, reinterpret_cast<void **>(&m_pCbvDataBegin));
-    memcpy(m_pCbvDataBegin, &mWorldUniformPer, sizeof(WorldUniformPer));
+    mContextD3D12->updateConstantBufferSync(
+        mWorldBuffer, mWorldUploadBuffer, &mWorldUniformPer,
+        mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniforms)));
 }
 
 void GenericModelD3D12::draw()
 {
-    auto &commandList = mContextD3D12->mCommandList;
+    mContextD3D12->mCommandList->SetPipelineState(mPipelineState.Get());
+    mContextD3D12->mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
 
-    commandList->SetPipelineState(mPipelineState.Get());
-    commandList->SetGraphicsRootSignature(mRootSignature.Get());
-
-    commandList->SetGraphicsRootDescriptorTable(0, mContextD3D12->lightGPUHandle);
-    commandList->SetGraphicsRootConstantBufferView(
+    mContextD3D12->mCommandList->SetGraphicsRootDescriptorTable(0, mContextD3D12->lightGPUHandle);
+    mContextD3D12->mCommandList->SetGraphicsRootConstantBufferView(
         1, mContextD3D12->lightWorldPositionView.BufferLocation);
-    commandList->SetGraphicsRootDescriptorTable(2, mLightFactorGPUHandle);
-    commandList->SetGraphicsRootDescriptorTable(3, mDiffuseTexture->getTextureGPUHandle());
-    commandList->SetGraphicsRootConstantBufferView(4, mWorldBufferView.BufferLocation);
+    mContextD3D12->mCommandList->SetGraphicsRootDescriptorTable(2, mLightFactorGPUHandle);
+    mContextD3D12->mCommandList->SetGraphicsRootDescriptorTable(
+        3, mDiffuseTexture->getTextureGPUHandle());
+    mContextD3D12->mCommandList->SetGraphicsRootConstantBufferView(4,
+                                                                   mWorldBufferView.BufferLocation);
 
-    commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    mContextD3D12->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     // diffuseShader doesn't have to input tangent buffer or binormal buffer.
     if (mTangentBuffer && mBiNormalBuffer && mName != MODELNAME::MODELGLOBEBASE)
     {
-        commandList->IASetVertexBuffers(0, 5, mVertexBufferView);
+        mContextD3D12->mCommandList->IASetVertexBuffers(0, 5, mVertexBufferView);
     } else
     {
-        commandList->IASetVertexBuffers(0, 3, mVertexBufferView);
+        mContextD3D12->mCommandList->IASetVertexBuffers(0, 3, mVertexBufferView);
     }
-    commandList->IASetIndexBuffer(&mIndicesBuffer->mIndexBufferView);
+    mContextD3D12->mCommandList->IASetIndexBuffer(&mIndicesBuffer->mIndexBufferView);
 
-    commandList->DrawIndexedInstanced(mIndicesBuffer->getTotalComponents(), mInstance, 0, 0, 0);
+    mContextD3D12->mCommandList->DrawIndexedInstanced(mIndicesBuffer->getTotalComponents(),
+                                                      mInstance, 0, 0, 0);
 
     mInstance = 0;
 }

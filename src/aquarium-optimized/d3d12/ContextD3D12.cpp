@@ -61,7 +61,8 @@ ContextD3D12::ContextD3D12(BACKENDTYPE backendType)
       mFogView({}),
       mSceneRenderTargetView({}),
       mEnableMSAA(false),
-      mVsync(1u)
+      mVsync(1u),
+      mDisableD3D12RenderPass(false)
 {
     for (UINT n = 0; n < mFrameCount; n++)
     {
@@ -233,23 +234,23 @@ bool ContextD3D12::initialize(
     cbvsrvCPUHandle = mCbvsrvHeap->GetCPUDescriptorHandleForHeapStart();
     cbvsrvGPUHandle = mCbvsrvHeap->GetGPUDescriptorHandleForHeapStart();
 
-    // Init 3 command allocators for 3 back buffers
-    for (UINT n = 0; n < mFrameCount; n++)
+    // Init 6 command allocators for 3 back buffers and 3 copy buffer lists.
+    for (UINT n = 0; n < mCommandAllocatorCount; n++)
     {
         ThrowIfFailed(mDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT,
                                                       IID_PPV_ARGS(&mCommandAllocators[n])));
     }
 
     createCommandList(nullptr, mCommandList);
+    // mCommandList.As(&mCommandList4);
+    ThrowIfFailed(mCommandList->QueryInterface(IID_PPV_ARGS(&mCommandList4)));
 
     // Check highest version of root signature.
-    mRootSignature.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
+    checkRootSignatureSupport();
 
-    if (FAILED(mDevice->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &mRootSignature,
-                                            sizeof(mRootSignature))))
-    {
-        mRootSignature.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
-    }
+    mDisableD3D12RenderPass =
+        !getRenderPassesTier(mDevice.Get()) ||
+        toggleBitset.test(static_cast<size_t>(TOGGLE::DISABLED3D12RENDERPASS));
 
     if (mEnableMSAA)
     {
@@ -297,6 +298,31 @@ bool ContextD3D12::initialize(
     return true;
 }
 
+void ContextD3D12::checkRootSignatureSupport()
+{
+    mRootSignature.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
+
+    if (FAILED(mDevice->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &mRootSignature,
+                                            sizeof(mRootSignature))))
+    {
+        mRootSignature.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
+    }
+}
+
+bool ContextD3D12::getRenderPassesTier(ID3D12Device *device)
+{
+    D3D12_FEATURE_DATA_D3D12_OPTIONS5 featureSupport{};
+    if (SUCCEEDED(device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS5, &featureSupport,
+                                              sizeof(featureSupport))))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 // Helper function for acquiring the first available hardware adapter that supports Direct3D 12.
 // If no such adapter can be found, *ppAdapter will be set to nullptr.
 bool ContextD3D12::GetHardwareAdapter(
@@ -330,7 +356,7 @@ bool ContextD3D12::GetHardwareAdapter(
             if (SUCCEEDED(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0,
                                             _uuidof(ID3D12Device), nullptr)))
             {
-                std::wstring str = desc.Description;
+                std::wstring str     = desc.Description;
                 std::string renderer = std::string(str.begin(), str.end());
                 std::cout << renderer << std::endl;
                 mResourceHelper->setRenderer(renderer);
@@ -382,38 +408,71 @@ void ContextD3D12::initAvailableToggleBitset(BACKENDTYPE backendType)
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::INTEGRATEDGPU));
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEFULLSCREENMODE));
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::TURNOFFVSYNC));
+    mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::DISABLED3D12RENDERPASS));
 }
 
 void ContextD3D12::DoFlush(const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset)
 {
-    // Resolve MSAA texture to non MSAA texture, and then present.
-    if (mEnableMSAA)
+    if (mDisableD3D12RenderPass)
     {
-        stateTransition(mSceneRenderTargetTexture, D3D12_RESOURCE_STATE_RENDER_TARGET,
-                        D3D12_RESOURCE_STATE_RESOLVE_SOURCE);
-        stateTransition(mRenderTargets[m_frameIndex], D3D12_RESOURCE_STATE_COMMON,
-                        D3D12_RESOURCE_STATE_RESOLVE_DEST);
+        // Resolve MSAA texture to non MSAA texture, and then present.
+        if (mEnableMSAA)
+        {
+            stateTransition(mSceneRenderTargetTexture, D3D12_RESOURCE_STATE_RENDER_TARGET,
+                            D3D12_RESOURCE_STATE_RESOLVE_SOURCE);
+            stateTransition(mRenderTargets[m_frameIndex], D3D12_RESOURCE_STATE_COMMON,
+                            D3D12_RESOURCE_STATE_RESOLVE_DEST);
 
-        mCommandList->ResolveSubresource(mRenderTargets[m_frameIndex].Get(), 0,
-                                         mSceneRenderTargetTexture.Get(), 0,
-                                         mPreferredSwapChainFormat);
+            mCommandList->ResolveSubresource(mRenderTargets[m_frameIndex].Get(), 0,
+                                             mSceneRenderTargetTexture.Get(), 0,
+                                             mPreferredSwapChainFormat);
 
-        stateTransition(mSceneRenderTargetTexture, D3D12_RESOURCE_STATE_RESOLVE_SOURCE,
-                        D3D12_RESOURCE_STATE_RENDER_TARGET);
-        stateTransition(mRenderTargets[m_frameIndex], D3D12_RESOURCE_STATE_RESOLVE_DEST,
-                        D3D12_RESOURCE_STATE_COMMON);
+            stateTransition(mSceneRenderTargetTexture, D3D12_RESOURCE_STATE_RESOLVE_SOURCE,
+                            D3D12_RESOURCE_STATE_RENDER_TARGET);
+            stateTransition(mRenderTargets[m_frameIndex], D3D12_RESOURCE_STATE_RESOLVE_DEST,
+                            D3D12_RESOURCE_STATE_COMMON);
+            // TODO(yizhou): set render target back?
+            CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(
+                mRtvHeap->GetCPUDescriptorHandleForHeapStart(), m_frameIndex, mRtvDescriptorSize);
+            CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle =
+                CD3DX12_CPU_DESCRIPTOR_HANDLE(mDsvHeap->GetCPUDescriptorHandleForHeapStart());
+            mCommandList->OMSetRenderTargets(1, &rtvHandle, true, &dsvHandle);
+        }
+        else
+        {
+            stateTransition(mRenderTargets[m_frameIndex], D3D12_RESOURCE_STATE_RENDER_TARGET,
+                            D3D12_RESOURCE_STATE_COMMON);
+        }
+
+        ThrowIfFailed(mCommandList->Close());
+
+        // Execute the command list.
+        ID3D12CommandList *ppCommandLists[] = {mCommandList.Get()};
+        int count                           = _countof(ppCommandLists);
+        mCommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
     }
     else
     {
-        stateTransition(mRenderTargets[m_frameIndex], D3D12_RESOURCE_STATE_RENDER_TARGET,
-                        D3D12_RESOURCE_STATE_COMMON);
+        mCommandList->EndRenderPass();
+
+        ThrowIfFailed(mCommandList->Close());
+
+        // Execute the command list.
+        ID3D12CommandList *ppCommandLists[] = {mCommandList.Get()};
+        int count                           = _countof(ppCommandLists);
+        mCommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+
+        if (mEnableMSAA)
+        {
+            stateTransition(mRenderTargets[m_frameIndex], D3D12_RESOURCE_STATE_RESOLVE_DEST,
+                            D3D12_RESOURCE_STATE_COMMON);
+        }
+        else
+        {
+            stateTransition(mRenderTargets[m_frameIndex], D3D12_RESOURCE_STATE_RENDER_TARGET,
+                            D3D12_RESOURCE_STATE_COMMON);
+        }
     }
-
-    ThrowIfFailed(mCommandList->Close());
-
-    // Execute the command list.
-    ID3D12CommandList *ppCommandLists[] = {mCommandList.Get()};
-    mCommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
     // Present the frame.
     ThrowIfFailed(mSwapChain->Present(mVsync, 0));
@@ -421,6 +480,25 @@ void ContextD3D12::DoFlush(const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEM
     WaitForPreviousFrame();
 
     glfwPollEvents();
+}
+
+void ContextD3D12::FlushBufferUpdate()
+{
+    ThrowIfFailed(mCommandList->Close());
+    // Execute the command list.
+    ID3D12CommandList *ppCommandLists[] = {mCommandList.Get()};
+    int count                           = _countof(ppCommandLists);
+    mCommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+
+    // Use command allocator of drawing
+    ThrowIfFailed(mCommandAllocators[m_frameIndex]->Reset());
+
+    // A command list can be reset after it has been added to the command queue via
+    // ExecuteCommandList.
+    // Reusing the command list reuses memory.
+    ThrowIfFailed(mCommandList->Reset(mCommandAllocators[m_frameIndex].Get(), nullptr));
+
+    WaitForPreviousFrame();
 }
 
 void ContextD3D12::Flush()
@@ -480,9 +558,9 @@ void ContextD3D12::showFPS(const FPSTimer &fpsTimer,
                            std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> *toggleBitset)
 {
     // Start the Dear ImGui frame
-    ImGui_ImplDX12_NewFrame();
+    /*ImGui_ImplDX12_NewFrame();
     renderImgui(fpsTimer, fishCount, toggleBitset);
-    ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), mCommandList.Get());
+    ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), mCommandList.Get());*/
 }
 
 void ContextD3D12::destoryImgUI()
@@ -496,24 +574,32 @@ void ContextD3D12::preFrame()
 {
     // Reuse the memory associated with command recording.
     // We can only reset when the associated command lists have finished execution on the GPU.
-    ThrowIfFailed(mCommandAllocators[m_frameIndex]->Reset());
+    // Use command allocator of copy buffers.
+    ThrowIfFailed(mCommandAllocators[m_frameIndex + 3]->Reset());
 
     // A command list can be reset after it has been added to the command queue via
     // ExecuteCommandList.
     // Reusing the command list reuses memory.
-    ThrowIfFailed(mCommandList->Reset(mCommandAllocators[m_frameIndex].Get(), nullptr));
+    ThrowIfFailed(mCommandList->Reset(mCommandAllocators[m_frameIndex + 3].Get(), nullptr));
+
+    // Set descriptor heaps related to command list.
+    ID3D12DescriptorHeap *mDescriptorHeaps[] = {mCbvsrvHeap.Get()};
+}
+
+void ContextD3D12::beginRenderPass()
+{
+    // Flush buffer updating before begin render pass
+    FlushBufferUpdate();
 
     // Set descriptor heaps related to command list.
     ID3D12DescriptorHeap *mDescriptorHeaps[] = {mCbvsrvHeap.Get()};
 
-    mCommandList->SetDescriptorHeaps(_countof(mDescriptorHeaps), mDescriptorHeaps);
-    mCommandList->RSSetViewports(1, &mViewport);
-    mCommandList->RSSetScissorRects(1, &mScissorRect);
-
     CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle;
     CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle;
+
     if (mEnableMSAA)
     {
+        // Set MSAA texture as render target
         rtvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(mRtvHeap->GetCPUDescriptorHandleForHeapStart(),
                                                   mFrameCount, mRtvDescriptorSize);
     }
@@ -521,18 +607,84 @@ void ContextD3D12::preFrame()
     {
         rtvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(mRtvHeap->GetCPUDescriptorHandleForHeapStart(),
                                                   m_frameIndex, mRtvDescriptorSize);
-
-        stateTransition(mRenderTargets[m_frameIndex], D3D12_RESOURCE_STATE_COMMON,
-                        D3D12_RESOURCE_STATE_RENDER_TARGET);
     }
+    // stateTransition(mRenderTargets[m_frameIndex], D3D12_RESOURCE_STATE_COMMON,
+    //                D3D12_RESOURCE_STATE_RENDER_TARGET);
 
     dsvHandle = mDsvHeap->GetCPUDescriptorHandleForHeapStart();
 
-    mCommandList->ClearDepthStencilView(mDsvHeap->GetCPUDescriptorHandleForHeapStart(),
-                                        D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0,
-                                        0, nullptr);
+    if (mDisableD3D12RenderPass)
+    {
+        mCommandList->ClearDepthStencilView(mDsvHeap->GetCPUDescriptorHandleForHeapStart(),
+                                            D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f,
+                                            0, 0, nullptr);
 
-    mCommandList->OMSetRenderTargets(1, &rtvHandle, true, &dsvHandle);
+        mCommandList->OMSetRenderTargets(1, &rtvHandle, true, &dsvHandle);
+    }
+    else  // Enable D3D12 render pass
+    {
+        const float clearColor4[]{0.f, 0.8f, 1.f, 0.f};
+        CD3DX12_CLEAR_VALUE clearValue{DXGI_FORMAT_R32G32B32_FLOAT, clearColor4};
+
+        D3D12_RENDER_PASS_BEGINNING_ACCESS renderPassBeginningAccessClear{
+            D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_CLEAR, {clearValue}};
+        D3D12_RENDER_PASS_ENDING_ACCESS renderPassEndingAccessPreserve{
+            D3D12_RENDER_PASS_ENDING_ACCESS_TYPE_PRESERVE, {}};
+
+        D3D12_RENDER_PASS_RENDER_TARGET_DESC renderPassRenderTargetDesc;
+        renderPassRenderTargetDesc.cpuDescriptor   = rtvHandle;
+        renderPassRenderTargetDesc.BeginningAccess = renderPassBeginningAccessClear;
+        if (mEnableMSAA)
+        {
+            stateTransition(mRenderTargets[m_frameIndex],
+                            D3D12_RESOURCE_STATE_COMMON,  // D3D12_RESOURCE_STATE_RENDER_TARGET
+                            D3D12_RESOURCE_STATE_RESOLVE_DEST);
+
+            D3D12_RENDER_PASS_ENDING_ACCESS_RESOLVE_SUBRESOURCE_PARAMETERS subresourceParameters;
+            subresourceParameters.DstX           = 0;
+            subresourceParameters.DstY           = 0;
+            subresourceParameters.SrcSubresource = 0;
+            subresourceParameters.DstSubresource = 0;
+            subresourceParameters.SrcRect        = {0, 0, mClientWidth, mClientHeight};
+
+            D3D12_RENDER_PASS_ENDING_ACCESS_RESOLVE_PARAMETERS resolveParameters;
+            resolveParameters.Format       = mPreferredSwapChainFormat;
+            resolveParameters.pSrcResource = mSceneRenderTargetTexture.Get();
+            resolveParameters.pDstResource = mRenderTargets[m_frameIndex].Get();
+            // resolveParameters.PreserveResolveSource  = false;
+            resolveParameters.PreserveResolveSource  = true;
+            resolveParameters.ResolveMode            = D3D12_RESOLVE_MODE_AVERAGE;
+            resolveParameters.SubresourceCount       = 1;
+            resolveParameters.pSubresourceParameters = &subresourceParameters;
+
+            renderPassRenderTargetDesc.EndingAccess.Type =
+                D3D12_RENDER_PASS_ENDING_ACCESS_TYPE_RESOLVE;
+            renderPassRenderTargetDesc.EndingAccess.Resolve = resolveParameters;
+        }
+        else
+        {
+            renderPassRenderTargetDesc.EndingAccess = renderPassEndingAccessPreserve;
+        }
+
+        D3D12_RENDER_PASS_BEGINNING_ACCESS renderPassBeginningAccessClearDepthStencil;
+        renderPassBeginningAccessClearDepthStencil.Clear.ClearValue.DepthStencil.Depth   = 1.f;
+        renderPassBeginningAccessClearDepthStencil.Clear.ClearValue.DepthStencil.Stencil = 0;
+        renderPassBeginningAccessClearDepthStencil.Clear.ClearValue.Format =
+            DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
+        renderPassBeginningAccessClearDepthStencil.Type =
+            D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_CLEAR;
+        D3D12_RENDER_PASS_DEPTH_STENCIL_DESC renderPassDepthStencilDesc{
+            dsvHandle, renderPassBeginningAccessClearDepthStencil,
+            renderPassBeginningAccessClearDepthStencil, renderPassEndingAccessPreserve,
+            renderPassEndingAccessPreserve};
+
+        mCommandList->BeginRenderPass(1, &renderPassRenderTargetDesc, &renderPassDepthStencilDesc,
+                                      D3D12_RENDER_PASS_FLAG_NONE);
+    }
+
+    mCommandList->SetDescriptorHeaps(_countof(mDescriptorHeaps), mDescriptorHeaps);
+    mCommandList->RSSetViewports(1, &mViewport);
+    mCommandList->RSSetScissorRects(1, &mScissorRect);
 }
 
 Model *ContextD3D12::createModel(Aquarium *aquarium, MODELGROUP type, MODELNAME name, bool blend)
@@ -607,15 +759,16 @@ Texture *ContextD3D12::createTexture(const std::string &name, const std::vector<
 void ContextD3D12::initGeneralResources(Aquarium *aquarium)
 {
     // create common constant buffer, desc and view.
-    mLightBuffer =
-        createDefaultBuffer(&aquarium->lightUniforms,
-                            CalcConstantBufferByteSize(sizeof(LightUniforms)), mLightUploadBuffer);
+    mLightBuffer = createDefaultBuffer(
+        &aquarium->lightUniforms, CalcConstantBufferByteSize(sizeof(LightUniforms)),
+        D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, mLightUploadBuffer);
     mLightView.BufferLocation = mLightBuffer->GetGPUVirtualAddress();
     mLightView.SizeInBytes    = CalcConstantBufferByteSize(sizeof(LightUniforms));
     buildCbvDescriptor(mLightView, &lightGPUHandle);
 
-    mFogBuffer = createDefaultBuffer(
-        &aquarium->fogUniforms, CalcConstantBufferByteSize(sizeof(FogUniforms)), mFogUploadBuffer);
+    mFogBuffer =
+        createDefaultBuffer(&aquarium->fogUniforms, CalcConstantBufferByteSize(sizeof(FogUniforms)),
+                            D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, mFogUploadBuffer);
     mFogView.BufferLocation = mFogBuffer->GetGPUVirtualAddress();
     mFogView.SizeInBytes    = CalcConstantBufferByteSize(
         sizeof(FogUniforms));  // CB size is required to be 256-byte aligned.
@@ -630,9 +783,10 @@ void ContextD3D12::initGeneralResources(Aquarium *aquarium)
                          D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
     rootParameterGeneral.InitAsDescriptorTable(2, rangeGeneral, D3D12_SHADER_VISIBILITY_PIXEL);
 
-    mLightWorldPositionBuffer =
-        createUploadBuffer(&aquarium->lightWorldPositionUniform,
-                           CalcConstantBufferByteSize(sizeof(LightWorldPositionUniform)));
+    mLightWorldPositionBuffer = createDefaultBuffer(
+        &aquarium->lightWorldPositionUniform,
+        CalcConstantBufferByteSize(sizeof(LightWorldPositionUniform)),
+        D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, mLightWorldPositionUploadBuffer);
     lightWorldPositionView.BufferLocation = mLightWorldPositionBuffer->GetGPUVirtualAddress();
     lightWorldPositionView.SizeInBytes =
         CalcConstantBufferByteSize(sizeof(LightWorldPositionUniform));
@@ -663,11 +817,9 @@ void ContextD3D12::initGeneralResources(Aquarium *aquarium)
 
 void ContextD3D12::updateWorldlUniforms(Aquarium *aquarium)
 {
-    CD3DX12_RANGE readRange(0, 0);
-    UINT8 *m_pCbvDataBegin;
-    mLightWorldPositionBuffer->Map(0, &readRange, reinterpret_cast<void **>(&m_pCbvDataBegin));
-    memcpy(m_pCbvDataBegin, &aquarium->lightWorldPositionUniform,
-           sizeof(LightWorldPositionUniform));
+    updateConstantBufferSync(mLightWorldPositionBuffer, mLightWorldPositionUploadBuffer,
+                             &aquarium->lightWorldPositionUniform,
+                             CalcConstantBufferByteSize(sizeof(LightWorldPositionUniform)));
 }
 
 ComPtr<ID3DBlob> ContextD3D12::createShaderModule(const std::string &type,
@@ -784,13 +936,13 @@ void ContextD3D12::updateAllFishData(
 void ContextD3D12::createDepthStencilView()
 {
     D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
-    depthStencilViewDesc.Format                        = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    depthStencilViewDesc.Format                        = DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
     depthStencilViewDesc.ViewDimension =
         mEnableMSAA ? D3D12_DSV_DIMENSION_TEXTURE2DMS : D3D12_DSV_DIMENSION_TEXTURE2D;
     depthStencilViewDesc.Flags = D3D12_DSV_FLAG_NONE;
 
     D3D12_CLEAR_VALUE depthOptimizedClearValue    = {};
-    depthOptimizedClearValue.Format               = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    depthOptimizedClearValue.Format               = DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
     depthOptimizedClearValue.DepthStencil.Depth   = 1.0f;
     depthOptimizedClearValue.DepthStencil.Stencil = 0;
 
@@ -801,7 +953,7 @@ void ContextD3D12::createDepthStencilView()
     depthStencilDesc.Height             = mClientHeight;
     depthStencilDesc.DepthOrArraySize   = 1;
     depthStencilDesc.MipLevels          = 1;
-    depthStencilDesc.Format             = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    depthStencilDesc.Format             = DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
     depthStencilDesc.SampleDesc.Count   = mEnableMSAA ? 4 : 1;
     depthStencilDesc.SampleDesc.Quality = 0;
     depthStencilDesc.Layout             = D3D12_TEXTURE_LAYOUT_UNKNOWN;
@@ -816,16 +968,18 @@ void ContextD3D12::createDepthStencilView()
 }
 
 void ContextD3D12::createCommandList(ID3D12PipelineState *pInitialState,
-                                     ComPtr<ID3D12GraphicsCommandList> &commandList)
+                                     ComPtr<ID3D12GraphicsCommandList4> &commandList)
 {
     ThrowIfFailed(mDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT,
                                              mCommandAllocators[0].Get(), pInitialState,
                                              IID_PPV_ARGS(&commandList)));
 }
 
-ComPtr<ID3D12Resource> ContextD3D12::createDefaultBuffer(const void *initData,
-                                                         UINT64 byteSize,
-                                                         ComPtr<ID3D12Resource> &uploadBuffer) const
+ComPtr<ID3D12Resource> ContextD3D12::createDefaultBuffer(
+    const void *initData,
+    UINT64 byteSize,
+    D3D12_RESOURCE_STATES defaultBufferInitState,
+    ComPtr<ID3D12Resource> &uploadBuffer) const
 {
     ComPtr<ID3D12Resource> defaultBuffer;
 
@@ -833,8 +987,8 @@ ComPtr<ID3D12Resource> ContextD3D12::createDefaultBuffer(const void *initData,
 
     // Create the actual default buffer resource.
     ThrowIfFailed(mDevice->CreateCommittedResource(
-        &defaultheapProperties, D3D12_HEAP_FLAG_NONE, &resourceDescriptor,
-        D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(defaultBuffer.GetAddressOf())));
+        &defaultheapProperties, D3D12_HEAP_FLAG_NONE, &resourceDescriptor, defaultBufferInitState,
+        nullptr, IID_PPV_ARGS(defaultBuffer.GetAddressOf())));
 
     // In order to copy CPU memory data into our default buffer, we need to create
     // an intermediate upload heap.
@@ -842,6 +996,14 @@ ComPtr<ID3D12Resource> ContextD3D12::createDefaultBuffer(const void *initData,
         &uploadheapProperties, D3D12_HEAP_FLAG_NONE, &resourceDescriptor,
         D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(uploadBuffer.GetAddressOf())));
 
+    return defaultBuffer;
+}
+
+void ContextD3D12::updateConstantBufferSync(ComPtr<ID3D12Resource> &defaultBuffer,
+                                            const ComPtr<ID3D12Resource> &uploadBuffer,
+                                            const void *initData,
+                                            UINT64 byteSize) const
+{
     // Describe the data we want to copy into the default buffer.
     D3D12_SUBRESOURCE_DATA subResourceData = {};
     subResourceData.pData                  = initData;
@@ -849,15 +1011,14 @@ ComPtr<ID3D12Resource> ContextD3D12::createDefaultBuffer(const void *initData,
     subResourceData.SlicePitch             = subResourceData.RowPitch;
 
     // Schedule to copy the data to the default buffer resource.
-    stateTransition(defaultBuffer, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_DEST);
+    stateTransition(defaultBuffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+                    D3D12_RESOURCE_STATE_COPY_DEST);
 
     UpdateSubresources<1>(mCommandList.Get(), defaultBuffer.Get(), uploadBuffer.Get(), 0, 0, 1,
                           &subResourceData);
 
     stateTransition(defaultBuffer, D3D12_RESOURCE_STATE_COPY_DEST,
                     D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
-
-    return defaultBuffer;
 }
 
 ComPtr<ID3D12Resource> ContextD3D12::createUploadBuffer(const void *initData, UINT64 byteSize) const
@@ -871,7 +1032,8 @@ ComPtr<ID3D12Resource> ContextD3D12::createUploadBuffer(const void *initData, UI
 
     // Copy the triangle data to the vertex buffer.
     UINT8 *pVertexDataBegin;
-    CD3DX12_RANGE readRange(0, 0);  // We do not intend to read from this resource on the CPU.
+    CD3DX12_RANGE readRange(0,
+                            byteSize);  // We do not intend to read from this resource on the CPU.
     uploadBuffer->Map(0, &readRange, reinterpret_cast<void **>(&pVertexDataBegin));
     memcpy(pVertexDataBegin, initData, byteSize);
     uploadBuffer->Unmap(0, nullptr);
@@ -1008,7 +1170,7 @@ void ContextD3D12::createGraphicsPipelineState(
     psoDesc.DepthStencilState.StencilEnable       = true;
     psoDesc.DepthStencilState.StencilReadMask     = 0xff;
     psoDesc.DepthStencilState.StencilWriteMask    = 0xff;
-    psoDesc.DSVFormat                             = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    psoDesc.DSVFormat                             = DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
     psoDesc.SampleMask                            = UINT_MAX;
     psoDesc.PrimitiveTopologyType                 = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
     psoDesc.NumRenderTargets                      = 1u;

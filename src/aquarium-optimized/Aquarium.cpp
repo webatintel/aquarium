@@ -764,39 +764,62 @@ void Aquarium::updateGlobalUniforms()
 
 void Aquarium::render()
 {
-    updateGlobalUniforms();
 
     matrix::resetPseudoRandom();
 
     mContext->preFrame();
+    updateGlobalUniforms();
 
-    drawBackground();
-
-    // TODO(yizhou): Functionality of reallocate fish count during rendering
-    // isn't supported for instanced draw.
-    // To try this functionality now, use composition of "--backend dawn_xxx", or
-    // "--backend dawn_xxx --disable-dyanmic-buffer-offset"
-    if (!toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEINSTANCEDDRAWS)))
-        if (mCurFishCount != mPreFishCount)
+    // Update all buffers before begin renderpass
+    if (!toggleBitset.test(static_cast<size_t>(TOGGLE::DISABLED3D12RENDERPASS)))
+    {
+        for (int i = MODELNAME::MODELCORAL; i <= MODELNAME::MODELCORAL; ++i)
         {
-            calculateFishCount();
-            bool enableDynamicBufferOffset =
-                toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEDYNAMICBUFFEROFFSET));
-            mContext->reallocResource(mPreFishCount, mCurFishCount, enableDynamicBufferOffset);
-            mPreFishCount = mCurFishCount;
-
-            resetFpsTime();
+            Model *model = mAquariumModels[i];
+            updateWorldMatrix(model);
         }
+    }
 
-    drawFishes();
+    mContext->beginRenderPass();
 
-    drawInner();
+    if (!toggleBitset.test(static_cast<size_t>(TOGGLE::DISABLED3D12RENDERPASS)))
+    {
+        for (int i = MODELNAME::MODELCORAL; i <= MODELNAME::MODELCORAL; ++i)
+        {
+            Model *model = mAquariumModels[i];
+            drawModels(model);
+        }
+    }
+    else
+    {
+        drawBackground();
 
-    drawSeaweed();
+        // TODO(yizhou): Functionality of reallocate fish count during rendering
+        // isn't supported for instanced draw.
+        // To try this functionality now, use composition of "--backend dawn_xxx", or
+        // "--backend dawn_xxx --disable-dyanmic-buffer-offset"
+        if (!toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEINSTANCEDDRAWS)))
+            if (mCurFishCount != mPreFishCount)
+            {
+                calculateFishCount();
+                bool enableDynamicBufferOffset =
+                    toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEDYNAMICBUFFEROFFSET));
+                mContext->reallocResource(mPreFishCount, mCurFishCount, enableDynamicBufferOffset);
+                mPreFishCount = mCurFishCount;
 
-    drawOutside();
+                resetFpsTime();
+            }
 
-    mContext->showFPS(mFpsTimer, &mCurFishCount, &toggleBitset);
+        drawFishes();
+
+        drawInner();
+
+        drawSeaweed();
+
+        drawOutside();
+
+        mContext->showFPS(mFpsTimer, &mCurFishCount, &toggleBitset);
+    }
 }
 
 void Aquarium::drawBackground()
@@ -944,4 +967,21 @@ void Aquarium::updateWorldMatrixAndDraw(Model *model)
         model->prepareForDraw();
         model->draw();
     }
+}
+
+void Aquarium::updateWorldMatrix(Model *model)
+{
+    if (model->worldmatrices.size())
+    {
+        for (auto &world : model->worldmatrices)
+        {
+            model->updatePerInstanceUniforms(worldUniforms);
+        }
+        model->prepareForDraw();
+    }
+}
+
+void Aquarium::drawModels(Model *model)
+{
+    model->draw();
 }

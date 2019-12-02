@@ -53,7 +53,7 @@ void SeaweedModelD3D12::init()
     mLightFactorBuffer = mContextD3D12->createDefaultBuffer(
         &mLightFactorUniforms,
         mContextD3D12->CalcConstantBufferByteSize(sizeof(LightFactorUniforms)),
-        mLightFactorUploadBuffer);
+        D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, mLightFactorUploadBuffer);
     mLightFactorView.BufferLocation = mLightFactorBuffer->GetGPUVirtualAddress();
     mLightFactorView.SizeInBytes    = mContextD3D12->CalcConstantBufferByteSize(
         sizeof(LightFactorUniforms));  // CB size is required to be 256-byte aligned.
@@ -104,12 +104,14 @@ void SeaweedModelD3D12::init()
 
 void SeaweedModelD3D12::prepareForDraw()
 {
-    CD3DX12_RANGE readRangeView(0, 0);
+    CD3DX12_RANGE readRangeView(0,
+                                mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniformPer)));
     UINT8 *m_pCbvDataBeginView;
     mWorldBuffer->Map(0, &readRangeView, reinterpret_cast<void **>(&m_pCbvDataBeginView));
     memcpy(m_pCbvDataBeginView, &mWorldUniformPer, sizeof(WorldUniformPer));
 
-    CD3DX12_RANGE readRangeSeaweed(0, 0);
+    CD3DX12_RANGE readRangeSeaweed(0,
+                                   mContextD3D12->CalcConstantBufferByteSize(sizeof(SeaweedPer)));
     UINT8 *m_pCbvDataBeginSeaweed;
     mSeaweedBuffer->Map(0, &readRangeSeaweed, reinterpret_cast<void **>(&m_pCbvDataBeginSeaweed));
     memcpy(m_pCbvDataBeginSeaweed, &mSeaweedPer, sizeof(SeaweedPer));

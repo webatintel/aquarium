@@ -72,12 +72,17 @@ class ContextD3D12 : public Context
     void executeCommandLists(UINT NumCommandLists, ID3D12CommandList *const *ppCommandLists);
 
     void createCommandList(ID3D12PipelineState *pInitialState,
-                           ComPtr<ID3D12GraphicsCommandList> &commandList);
+                           ComPtr<ID3D12GraphicsCommandList4> &commandList);
 
     ComPtr<ID3D12Resource> createDefaultBuffer(const void *initData,
                                                UINT64 byteSize,
+                                               D3D12_RESOURCE_STATES defaultBufferInitState,
                                                ComPtr<ID3D12Resource> &uploadBuffer) const;
     ComPtr<ID3D12Resource> createUploadBuffer(const void *initData, UINT64 byteSize) const;
+    void updateConstantBufferSync(ComPtr<ID3D12Resource> &defaultBuffer,
+                                  const ComPtr<ID3D12Resource> &uploadBuffer,
+                                  const void *initData,
+                                  UINT64 byteSize) const;
     void createRootSignature(const D3D12_VERSIONED_ROOT_SIGNATURE_DESC &pRootSignatureDesc,
                              ComPtr<ID3D12RootSignature> &rootSignature) const;
     void createGraphicsPipelineState(
@@ -108,8 +113,10 @@ class ContextD3D12 : public Context
                          bool enableDynamicBufferOffset) override;
     void updateAllFishData(
         const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset) override;
+    void beginRenderPass();
 
-    Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList;
+    Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList4> mCommandList;
+    Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList4> mCommandList4;
 
     CD3DX12_DESCRIPTOR_RANGE1 rangeGeneral[2];
     CD3DX12_ROOT_PARAMETER1 rootParameterGeneral;
@@ -133,6 +140,9 @@ class ContextD3D12 : public Context
                          D3D12_RESOURCE_STATES preState,
                          D3D12_RESOURCE_STATES transferState) const;
     void initAvailableToggleBitset(BACKENDTYPE backendType) override;
+    void checkRootSignatureSupport();
+    bool getRenderPassesTier(ID3D12Device *device);
+    void FlushBufferUpdate();
 
     GLFWwindow *mWindow;
     ComPtr<ID3D12Device> mDevice;
@@ -144,7 +154,11 @@ class ContextD3D12 : public Context
     static const UINT mFrameCount = 3;
     UINT m_frameIndex;
     UINT mBufferSerias[mFrameCount];
-    ComPtr<ID3D12CommandAllocator> mCommandAllocators[mFrameCount];
+    // TODO(yizhou): Currently the command allocators are hard coded as 6. First3 command list
+    // is for copy buffers and latter is for drawing. Should refator this by dynamically
+    // allocating command lists from a command pool.
+    static const UINT mCommandAllocatorCount = 6;
+    ComPtr<ID3D12CommandAllocator> mCommandAllocators[mCommandAllocatorCount];
 
     ComPtr<ID3D12DescriptorHeap> mRtvHeap;
     ComPtr<ID3D12DescriptorHeap> mDsvHeap;
@@ -165,6 +179,7 @@ class ContextD3D12 : public Context
 
     // General Resources
     ComPtr<ID3D12Resource> mLightWorldPositionBuffer;
+    ComPtr<ID3D12Resource> mLightWorldPositionUploadBuffer;
 
     D3D12_CONSTANT_BUFFER_VIEW_DESC mLightView;
     ComPtr<ID3D12Resource> mLightBuffer;
@@ -179,6 +194,7 @@ class ContextD3D12 : public Context
 
     bool mEnableMSAA;
     UINT mVsync;
+    bool mDisableD3D12RenderPass;
 };
 
 #endif

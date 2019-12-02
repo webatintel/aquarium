@@ -57,13 +57,14 @@ void InnerModelD3D12::init()
     // create constant buffer, desc.
     mInnerBuffer = mContextD3D12->createDefaultBuffer(
         &mInnerUniforms, mContextD3D12->CalcConstantBufferByteSize(sizeof(InnerUniforms)),
-        mInnerUploadBuffer);
+        D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, mInnerUploadBuffer);
     mInnerView.BufferLocation = mInnerBuffer->GetGPUVirtualAddress();
     mInnerView.SizeInBytes    = mContextD3D12->CalcConstantBufferByteSize(
         sizeof(InnerUniforms));  // CB size is required to be 256-byte aligned.
     mContextD3D12->buildCbvDescriptor(mInnerView, &mInnerGPUHandle);
-    mWorldBuffer = mContextD3D12->createUploadBuffer(
-        &mWorldUniformPer, mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniforms)));
+    mWorldBuffer = mContextD3D12->createDefaultBuffer(
+        &mWorldUniformPer, mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniforms)),
+        D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, mWorldUploadBuffer);
     mWorldBufferView.BufferLocation = mWorldBuffer->GetGPUVirtualAddress();
     mWorldBufferView.SizeInBytes = mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniforms));
 
@@ -101,7 +102,12 @@ void InnerModelD3D12::init()
         mProgramD3D12->getFSModule(), mPipelineState, mBlend);
 }
 
-void InnerModelD3D12::prepareForDraw() {}
+void InnerModelD3D12::prepareForDraw()
+{
+    mContextD3D12->updateConstantBufferSync(
+        mWorldBuffer, mWorldUploadBuffer, &mWorldUniformPer,
+        mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniforms)));
+}
 
 void InnerModelD3D12::draw()
 {
@@ -129,8 +135,8 @@ void InnerModelD3D12::updatePerInstanceUniforms(const WorldUniforms &worldUnifor
 {
     memcpy(&mWorldUniformPer, &worldUniforms, sizeof(WorldUniforms));
 
-    CD3DX12_RANGE readRange(0, 0);
+    /*CD3DX12_RANGE readRange(0, mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniforms)));
     UINT8 *m_pCbvDataBegin;
     mWorldBuffer->Map(0, &readRange, reinterpret_cast<void **>(&m_pCbvDataBegin));
-    memcpy(m_pCbvDataBegin, &mWorldUniformPer, sizeof(WorldUniforms));
+    memcpy(m_pCbvDataBegin, &mWorldUniformPer, sizeof(WorldUniforms));*/
 }

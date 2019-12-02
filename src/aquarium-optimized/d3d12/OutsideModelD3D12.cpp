@@ -51,7 +51,7 @@ void OutsideModelD3D12::init()
     mLightFactorBuffer = mContextD3D12->createDefaultBuffer(
         &mLightFactorUniforms,
         mContextD3D12->CalcConstantBufferByteSize(sizeof(LightFactorUniforms)),
-        mLightFactorUploadBuffer);
+        D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, mLightFactorUploadBuffer);
     mLightFactorView.BufferLocation = mLightFactorBuffer->GetGPUVirtualAddress();
     mLightFactorView.SizeInBytes    = mContextD3D12->CalcConstantBufferByteSize(
         sizeof(LightFactorUniforms));  // CB size is required to be 256-byte aligned.
@@ -97,31 +97,34 @@ void OutsideModelD3D12::prepareForDraw() {}
 
 void OutsideModelD3D12::draw()
 {
-    auto &commandList = mContextD3D12->mCommandList;
+    // auto &commandList = mContextD3D12->mCommandList;
 
-    commandList->SetPipelineState(mPipelineState.Get());
-    commandList->SetGraphicsRootSignature(mRootSignature.Get());
+    mContextD3D12->mCommandList->SetPipelineState(mPipelineState.Get());
+    mContextD3D12->mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
 
-    commandList->SetGraphicsRootDescriptorTable(0, mContextD3D12->lightGPUHandle);
-    commandList->SetGraphicsRootConstantBufferView(
+    mContextD3D12->mCommandList->SetGraphicsRootDescriptorTable(0, mContextD3D12->lightGPUHandle);
+    mContextD3D12->mCommandList->SetGraphicsRootConstantBufferView(
         1, mContextD3D12->lightWorldPositionView.BufferLocation);
-    commandList->SetGraphicsRootDescriptorTable(2, mLightFactorGPUHandle);
-    commandList->SetGraphicsRootDescriptorTable(3, mDiffuseTexture->getTextureGPUHandle());
-    commandList->SetGraphicsRootConstantBufferView(4, mWorldBufferView.BufferLocation);
+    mContextD3D12->mCommandList->SetGraphicsRootDescriptorTable(2, mLightFactorGPUHandle);
+    mContextD3D12->mCommandList->SetGraphicsRootDescriptorTable(
+        3, mDiffuseTexture->getTextureGPUHandle());
+    mContextD3D12->mCommandList->SetGraphicsRootConstantBufferView(4,
+                                                                   mWorldBufferView.BufferLocation);
 
-    commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    commandList->IASetVertexBuffers(0, 3, mVertexBufferView);
+    mContextD3D12->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    mContextD3D12->mCommandList->IASetVertexBuffers(0, 3, mVertexBufferView);
 
-    commandList->IASetIndexBuffer(&mIndicesBuffer->mIndexBufferView);
+    mContextD3D12->mCommandList->IASetIndexBuffer(&mIndicesBuffer->mIndexBufferView);
 
-    commandList->DrawIndexedInstanced(mIndicesBuffer->getTotalComponents(), 1, 0, 0, 0);
+    mContextD3D12->mCommandList->DrawIndexedInstanced(mIndicesBuffer->getTotalComponents(), 1, 0, 0,
+                                                      0);
 }
 
 void OutsideModelD3D12::updatePerInstanceUniforms(const WorldUniforms &worldUniforms)
 {
     memcpy(&mWorldUniformPer, &worldUniforms, sizeof(WorldUniforms));
 
-    CD3DX12_RANGE readRange(0, 0);
+    CD3DX12_RANGE readRange(0, mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniforms)));
     UINT8 *m_pCbvDataBegin;
     mWorldBuffer->Map(0, &readRange, reinterpret_cast<void **>(&m_pCbvDataBegin));
     memcpy(m_pCbvDataBegin, &mWorldUniformPer, sizeof(WorldUniforms));

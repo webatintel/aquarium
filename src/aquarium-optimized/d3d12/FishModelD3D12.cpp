@@ -72,7 +72,7 @@ void FishModelD3D12::init()
     // create constant buffer, desc.
     mFishVertexBuffer = mContextD3D12->createDefaultBuffer(
         &mFishVertexUniforms, mContextD3D12->CalcConstantBufferByteSize(sizeof(FishVertexUniforms)),
-        mFishVertexUploadBuffer);
+        D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, mFishVertexUploadBuffer);
     mFishVertexView.BufferLocation = mFishVertexBuffer->GetGPUVirtualAddress();
     mFishVertexView.SizeInBytes    = mContextD3D12->CalcConstantBufferByteSize(
         sizeof(mFishVertexUniforms));  // CB size is required to be 256-byte aligned.
@@ -80,7 +80,7 @@ void FishModelD3D12::init()
     mLightFactorBuffer = mContextD3D12->createDefaultBuffer(
         &mLightFactorUniforms,
         mContextD3D12->CalcConstantBufferByteSize(sizeof(LightFactorUniforms)),
-        mLightFactorUploadBuffer);
+        D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, mLightFactorUploadBuffer);
     mLightFactorView.BufferLocation = mLightFactorBuffer->GetGPUVirtualAddress();
     mLightFactorView.SizeInBytes    = mContextD3D12->CalcConstantBufferByteSize(
         sizeof(LightFactorUniforms));  // CB size is required to be 256-byte aligned.
@@ -154,7 +154,8 @@ void FishModelD3D12::draw()
     if (mCurInstance == 0)
         return;
 
-    CD3DX12_RANGE readRange(0, 0);
+    CD3DX12_RANGE readRange(
+        0, mContextD3D12->CalcConstantBufferByteSize(sizeof(FishPer) * mCurInstance));
     UINT8 *m_pCbvDataBegin;
     mFishPersBuffer->Map(0, &readRange, reinterpret_cast<void **>(&m_pCbvDataBegin));
     memcpy(m_pCbvDataBegin, mFishPers, sizeof(FishPer) * mCurInstance);

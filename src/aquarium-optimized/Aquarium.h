@@ -467,6 +467,8 @@ class Aquarium
     void setupModelEnumMap();
     void calculateFishCount();
     void updateWorldMatrixAndDraw(Model *model);
+    void updateWorldMatrix(Model *model);
+    void drawModels(Model *model);
     void updateGlobalUniforms();
     void drawBackground();
     void drawFishes();
