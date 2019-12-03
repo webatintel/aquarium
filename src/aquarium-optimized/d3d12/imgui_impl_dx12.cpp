@@ -218,6 +218,11 @@ void ImGui_ImplDX12_RenderDrawData(ImDrawData *draw_data, ID3D12GraphicsCommandL
     }
     fr->VertexBuffer->Unmap(0, &range);
     fr->IndexBuffer->Unmap(0, &range);
+}
+
+void ImGui_ImplDX12_Draw(ImDrawData *draw_data, ID3D12GraphicsCommandList *ctx)
+{
+    FrameResources *fr = &g_pFrameResources[g_frameIndex % g_numFramesInFlight];
 
     // Setup desired DX state
     ImGui_ImplDX12_SetupRenderState(draw_data, ctx, fr);

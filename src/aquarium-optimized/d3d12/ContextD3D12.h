@@ -35,9 +35,10 @@ class ContextD3D12 : public Context
     void DoFlush(const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset) override;
     void Terminate() override;
     void showWindow() override;
-    void showFPS(const FPSTimer &fpsTimer,
-                 int *fishCount,
-                 std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> *toggleBitset) override;
+    void updateFPS(const FPSTimer &fpsTimer,
+                   int *fishCount,
+                   std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> *toggleBitset) override;
+    void showFPS() override;
     void destoryImgUI() override;
 
     void Flush() override;

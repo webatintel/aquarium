@@ -58,9 +58,10 @@ class Context
     virtual void Flush() {}
     virtual void preFrame()   = 0;
     virtual void showWindow() = 0;
-    virtual void showFPS(const FPSTimer &fpsTimer,
-                         int *fishCount,
-                         std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> *toggleBitset) = 0;
+    virtual void updateFPS(const FPSTimer &fpsTimer,
+                           int *fishCount,
+                           std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> *toggleBitset) = 0;
+    virtual void showFPS() {}
     virtual void destoryImgUI() = 0;
     virtual void reallocResource(int preTotalInstance,
                                  int curTotalInstance,
