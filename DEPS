@@ -8,18 +8,16 @@ vars = {
   'chromium_git': 'https://chromium.googlesource.com',
   'github_git': 'https://github.com',
   'dawn_git': 'https://dawn.googlesource.com',
-  'dawn_revision': '4b0b7a532ab94497576e41fc83cac6937d91a9cc',
+  'dawn_revision': '969df2b3a21c126b2e0015ce2392c135f32a6a08',
   'imgui_git': 'https://github.com/ocornut',
   'imgui_revision': 'e16564e67a2e88d4cbe3afa6594650712790fba3',
   'angle_root': 'third_party/angle',
   'angle_revision': '6c824a1bc17b286b86cf05a0228ec549875351eb',
-  'glslang_revision': '4b97a1108114107a8082a55e9e0721a40f9536d3',
+  'glslang_revision': '38b4db48f98c4e3a9cc405de3a76547b857e1c37',
   'build_revision': 'f3d0ca5f46b7b190dbbdc6be508ca11dd5c54302',
   'buildtools_revision': '74cfb57006f83cfe050817526db359d5c8a11628',
   'tools_clang_revision': '3605577b67603ec5776afcfada9e0ff4ea05cf0e',
-  'spirv_tools_revision': '253806adc4c654c087ffe1e8e64b538d00989b16',
-  'spirv_headers_revision': 'b252a50953ac4375cb1864e94f4b0234db9d215d',
-  'shaderc_revision': '65adcb504d024bb29f0ad8279b6a215d5f679832',
+  'spirv_tools_revision': '85f3e93d13f32d45bd7f9999aa51baddf2452aae',
   'jsoncpp_revision': '571788934b5ee8643d53e5d054534abbe6006168',
   'jsoncpp_source_revision': '645250b6690785be60ab6780ce4b58698d884d11',
   'vulkan-headers_revision':'5b44df19e040fca0048ab30c553a8c2d2cb9623e',
@@ -71,15 +69,8 @@ deps = {
   'third_party/SPIRV-Tools': {
     'url': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Tools@{spirv_tools_revision}',
   },
-  'third_party/spirv-headers': {
-    'url': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Headers@{spirv_headers_revision}',
-  },
   'third_party/imgui': {
     'url': '{imgui_git}/imgui.git@{imgui_revision}',
-  },
-  'third_party/shaderc': {
-    'url': '{chromium_git}/external/github.com/google/shaderc@{shaderc_revision}',
-    'condition': 'dawn_standalone',
   },
   'third_party/jsoncpp': {
     'url': '{chromium_git}/chromium/src/third_party/jsoncpp@{jsoncpp_revision}',
