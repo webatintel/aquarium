@@ -5,7 +5,7 @@
 #
 
 vulkan_headers_dir = "//third_party/vulkan-headers"
-vvl_spirv_tools_dir = "//third_party/SPIRV-Tools"
+vvl_spirv_tools_dir = "//third_party/dawn/third_party/SPIRV-Tools"
 vvl_glslang_dir = "//third_party/glslang"
 
 # Subdirectories for generated files
