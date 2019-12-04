@@ -73,7 +73,7 @@ class ContextD3D12 : public Context
     void executeCommandLists(UINT NumCommandLists, ID3D12CommandList *const *ppCommandLists);
 
     void createCommandList(ID3D12PipelineState *pInitialState,
-                           ComPtr<ID3D12GraphicsCommandList> &commandList);
+                           ComPtr<ID3D12GraphicsCommandList4> &commandList);
 
     ComPtr<ID3D12Resource> createDefaultBuffer(const void *initData,
                                                UINT64 byteSize,
@@ -116,7 +116,7 @@ class ContextD3D12 : public Context
     bool getRenderPassesTier(ID3D12Device *device);
     void beginRenderPass() override;
 
-    Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList;
+    Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList4> mCommandList;
 
     CD3DX12_DESCRIPTOR_RANGE1 rangeGeneral[2];
     CD3DX12_ROOT_PARAMETER1 rootParameterGeneral;

@@ -27,7 +27,7 @@ ContextDawn *mContextDawn(nullptr);
 
 int mIndexBufferSize  = 0;
 int mVertexBufferSize = 0;
-bool mEnableMSAA      = false;
+
 ImDrawVert mVertexData[40000];
 ImDrawIdx mIndexData[10000];
 
@@ -235,7 +235,7 @@ static void ImGui_ImplDawn_CreateFontsTexture()
     io.Fonts->TexID = (ImTextureID)mTextureView.Get();
 }
 
-bool ImGui_ImplDawn_CreateDeviceObjects()
+bool ImGui_ImplDawn_CreateDeviceObjects(bool enableMSAA)
 {
     if (!mContextDawn->mDevice)
         return false;
@@ -309,7 +309,7 @@ bool ImGui_ImplDawn_CreateDeviceObjects()
     mPipelineDescriptor.cDepthStencilState.depthWriteEnabled = false;
     mPipelineDescriptor.cDepthStencilState.depthCompare      = wgpu::CompareFunction::Always;
     mPipelineDescriptor.primitiveTopology  = wgpu::PrimitiveTopology::TriangleList;
-    mPipelineDescriptor.sampleCount        = mEnableMSAA ? 4 : 1;
+    mPipelineDescriptor.sampleCount                          = enableMSAA ? 4 : 1;
     mPipelineDescriptor.rasterizationState = &rasterizationState;
 
     mPipeline = mContextDawn->mDevice.CreateRenderPipeline(&mPipelineDescriptor);
@@ -332,7 +332,7 @@ bool ImGui_ImplDawn_CreateDeviceObjects()
     return true;
 }
 
-bool ImGui_ImplDawn_Init(ContextDawn *context, wgpu::TextureFormat rtv_format, bool enableMSAA)
+bool ImGui_ImplDawn_Init(ContextDawn *context, wgpu::TextureFormat rtv_format)
 {
     // Setup back-end capabilities flags
     ImGuiIO &io            = ImGui::GetIO();
@@ -348,7 +348,6 @@ bool ImGui_ImplDawn_Init(ContextDawn *context, wgpu::TextureFormat rtv_format, b
     mVertexBuffer     = NULL;
     mIndexBufferSize  = 3000;
     mVertexBufferSize = 3000;
-    mEnableMSAA       = enableMSAA;
 
     return true;
 }
@@ -371,8 +370,8 @@ void ImGui_ImplDawn_Shutdown()
     mTextureView    = nullptr;
 }
 
-void ImGui_ImplDawn_NewFrame()
+void ImGui_ImplDawn_NewFrame(bool enableMSAA)
 {
     if (!mPipeline.Get())
-        ImGui_ImplDawn_CreateDeviceObjects();
+        ImGui_ImplDawn_CreateDeviceObjects(enableMSAA);
 }

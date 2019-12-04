@@ -421,8 +421,27 @@ void ContextD3D12::DoFlush(const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEM
         ID3D12CommandList *ppCommandLists[] = {mCommandList.Get()};
         mCommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
     }
-    else
+    else  // Enable D3D12 Render Pass
     {
+        mCommandList->EndRenderPass();
+
+        if (mEnableMSAA)
+        {
+            stateTransition(mRenderTargets[m_frameIndex], D3D12_RESOURCE_STATE_RESOLVE_DEST,
+                            D3D12_RESOURCE_STATE_COMMON);
+        }
+        else
+        {
+            stateTransition(mRenderTargets[m_frameIndex], D3D12_RESOURCE_STATE_RENDER_TARGET,
+                            D3D12_RESOURCE_STATE_COMMON);
+        }
+
+        ThrowIfFailed(mCommandList->Close());
+
+        // Execute the command list.
+        ID3D12CommandList *ppCommandLists[] = {mCommandList.Get()};
+        int count                           = _countof(ppCommandLists);
+        mCommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
     }
 
     // Present the frame.
@@ -490,7 +509,7 @@ void ContextD3D12::updateFPS(const FPSTimer &fpsTimer,
                              std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> *toggleBitset)
 {
     // Start the Dear ImGui frame
-    ImGui_ImplDX12_NewFrame();
+    ImGui_ImplDX12_NewFrame(mEnableMSAA);
     renderImgui(fpsTimer, fishCount, toggleBitset);
     ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), mCommandList.Get());
 }
@@ -881,8 +900,11 @@ void ContextD3D12::beginRenderPass()
 
     if (mDisableD3D12RenderPass)
     {
-        stateTransition(mRenderTargets[m_frameIndex], D3D12_RESOURCE_STATE_COMMON,
-                        D3D12_RESOURCE_STATE_RENDER_TARGET);
+        if (!mEnableMSAA)
+        {
+            stateTransition(mRenderTargets[m_frameIndex], D3D12_RESOURCE_STATE_COMMON,
+                            D3D12_RESOURCE_STATE_RENDER_TARGET);
+        }
 
         mCommandList->ClearDepthStencilView(mDsvHeap->GetCPUDescriptorHandleForHeapStart(),
                                             D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f,
@@ -890,8 +912,69 @@ void ContextD3D12::beginRenderPass()
 
         mCommandList->OMSetRenderTargets(1, &rtvHandle, true, &dsvHandle);
     }
-    else
+    else  // Enable Render Pass
     {
+        const float clearColor4[]{0.f, 0.8f, 1.f, 0.f};
+        CD3DX12_CLEAR_VALUE clearValue{DXGI_FORMAT_R32G32B32_FLOAT, clearColor4};
+
+        D3D12_RENDER_PASS_BEGINNING_ACCESS renderPassBeginningAccessClear{
+            D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_CLEAR, {clearValue}};
+        D3D12_RENDER_PASS_ENDING_ACCESS renderPassEndingAccessPreserve{
+            D3D12_RENDER_PASS_ENDING_ACCESS_TYPE_PRESERVE, {}};
+
+        D3D12_RENDER_PASS_RENDER_TARGET_DESC renderPassRenderTargetDesc;
+        renderPassRenderTargetDesc.cpuDescriptor   = rtvHandle;
+        renderPassRenderTargetDesc.BeginningAccess = renderPassBeginningAccessClear;
+
+        if (mEnableMSAA)
+        {
+            stateTransition(mRenderTargets[m_frameIndex],
+                            D3D12_RESOURCE_STATE_COMMON,  // D3D12_RESOURCE_STATE_RENDER_TARGET
+                            D3D12_RESOURCE_STATE_RESOLVE_DEST);
+
+            D3D12_RENDER_PASS_ENDING_ACCESS_RESOLVE_SUBRESOURCE_PARAMETERS subresourceParameters;
+            subresourceParameters.DstX           = 0;
+            subresourceParameters.DstY           = 0;
+            subresourceParameters.SrcSubresource = 0;
+            subresourceParameters.DstSubresource = 0;
+            subresourceParameters.SrcRect        = {0, 0, mClientWidth, mClientHeight};
+
+            D3D12_RENDER_PASS_ENDING_ACCESS_RESOLVE_PARAMETERS resolveParameters;
+            resolveParameters.Format       = mPreferredSwapChainFormat;
+            resolveParameters.pSrcResource = mSceneRenderTargetTexture.Get();
+            resolveParameters.pDstResource = mRenderTargets[m_frameIndex].Get();
+            // resolveParameters.PreserveResolveSource  = false;
+            resolveParameters.PreserveResolveSource  = true;
+            resolveParameters.ResolveMode            = D3D12_RESOLVE_MODE_AVERAGE;
+            resolveParameters.SubresourceCount       = 1;
+            resolveParameters.pSubresourceParameters = &subresourceParameters;
+
+            renderPassRenderTargetDesc.EndingAccess.Type =
+                D3D12_RENDER_PASS_ENDING_ACCESS_TYPE_RESOLVE;
+            renderPassRenderTargetDesc.EndingAccess.Resolve = resolveParameters;
+        }
+        else  // non-MSAA
+        {
+            stateTransition(mRenderTargets[m_frameIndex], D3D12_RESOURCE_STATE_COMMON,
+                            D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+            renderPassRenderTargetDesc.EndingAccess = renderPassEndingAccessPreserve;
+        }
+
+        D3D12_RENDER_PASS_BEGINNING_ACCESS renderPassBeginningAccessClearDepthStencil;
+        renderPassBeginningAccessClearDepthStencil.Clear.ClearValue.DepthStencil.Depth   = 1.f;
+        renderPassBeginningAccessClearDepthStencil.Clear.ClearValue.DepthStencil.Stencil = 0;
+        renderPassBeginningAccessClearDepthStencil.Clear.ClearValue.Format =
+            DXGI_FORMAT_D24_UNORM_S8_UINT;
+        renderPassBeginningAccessClearDepthStencil.Type =
+            D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_CLEAR;
+        D3D12_RENDER_PASS_DEPTH_STENCIL_DESC renderPassDepthStencilDesc{
+            dsvHandle, renderPassBeginningAccessClearDepthStencil,
+            renderPassBeginningAccessClearDepthStencil, renderPassEndingAccessPreserve,
+            renderPassEndingAccessPreserve};
+
+        mCommandList->BeginRenderPass(1, &renderPassRenderTargetDesc, &renderPassDepthStencilDesc,
+                                      D3D12_RENDER_PASS_FLAG_NONE);
     }
 
     mCommandList->SetDescriptorHeaps(_countof(mDescriptorHeaps), mDescriptorHeaps);
@@ -934,7 +1017,7 @@ void ContextD3D12::createDepthStencilView()
 }
 
 void ContextD3D12::createCommandList(ID3D12PipelineState *pInitialState,
-                                     ComPtr<ID3D12GraphicsCommandList> &commandList)
+                                     ComPtr<ID3D12GraphicsCommandList4> &commandList)
 {
     ThrowIfFailed(mDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT,
                                              mCommandAllocators[0].Get(), pInitialState,

@@ -267,7 +267,7 @@ bool ContextDawn::initialize(
     // Because imgui doesn't have dawn backend, we rewrite the functions by dawn API in
     // imgui_impl_dawn.cpp and imgui_impl_dawn.h
     ImGui_ImplGlfw_InitForOpenGL(mWindow, true);
-    ImGui_ImplDawn_Init(this, mPreferredSwapChainFormat, mEnableMSAA);
+    ImGui_ImplDawn_Init(this, mPreferredSwapChainFormat);
 
     return true;
 }
@@ -691,7 +691,7 @@ void ContextDawn::updateFPS(const FPSTimer &fpsTimer,
                             std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> *toggleBitset)
 {
     // Start the Dear ImGui frame
-    ImGui_ImplDawn_NewFrame();
+    ImGui_ImplDawn_NewFrame(mEnableMSAA);
     renderImgui(fpsTimer, fishCount, toggleBitset);
     ImGui_ImplDawn_RenderDrawData(ImGui::GetDrawData());
 }

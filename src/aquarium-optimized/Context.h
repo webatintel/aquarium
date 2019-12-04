@@ -68,7 +68,7 @@ class Context
                                  bool enableDynamicBufferOffset)   = 0;
     virtual void updateAllFishData(
         const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset) = 0;
-    virtual void beginRenderPass(){};
+    virtual void beginRenderPass() {}
 
     int getClientWidth() const { return mClientWidth; }
     int getclientHeight() const { return mClientHeight; }

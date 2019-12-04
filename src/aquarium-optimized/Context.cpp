@@ -103,7 +103,8 @@ void Context::renderImgui(const FPSTimer &fpsTimer,
             ImGui::Text("INSTANCEDDRAWS: OFF");
         }
 
-        if (mResourceHelper->getBackendType() == BACKENDTYPE::BACKENDTYPEDAWND3D12)
+        if (mResourceHelper->getBackendType() == BACKENDTYPE::BACKENDTYPEDAWND3D12 ||
+            mResourceHelper->getBackendType() == BACKENDTYPE::BACKENDTYPED3D12)
         {
             if (toggleBitset->test(static_cast<size_t>(TOGGLE::DISABLED3D12RENDERPASS)))
             {
