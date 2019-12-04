@@ -805,6 +805,7 @@ void Aquarium::render()
         mContext->updateFPS(mFpsTimer, &mCurFishCount, &toggleBitset);
 
         // Begin render pass
+        mContext->beginRenderPass();
 
         drawBackground();
         drawFishes();

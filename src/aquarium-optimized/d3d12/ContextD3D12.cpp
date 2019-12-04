@@ -63,7 +63,8 @@ ContextD3D12::ContextD3D12(BACKENDTYPE backendType)
       mFogView({}),
       mSceneRenderTargetView({}),
       mEnableMSAA(false),
-      mVsync(1u)
+      mVsync(1u),
+      mDisableD3D12RenderPass(false)
 {
     for (UINT n = 0; n < mFrameCount; n++)
     {
@@ -247,12 +248,11 @@ bool ContextD3D12::initialize(
 
     // Check highest version of root signature.
     mRootSignature.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
-
-    if (FAILED(mDevice->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &mRootSignature,
-                                            sizeof(mRootSignature))))
-    {
-        mRootSignature.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
-    }
+    checkRootSignatureSupport();
+    // Check if render pass is supported.
+    mDisableD3D12RenderPass =
+        !getRenderPassesTier(mDevice.Get()) ||
+        toggleBitset.test(static_cast<size_t>(TOGGLE::DISABLED3D12RENDERPASS));
 
     if (mEnableMSAA)
     {
@@ -385,38 +385,45 @@ void ContextD3D12::initAvailableToggleBitset(BACKENDTYPE backendType)
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::INTEGRATEDGPU));
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEFULLSCREENMODE));
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::TURNOFFVSYNC));
+    mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::DISABLED3D12RENDERPASS));
 }
 
 void ContextD3D12::DoFlush(const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset)
 {
-    // Resolve MSAA texture to non MSAA texture, and then present.
-    if (mEnableMSAA)
+    if (mDisableD3D12RenderPass)
     {
-        stateTransition(mSceneRenderTargetTexture, D3D12_RESOURCE_STATE_RENDER_TARGET,
-                        D3D12_RESOURCE_STATE_RESOLVE_SOURCE);
-        stateTransition(mRenderTargets[m_frameIndex], D3D12_RESOURCE_STATE_COMMON,
-                        D3D12_RESOURCE_STATE_RESOLVE_DEST);
+        // Resolve MSAA texture to non MSAA texture, and then present.
+        if (mEnableMSAA)
+        {
+            stateTransition(mSceneRenderTargetTexture, D3D12_RESOURCE_STATE_RENDER_TARGET,
+                            D3D12_RESOURCE_STATE_RESOLVE_SOURCE);
+            stateTransition(mRenderTargets[m_frameIndex], D3D12_RESOURCE_STATE_COMMON,
+                            D3D12_RESOURCE_STATE_RESOLVE_DEST);
 
-        mCommandList->ResolveSubresource(mRenderTargets[m_frameIndex].Get(), 0,
-                                         mSceneRenderTargetTexture.Get(), 0,
-                                         mPreferredSwapChainFormat);
+            mCommandList->ResolveSubresource(mRenderTargets[m_frameIndex].Get(), 0,
+                                             mSceneRenderTargetTexture.Get(), 0,
+                                             mPreferredSwapChainFormat);
 
-        stateTransition(mSceneRenderTargetTexture, D3D12_RESOURCE_STATE_RESOLVE_SOURCE,
-                        D3D12_RESOURCE_STATE_RENDER_TARGET);
-        stateTransition(mRenderTargets[m_frameIndex], D3D12_RESOURCE_STATE_RESOLVE_DEST,
-                        D3D12_RESOURCE_STATE_COMMON);
+            stateTransition(mSceneRenderTargetTexture, D3D12_RESOURCE_STATE_RESOLVE_SOURCE,
+                            D3D12_RESOURCE_STATE_RENDER_TARGET);
+            stateTransition(mRenderTargets[m_frameIndex], D3D12_RESOURCE_STATE_RESOLVE_DEST,
+                            D3D12_RESOURCE_STATE_COMMON);
+        }
+        else
+        {
+            stateTransition(mRenderTargets[m_frameIndex], D3D12_RESOURCE_STATE_RENDER_TARGET,
+                            D3D12_RESOURCE_STATE_COMMON);
+        }
+
+        ThrowIfFailed(mCommandList->Close());
+
+        // Execute the command list.
+        ID3D12CommandList *ppCommandLists[] = {mCommandList.Get()};
+        mCommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
     }
     else
     {
-        stateTransition(mRenderTargets[m_frameIndex], D3D12_RESOURCE_STATE_RENDER_TARGET,
-                        D3D12_RESOURCE_STATE_COMMON);
     }
-
-    ThrowIfFailed(mCommandList->Close());
-
-    // Execute the command list.
-    ID3D12CommandList *ppCommandLists[] = {mCommandList.Get()};
-    mCommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
     // Present the frame.
     ThrowIfFailed(mSwapChain->Present(mVsync, 0));
@@ -504,7 +511,7 @@ void ContextD3D12::preFrame()
 {
     // Reuse the memory associated with command recording.
     // We can only reset when the associated command lists have finished execution on the GPU.
-    ThrowIfFailed(mCommandAllocators[m_frameIndex]->Reset());
+    /*ThrowIfFailed(mCommandAllocators[m_frameIndex]->Reset());
 
     // A command list can be reset after it has been added to the command queue via
     // ExecuteCommandList.
@@ -540,7 +547,7 @@ void ContextD3D12::preFrame()
                                         D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0,
                                         0, nullptr);
 
-    mCommandList->OMSetRenderTargets(1, &rtvHandle, true, &dsvHandle);
+    mCommandList->OMSetRenderTargets(1, &rtvHandle, true, &dsvHandle);*/
 }
 
 Model *ContextD3D12::createModel(Aquarium *aquarium, MODELGROUP type, MODELNAME name, bool blend)
@@ -815,6 +822,81 @@ void ContextD3D12::updateAllFishData(
     // TODO(yizhou): Split data updating and render pass.
     updateConstantBufferSync(mFishPersBuffer, stagingBuffer, fishPers,
                              CalcConstantBufferByteSize(sizeof(FishPer) * mCurTotalInstance));
+}
+
+void ContextD3D12::checkRootSignatureSupport()
+{
+    mRootSignature.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
+
+    if (FAILED(mDevice->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &mRootSignature,
+                                            sizeof(mRootSignature))))
+    {
+        mRootSignature.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
+    }
+}
+
+bool ContextD3D12::getRenderPassesTier(ID3D12Device *device)
+{
+    D3D12_FEATURE_DATA_D3D12_OPTIONS5 featureSupport{};
+    if (SUCCEEDED(device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS5, &featureSupport,
+                                              sizeof(featureSupport))))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+void ContextD3D12::beginRenderPass()
+{
+    // Reuse the memory associated with command recording.
+    // We can only reset when the associated command lists have finished execution on the GPU.
+    ThrowIfFailed(mCommandAllocators[m_frameIndex]->Reset());
+
+    // A command list can be reset after it has been added to the command queue via
+    // ExecuteCommandList.
+    // Reusing the command list reuses memory.
+    ThrowIfFailed(mCommandList->Reset(mCommandAllocators[m_frameIndex].Get(), nullptr));
+
+    // Set descriptor heaps related to command list.
+    ID3D12DescriptorHeap *mDescriptorHeaps[] = {mCbvsrvHeap.Get()};
+
+    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle;
+    CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle;
+
+    if (mEnableMSAA)
+    {
+        // Set MSAA texture as render target
+        rtvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(mRtvHeap->GetCPUDescriptorHandleForHeapStart(),
+                                                  mFrameCount, mRtvDescriptorSize);
+    }
+    else
+    {
+        rtvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(mRtvHeap->GetCPUDescriptorHandleForHeapStart(),
+                                                  m_frameIndex, mRtvDescriptorSize);
+    }
+    dsvHandle = mDsvHeap->GetCPUDescriptorHandleForHeapStart();
+
+    if (mDisableD3D12RenderPass)
+    {
+        stateTransition(mRenderTargets[m_frameIndex], D3D12_RESOURCE_STATE_COMMON,
+                        D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+        mCommandList->ClearDepthStencilView(mDsvHeap->GetCPUDescriptorHandleForHeapStart(),
+                                            D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f,
+                                            0, 0, nullptr);
+
+        mCommandList->OMSetRenderTargets(1, &rtvHandle, true, &dsvHandle);
+    }
+    else
+    {
+    }
+
+    mCommandList->SetDescriptorHeaps(_countof(mDescriptorHeaps), mDescriptorHeaps);
+    mCommandList->RSSetViewports(1, &mViewport);
+    mCommandList->RSSetScissorRects(1, &mScissorRect);
 }
 
 void ContextD3D12::createDepthStencilView()

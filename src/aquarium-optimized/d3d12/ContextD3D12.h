@@ -112,6 +112,9 @@ class ContextD3D12 : public Context
                                   const ComPtr<ID3D12Resource> &uploadBuffer,
                                   const void *initData,
                                   UINT64 byteSize);
+    void checkRootSignatureSupport();
+    bool getRenderPassesTier(ID3D12Device *device);
+    void beginRenderPass() override;
 
     Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList;
 
@@ -192,6 +195,7 @@ class ContextD3D12 : public Context
 
     bool mEnableMSAA;
     UINT mVsync;
+    bool mDisableD3D12RenderPass;
 };
 
 #endif
