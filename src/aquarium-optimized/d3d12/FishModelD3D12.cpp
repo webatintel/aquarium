@@ -121,7 +121,7 @@ void FishModelD3D12::init()
         rootParameters[3].InitAsDescriptorTable(1, &ranges[1], D3D12_SHADER_VISIBILITY_PIXEL);
     }
 
-    rootParameters[4].InitAsConstantBufferView(0, 3, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC,
+    rootParameters[4].InitAsConstantBufferView(0, 3, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_VOLATILE,
                                                D3D12_SHADER_VISIBILITY_VERTEX);
 
     rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 2u,
@@ -154,10 +154,11 @@ void FishModelD3D12::draw()
     if (mCurInstance == 0)
         return;
 
-    CD3DX12_RANGE readRange(0, 0);
-    UINT8 *m_pCbvDataBegin;
-    mFishPersBuffer->Map(0, &readRange, reinterpret_cast<void **>(&m_pCbvDataBegin));
-    memcpy(m_pCbvDataBegin, mFishPers, sizeof(FishPer) * mCurInstance);
+    // TODO(yizhou): Split data updating and render pass. Merge 5 staging buffers to 1 to prepare
+    // for buffer pool.
+    mContextD3D12->updateConstantBufferSync(
+        mFishPersBuffer, mFishPersUploadBuffer, &mFishPers,
+        mContextD3D12->CalcConstantBufferByteSize(sizeof(FishPer) * mCurInstance));
 
     auto &commandList = mContextD3D12->mCommandList;
 
@@ -210,10 +211,12 @@ void FishModelD3D12::reallocResource()
 
     mFishPers = new FishPer[mCurInstance];
 
-    mFishPersBuffer = mContextD3D12->createUploadBuffer(
-        mFishPers, mContextD3D12->CalcConstantBufferByteSize(sizeof(FishPer) * mCurInstance));
+    mFishPersBuffer = mContextD3D12->createDefaultBuffer(
+        mFishPers, mContextD3D12->CalcConstantBufferByteSize(sizeof(FishPer) * mCurInstance),
+        mFishPersUploadBuffer);
     mFishPersBufferView.BufferLocation = mFishPersBuffer->GetGPUVirtualAddress();
     mFishPersBufferView.SizeInBytes    = mContextD3D12->CalcConstantBufferByteSize(sizeof(FishPer));
+    mContextD3D12->buildCbvDescriptor(mFishPersBufferView, &mFishPersGPUHandle);
 }
 
 void FishModelD3D12::destoryFishResource()

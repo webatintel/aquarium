@@ -330,7 +330,7 @@ bool ContextD3D12::GetHardwareAdapter(
             if (SUCCEEDED(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0,
                                             _uuidof(ID3D12Device), nullptr)))
             {
-                std::wstring str = desc.Description;
+                std::wstring str     = desc.Description;
                 std::string renderer = std::string(str.begin(), str.end());
                 std::cout << renderer << std::endl;
                 mResourceHelper->setRenderer(renderer);
@@ -681,12 +681,6 @@ void ContextD3D12::updateConstantBufferSync(ComPtr<ID3D12Resource> &defaultBuffe
 
     UpdateSubresources<1>(mCommandList.Get(), defaultBuffer.Get(), uploadBuffer.Get(), 0, 0, 1,
                           &subResourceData);
-
-    mFenceValue++;
-    // Signal and increment the fence value.
-    const UINT64 fence = mFenceValue;
-    ThrowIfFailed(mCommandQueue->Signal(mFence.Get(), fence));
-    mBufferSerias[m_frameIndex] = mFenceValue;
 
     stateTransition(defaultBuffer, D3D12_RESOURCE_STATE_COPY_DEST,
                     D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);

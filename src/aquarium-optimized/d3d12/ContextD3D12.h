@@ -18,7 +18,7 @@ using Microsoft::WRL::ComPtr;
 
 enum BACKENDTYPE : short;
 
-constexpr int cbvsrvCount = 88;
+constexpr int cbvsrvCount = 193;
 
 class ContextD3D12 : public Context
 {

@@ -84,7 +84,9 @@ class FishModelD3D12 : public FishModel
 
   private:
     D3D12_CONSTANT_BUFFER_VIEW_DESC mFishPersBufferView;
+    D3D12_GPU_DESCRIPTOR_HANDLE mFishPersGPUHandle;
     ComPtr<ID3D12Resource> mFishPersBuffer;
+    ComPtr<ID3D12Resource> mFishPersUploadBuffer;
 
     D3D12_CONSTANT_BUFFER_VIEW_DESC mLightFactorView;
     D3D12_GPU_DESCRIPTOR_HANDLE mLightFactorGPUHandle;
