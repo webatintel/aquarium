@@ -170,8 +170,7 @@ void FishModelInstancedDrawD3D12::draw()
     commandList->SetGraphicsRootSignature(mRootSignature.Get());
 
     commandList->SetGraphicsRootDescriptorTable(0, mContextD3D12->lightGPUHandle);
-    commandList->SetGraphicsRootConstantBufferView(
-        1, mContextD3D12->lightWorldPositionView.BufferLocation);
+    commandList->SetGraphicsRootDescriptorTable(1, mContextD3D12->lightWorldPositionGPUHandle);
     commandList->SetGraphicsRootDescriptorTable(2, mFishVertexGPUHandle);
     commandList->SetGraphicsRootDescriptorTable(3, mDiffuseTexture->getTextureGPUHandle());
 

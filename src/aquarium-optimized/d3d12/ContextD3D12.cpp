@@ -631,14 +631,17 @@ void ContextD3D12::initGeneralResources(Aquarium *aquarium)
     rootParameterGeneral.InitAsDescriptorTable(2, rangeGeneral, D3D12_SHADER_VISIBILITY_PIXEL);
 
     mLightWorldPositionBuffer =
-        createUploadBuffer(&aquarium->lightWorldPositionUniform,
-                           CalcConstantBufferByteSize(sizeof(LightWorldPositionUniform)));
+        createDefaultBuffer(&aquarium->lightWorldPositionUniform,
+                            CalcConstantBufferByteSize(sizeof(LightWorldPositionUniform)),
+                            mLightWorldPositionUploadBuffer);
     lightWorldPositionView.BufferLocation = mLightWorldPositionBuffer->GetGPUVirtualAddress();
     lightWorldPositionView.SizeInBytes =
         CalcConstantBufferByteSize(sizeof(LightWorldPositionUniform));
-
-    rootParameterWorld.InitAsConstantBufferView(0, 1, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC,
-                                                D3D12_SHADER_VISIBILITY_VERTEX);
+    buildCbvDescriptor(lightWorldPositionView, &lightWorldPositionGPUHandle);
+    rangeLightWorldPosition.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0, 1,
+                                 D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE);
+    rootParameterWorld.InitAsDescriptorTable(1, &rangeLightWorldPosition,
+                                             D3D12_SHADER_VISIBILITY_VERTEX);
 
     CD3DX12_STATIC_SAMPLER_DESC sampler2D(0u,                                     // shaderRegister
                                           D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT,  // filter
@@ -661,13 +664,39 @@ void ContextD3D12::initGeneralResources(Aquarium *aquarium)
     staticSamplers.emplace_back(std::move(samplerCube));
 }
 
+void ContextD3D12::updateConstantBufferSync(ComPtr<ID3D12Resource> &defaultBuffer,
+                                            const ComPtr<ID3D12Resource> &uploadBuffer,
+                                            const void *initData,
+                                            UINT64 byteSize)
+{
+    // Describe the data we want to copy into the default buffer.
+    D3D12_SUBRESOURCE_DATA subResourceData = {};
+    subResourceData.pData                  = initData;
+    subResourceData.RowPitch               = byteSize;
+    subResourceData.SlicePitch             = subResourceData.RowPitch;
+
+    // Schedule to copy the data to the default buffer resource.
+    stateTransition(defaultBuffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+                    D3D12_RESOURCE_STATE_COPY_DEST);
+
+    UpdateSubresources<1>(mCommandList.Get(), defaultBuffer.Get(), uploadBuffer.Get(), 0, 0, 1,
+                          &subResourceData);
+
+    mFenceValue++;
+    // Signal and increment the fence value.
+    const UINT64 fence = mFenceValue;
+    ThrowIfFailed(mCommandQueue->Signal(mFence.Get(), fence));
+    mBufferSerias[m_frameIndex] = mFenceValue;
+
+    stateTransition(defaultBuffer, D3D12_RESOURCE_STATE_COPY_DEST,
+                    D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+}
+
 void ContextD3D12::updateWorldlUniforms(Aquarium *aquarium)
 {
-    CD3DX12_RANGE readRange(0, 0);
-    UINT8 *m_pCbvDataBegin;
-    mLightWorldPositionBuffer->Map(0, &readRange, reinterpret_cast<void **>(&m_pCbvDataBegin));
-    memcpy(m_pCbvDataBegin, &aquarium->lightWorldPositionUniform,
-           sizeof(LightWorldPositionUniform));
+    updateConstantBufferSync(mLightWorldPositionBuffer, mLightWorldPositionUploadBuffer,
+                             &aquarium->lightWorldPositionUniform,
+                             CalcConstantBufferByteSize(sizeof(LightWorldPositionUniform)));
 }
 
 ComPtr<ID3DBlob> ContextD3D12::createShaderModule(const std::string &type,

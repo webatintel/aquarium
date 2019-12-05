@@ -764,11 +764,12 @@ void Aquarium::updateGlobalUniforms()
 
 void Aquarium::render()
 {
-    updateGlobalUniforms();
-
     matrix::resetPseudoRandom();
 
     mContext->preFrame();
+
+    // Global Uniforms should update after command reallocation.
+    updateGlobalUniforms();
 
     drawBackground();
 
