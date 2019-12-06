@@ -18,7 +18,7 @@ using Microsoft::WRL::ComPtr;
 
 enum BACKENDTYPE : short;
 
-constexpr int cbvsrvCount = 193;
+constexpr int cbvsrvCount = 88;
 
 class ContextD3D12 : public Context
 {
@@ -128,6 +128,11 @@ class ContextD3D12 : public Context
 
     std::vector<CD3DX12_STATIC_SAMPLER_DESC> staticSamplers;
 
+    D3D12_CONSTANT_BUFFER_VIEW_DESC mFishPersBufferView;
+    ComPtr<ID3D12Resource> mFishPersBuffer;
+    ComPtr<ID3D12Resource> stagingBuffer;
+    FishPer *fishPers;
+
   private:
     bool GetHardwareAdapter(
         IDXGIFactory2 *pFactory,
@@ -139,6 +144,7 @@ class ContextD3D12 : public Context
                          D3D12_RESOURCE_STATES preState,
                          D3D12_RESOURCE_STATES transferState) const;
     void initAvailableToggleBitset(BACKENDTYPE backendType) override;
+    void destoryFishResource();
 
     GLFWwindow *mWindow;
     ComPtr<ID3D12Device> mDevice;

@@ -122,16 +122,6 @@ class ContextDawn : public Context
     wgpu::BindGroup *bindGroupFishPers;
 
     wgpu::Buffer stagingBuffer;
-
-    struct FishPer
-    {
-        float worldPosition[3];
-        float scale;
-        float nextPosition[3];
-        float time;
-        float padding[56];  // TODO(yizhou): the padding is to align with 256 byte offset.
-    };
-
     FishPer *fishPers;
 
     wgpu::Device mDevice;
@@ -175,8 +165,6 @@ class ContextDawn : public Context
     wgpu::Buffer mFogBuffer;
 
     bool mEnableMSAA;
-    int mPreTotalInstance;
-    int mCurTotalInstance;
     bool mEnableDynamicBufferOffset;
 
     void *mappedData;

@@ -13,7 +13,7 @@ FishModelInstancedDrawD3D12::FishModelInstancedDrawD3D12(Context *context,
                                                          MODELGROUP type,
                                                          MODELNAME name,
                                                          bool blend)
-    : FishModel(type, name, blend), instance(0)
+    : FishModel(type, name, blend, aquarium), instance(0)
 {
     mContextD3D12 = static_cast<ContextD3D12 *>(context);
 

@@ -13,7 +13,7 @@ FishModelInstancedDrawDawn::FishModelInstancedDrawDawn(const Context *context,
                                                        MODELGROUP type,
                                                        MODELNAME name,
                                                        bool blend)
-    : FishModel(type, name, blend), instance(0)
+    : FishModel(type, name, blend, aquarium), instance(0)
 {
     mContextDawn = static_cast<const ContextDawn *>(context);
 

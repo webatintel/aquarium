@@ -29,7 +29,6 @@ class FishModelDawn : public FishModel
     ~FishModelDawn();
 
     void init() override;
-    void prepareForDraw() override;
     void draw() override;
 
     void updatePerInstanceUniforms(const WorldUniforms &worldUniforms) override;
@@ -85,9 +84,6 @@ class FishModelDawn : public FishModel
     ContextDawn *mContextDawn;
 
     bool mEnableDynamicBufferOffset;
-    Aquarium *mAquarium;
-
-    int mFishPerOffset;
 };
 
 #endif

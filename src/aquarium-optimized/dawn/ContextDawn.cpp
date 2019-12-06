@@ -16,6 +16,7 @@
 #include <string>
 #include <vector>
 
+#include "../FishModel.h"
 #include "BufferDawn.h"
 #include "ContextDawn.h"
 #include "FishModelDawn.h"

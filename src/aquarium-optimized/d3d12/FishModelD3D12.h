@@ -29,7 +29,6 @@ class FishModelD3D12 : public FishModel
     ~FishModelD3D12();
 
     void init() override;
-    void prepareForDraw() override;
     void draw() override;
 
     void updatePerInstanceUniforms(const WorldUniforms &worldUniforms) override;
@@ -43,9 +42,6 @@ class FishModelD3D12 : public FishModel
                                float time,
                                int index) override;
 
-    void reallocResource();
-    void destoryFishResource();
-
     struct FishVertexUniforms
     {
         float fishLength;
@@ -58,16 +54,6 @@ class FishModelD3D12 : public FishModel
         float shininess;
         float specularFactor;
     } mLightFactorUniforms;
-
-    struct FishPer
-    {
-        float worldPosition[3];
-        float scale;
-        float nextPosition[3];
-        float time;
-        float padding[56];  // TODO(yizhou): the padding is to align with 256 byte offset.
-    };
-    FishPer *mFishPers;
 
     TextureD3D12 *mDiffuseTexture;
     TextureD3D12 *mNormalTexture;
@@ -83,11 +69,6 @@ class FishModelD3D12 : public FishModel
     BufferD3D12 *mIndicesBuffer;
 
   private:
-    D3D12_CONSTANT_BUFFER_VIEW_DESC mFishPersBufferView;
-    D3D12_GPU_DESCRIPTOR_HANDLE mFishPersGPUHandle;
-    ComPtr<ID3D12Resource> mFishPersBuffer;
-    ComPtr<ID3D12Resource> mFishPersUploadBuffer;
-
     D3D12_CONSTANT_BUFFER_VIEW_DESC mLightFactorView;
     D3D12_GPU_DESCRIPTOR_HANDLE mLightFactorGPUHandle;
     ComPtr<ID3D12Resource> mLightFactorBuffer;
@@ -108,7 +89,6 @@ class FishModelD3D12 : public FishModel
 
     ProgramD3D12 *mProgramD3D12;
     ContextD3D12 *mContextD3D12;
-    Aquarium *mAquarium;
 };
 
 #endif

@@ -14,7 +14,7 @@ FishModelGL::FishModelGL(const ContextGL *mContextGL,
                          MODELGROUP type,
                          MODELNAME name,
                          bool blend)
-    : FishModel(type, name, blend), mContextGL(mContextGL)
+    : FishModel(type, name, blend, aquarium), mContextGL(mContextGL)
 {
     mViewInverseUniform.first    = aquarium->lightWorldPositionUniform.viewInverse;
     mLightWorldPosUniform.first  = aquarium->lightWorldPositionUniform.lightWorldPos;
