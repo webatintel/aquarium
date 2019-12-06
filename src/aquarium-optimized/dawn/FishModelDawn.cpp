@@ -15,7 +15,7 @@ FishModelDawn::FishModelDawn(Context *context,
                              MODELGROUP type,
                              MODELNAME name,
                              bool blend)
-    : FishModel(type, name, blend), mAquarium(aquarium), mFishPerOffset(0)
+    : FishModel(type, name, blend, aquarium)
 {
     mContextDawn = static_cast<ContextDawn *>(context);
 
@@ -158,19 +158,6 @@ void FishModelDawn::init()
                                 &mLightFactorUniforms);
     mContextDawn->setBufferData(mFishVertexBuffer, 0, sizeof(FishVertexUniforms),
                                 &mFishVertexUniforms);
-}
-
-void FishModelDawn::prepareForDraw()
-{
-    mFishPerOffset = 0;
-    for (int i = 0; i < mName - MODELNAME::MODELSMALLFISHA; i++)
-    {
-        const Fish &fishInfo = fishTable[i];
-        mFishPerOffset += mAquarium->fishCount[fishInfo.modelName - MODELNAME::MODELSMALLFISHA];
-    }
-
-    const Fish &fishInfo = fishTable[mName - MODELNAME::MODELSMALLFISHA];
-    mCurInstance         = mAquarium->fishCount[fishInfo.modelName - MODELNAME::MODELSMALLFISHA];
 }
 
 void FishModelDawn::draw()

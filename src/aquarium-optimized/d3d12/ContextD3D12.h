@@ -18,7 +18,7 @@ using Microsoft::WRL::ComPtr;
 
 enum BACKENDTYPE : short;
 
-constexpr int cbvsrvCount = 87;
+constexpr int cbvsrvCount = 88;
 
 class ContextD3D12 : public Context
 {
@@ -108,19 +108,30 @@ class ContextD3D12 : public Context
                          bool enableDynamicBufferOffset) override;
     void updateAllFishData(
         const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset) override;
+    void updateConstantBufferSync(ComPtr<ID3D12Resource> &defaultBuffer,
+                                  const ComPtr<ID3D12Resource> &uploadBuffer,
+                                  const void *initData,
+                                  UINT64 byteSize);
 
     Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList;
 
     CD3DX12_DESCRIPTOR_RANGE1 rangeGeneral[2];
     CD3DX12_ROOT_PARAMETER1 rootParameterGeneral;
+    CD3DX12_DESCRIPTOR_RANGE1 rangeLightWorldPosition;
     CD3DX12_ROOT_PARAMETER1 rootParameterWorld;
     D3D12_GPU_DESCRIPTOR_HANDLE fogGPUHandle;
     D3D12_GPU_DESCRIPTOR_HANDLE lightGPUHandle;
     D3D12_CONSTANT_BUFFER_VIEW_DESC lightWorldPositionView;
+    D3D12_GPU_DESCRIPTOR_HANDLE lightWorldPositionGPUHandle;
     CD3DX12_CPU_DESCRIPTOR_HANDLE cbvsrvCPUHandle;
     CD3DX12_GPU_DESCRIPTOR_HANDLE cbvsrvGPUHandle;
 
     std::vector<CD3DX12_STATIC_SAMPLER_DESC> staticSamplers;
+
+    D3D12_CONSTANT_BUFFER_VIEW_DESC mFishPersBufferView;
+    ComPtr<ID3D12Resource> mFishPersBuffer;
+    ComPtr<ID3D12Resource> stagingBuffer;
+    FishPer *fishPers;
 
   private:
     bool GetHardwareAdapter(
@@ -133,6 +144,7 @@ class ContextD3D12 : public Context
                          D3D12_RESOURCE_STATES preState,
                          D3D12_RESOURCE_STATES transferState) const;
     void initAvailableToggleBitset(BACKENDTYPE backendType) override;
+    void destoryFishResource();
 
     GLFWwindow *mWindow;
     ComPtr<ID3D12Device> mDevice;
@@ -165,6 +177,7 @@ class ContextD3D12 : public Context
 
     // General Resources
     ComPtr<ID3D12Resource> mLightWorldPositionBuffer;
+    ComPtr<ID3D12Resource> mLightWorldPositionUploadBuffer;
 
     D3D12_CONSTANT_BUFFER_VIEW_DESC mLightView;
     ComPtr<ID3D12Resource> mLightBuffer;

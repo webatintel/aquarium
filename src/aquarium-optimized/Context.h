@@ -90,6 +90,8 @@ class Context
 
     int mClientWidth;
     int mClientHeight;
+    int mPreTotalInstance;
+    int mCurTotalInstance;
 
     ResourceHelper *mResourceHelper;
 

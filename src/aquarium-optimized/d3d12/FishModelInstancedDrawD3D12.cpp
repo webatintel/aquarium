@@ -13,7 +13,7 @@ FishModelInstancedDrawD3D12::FishModelInstancedDrawD3D12(Context *context,
                                                          MODELGROUP type,
                                                          MODELNAME name,
                                                          bool blend)
-    : FishModel(type, name, blend), instance(0)
+    : FishModel(type, name, blend, aquarium), instance(0)
 {
     mContextD3D12 = static_cast<ContextD3D12 *>(context);
 
@@ -170,8 +170,7 @@ void FishModelInstancedDrawD3D12::draw()
     commandList->SetGraphicsRootSignature(mRootSignature.Get());
 
     commandList->SetGraphicsRootDescriptorTable(0, mContextD3D12->lightGPUHandle);
-    commandList->SetGraphicsRootConstantBufferView(
-        1, mContextD3D12->lightWorldPositionView.BufferLocation);
+    commandList->SetGraphicsRootDescriptorTable(1, mContextD3D12->lightWorldPositionGPUHandle);
     commandList->SetGraphicsRootDescriptorTable(2, mFishVertexGPUHandle);
     commandList->SetGraphicsRootDescriptorTable(3, mDiffuseTexture->getTextureGPUHandle());
 

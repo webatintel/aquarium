@@ -13,7 +13,7 @@ FishModelD3D12::FishModelD3D12(Context *context,
                                MODELGROUP type,
                                MODELNAME name,
                                bool blend)
-    : FishModel(type, name, blend), mFishPers(nullptr), mAquarium(aquarium)
+    : FishModel(type, name, blend, aquarium)
 {
     mContextD3D12 = static_cast<ContextD3D12 *>(context);
 
@@ -31,7 +31,6 @@ FishModelD3D12::FishModelD3D12(Context *context,
 
 FishModelD3D12::~FishModelD3D12()
 {
-    destoryFishResource();
 }
 
 void FishModelD3D12::init()
@@ -121,7 +120,7 @@ void FishModelD3D12::init()
         rootParameters[3].InitAsDescriptorTable(1, &ranges[1], D3D12_SHADER_VISIBILITY_PIXEL);
     }
 
-    rootParameters[4].InitAsConstantBufferView(0, 3, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC,
+    rootParameters[4].InitAsConstantBufferView(0, 3, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_VOLATILE,
                                                D3D12_SHADER_VISIBILITY_VERTEX);
 
     rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 2u,
@@ -133,20 +132,6 @@ void FishModelD3D12::init()
     mContextD3D12->createGraphicsPipelineState(
         mInputElementDescs, mRootSignature, mProgramD3D12->getVSModule(),
         mProgramD3D12->getFSModule(), mPipelineState, mBlend);
-
-    reallocResource();
-}
-
-void FishModelD3D12::prepareForDraw()
-{
-    const Fish &fishInfo = fishTable[mName - MODELNAME::MODELSMALLFISHA];
-    mCurInstance         = mAquarium->fishCount[fishInfo.modelName - MODELNAME::MODELSMALLFISHA];
-    if (mCurInstance != mPreInstance)
-    {
-        destoryFishResource();
-        reallocResource();
-        mPreInstance = mCurInstance;
-    }
 }
 
 void FishModelD3D12::draw()
@@ -154,19 +139,13 @@ void FishModelD3D12::draw()
     if (mCurInstance == 0)
         return;
 
-    CD3DX12_RANGE readRange(0, 0);
-    UINT8 *m_pCbvDataBegin;
-    mFishPersBuffer->Map(0, &readRange, reinterpret_cast<void **>(&m_pCbvDataBegin));
-    memcpy(m_pCbvDataBegin, mFishPers, sizeof(FishPer) * mCurInstance);
-
     auto &commandList = mContextD3D12->mCommandList;
 
     commandList->SetPipelineState(mPipelineState.Get());
     commandList->SetGraphicsRootSignature(mRootSignature.Get());
 
     commandList->SetGraphicsRootDescriptorTable(0, mContextD3D12->lightGPUHandle);
-    commandList->SetGraphicsRootConstantBufferView(
-        1, mContextD3D12->lightWorldPositionView.BufferLocation);
+    commandList->SetGraphicsRootDescriptorTable(1, mContextD3D12->lightWorldPositionGPUHandle);
     commandList->SetGraphicsRootDescriptorTable(2, mFishVertexGPUHandle);
     commandList->SetGraphicsRootDescriptorTable(3, mDiffuseTexture->getTextureGPUHandle());
 
@@ -177,7 +156,8 @@ void FishModelD3D12::draw()
     for (int i = 0; i < mCurInstance; i++)
     {
         commandList->SetGraphicsRootConstantBufferView(
-            4, mFishPersBufferView.BufferLocation + i * mFishPersBufferView.SizeInBytes);
+            4, mContextD3D12->mFishPersBufferView.BufferLocation +
+                   (mFishPerOffset + i) * mContextD3D12->mFishPersBufferView.SizeInBytes);
         commandList->DrawIndexedInstanced(mIndicesBuffer->getTotalComponents(), 1, 0, 0, 0);
     }
 }
@@ -194,37 +174,14 @@ void FishModelD3D12::updateFishPerUniforms(float x,
                                            float time,
                                            int index)
 {
-    mFishPers[index].worldPosition[0] = x;
-    mFishPers[index].worldPosition[1] = y;
-    mFishPers[index].worldPosition[2] = z;
-    mFishPers[index].nextPosition[0]  = nextX;
-    mFishPers[index].nextPosition[1]  = nextY;
-    mFishPers[index].nextPosition[2]  = nextZ;
-    mFishPers[index].scale            = scale;
-    mFishPers[index].time             = time;
+    index += mFishPerOffset;
+    mContextD3D12->fishPers[index].worldPosition[0] = x;
+    mContextD3D12->fishPers[index].worldPosition[1] = y;
+    mContextD3D12->fishPers[index].worldPosition[2] = z;
+    mContextD3D12->fishPers[index].nextPosition[0]  = nextX;
+    mContextD3D12->fishPers[index].nextPosition[1]  = nextY;
+    mContextD3D12->fishPers[index].nextPosition[2]  = nextZ;
+    mContextD3D12->fishPers[index].scale            = scale;
+    mContextD3D12->fishPers[index].time             = time;
 }
 
-void FishModelD3D12::reallocResource()
-{
-    if (mCurInstance == 0)
-        return;
-
-    mFishPers = new FishPer[mCurInstance];
-
-    mFishPersBuffer = mContextD3D12->createUploadBuffer(
-        mFishPers, mContextD3D12->CalcConstantBufferByteSize(sizeof(FishPer) * mCurInstance));
-    mFishPersBufferView.BufferLocation = mFishPersBuffer->GetGPUVirtualAddress();
-    mFishPersBufferView.SizeInBytes    = mContextD3D12->CalcConstantBufferByteSize(sizeof(FishPer));
-}
-
-void FishModelD3D12::destoryFishResource()
-{
-    mContextD3D12->FlushPreviousFrames();
-
-    mFishPersBuffer.Reset();
-    if (mFishPers != nullptr)
-    {
-        delete mFishPers;
-        mFishPers = nullptr;
-    }
-}

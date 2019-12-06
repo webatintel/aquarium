@@ -41,6 +41,8 @@ inline void ThrowIfFailed(HRESULT hr)
 
 ContextD3D12::ContextD3D12(BACKENDTYPE backendType)
     : lightWorldPositionView({}),
+      mFishPersBufferView({}),
+      fishPers(nullptr),
       mWindow(nullptr),
       mDevice(nullptr),
       mCommandQueue(nullptr),
@@ -76,6 +78,7 @@ ContextD3D12::~ContextD3D12()
 {
     delete mResourceHelper;
     destoryImgUI();
+    destoryFishResource();
 }
 
 bool ContextD3D12::initialize(
@@ -330,7 +333,7 @@ bool ContextD3D12::GetHardwareAdapter(
             if (SUCCEEDED(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0,
                                             _uuidof(ID3D12Device), nullptr)))
             {
-                std::wstring str = desc.Description;
+                std::wstring str     = desc.Description;
                 std::string renderer = std::string(str.begin(), str.end());
                 std::cout << renderer << std::endl;
                 mResourceHelper->setRenderer(renderer);
@@ -631,14 +634,17 @@ void ContextD3D12::initGeneralResources(Aquarium *aquarium)
     rootParameterGeneral.InitAsDescriptorTable(2, rangeGeneral, D3D12_SHADER_VISIBILITY_PIXEL);
 
     mLightWorldPositionBuffer =
-        createUploadBuffer(&aquarium->lightWorldPositionUniform,
-                           CalcConstantBufferByteSize(sizeof(LightWorldPositionUniform)));
+        createDefaultBuffer(&aquarium->lightWorldPositionUniform,
+                            CalcConstantBufferByteSize(sizeof(LightWorldPositionUniform)),
+                            mLightWorldPositionUploadBuffer);
     lightWorldPositionView.BufferLocation = mLightWorldPositionBuffer->GetGPUVirtualAddress();
     lightWorldPositionView.SizeInBytes =
         CalcConstantBufferByteSize(sizeof(LightWorldPositionUniform));
-
-    rootParameterWorld.InitAsConstantBufferView(0, 1, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC,
-                                                D3D12_SHADER_VISIBILITY_VERTEX);
+    buildCbvDescriptor(lightWorldPositionView, &lightWorldPositionGPUHandle);
+    rangeLightWorldPosition.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0, 1,
+                                 D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE);
+    rootParameterWorld.InitAsDescriptorTable(1, &rangeLightWorldPosition,
+                                             D3D12_SHADER_VISIBILITY_VERTEX);
 
     CD3DX12_STATIC_SAMPLER_DESC sampler2D(0u,                                     // shaderRegister
                                           D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT,  // filter
@@ -659,15 +665,43 @@ void ContextD3D12::initGeneralResources(Aquarium *aquarium)
                                             D3D12_FLOAT32_MAX, D3D12_SHADER_VISIBILITY_PIXEL, 0u);
     staticSamplers.emplace_back(std::move(sampler2D));
     staticSamplers.emplace_back(std::move(samplerCube));
+
+    fishPers = new FishPer[aquarium->getCurFishCount()];
+
+    mFishPersBuffer = createDefaultBuffer(
+        fishPers, CalcConstantBufferByteSize(sizeof(FishPer) * aquarium->getCurFishCount()),
+        stagingBuffer);
+    mFishPersBufferView.BufferLocation = mFishPersBuffer->GetGPUVirtualAddress();
+    mFishPersBufferView.SizeInBytes    = CalcConstantBufferByteSize(sizeof(FishPer));
+}
+
+void ContextD3D12::updateConstantBufferSync(ComPtr<ID3D12Resource> &defaultBuffer,
+                                            const ComPtr<ID3D12Resource> &uploadBuffer,
+                                            const void *initData,
+                                            UINT64 byteSize)
+{
+    // Describe the data we want to copy into the default buffer.
+    D3D12_SUBRESOURCE_DATA subResourceData = {};
+    subResourceData.pData                  = initData;
+    subResourceData.RowPitch               = byteSize;
+    subResourceData.SlicePitch             = subResourceData.RowPitch;
+
+    // Schedule to copy the data to the default buffer resource.
+    stateTransition(defaultBuffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+                    D3D12_RESOURCE_STATE_COPY_DEST);
+
+    UpdateSubresources<1>(mCommandList.Get(), defaultBuffer.Get(), uploadBuffer.Get(), 0, 0, 1,
+                          &subResourceData);
+
+    stateTransition(defaultBuffer, D3D12_RESOURCE_STATE_COPY_DEST,
+                    D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 }
 
 void ContextD3D12::updateWorldlUniforms(Aquarium *aquarium)
 {
-    CD3DX12_RANGE readRange(0, 0);
-    UINT8 *m_pCbvDataBegin;
-    mLightWorldPositionBuffer->Map(0, &readRange, reinterpret_cast<void **>(&m_pCbvDataBegin));
-    memcpy(m_pCbvDataBegin, &aquarium->lightWorldPositionUniform,
-           sizeof(LightWorldPositionUniform));
+    updateConstantBufferSync(mLightWorldPositionBuffer, mLightWorldPositionUploadBuffer,
+                             &aquarium->lightWorldPositionUniform,
+                             CalcConstantBufferByteSize(sizeof(LightWorldPositionUniform)));
 }
 
 ComPtr<ID3DBlob> ContextD3D12::createShaderModule(const std::string &type,
@@ -770,15 +804,12 @@ void ContextD3D12::FlushPreviousFrames()
     m_frameIndex = mSwapChain->GetCurrentBackBufferIndex();
 }
 
-void ContextD3D12::reallocResource(int preTotalInstance,
-                                   int curTotalInstance,
-                                   bool enableDynamicBufferOffset)
-{
-}
-
 void ContextD3D12::updateAllFishData(
     const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset)
 {
+    // TODO(yizhou): Split data updating and render pass.
+    updateConstantBufferSync(mFishPersBuffer, stagingBuffer, fishPers,
+                             CalcConstantBufferByteSize(sizeof(FishPer) * mCurTotalInstance));
 }
 
 void ContextD3D12::createDepthStencilView()
@@ -1054,4 +1085,46 @@ UINT ContextD3D12::CalcConstantBufferByteSize(UINT byteSize)
     // 0x0200
     // 512
     return (byteSize + 255) & ~255;
+}
+
+void ContextD3D12::reallocResource(int preTotalInstance,
+                                   int curTotalInstance,
+                                   bool enableDynamicBufferOffset)
+{
+    mPreTotalInstance = preTotalInstance;
+    mCurTotalInstance = curTotalInstance;
+
+    if (curTotalInstance == 0)
+        return;
+
+    // If current fish number > pre fish number, allocate a new bigger buffer.
+    // If current fish number <= prefish number, do not allocate a new one.
+    // TODO(yizhou) : optimize the buffer allocation strategy.
+    if (preTotalInstance >= curTotalInstance)
+    {
+        return;
+    }
+
+    destoryFishResource();
+
+    fishPers = new FishPer[curTotalInstance];
+
+    mFishPersBuffer = createDefaultBuffer(
+        fishPers, CalcConstantBufferByteSize(sizeof(FishPer) * curTotalInstance), stagingBuffer);
+    mFishPersBufferView.BufferLocation = mFishPersBuffer->GetGPUVirtualAddress();
+    mFishPersBufferView.SizeInBytes    = CalcConstantBufferByteSize(sizeof(FishPer));
+}
+
+void ContextD3D12::destoryFishResource()
+{
+    FlushPreviousFrames();
+
+    mFishPersBuffer.Reset();
+    stagingBuffer.Reset();
+
+    if (fishPers != nullptr)
+    {
+        delete fishPers;
+        fishPers = nullptr;
+    }
 }
