@@ -58,13 +58,15 @@ void SeaweedModelD3D12::init()
     mLightFactorView.SizeInBytes    = mContextD3D12->CalcConstantBufferByteSize(
         sizeof(LightFactorUniforms));  // CB size is required to be 256-byte aligned.
     mContextD3D12->buildCbvDescriptor(mLightFactorView, &mLightFactorGPUHandle);
-    mWorldBuffer = mContextD3D12->createUploadBuffer(
-        &mWorldUniformPer, mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniformPer)));
+    mWorldBuffer = mContextD3D12->createDefaultBuffer(
+        &mWorldUniformPer, mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniformPer)),
+        mWorldUploadBuffer);
     mWorldBufferView.BufferLocation = mWorldBuffer->GetGPUVirtualAddress();
     mWorldBufferView.SizeInBytes =
         mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniformPer));
-    mSeaweedBuffer = mContextD3D12->createUploadBuffer(
-        &mSeaweedPer, mContextD3D12->CalcConstantBufferByteSize(sizeof(SeaweedPer)));
+    mSeaweedBuffer = mContextD3D12->createDefaultBuffer(
+        &mSeaweedPer, mContextD3D12->CalcConstantBufferByteSize(sizeof(SeaweedPer)),
+        mSeaweedUploadBuffer);
     mSeaweedBufferView.BufferLocation = mSeaweedBuffer->GetGPUVirtualAddress();
     mSeaweedBufferView.SizeInBytes = mContextD3D12->CalcConstantBufferByteSize(sizeof(SeaweedPer));
 
@@ -86,9 +88,9 @@ void SeaweedModelD3D12::init()
     rootParameters[2].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
     rootParameters[3].InitAsDescriptorTable(1, &ranges[1], D3D12_SHADER_VISIBILITY_PIXEL);
 
-    rootParameters[4].InitAsConstantBufferView(0, 3, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC,
+    rootParameters[4].InitAsConstantBufferView(0, 3, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_VOLATILE,
                                                D3D12_SHADER_VISIBILITY_VERTEX);
-    rootParameters[5].InitAsConstantBufferView(1, 3, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC,
+    rootParameters[5].InitAsConstantBufferView(1, 3, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_VOLATILE,
                                                D3D12_SHADER_VISIBILITY_VERTEX);
 
     rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 2u,
@@ -104,15 +106,13 @@ void SeaweedModelD3D12::init()
 
 void SeaweedModelD3D12::prepareForDraw()
 {
-    CD3DX12_RANGE readRangeView(0, 0);
-    UINT8 *m_pCbvDataBeginView;
-    mWorldBuffer->Map(0, &readRangeView, reinterpret_cast<void **>(&m_pCbvDataBeginView));
-    memcpy(m_pCbvDataBeginView, &mWorldUniformPer, sizeof(WorldUniformPer));
+    mContextD3D12->updateConstantBufferSync(
+        mWorldBuffer, mWorldUploadBuffer, &mWorldUniformPer,
+        mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniformPer)));
 
-    CD3DX12_RANGE readRangeSeaweed(0, 0);
-    UINT8 *m_pCbvDataBeginSeaweed;
-    mSeaweedBuffer->Map(0, &readRangeSeaweed, reinterpret_cast<void **>(&m_pCbvDataBeginSeaweed));
-    memcpy(m_pCbvDataBeginSeaweed, &mSeaweedPer, sizeof(SeaweedPer));
+    mContextD3D12->updateConstantBufferSync(
+        mSeaweedBuffer, mSeaweedUploadBuffer, &mSeaweedPer,
+        mContextD3D12->CalcConstantBufferByteSize(sizeof(SeaweedPer)));
 }
 
 void SeaweedModelD3D12::draw()

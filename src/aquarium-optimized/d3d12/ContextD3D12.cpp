@@ -891,24 +891,6 @@ ComPtr<ID3D12Resource> ContextD3D12::createDefaultBuffer(const void *initData,
     return defaultBuffer;
 }
 
-ComPtr<ID3D12Resource> ContextD3D12::createUploadBuffer(const void *initData, UINT64 byteSize) const
-{
-    // create an uploadBuffer for dynamic data.
-    ComPtr<ID3D12Resource> uploadBuffer;
-    CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(byteSize);
-    mDevice->CreateCommittedResource(&uploadheapProperties, D3D12_HEAP_FLAG_NONE, &resourceDesc,
-                                     D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
-                                     IID_PPV_ARGS(uploadBuffer.GetAddressOf()));
-
-    // Copy the triangle data to the vertex buffer.
-    UINT8 *pVertexDataBegin;
-    CD3DX12_RANGE readRange(0, 0);  // We do not intend to read from this resource on the CPU.
-    uploadBuffer->Map(0, &readRange, reinterpret_cast<void **>(&pVertexDataBegin));
-    memcpy(pVertexDataBegin, initData, byteSize);
-    uploadBuffer->Unmap(0, nullptr);
-    return uploadBuffer;
-}
-
 void ContextD3D12::createRootSignature(
     const D3D12_VERSIONED_ROOT_SIGNATURE_DESC &pRootSignatureDesc,
     ComPtr<ID3D12RootSignature> &rootSignature) const

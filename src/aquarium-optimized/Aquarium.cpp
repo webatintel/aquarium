@@ -227,14 +227,16 @@ bool Aquarium::init(int argc, char **argv)
         }
         else if (cmd == "--enable-instanced-draws")
         {
-            if (!availableToggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEINSTANCEDDRAWS)))
+            /*if (!availableToggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEINSTANCEDDRAWS)))
             {
                 std::cerr << "Instanced draw path isn't implemented for the backend." << std::endl;
                 return false;
             }
             toggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEINSTANCEDDRAWS));
             // Disable map write aync for instanced draw mode
-            toggleBitset.reset(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC));
+            toggleBitset.reset(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC));*/
+            std::cerr << "Instanced draw path is deprecated." << std::endl;
+            return false;
         }
         else if (cmd == "--disable-dynamic-buffer-offset")
         {

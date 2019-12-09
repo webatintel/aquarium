@@ -80,8 +80,9 @@ void GenericModelD3D12::init()
     mLightFactorView.SizeInBytes    = mContextD3D12->CalcConstantBufferByteSize(
         sizeof(LightFactorUniforms));  // CB size is required to be 256-byte aligned.
     mContextD3D12->buildCbvDescriptor(mLightFactorView, &mLightFactorGPUHandle);
-    mWorldBuffer = mContextD3D12->createUploadBuffer(
-        &mWorldUniformPer, mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniformPer)));
+    mWorldBuffer = mContextD3D12->createDefaultBuffer(
+        &mWorldUniformPer, mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniformPer)),
+        mWorldUploadBuffer);
     mWorldBufferView.BufferLocation = mWorldBuffer->GetGPUVirtualAddress();
     mWorldBufferView.SizeInBytes =
         mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniformPer));
@@ -132,7 +133,7 @@ void GenericModelD3D12::init()
         rootParameters[3].InitAsDescriptorTable(1, &ranges[1], D3D12_SHADER_VISIBILITY_PIXEL);
     }
 
-    rootParameters[4].InitAsConstantBufferView(0, 3, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC,
+    rootParameters[4].InitAsConstantBufferView(0, 3, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_VOLATILE,
                                                D3D12_SHADER_VISIBILITY_VERTEX);
 
     rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 2u,
@@ -149,10 +150,9 @@ void GenericModelD3D12::init()
 // Update constant buffer per frame
 void GenericModelD3D12::prepareForDraw()
 {
-    CD3DX12_RANGE readRange(0, 0);
-    UINT8 *m_pCbvDataBegin;
-    mWorldBuffer->Map(0, &readRange, reinterpret_cast<void **>(&m_pCbvDataBegin));
-    memcpy(m_pCbvDataBegin, &mWorldUniformPer, sizeof(WorldUniformPer));
+    mContextD3D12->updateConstantBufferSync(
+        mWorldBuffer, mWorldUploadBuffer, &mWorldUniformPer,
+        mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniformPer)));
 }
 
 void GenericModelD3D12::draw()

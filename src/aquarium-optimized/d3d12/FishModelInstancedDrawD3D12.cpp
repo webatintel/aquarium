@@ -59,8 +59,9 @@ void FishModelInstancedDrawD3D12::init()
     mVertexBufferView[3] = mTangentBuffer->mVertexBufferView;
     mVertexBufferView[4] = mBiNormalBuffer->mVertexBufferView;
 
-    mFishPersBuffer = mContextD3D12->createUploadBuffer(
-        mFishPers, mContextD3D12->CalcConstantBufferByteSize(sizeof(FishPer) * instance));
+    mFishPersBuffer = mContextD3D12->createDefaultBuffer(
+        mFishPers, mContextD3D12->CalcConstantBufferByteSize(sizeof(FishPer) * instance),
+        mFishPersUploadBuffer);
     mFishPersBufferView.BufferLocation = mFishPersBuffer->GetGPUVirtualAddress();
     mFishPersBufferView.SizeInBytes =
         mContextD3D12->CalcConstantBufferByteSize(sizeof(FishPer) * instance);
@@ -152,17 +153,16 @@ void FishModelInstancedDrawD3D12::init()
         mProgramD3D12->getFSModule(), mPipelineState, mBlend);
 }
 
-void FishModelInstancedDrawD3D12::prepareForDraw() {}
+void FishModelInstancedDrawD3D12::prepareForDraw()
+{
+    mContextD3D12->updateConstantBufferSync(mFishPersBuffer, mFishPersUploadBuffer, mFishPers,
+                                            sizeof(FishPer) * instance);
+}
 
 void FishModelInstancedDrawD3D12::draw()
 {
     if (instance == 0)
         return;
-
-    CD3DX12_RANGE readRange(0, 0);
-    UINT8 *m_pCbvDataBegin;
-    mFishPersBuffer->Map(0, &readRange, reinterpret_cast<void **>(&m_pCbvDataBegin));
-    memcpy(m_pCbvDataBegin, mFishPers, sizeof(FishPer) * instance);
 
     auto &commandList = mContextD3D12->mCommandList;
 
