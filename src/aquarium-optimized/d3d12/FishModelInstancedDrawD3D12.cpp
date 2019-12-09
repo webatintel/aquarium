@@ -164,21 +164,22 @@ void FishModelInstancedDrawD3D12::draw()
     if (instance == 0)
         return;
 
-    auto &commandList = mContextD3D12->mCommandList;
+    mContextD3D12->mCommandList->SetPipelineState(mPipelineState.Get());
+    mContextD3D12->mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
 
-    commandList->SetPipelineState(mPipelineState.Get());
-    commandList->SetGraphicsRootSignature(mRootSignature.Get());
+    mContextD3D12->mCommandList->SetGraphicsRootDescriptorTable(0, mContextD3D12->lightGPUHandle);
+    mContextD3D12->mCommandList->SetGraphicsRootDescriptorTable(
+        1, mContextD3D12->lightWorldPositionGPUHandle);
+    mContextD3D12->mCommandList->SetGraphicsRootDescriptorTable(2, mFishVertexGPUHandle);
+    mContextD3D12->mCommandList->SetGraphicsRootDescriptorTable(
+        3, mDiffuseTexture->getTextureGPUHandle());
 
-    commandList->SetGraphicsRootDescriptorTable(0, mContextD3D12->lightGPUHandle);
-    commandList->SetGraphicsRootDescriptorTable(1, mContextD3D12->lightWorldPositionGPUHandle);
-    commandList->SetGraphicsRootDescriptorTable(2, mFishVertexGPUHandle);
-    commandList->SetGraphicsRootDescriptorTable(3, mDiffuseTexture->getTextureGPUHandle());
+    mContextD3D12->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    mContextD3D12->mCommandList->IASetVertexBuffers(0, 6, mVertexBufferView);
+    mContextD3D12->mCommandList->IASetIndexBuffer(&mIndicesBuffer->mIndexBufferView);
 
-    commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    commandList->IASetVertexBuffers(0, 6, mVertexBufferView);
-    commandList->IASetIndexBuffer(&mIndicesBuffer->mIndexBufferView);
-
-    commandList->DrawIndexedInstanced(mIndicesBuffer->getTotalComponents(), instance, 0, 0, 0);
+    mContextD3D12->mCommandList->DrawIndexedInstanced(mIndicesBuffer->getTotalComponents(),
+                                                      instance, 0, 0, 0);
 }
 
 void FishModelInstancedDrawD3D12::updatePerInstanceUniforms(const WorldUniforms &worldUniforms) {}

@@ -117,24 +117,27 @@ void SeaweedModelD3D12::prepareForDraw()
 
 void SeaweedModelD3D12::draw()
 {
-    auto &commandList = mContextD3D12->mCommandList;
+    mContextD3D12->mCommandList->SetPipelineState(mPipelineState.Get());
+    mContextD3D12->mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
 
-    commandList->SetPipelineState(mPipelineState.Get());
-    commandList->SetGraphicsRootSignature(mRootSignature.Get());
+    mContextD3D12->mCommandList->SetGraphicsRootDescriptorTable(0, mContextD3D12->lightGPUHandle);
+    mContextD3D12->mCommandList->SetGraphicsRootDescriptorTable(
+        1, mContextD3D12->lightWorldPositionGPUHandle);
+    mContextD3D12->mCommandList->SetGraphicsRootDescriptorTable(2, mLightFactorGPUHandle);
+    mContextD3D12->mCommandList->SetGraphicsRootDescriptorTable(
+        3, mDiffuseTexture->getTextureGPUHandle());
+    mContextD3D12->mCommandList->SetGraphicsRootConstantBufferView(4,
+                                                                   mWorldBufferView.BufferLocation);
+    mContextD3D12->mCommandList->SetGraphicsRootConstantBufferView(
+        5, mSeaweedBufferView.BufferLocation);
 
-    commandList->SetGraphicsRootDescriptorTable(0, mContextD3D12->lightGPUHandle);
-    commandList->SetGraphicsRootDescriptorTable(1, mContextD3D12->lightWorldPositionGPUHandle);
-    commandList->SetGraphicsRootDescriptorTable(2, mLightFactorGPUHandle);
-    commandList->SetGraphicsRootDescriptorTable(3, mDiffuseTexture->getTextureGPUHandle());
-    commandList->SetGraphicsRootConstantBufferView(4, mWorldBufferView.BufferLocation);
-    commandList->SetGraphicsRootConstantBufferView(5, mSeaweedBufferView.BufferLocation);
+    mContextD3D12->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    mContextD3D12->mCommandList->IASetVertexBuffers(0, 3, mVertexBufferView);
 
-    commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    commandList->IASetVertexBuffers(0, 3, mVertexBufferView);
+    mContextD3D12->mCommandList->IASetIndexBuffer(&mIndicesBuffer->mIndexBufferView);
 
-    commandList->IASetIndexBuffer(&mIndicesBuffer->mIndexBufferView);
-
-    commandList->DrawIndexedInstanced(mIndicesBuffer->getTotalComponents(), instance, 0, 0, 0);
+    mContextD3D12->mCommandList->DrawIndexedInstanced(mIndicesBuffer->getTotalComponents(),
+                                                      instance, 0, 0, 0);
 
     instance = 0;
 }
