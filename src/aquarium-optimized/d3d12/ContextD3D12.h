@@ -77,7 +77,6 @@ class ContextD3D12 : public Context
     ComPtr<ID3D12Resource> createDefaultBuffer(const void *initData,
                                                UINT64 byteSize,
                                                ComPtr<ID3D12Resource> &uploadBuffer) const;
-    ComPtr<ID3D12Resource> createUploadBuffer(const void *initData, UINT64 byteSize) const;
     void createRootSignature(const D3D12_VERSIONED_ROOT_SIGNATURE_DESC &pRootSignatureDesc,
                              ComPtr<ID3D12RootSignature> &rootSignature) const;
     void createGraphicsPipelineState(

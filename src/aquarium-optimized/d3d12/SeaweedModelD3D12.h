@@ -68,8 +68,10 @@ class SeaweedModelD3D12 : public SeaweedModel
   private:
     D3D12_CONSTANT_BUFFER_VIEW_DESC mWorldBufferView;
     ComPtr<ID3D12Resource> mWorldBuffer;
+    ComPtr<ID3D12Resource> mWorldUploadBuffer;
     D3D12_CONSTANT_BUFFER_VIEW_DESC mSeaweedBufferView;
     ComPtr<ID3D12Resource> mSeaweedBuffer;
+    ComPtr<ID3D12Resource> mSeaweedUploadBuffer;
 
     D3D12_CONSTANT_BUFFER_VIEW_DESC mLightFactorView;
     D3D12_GPU_DESCRIPTOR_HANDLE mLightFactorGPUHandle;
