@@ -623,7 +623,6 @@ Buffer *ContextDawn::createBuffer(int numComponents, std::vector<unsigned short>
 Program *ContextDawn::createProgram(const std::string &mVId, const std::string &mFId)
 {
     ProgramDawn *program = new ProgramDawn(this, mVId, mFId);
-    program->loadProgram();
 
     return program;
 }

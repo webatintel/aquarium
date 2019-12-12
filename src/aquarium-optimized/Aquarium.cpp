@@ -367,6 +367,10 @@ bool Aquarium::init(int argc, char **argv)
 
             toggleBitset.set(static_cast<size_t>(TOGGLE::DISABLEDAWNVALIDATION));
         }
+        else if (cmd == "--enable-alpha-blending")
+        {
+            toggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEALPHABLENDING));
+        }
         else
         {
         }
@@ -521,7 +525,16 @@ void Aquarium::loadModel(const G_sceneInfo &info)
     const rapidjson::Value &models = document["models"];
     ASSERT(models.IsArray());
 
-    Model *model               = mContext->createModel(this, info.type, info.name, info.blend);
+    Model *model;
+    if (toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEALPHABLENDING)) &&
+        info.type != MODELGROUP::INNER && info.type != MODELGROUP::OUTSIDE)
+    {
+        model = mContext->createModel(this, info.type, info.name, true);
+    }
+    else
+    {
+        model = mContext->createModel(this, info.type, info.name, info.blend);
+    }
     mAquariumModels[info.name] = model;
 
     auto &value = models.GetArray()[models.GetArray().Size() - 1];
@@ -614,6 +627,15 @@ void Aquarium::loadModel(const G_sceneInfo &info)
         else
         {
             program = mContext->createProgram(programPath + vsId, programPath + fsId);
+            if (toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEALPHABLENDING)) &&
+                info.type != MODELGROUP::INNER && info.type != MODELGROUP::OUTSIDE)
+            {
+                program->compileProgram(true);
+            }
+            else
+            {
+                program->compileProgram(false);
+            }
             mProgramMap[vsId + fsId] = program;
         }
 
@@ -999,9 +1021,9 @@ void Aquarium::updateWorldMatrixAndDraw(Model *model)
         for (auto &world : model->worldmatrices)
         {
             updateWorldProjections(world);
-                model->prepareForDraw();
-                model->updatePerInstanceUniforms(worldUniforms);
-                model->draw();
+            model->prepareForDraw();
+            model->updatePerInstanceUniforms(worldUniforms);
+            model->draw();
         }
     }
 }

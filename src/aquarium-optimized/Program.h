@@ -22,10 +22,16 @@ class Program
     }
     virtual ~Program() {}
     virtual void setProgram() {}
+    virtual void compileProgram(bool enableAlphaBlending) = 0;
 
   protected:
+    void loadProgram();
+
     std::string mVId;
     std::string mFId;
+
+    std::string VertexShaderCode;
+    std::string FragmentShaderCode;
 };
 
 #endif // !PROGRAM_H

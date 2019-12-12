@@ -29,7 +29,7 @@ public:
     ProgramDawn(ContextDawn *context, const std::string &mVId, const std::string &mFId);
     ~ProgramDawn() override;
 
-    void loadProgram();
+    void compileProgram(bool enableAlphaBlending) override;
     wgpu::ShaderModule getVSModule() { return mVsModule; }
     wgpu::ShaderModule getFSModule() { return mFsModule; }
 

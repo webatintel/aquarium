@@ -269,7 +269,7 @@ bool ImGui_ImplDawn_CreateDeviceObjects(bool enableMSAA)
     std::string programPath        = resourceHelper->getProgramPath();
     mProgramDawn = new ProgramDawn(mContextDawn, programPath + "imguiVertexShader",
                                    programPath + "imguiFragmentShader");
-    mProgramDawn->loadProgram();
+    mProgramDawn->compileProgram(true);
 
     const wgpu::ShaderModule &mVsModule = mProgramDawn->getVSModule();
     const wgpu::ShaderModule &mFsModule = mProgramDawn->getFSModule();

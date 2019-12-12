@@ -618,7 +618,6 @@ Buffer *ContextD3D12::createBuffer(int numComponents,
 Program *ContextD3D12::createProgram(const std::string &mVId, const std::string &mFId)
 {
     ProgramD3D12 *program = new ProgramD3D12(this, mVId, mFId);
-    program->loadProgram();
 
     return program;
 }

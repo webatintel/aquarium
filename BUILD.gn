@@ -32,6 +32,7 @@ executable("aquarium") {
     "src/aquarium-optimized/Model.cpp",
     "src/aquarium-optimized/Model.h",
     "src/aquarium-optimized/Program.h",
+    "src/aquarium-optimized/Program.cpp",
     "src/aquarium-optimized/ResourceHelper.h",
     "src/aquarium-optimized/ResourceHelper.cpp",
     "src/aquarium-optimized/SeaweedModel.h",
