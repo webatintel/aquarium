@@ -477,16 +477,21 @@ class Aquarium
     void calculateFishCount();
     void updateWorldMatrixAndDraw(Model *model);
     void updateGlobalUniforms();
-    void drawBackground();
-    void drawFishes();
-    void drawSeaweed();
-    void drawInner();
-    void drawOutside();
+
     void updateWorldProjections(const std::vector<float> &w);
     BACKENDTYPE getBackendType(const std::string &backendPath);
     double getElapsedTime();
     void printRecordFps();
     void resetFpsTime();
+    void updateWorldMatrix(Model *model);
+
+    void updateAndDrawFishes();
+    void updateAndDrawBackground();
+
+    void updateBackground();
+    void drawBackground();
+    void updateFishes();
+    void drawFishes();
 
     std::unordered_map<std::string, MODELNAME> mModelEnumMap;
     std::unordered_map<std::string, Texture *> mTextureMap;

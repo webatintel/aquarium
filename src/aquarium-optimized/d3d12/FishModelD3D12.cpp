@@ -139,26 +139,27 @@ void FishModelD3D12::draw()
     if (mCurInstance == 0)
         return;
 
-    auto &commandList = mContextD3D12->mCommandList;
+    mContextD3D12->mCommandList->SetPipelineState(mPipelineState.Get());
+    mContextD3D12->mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
 
-    commandList->SetPipelineState(mPipelineState.Get());
-    commandList->SetGraphicsRootSignature(mRootSignature.Get());
+    mContextD3D12->mCommandList->SetGraphicsRootDescriptorTable(0, mContextD3D12->lightGPUHandle);
+    mContextD3D12->mCommandList->SetGraphicsRootDescriptorTable(
+        1, mContextD3D12->lightWorldPositionGPUHandle);
+    mContextD3D12->mCommandList->SetGraphicsRootDescriptorTable(2, mFishVertexGPUHandle);
+    mContextD3D12->mCommandList->SetGraphicsRootDescriptorTable(
+        3, mDiffuseTexture->getTextureGPUHandle());
 
-    commandList->SetGraphicsRootDescriptorTable(0, mContextD3D12->lightGPUHandle);
-    commandList->SetGraphicsRootDescriptorTable(1, mContextD3D12->lightWorldPositionGPUHandle);
-    commandList->SetGraphicsRootDescriptorTable(2, mFishVertexGPUHandle);
-    commandList->SetGraphicsRootDescriptorTable(3, mDiffuseTexture->getTextureGPUHandle());
-
-    commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    commandList->IASetVertexBuffers(0, 5, mVertexBufferView);
-    commandList->IASetIndexBuffer(&mIndicesBuffer->mIndexBufferView);
+    mContextD3D12->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    mContextD3D12->mCommandList->IASetVertexBuffers(0, 5, mVertexBufferView);
+    mContextD3D12->mCommandList->IASetIndexBuffer(&mIndicesBuffer->mIndexBufferView);
 
     for (int i = 0; i < mCurInstance; i++)
     {
-        commandList->SetGraphicsRootConstantBufferView(
+        mContextD3D12->mCommandList->SetGraphicsRootConstantBufferView(
             4, mContextD3D12->mFishPersBufferView.BufferLocation +
                    (mFishPerOffset + i) * mContextD3D12->mFishPersBufferView.SizeInBytes);
-        commandList->DrawIndexedInstanced(mIndicesBuffer->getTotalComponents(), 1, 0, 0, 0);
+        mContextD3D12->mCommandList->DrawIndexedInstanced(mIndicesBuffer->getTotalComponents(), 1,
+                                                          0, 0, 0);
     }
 }
 

@@ -3,8 +3,8 @@
 
 #include "ProgramDawn.h"
 
-#include "imgui_impl_dawn.h"
 #include "imgui.h"
+#include "imgui_impl_dawn.h"
 #include "utils/ComboRenderPipelineDescriptor.h"
 
 // Dawn data
@@ -27,7 +27,7 @@ ContextDawn *mContextDawn(nullptr);
 
 int mIndexBufferSize  = 0;
 int mVertexBufferSize = 0;
-bool mEnableMSAA      = false;
+
 ImDrawVert mVertexData[40000];
 ImDrawIdx mIndexData[10000];
 
@@ -106,8 +106,8 @@ void ImGui_ImplDawn_RenderDrawData(ImDrawData *draw_data)
     }
 
     // Upload vertex/index data into a single contiguous GPU buffer
-    uint32_t vtx_dst = 0;
-    uint32_t idx_dst = 0;
+    uint32_t vtx_dst    = 0;
+    uint32_t idx_dst    = 0;
     ImDrawVert *pVertex = mVertexData;
     ImDrawIdx *pIndex   = mIndexData;
     for (int n = 0; n < draw_data->CmdListsCount; n++)
@@ -129,7 +129,10 @@ void ImGui_ImplDawn_RenderDrawData(ImDrawData *draw_data)
         mContextDawn->setBufferData(mVertexBuffer, 0, vtx_dst, mVertexData);
         mContextDawn->setBufferData(mIndexBuffer, 0, idx_dst, mIndexData);
     }
+}
 
+void ImGui_ImplDawn_Draw(ImDrawData *draw_data)
+{
     const wgpu::RenderPassEncoder &pass = mContextDawn->getRenderPass();
 
     // Setup desired Dawn state
@@ -216,15 +219,15 @@ static void ImGui_ImplDawn_CreateFontsTexture()
         mTextureView = mTexture.CreateView(&viewDescriptor);
 
         wgpu::SamplerDescriptor samplerDesc;
-        samplerDesc.addressModeU    = wgpu::AddressMode::Repeat;
-        samplerDesc.addressModeV    = wgpu::AddressMode::Repeat;
-        samplerDesc.addressModeW    = wgpu::AddressMode::Repeat;
-        samplerDesc.minFilter       = wgpu::FilterMode::Linear;
-        samplerDesc.magFilter       = wgpu::FilterMode::Linear;
-        samplerDesc.lodMinClamp     = 0.0f;
-        samplerDesc.lodMaxClamp     = 0.0f;
-        samplerDesc.compare         = wgpu::CompareFunction::Always;
-        samplerDesc.mipmapFilter    = wgpu::FilterMode::Linear;
+        samplerDesc.addressModeU = wgpu::AddressMode::Repeat;
+        samplerDesc.addressModeV = wgpu::AddressMode::Repeat;
+        samplerDesc.addressModeW = wgpu::AddressMode::Repeat;
+        samplerDesc.minFilter    = wgpu::FilterMode::Linear;
+        samplerDesc.magFilter    = wgpu::FilterMode::Linear;
+        samplerDesc.lodMinClamp  = 0.0f;
+        samplerDesc.lodMaxClamp  = 0.0f;
+        samplerDesc.compare      = wgpu::CompareFunction::Always;
+        samplerDesc.mipmapFilter = wgpu::FilterMode::Linear;
 
         mSampler = mContextDawn->createSampler(samplerDesc);
     }
@@ -232,7 +235,7 @@ static void ImGui_ImplDawn_CreateFontsTexture()
     io.Fonts->TexID = (ImTextureID)mTextureView.Get();
 }
 
-bool ImGui_ImplDawn_CreateDeviceObjects()
+bool ImGui_ImplDawn_CreateDeviceObjects(bool enableMSAA)
 {
     if (!mContextDawn->mDevice)
         return false;
@@ -306,7 +309,7 @@ bool ImGui_ImplDawn_CreateDeviceObjects()
     mPipelineDescriptor.cDepthStencilState.depthWriteEnabled = false;
     mPipelineDescriptor.cDepthStencilState.depthCompare      = wgpu::CompareFunction::Always;
     mPipelineDescriptor.primitiveTopology  = wgpu::PrimitiveTopology::TriangleList;
-    mPipelineDescriptor.sampleCount        = mEnableMSAA ? 4 : 1;
+    mPipelineDescriptor.sampleCount                          = enableMSAA ? 4 : 1;
     mPipelineDescriptor.rasterizationState = &rasterizationState;
 
     mPipeline = mContextDawn->mDevice.CreateRenderPipeline(&mPipelineDescriptor);
@@ -315,7 +318,7 @@ bool ImGui_ImplDawn_CreateDeviceObjects()
 
     // Create uniform buffer
     wgpu::BufferDescriptor descriptor;
-    descriptor.size  = sizeof(VERTEX_CONSTANT_BUFFER);
+    descriptor.size = sizeof(VERTEX_CONSTANT_BUFFER);
     descriptor.usage =
         wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform | wgpu::BufferUsage::Uniform;
 
@@ -329,7 +332,7 @@ bool ImGui_ImplDawn_CreateDeviceObjects()
     return true;
 }
 
-bool ImGui_ImplDawn_Init(ContextDawn *context, wgpu::TextureFormat rtv_format, bool enableMSAA)
+bool ImGui_ImplDawn_Init(ContextDawn *context, wgpu::TextureFormat rtv_format)
 {
     // Setup back-end capabilities flags
     ImGuiIO &io            = ImGui::GetIO();
@@ -338,14 +341,13 @@ bool ImGui_ImplDawn_Init(ContextDawn *context, wgpu::TextureFormat rtv_format, b
         ImGuiBackendFlags_RendererHasVtxOffset;  // We can honor the ImDrawCmd::VtxOffset field,
                                                  // allowing for large meshes.
 
-    mFormat     = rtv_format;
+    mFormat      = rtv_format;
     mContextDawn = context;
 
     mIndexBuffer      = NULL;
     mVertexBuffer     = NULL;
     mIndexBufferSize  = 3000;
     mVertexBufferSize = 3000;
-    mEnableMSAA       = enableMSAA;
 
     return true;
 }
@@ -359,17 +361,17 @@ void ImGui_ImplDawn_Shutdown()
     mVsModule  = nullptr;
     mFsModule  = nullptr;
 
-    mIndexBuffer  = nullptr;
-    mVertexBuffer = nullptr;
-    mStagingBuffer   = nullptr;
-    mTexture      = nullptr;
-    mSampler      = nullptr;
+    mIndexBuffer    = nullptr;
+    mVertexBuffer   = nullptr;
+    mStagingBuffer  = nullptr;
+    mTexture        = nullptr;
+    mSampler        = nullptr;
     mConstantBuffer = nullptr;
-    mTextureView     = nullptr;
+    mTextureView    = nullptr;
 }
 
-void ImGui_ImplDawn_NewFrame()
+void ImGui_ImplDawn_NewFrame(bool enableMSAA)
 {
     if (!mPipeline.Get())
-        ImGui_ImplDawn_CreateDeviceObjects();
+        ImGui_ImplDawn_CreateDeviceObjects(enableMSAA);
 }

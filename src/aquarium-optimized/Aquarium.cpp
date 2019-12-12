@@ -773,8 +773,6 @@ void Aquarium::render()
     // Global Uniforms should update after command reallocation.
     updateGlobalUniforms();
 
-    drawBackground();
-
     // TODO(yizhou): Functionality of reallocate fish count during rendering
     // isn't supported for instanced draw.
     // To try this functionality now, use composition of "--backend dawn_xxx", or
@@ -791,39 +789,53 @@ void Aquarium::render()
             resetFpsTime();
         }
 
-    drawFishes();
+    bool updateAndDrawForEachFish =
+        toggleBitset.test(static_cast<size_t>(TOGGLE::UPATEANDDRAWFOREACHMODEL));
 
-    drawInner();
+    if (updateAndDrawForEachFish)
+    {
+        updateAndDrawBackground();
+        updateAndDrawFishes();
+        mContext->updateFPS(mFpsTimer, &mCurFishCount, &toggleBitset);
+    }
+    else
+    {
+        updateBackground();
+        updateFishes();
+        mContext->updateFPS(mFpsTimer, &mCurFishCount, &toggleBitset);
 
-    drawSeaweed();
+        // Begin render pass
+        mContext->beginRenderPass();
 
-    drawOutside();
+        drawBackground();
+        drawFishes();
+        mContext->showFPS();
 
-    mContext->showFPS(mFpsTimer, &mCurFishCount, &toggleBitset);
+        // End renderpass
+    }
 }
 
-void Aquarium::drawBackground()
+void Aquarium::updateAndDrawBackground()
 {
     Model *model = mAquariumModels[MODELNAME::MODELRUINCOlOMN];
-    for (int i = MODELNAME::MODELRUINCOlOMN; i <= MODELNAME::MODELTREASURECHEST; ++i)
+    for (int i = MODELNAME::MODELRUINCOlOMN; i <= MODELNAME::MODELSEAWEEDB; ++i)
     {
         model = mAquariumModels[i];
         updateWorldMatrixAndDraw(model);
     }
 }
 
-void Aquarium::drawSeaweed()
+void Aquarium::drawBackground()
 {
-    SeaweedModel *model = static_cast<SeaweedModel *>(mAquariumModels[MODELNAME::MODELSEAWEEDA]);
-    for (int i = MODELNAME::MODELSEAWEEDA; i <= MODELNAME::MODELSEAWEEDB; ++i)
+    Model *model = mAquariumModels[MODELNAME::MODELRUINCOlOMN];
+    for (int i = MODELNAME::MODELRUINCOlOMN; i <= MODELNAME::MODELSEAWEEDB; ++i)
     {
-        // model->updateSeaweedModelTime(g.mclock);
-        model = static_cast<SeaweedModel *>(mAquariumModels[i]);
-        updateWorldMatrixAndDraw(model);
+        model = mAquariumModels[i];
+        model->draw();
     }
 }
 
-void Aquarium::drawFishes()
+void Aquarium::updateAndDrawFishes()
 {
     int begin = toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEINSTANCEDDRAWS))
                     ? MODELNAME::MODELSMALLFISHAINSTANCEDDRAWS
@@ -831,8 +843,6 @@ void Aquarium::drawFishes()
     int end = toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEINSTANCEDDRAWS))
                   ? MODELNAME::MODELBIGFISHBINSTANCEDDRAWS
                   : MODELNAME::MODELBIGFISHB;
-    bool updateAndDrawForEachFish =
-        toggleBitset.test(static_cast<size_t>(TOGGLE::UPATEANDDRAWFOREACHMODEL));
 
     for (int i = begin; i <= end; ++i)
     {
@@ -879,34 +889,97 @@ void Aquarium::drawFishes()
                 fmod((g.mclock + ii * g_tailOffsetMult) * fishTailSpeed * speed,
                      static_cast<float>(M_PI) * 2),
                 ii);
-            if (updateAndDrawForEachFish)
-            {
-                model->updatePerInstanceUniforms(worldUniforms);
-                model->draw();
-            }
-        }
-        // TODO(yizhou): If backend is dawn or d3d12, draw only once for every type of fish by
-        // drawInstance. If backend is opengl or angle, draw for exery fish. Update the logic the
-        // same as Dawn if uniform blocks are implemented for OpenGL.
-        if (!updateAndDrawForEachFish)
-        {
+
+            model->updatePerInstanceUniforms(worldUniforms);
             model->draw();
+        }
+    }
+}
+
+void Aquarium::updateBackground()
+{
+    Model *model = mAquariumModels[MODELNAME::MODELRUINCOlOMN];
+    for (int i = MODELNAME::MODELRUINCOlOMN; i <= MODELNAME::MODELSEAWEEDB; ++i)
+    {
+        model = mAquariumModels[i];
+        updateWorldMatrix(model);
+    }
+}
+
+void Aquarium::updateFishes()
+{
+    int begin = toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEINSTANCEDDRAWS))
+                    ? MODELNAME::MODELSMALLFISHAINSTANCEDDRAWS
+                    : MODELNAME::MODELSMALLFISHA;
+    int end = toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEINSTANCEDDRAWS))
+                  ? MODELNAME::MODELBIGFISHBINSTANCEDDRAWS
+                  : MODELNAME::MODELBIGFISHB;
+
+    for (int i = begin; i <= end; ++i)
+    {
+        FishModel *model = static_cast<FishModel *>(mAquariumModels[i]);
+
+        const Fish &fishInfo = fishTable[i - begin];
+        int numFish          = fishCount[i - begin];
+
+        model->prepareForDraw();
+
+        float fishBaseClock   = g.mclock * g_fishSpeed;
+        float fishRadius      = fishInfo.radius;
+        float fishRadiusRange = fishInfo.radiusRange;
+        float fishSpeed       = fishInfo.speed;
+        float fishSpeedRange  = fishInfo.speedRange;
+        float fishTailSpeed   = fishInfo.tailSpeed * g_fishTailSpeed;
+        float fishOffset      = g_fishOffset;
+        // float fishClockSpeed  = g_fishSpeed;
+        float fishHeight      = g_fishHeight + fishInfo.heightOffset;
+        float fishHeightRange = g_fishHeightRange * fishInfo.heightRange;
+        float fishXClock      = g_fishXClock;
+        float fishYClock      = g_fishYClock;
+        float fishZClock      = g_fishZClock;
+
+        for (int ii = 0; ii < numFish; ++ii)
+        {
+            float fishClock = fishBaseClock + ii * fishOffset;
+            float speed = fishSpeed + static_cast<float>(matrix::pseudoRandom()) * fishSpeedRange;
+            float scale = 1.0f + static_cast<float>(matrix::pseudoRandom()) * 1;
+            float xRadius =
+                fishRadius + static_cast<float>(matrix::pseudoRandom()) * fishRadiusRange;
+            float yRadius = 2.0f + static_cast<float>(matrix::pseudoRandom()) * fishHeightRange;
+            float zRadius =
+                fishRadius + static_cast<float>(matrix::pseudoRandom()) * fishRadiusRange;
+            float fishSpeedClock = fishClock * speed;
+            float xClock         = fishSpeedClock * fishXClock;
+            float yClock         = fishSpeedClock * fishYClock;
+            float zClock         = fishSpeedClock * fishZClock;
+
+            model->updateFishPerUniforms(
+                sin(xClock) * xRadius, sin(yClock) * yRadius + fishHeight, cos(zClock) * zRadius,
+                sin(xClock - 0.04f) * xRadius, sin(yClock - 0.01f) * yRadius + fishHeight,
+                cos(zClock - 0.04f) * zRadius, scale,
+                fmod((g.mclock + ii * g_tailOffsetMult) * fishTailSpeed * speed,
+                     static_cast<float>(M_PI) * 2),
+                ii);
         }
     }
 
     mContext->updateAllFishData(toggleBitset);
 }
 
-void Aquarium::drawInner()
+void Aquarium::drawFishes()
 {
-    Model *model = mAquariumModels[MODELNAME::MODELGLOBEINNER];
-    updateWorldMatrixAndDraw(model);
-}
+    int begin = toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEINSTANCEDDRAWS))
+                    ? MODELNAME::MODELSMALLFISHAINSTANCEDDRAWS
+                    : MODELNAME::MODELSMALLFISHA;
+    int end = toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEINSTANCEDDRAWS))
+                  ? MODELNAME::MODELBIGFISHBINSTANCEDDRAWS
+                  : MODELNAME::MODELBIGFISHB;
 
-void Aquarium::drawOutside()
-{
-    Model *model = mAquariumModels[MODELNAME::MODELENVIRONMENTBOX];
-    updateWorldMatrixAndDraw(model);
+    for (int i = begin; i <= end; ++i)
+    {
+        FishModel *model = static_cast<FishModel *>(mAquariumModels[i]);
+        model->draw();
+    }
 }
 
 void Aquarium::updateWorldProjections(const std::vector<float> &w)
@@ -921,30 +994,28 @@ void Aquarium::updateWorldProjections(const std::vector<float> &w)
 
 void Aquarium::updateWorldMatrixAndDraw(Model *model)
 {
-    bool updateAndDrawForEachFish =
-        toggleBitset.test(static_cast<size_t>(TOGGLE::UPATEANDDRAWFOREACHMODEL));
-
     if (model->worldmatrices.size())
     {
         for (auto &world : model->worldmatrices)
         {
             updateWorldProjections(world);
-            if (updateAndDrawForEachFish)
-            {
                 model->prepareForDraw();
                 model->updatePerInstanceUniforms(worldUniforms);
                 model->draw();
-            }
-            else
-            {
-                model->updatePerInstanceUniforms(worldUniforms);
-            }
+        }
+    }
+}
+
+void Aquarium::updateWorldMatrix(Model *model)
+{
+    if (model->worldmatrices.size())
+    {
+        for (auto &world : model->worldmatrices)
+        {
+            updateWorldProjections(world);
+            model->updatePerInstanceUniforms(worldUniforms);
         }
     }
 
-    if (!updateAndDrawForEachFish)
-    {
-        model->prepareForDraw();
-        model->draw();
-    }
+    model->prepareForDraw();
 }

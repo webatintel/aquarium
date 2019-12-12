@@ -50,6 +50,8 @@ static DXGI_FORMAT g_RTVFormat                             = DXGI_FORMAT_UNKNOWN
 static ID3D12Resource *g_pFontTextureResource              = NULL;
 static D3D12_CPU_DESCRIPTOR_HANDLE g_hFontSrvCpuDescHandle = {};
 static D3D12_GPU_DESCRIPTOR_HANDLE g_hFontSrvGpuDescHandle = {};
+static D3D12_VERTEX_BUFFER_VIEW vbv;
+static D3D12_INDEX_BUFFER_VIEW ibv;
 
 struct FrameResources
 {
@@ -67,31 +69,14 @@ struct VERTEX_CONSTANT_BUFFER
     float mvp[4][4];
 };
 
+static VERTEX_CONSTANT_BUFFER vertex_constant_buffer;
+
 static void ImGui_ImplDX12_SetupRenderState(ImDrawData *draw_data,
                                             ID3D12GraphicsCommandList *ctx,
                                             FrameResources *fr)
 {
-    // Setup orthographic projection matrix into our constant buffer
-    // Our visible imgui space lies from draw_data->DisplayPos (top left) to
-    // draw_data->DisplayPos+data_data->DisplaySize (bottom right).
-    VERTEX_CONSTANT_BUFFER vertex_constant_buffer;
-    {
-        float L         = draw_data->DisplayPos.x;
-        float R         = draw_data->DisplayPos.x + draw_data->DisplaySize.x;
-        float T         = draw_data->DisplayPos.y;
-        float B         = draw_data->DisplayPos.y + draw_data->DisplaySize.y;
-        float mvp[4][4] = {
-            {2.0f / (R - L), 0.0f, 0.0f, 0.0f},
-            {0.0f, 2.0f / (T - B), 0.0f, 0.0f},
-            {0.0f, 0.0f, 0.5f, 0.0f},
-            {(R + L) / (L - R), (T + B) / (B - T), 0.5f, 1.0f},
-        };
-        memcpy(&vertex_constant_buffer.mvp, mvp, sizeof(mvp));
-    }
-
     // Setup viewport
     D3D12_VIEWPORT vp;
-    memset(&vp, 0, sizeof(D3D12_VIEWPORT));
     vp.Width    = draw_data->DisplaySize.x;
     vp.Height   = draw_data->DisplaySize.y;
     vp.MinDepth = 0.0f;
@@ -100,19 +85,8 @@ static void ImGui_ImplDX12_SetupRenderState(ImDrawData *draw_data,
     ctx->RSSetViewports(1, &vp);
 
     // Bind shader and vertex buffers
-    unsigned int stride = sizeof(ImDrawVert);
-    unsigned int offset = 0;
-    D3D12_VERTEX_BUFFER_VIEW vbv;
-    memset(&vbv, 0, sizeof(D3D12_VERTEX_BUFFER_VIEW));
-    vbv.BufferLocation = fr->VertexBuffer->GetGPUVirtualAddress() + offset;
-    vbv.SizeInBytes    = fr->VertexBufferSize * stride;
-    vbv.StrideInBytes  = stride;
     ctx->IASetVertexBuffers(0, 1, &vbv);
-    D3D12_INDEX_BUFFER_VIEW ibv;
-    memset(&ibv, 0, sizeof(D3D12_INDEX_BUFFER_VIEW));
-    ibv.BufferLocation = fr->IndexBuffer->GetGPUVirtualAddress();
-    ibv.SizeInBytes    = fr->IndexBufferSize * sizeof(ImDrawIdx);
-    ibv.Format         = sizeof(ImDrawIdx) == 2 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
+
     ctx->IASetIndexBuffer(&ibv);
     ctx->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     ctx->SetPipelineState(g_pPipelineState);
@@ -218,6 +192,39 @@ void ImGui_ImplDX12_RenderDrawData(ImDrawData *draw_data, ID3D12GraphicsCommandL
     }
     fr->VertexBuffer->Unmap(0, &range);
     fr->IndexBuffer->Unmap(0, &range);
+
+    // Setup orthographic projection matrix into our constant buffer
+    // Our visible imgui space lies from draw_data->DisplayPos (top left) to
+    // draw_data->DisplayPos+data_data->DisplaySize (bottom right).
+    {
+        float L         = draw_data->DisplayPos.x;
+        float R         = draw_data->DisplayPos.x + draw_data->DisplaySize.x;
+        float T         = draw_data->DisplayPos.y;
+        float B         = draw_data->DisplayPos.y + draw_data->DisplaySize.y;
+        float mvp[4][4] = {
+            {2.0f / (R - L), 0.0f, 0.0f, 0.0f},
+            {0.0f, 2.0f / (T - B), 0.0f, 0.0f},
+            {0.0f, 0.0f, 0.5f, 0.0f},
+            {(R + L) / (L - R), (T + B) / (B - T), 0.5f, 1.0f},
+        };
+        memcpy(&vertex_constant_buffer.mvp, mvp, sizeof(mvp));
+    }
+
+    unsigned int stride = sizeof(ImDrawVert);
+    unsigned int offset = 0;
+
+    vbv.BufferLocation = fr->VertexBuffer->GetGPUVirtualAddress() + offset;
+    vbv.SizeInBytes    = fr->VertexBufferSize * stride;
+    vbv.StrideInBytes  = stride;
+
+    ibv.BufferLocation = fr->IndexBuffer->GetGPUVirtualAddress();
+    ibv.SizeInBytes    = fr->IndexBufferSize * sizeof(ImDrawIdx);
+    ibv.Format         = sizeof(ImDrawIdx) == 2 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
+}
+
+void ImGui_ImplDX12_Draw(ImDrawData *draw_data, ID3D12GraphicsCommandList *ctx)
+{
+    FrameResources *fr = &g_pFrameResources[g_frameIndex % g_numFramesInFlight];
 
     // Setup desired DX state
     ImGui_ImplDX12_SetupRenderState(draw_data, ctx, fr);
@@ -418,7 +425,7 @@ static void ImGui_ImplDX12_CreateFontsTexture()
     io.Fonts->TexID = (ImTextureID)g_hFontSrvGpuDescHandle.ptr;
 }
 
-bool ImGui_ImplDX12_CreateDeviceObjects()
+bool ImGui_ImplDX12_CreateDeviceObjects(bool enableMSAA)
 {
     if (!g_pd3dDevice)
         return false;
@@ -497,7 +504,7 @@ bool ImGui_ImplDX12_CreateDeviceObjects()
     psoDesc.SampleMask            = UINT_MAX;
     psoDesc.NumRenderTargets      = 1;
     psoDesc.RTVFormats[0]         = g_RTVFormat;
-    psoDesc.SampleDesc.Count      = 1;
+    psoDesc.SampleDesc.Count      = enableMSAA ? 4 : 1;
     psoDesc.Flags                 = D3D12_PIPELINE_STATE_FLAG_NONE;
 
     // Create the vertex shader
@@ -602,9 +609,9 @@ bool ImGui_ImplDX12_CreateDeviceObjects()
         desc.DepthBiasClamp         = D3D12_DEFAULT_DEPTH_BIAS_CLAMP;
         desc.SlopeScaledDepthBias   = D3D12_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;
         desc.DepthClipEnable        = true;
-        desc.MultisampleEnable      = FALSE;
+        desc.MultisampleEnable      = enableMSAA;
         desc.AntialiasedLineEnable  = FALSE;
-        desc.ForcedSampleCount      = 0;
+        desc.ForcedSampleCount      = 0u;
         desc.ConservativeRaster     = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
     }
 
@@ -724,8 +731,8 @@ void ImGui_ImplDX12_Shutdown()
     g_frameIndex                = UINT_MAX;
 }
 
-void ImGui_ImplDX12_NewFrame()
+void ImGui_ImplDX12_NewFrame(bool enableMSAA)
 {
     if (!g_pPipelineState)
-        ImGui_ImplDX12_CreateDeviceObjects();
+        ImGui_ImplDX12_CreateDeviceObjects(enableMSAA);
 }

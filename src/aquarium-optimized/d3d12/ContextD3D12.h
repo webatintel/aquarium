@@ -35,9 +35,10 @@ class ContextD3D12 : public Context
     void DoFlush(const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset) override;
     void Terminate() override;
     void showWindow() override;
-    void showFPS(const FPSTimer &fpsTimer,
-                 int *fishCount,
-                 std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> *toggleBitset) override;
+    void updateFPS(const FPSTimer &fpsTimer,
+                   int *fishCount,
+                   std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> *toggleBitset) override;
+    void showFPS() override;
     void destoryImgUI() override;
 
     void Flush() override;
@@ -61,7 +62,7 @@ class ContextD3D12 : public Context
     void createCommittedResource(const D3D12_HEAP_PROPERTIES &properties,
                                  const D3D12_RESOURCE_DESC &desc,
                                  D3D12_RESOURCE_STATES state,
-                                 ComPtr<ID3D12Resource> &resource);
+                                 ComPtr<ID3D12Resource>& resource);
     void updateSubresources(ID3D12GraphicsCommandList *pCmdList,
                             ID3D12Resource *pDestinationResource,
                             ID3D12Resource *pIntermediate,
@@ -72,21 +73,21 @@ class ContextD3D12 : public Context
     void executeCommandLists(UINT NumCommandLists, ID3D12CommandList *const *ppCommandLists);
 
     void createCommandList(ID3D12PipelineState *pInitialState,
-                           ComPtr<ID3D12GraphicsCommandList> &commandList);
+                           ComPtr<ID3D12GraphicsCommandList4>& commandList);
 
     ComPtr<ID3D12Resource> createDefaultBuffer(const void *initData,
                                                UINT64 byteSize,
-                                               ComPtr<ID3D12Resource> &uploadBuffer) const;
+                                               ComPtr<ID3D12Resource>& uploadBuffer) const;
     void createRootSignature(const D3D12_VERSIONED_ROOT_SIGNATURE_DESC &pRootSignatureDesc,
-                             ComPtr<ID3D12RootSignature> &rootSignature) const;
+                             ComPtr<ID3D12RootSignature>& rootSignature) const;
     void createGraphicsPipelineState(
         const std::vector<D3D12_INPUT_ELEMENT_DESC> &mInputElementDescs,
-        const ComPtr<ID3D12RootSignature> &rootSignature,
-        const ComPtr<ID3DBlob> &mVertexShader,
-        const ComPtr<ID3DBlob> &mPixelShader,
-        ComPtr<ID3D12PipelineState> &mPipelineState,
+        const ComPtr<ID3D12RootSignature>& rootSignature,
+        const ComPtr<ID3DBlob>& mVertexShader,
+        const ComPtr<ID3DBlob>& mPixelShader,
+        ComPtr<ID3D12PipelineState>& mPipelineState,
         bool enableBlend) const;
-    void buildSrvDescriptor(const ComPtr<ID3D12Resource> &resource,
+    void buildSrvDescriptor(const ComPtr<ID3D12Resource> resource,
                             const D3D12_SHADER_RESOURCE_VIEW_DESC &mSrvDesc,
                             D3D12_GPU_DESCRIPTOR_HANDLE *hGpuDescriptor);
     void buildCbvDescriptor(const D3D12_CONSTANT_BUFFER_VIEW_DESC &cbvDesc,
@@ -94,8 +95,8 @@ class ContextD3D12 : public Context
     UINT CalcConstantBufferByteSize(UINT byteSize);
     void createTexture(const D3D12_RESOURCE_DESC &textureDesc,
                        const std::vector<UINT8 *> &texture,
-                       ComPtr<ID3D12Resource> &m_texture,
-                       ComPtr<ID3D12Resource> &textureUploadHeap,
+                       ComPtr<ID3D12Resource>& m_texture,
+                       ComPtr<ID3D12Resource>& textureUploadHeap,
                        int TextureWidth,
                        int TextureHeight,
                        int TexturePixelSize,
@@ -107,12 +108,15 @@ class ContextD3D12 : public Context
                          bool enableDynamicBufferOffset) override;
     void updateAllFishData(
         const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset) override;
-    void updateConstantBufferSync(ComPtr<ID3D12Resource> &defaultBuffer,
-                                  const ComPtr<ID3D12Resource> &uploadBuffer,
+    void updateConstantBufferSync(ComPtr<ID3D12Resource> defaultBuffer,
+                                  const ComPtr<ID3D12Resource> uploadBuffer,
                                   const void *initData,
                                   UINT64 byteSize);
+    void checkRootSignatureSupport();
+    bool getRenderPassesTier(ID3D12Device *device);
+    void beginRenderPass() override;
 
-    Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList;
+    Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList4> mCommandList;
 
     CD3DX12_DESCRIPTOR_RANGE1 rangeGeneral[2];
     CD3DX12_ROOT_PARAMETER1 rootParameterGeneral;
@@ -139,7 +143,7 @@ class ContextD3D12 : public Context
         const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset);
     void WaitForPreviousFrame();
     void createDepthStencilView();
-    void stateTransition(ComPtr<ID3D12Resource> &resource,
+    void stateTransition(ComPtr<ID3D12Resource> resource,
                          D3D12_RESOURCE_STATES preState,
                          D3D12_RESOURCE_STATES transferState) const;
     void initAvailableToggleBitset(BACKENDTYPE backendType) override;
@@ -170,6 +174,7 @@ class ContextD3D12 : public Context
     HANDLE mFenceEvent;
 
     D3D12_FEATURE_DATA_ROOT_SIGNATURE mRootSignature;
+    D3D12_RENDER_PASS_ENDING_ACCESS_RESOLVE_SUBRESOURCE_PARAMETERS subresourceParameters;
 
     CD3DX12_VIEWPORT mViewport;
     CD3DX12_RECT mScissorRect;
@@ -191,6 +196,7 @@ class ContextD3D12 : public Context
 
     bool mEnableMSAA;
     UINT mVsync;
+    bool mDisableD3D12RenderPass;
 };
 
 #endif
