@@ -4,7 +4,7 @@
 // found in the LICENSE file.
 //
 #include <cstring>
-#include <fstream>
+#include <regex>
 
 #include "ContextD3D12.h"
 #include "ProgramD3D12.h"
@@ -16,18 +16,15 @@ ProgramD3D12::ProgramD3D12(ContextD3D12 *context, const std::string &mVId, const
 
 ProgramD3D12::~ProgramD3D12() {}
 
-void ProgramD3D12::loadProgram()
+void ProgramD3D12::compileProgram(bool enableBlending)
 {
-    std::ifstream VertexShaderStream(mVId, std::ios::in);
-    std::string VertexShaderCode((std::istreambuf_iterator<char>(VertexShaderStream)),
-                                 std::istreambuf_iterator<char>());
-    VertexShaderStream.close();
+    loadProgram();
 
-    // Read the Fragment Shader code from the file
-    std::ifstream FragmentShaderStream(mFId, std::ios::in);
-    std::string FragmentShaderCode((std::istreambuf_iterator<char>(FragmentShaderStream)),
-                                   std::istreambuf_iterator<char>());
-    FragmentShaderStream.close();
+    if (enableBlending)
+    {
+        FragmentShaderCode =
+            std::regex_replace(FragmentShaderCode, std::regex(R"(diffuseColor.w)"), "0.5");
+    }
 
     mVertexShader = context->createShaderModule("VS", VertexShaderCode);
     mPixelShader  = context->createShaderModule("PS", FragmentShaderCode);

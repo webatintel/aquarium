@@ -14,6 +14,7 @@ const char *cmdArgsStrAquarium = R"(Options and arguments:
 --buffer-mapping-async  : Upload uniforms by buffer mapping async for Dawn backend.
 --disable-dynamic-buffer-offset : The path is to test individual draw by creating many binding groups on dawn backend. By default, dynamic buffer offset is enabled. This option is only supported on dawn backend.
 --discrete-gpu          : Choose discrete gpu to render the application. This is only supported on Dawn and D3D12 backend.
+--enable-alpha-blending : Force enable alpha blending for all models. By default, only seaweed enables alpha blending.
 --enable-instanced-draws : specifies rendering fishes by instanced draw. By default, fishes are rendered by individual draw.Instanced rendering is only supported on dawn and d3d12 backend now.
 --enable-msaa           : Enable 4 samples MSAA. MSAA of angle backend is not supported now.
 --enable-full-screen-mode       : Render aquarium in full screen mode instead of window mode.
@@ -22,7 +23,7 @@ const char *cmdArgsStrAquarium = R"(Options and arguments:
 --record-fps-frequency [count]  : Record fps every count frame and print fps log when exit.
 --test-time [second]    : Render the application for some second and then exit, and the application will run 5 min by default.
 --turn-off-vsync        : Unlimit 60 fps. 
---disable-d3d12-render-pass   : Turn off render pass for dawn_d3d12 backend.
+--disable-d3d12-render-pass   : Turn off render pass for dawn_d3d12 and d3d12 backend.
 --disable-dawn-validation : Turn off dawn validation.
 --window-size=[width],[height]  : Input window size.";
 

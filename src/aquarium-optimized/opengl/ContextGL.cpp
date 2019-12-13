@@ -430,7 +430,6 @@ Buffer *ContextGL::createBuffer(int numComponents, std::vector<unsigned short> *
 Program *ContextGL::createProgram(const std::string &mVId, const std::string &mFId)
 {
     ProgramGL *program = new ProgramGL(this, mVId, mFId);
-    program->loadProgram();
 
     return program;
 }

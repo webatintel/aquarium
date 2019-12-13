@@ -20,7 +20,6 @@
 #include "glad/glad.h"
 #endif
 
-#include <fstream>
 #include <iostream>
 #include <map>
 #include <regex>
@@ -46,18 +45,9 @@ ProgramGL::~ProgramGL()
     mContext->deleteProgram(mProgramId);
 }
 
-void ProgramGL::loadProgram()
+void ProgramGL::compileProgram(bool enableBlending)
 {
-    std::ifstream VertexShaderStream(mVId, std::ios::in);
-    std::string VertexShaderCode((std::istreambuf_iterator<char>(VertexShaderStream)),
-                                 std::istreambuf_iterator<char>());
-    VertexShaderStream.close();
-
-    // Read the Fragment Shader code from the file
-    std::ifstream FragmentShaderStream(mFId, std::ios::in);
-    std::string FragmentShaderCode((std::istreambuf_iterator<char>(FragmentShaderStream)),
-                                   std::istreambuf_iterator<char>());
-    FragmentShaderStream.close();
+    loadProgram();
 
     const std::string fogUniforms =
         R"(uniform float fogPower;
@@ -85,6 +75,12 @@ void ProgramGL::loadProgram()
         std::regex_replace(FragmentShaderCode, std::regex(R"(\n.*?// #noReflection)"), "");
     FragmentShaderCode =
         std::regex_replace(FragmentShaderCode, std::regex(R"(\n.*?// #noNormalMap)"), "");
+
+    if (enableBlending)
+    {
+        FragmentShaderCode =
+            std::regex_replace(FragmentShaderCode, std::regex(R"(diffuseColor.a)"), "0.5");
+    }
 
     bool status = mContext->compileProgram(mProgramId, VertexShaderCode, FragmentShaderCode);
     ASSERT(status);

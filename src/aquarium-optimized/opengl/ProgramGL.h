@@ -32,7 +32,7 @@ public:
     void setProgram() override;
     GLuint getProgramId() const { return mProgramId; }
     GLuint getVAOId() { return mVAO; }
-    void loadProgram();
+    void compileProgram(bool enableAlphaBlending) override;
 
   private:
     GLuint mProgramId;

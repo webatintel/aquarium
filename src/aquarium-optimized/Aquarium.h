@@ -110,6 +110,8 @@ enum TOGGLE : short
 {
     // Stop rendering after specified time.
     AUTOSTOP,
+    // Enable alpha blending.
+    ENABLEALPHABLENDING,
     // Enable 4 times MSAA.
     ENABLEMSAAx4,
     // Go through instanced draw.

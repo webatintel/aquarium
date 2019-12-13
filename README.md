@@ -317,13 +317,16 @@ aquarium.exe --num-fish 10000 --backend dawn_d3d12 --window-size=2560,1440
 #“--turn-off-vsync” : Unlimit 60 fps.
 aquarium.exe --num-fish 10000 --backend dawn_vulkan --turn-off-vsync
 
-#“--disable-d3d12-render-pass” : Turn off render pass for dawn_d3d12 backend. Render pass is only supported on Intel gen 10
+#“--disable-d3d12-render-pass” : Turn off render pass for dawn_d3d12 and d3d12 backend. Render pass is only supported on windows sdk > 17763
 # or more advanced platforms. This feature is supported on versions of Windows prior to build 1809, or dawn will
 # emulate a render pass.
 aquarium.exe --num-fish 10000 --backend dawn_d3d12 --disable-d3d12-render-pass
 
 #“--disable-dawn-validation” : Disable Dawn validation.
 aquarium.exe --num-fish 10000 --backend dawn_d3d12 --disable-dawn-validation
+
+#"--enable-alpha-blending" : Force enable alpha blending for all models.
+aquarium.exe --num-fish 10000 --backend opengl --enable-alpha-blending
 
 # aquarium-direct-map only has OpenGL backend
 # Enable MSAA
