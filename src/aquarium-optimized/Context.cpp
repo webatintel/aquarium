@@ -137,6 +137,15 @@ void Context::renderImgui(const FPSTimer &fpsTimer,
             {
                 ImGui::Text("VALIDATION: ON");
             }
+
+            if (toggleBitset->test(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC)))
+            {
+                ImGui::Text("BUFFERMAPPINGASNC: ON");
+            }
+            else
+            {
+                ImGui::Text("BUFFERMAPPINGASNC: OFF");
+            }
         }
 
         ImGui::Checkbox("Option Window", &show_option_window);

@@ -54,8 +54,9 @@ class Context
     virtual void KeyBoardQuit()                                                               = 0;
     virtual void DoFlush(
         const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset) = 0;
-    virtual void Terminate()                                                                  = 0;
+    virtual void Terminate()                                                     = 0;
     virtual void Flush() {}
+
     virtual void preFrame()   = 0;
     virtual void showWindow() = 0;
     virtual void updateFPS(const FPSTimer &fpsTimer,
@@ -65,7 +66,10 @@ class Context
     virtual void destoryImgUI() = 0;
     virtual void reallocResource(int preTotalInstance,
                                  int curTotalInstance,
-                                 bool enableDynamicBufferOffset)   = 0;
+                                 bool enableDynamicBufferOffset,
+                                 bool enableBufferMappingAsync)
+    {
+    }
     virtual void updateAllFishData(
         const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset) = 0;
     virtual void beginRenderPass() {}

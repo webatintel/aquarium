@@ -1240,7 +1240,8 @@ UINT ContextD3D12::CalcConstantBufferByteSize(UINT byteSize)
 
 void ContextD3D12::reallocResource(int preTotalInstance,
                                    int curTotalInstance,
-                                   bool enableDynamicBufferOffset)
+                                   bool enableDynamicBufferOffset,
+                                   bool enableBufferMappingAsync)
 {
     mPreTotalInstance = preTotalInstance;
     mCurTotalInstance = curTotalInstance;

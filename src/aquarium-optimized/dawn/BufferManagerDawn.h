@@ -12,46 +12,49 @@
 #include "../BufferManager.h"
 #include "ContextDawn.h"
 
+class BufferManagerDawn;
 class ContextDawn;
 
 class RingBufferDawn : public RingBuffer
 {
   public:
-    RingBufferDawn(ContextDawn *context, size_t size);
+    RingBufferDawn(BufferManagerDawn *bufferManager, size_t size);
+    ~RingBufferDawn() {}
 
-    bool push(wgpu::Buffer &destBuffer, size_t dest_offset, void* pixels, size_t size);
+    bool push(const wgpu::CommandEncoder &encoder,
+              wgpu::Buffer &destBuffer,
+              size_t dest_offset,
+              void *pixels,
+              size_t size);
     bool reset(size_t size) override;
     void flush() override;
     void destory() override;
-
-    wgpu::CreateBufferMappedResult getCreateBufferMappedResult() const
-    {
-        return mBufferMappedResult;
-    }
-    wgpu::Buffer getStagingBuffer() const { return mStagingBuffer; }
+    void reMap();
 
   private:
     static void MapWriteCallback(WGPUBufferMapAsyncStatus status,
                                  void *data,
                                  uint64_t,
                                  void *userdata);
-    void *MapWriteAsyncAndWait(const wgpu::Buffer &buffer);
 
-    bool mSync;
     wgpu::CreateBufferMappedResult mBufferMappedResult;
-    wgpu::Buffer mStagingBuffer;
-    wgpu::CommandEncoder mEncoder;
-    ContextDawn *mContext;
+
+    BufferManagerDawn *mBufferManager;
     void *mappedData;
+    void *mPixels;
 };
 
 class BufferManagerDawn: public BufferManager
 {
   public:
-    BufferManagerDawn(ContextDawn *context) : mContext(context) {}
+    BufferManagerDawn(ContextDawn *context);
+    ~BufferManagerDawn();
 
-    RingBufferDawn *allocate(size_t size) override;
+    RingBufferDawn *allocate(size_t size, bool sync) override;
+    void flush() override;
+    void destroyBufferPool() override;
 
-  private:
+    wgpu::CommandEncoder mEncoder;
     ContextDawn *mContext;
+    bool mSync;
 };

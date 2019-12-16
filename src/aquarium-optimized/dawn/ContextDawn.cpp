@@ -46,7 +46,6 @@ ContextDawn::ContextDawn(BACKENDTYPE backendType)
       groupLayoutFishPer(nullptr),
       fishPersBuffer(nullptr),
       bindGroupFishPers(nullptr),
-      stagingBuffer(nullptr),
       fishPers(nullptr),
       mDevice(nullptr),
       mWindow(nullptr),
@@ -61,11 +60,9 @@ ContextDawn::ContextDawn(BACKENDTYPE backendType)
       mBindGroup(nullptr),
       mPreferredSwapChainFormat(wgpu::TextureFormat::RGBA8Unorm),
       mEnableMSAA(false),
-      bufferManager(nullptr),
-      mappedData(nullptr)
+      bufferManager(nullptr)
 {
     mResourceHelper = new ResourceHelper("dawn", "", backendType);
-    bufferManager   = new BufferManagerDawn(this);
     initAvailableToggleBitset(backendType);
 }
 
@@ -97,8 +94,6 @@ ContextDawn::~ContextDawn()
 
     groupLayoutFishPer = nullptr;
     destoryFishResource();
-
-    stagingBuffer = nullptr;
 
     mSwapchain               = nullptr;
     queue                    = nullptr;
@@ -270,6 +265,8 @@ bool ContextDawn::initialize(
     // imgui_impl_dawn.cpp and imgui_impl_dawn.h
     ImGui_ImplGlfw_InitForOpenGL(mWindow, true);
     ImGui_ImplDawn_Init(this, mPreferredSwapChainFormat);
+
+    bufferManager = new BufferManagerDawn(this);
 
     return true;
 }
@@ -593,14 +590,9 @@ void ContextDawn::initGeneralResources(Aquarium* aquarium)
             {0, wgpu::ShaderStage::Vertex, wgpu::BindingType::UniformBuffer},
         });
     }
-    reallocResource(aquarium->getPreFishCount(), aquarium->getCurFishCount(),
-                    enableDynamicBufferOffset);
 
-    // Create a big buffer for buffer mapping async
-    // TODO(yizhou): Use the staging buffer to upload more data, such as vertex buffers and world
-    // uniforms
-    stagingBuffer = createBuffer(sizeof(FishPer) * aquarium->getCurFishCount(),
-                                 wgpu::BufferUsage::MapWrite | wgpu::BufferUsage::CopySrc);
+    reallocResource(aquarium->getPreFishCount(), aquarium->getCurFishCount(), enableDynamicBufferOffset,
+        !aquarium->toggleBitset.test(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC)));
 }
 
 void ContextDawn::updateWorldlUniforms(Aquarium* aquarium)
@@ -651,22 +643,9 @@ void ContextDawn::DoFlush(const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMA
     mRenderPass.EndPass();
 
 	bufferManager->flush();
-        Flush();
 
-        wgpu::CommandBuffer cmd = mCommandEncoder.Finish();
-        mCommandBuffers.emplace_back(cmd);
-
-        // Wait for staging buffer uploading
-        if (toggleBitset.test(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC)))
-        {
-            while (mappedData == nullptr)
-            {
-                WaitABit();
-            }
-            mappedData = nullptr;
-
-            stagingBuffer.Unmap();
-    }
+    wgpu::CommandBuffer cmd = mCommandEncoder.Finish();
+    mCommandBuffers.emplace_back(cmd);
 
     Flush();
 
@@ -787,7 +766,8 @@ Model * ContextDawn::createModel(Aquarium* aquarium, MODELGROUP type, MODELNAME 
 
 void ContextDawn::reallocResource(int preTotalInstance,
                                   int curTotalInstance,
-                                  bool enableDynamicBufferOffset)
+                                  bool enableDynamicBufferOffset,
+                                  bool enableBufferMappingAsync)
 {
     mPreTotalInstance          = preTotalInstance;
     mCurTotalInstance          = curTotalInstance;
@@ -817,18 +797,8 @@ void ContextDawn::reallocResource(int preTotalInstance,
         bindGroupFishPers = new wgpu::BindGroup[curTotalInstance];
     }
 
-    //fishPersBuffer = createBufferFromData(fishPers, sizeof(FishPer) * curTotalInstance,
-    //                                      wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
     size_t size    = sizeof(FishPer) * curTotalInstance;
     fishPersBuffer = createBuffer(size, wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
-    RingBufferDawn* ringBuffer = bufferManager->allocate(size);
-    ringBuffer->push(fishPersBuffer, 0, fishPers, size);
-
-    // TODO(yizhou): the staging buffer should be bigger to hold other uniform buffers in the
-    // future. But now we only use the buffer to upload fish buffer, so the size is the same as fish
-    // buffer.
-    //stagingBuffer = createBuffer(sizeof(FishPer) * curTotalInstance,
-    //                             wgpu::BufferUsage::MapWrite | wgpu::BufferUsage::CopySrc);
 
     if (enableDynamicBufferOffset)
     {
@@ -858,26 +828,6 @@ wgpu::CreateBufferMappedResult ContextDawn::CreateBufferMapped(wgpu::BufferUsage
     return result;
 }
 
-void ContextDawn::MapWriteCallback(WGPUBufferMapAsyncStatus status,
-                                   void *data,
-                                   uint64_t,
-                                   void *userdata)
-{
-    ASSERT(status == WGPUBufferMapAsyncStatus_Success);
-    ASSERT(data != nullptr);
-    ContextDawn *contextDawn = static_cast<ContextDawn *>(userdata);
-
-    int size                = contextDawn->mCurTotalInstance;
-    contextDawn->mappedData = data;
-    memcpy(contextDawn->mappedData, contextDawn->fishPers,
-           sizeof(FishPer) * size);
-
-    // Create a command buffer that copy from the staging buffer to dest buffer.
-    wgpu::CommandBuffer command = contextDawn->copyBufferToBuffer(
-        contextDawn->stagingBuffer, 0, contextDawn->fishPersBuffer, 0, sizeof(FishPer) * size);
-    contextDawn->mCommandBuffers.emplace_back(command);
-}
-
 void ContextDawn::WaitABit()
 {
     mDevice.Tick();
@@ -885,23 +835,30 @@ void ContextDawn::WaitABit()
     utils::USleep(100);
 }
 
+wgpu::CommandEncoder ContextDawn::createCommandEncoder() const
+{
+    return mDevice.CreateCommandEncoder();
+}
+
 void ContextDawn::updateAllFishData(
     const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset)
 {
-    if (toggleBitset.test(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC)))
+    size_t size                = sizeof(FishPer) * mCurTotalInstance;
+    RingBufferDawn *ringBuffer = bufferManager->allocate(
+        size, !toggleBitset.test(static_cast<TOGGLE>(TOGGLE::BUFFERMAPPINGASYNC)));
+
+    if (ringBuffer == nullptr)
     {
-        stagingBuffer.MapWriteAsync(MapWriteCallback, this);
+        std::cout << "Memory upper limit." << std::endl;
+        return;
     }
-    else
-    {
-        setBufferData(fishPersBuffer, 0, sizeof(FishPer) * mCurTotalInstance, fishPers);
-    }
+
+    ringBuffer->push(bufferManager->mEncoder, fishPersBuffer, 0, fishPers, size);
 }
 
 void ContextDawn::destoryFishResource()
 {
     fishPersBuffer = nullptr;
-    stagingBuffer  = nullptr;
 
     if (fishPers != nullptr)
     {

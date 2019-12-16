@@ -14,13 +14,14 @@
 #include <dawn/webgpu_cpp.h>
 #include <dawn_native/DawnNative.h>
 
+#include "BufferManagerDawn.h"
 #include "GLFW/glfw3.h"
 #include "utils/WGPUHelpers.h"
-#include "BufferManagerDawn.h"
 
 class TextureDawn;
 class BufferDawn;
 class ProgramDawn;
+class RingBufferDawn;
 class BufferManagerDawn;
 enum BACKENDTYPE : short;
 
@@ -107,11 +108,13 @@ class ContextDawn : public Context
 
     void reallocResource(int preTotalInstance,
                          int curTotalInstance,
-                         bool enableDynamicBufferOffset) override;
+                         bool enableDynamicBufferOffset,
+                         bool enableBufferMappingAsync) override;
     void updateAllFishData(
         const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset) override;
     wgpu::CreateBufferMappedResult CreateBufferMapped(wgpu::BufferUsage usage, uint64_t size) const;
     void WaitABit();
+    wgpu::CommandEncoder createCommandEncoder() const;
 
     std::vector<wgpu::CommandBuffer> mCommandBuffers;
     wgpu::Queue queue;
@@ -125,7 +128,6 @@ class ContextDawn : public Context
     wgpu::Buffer fishPersBuffer;
     wgpu::BindGroup *bindGroupFishPers;
 
-    wgpu::Buffer stagingBuffer;
     FishPer *fishPers;
 
     wgpu::Device mDevice;
@@ -139,8 +141,6 @@ class ContextDawn : public Context
     void initAvailableToggleBitset(BACKENDTYPE backendType) override;
     static void framebufferResizeCallback(GLFWwindow *window, int width, int height);
     void destoryFishResource();
-
-    static void MapWriteCallback(WGPUBufferMapAsyncStatus status, void *, uint64_t, void *userdata);
 
     // TODO(jiawei.shao@intel.com): remove wgpu::TextureUsageBit::CopyDst when the bug in Dawn is
     // fixed.
@@ -170,9 +170,7 @@ class ContextDawn : public Context
     bool mEnableMSAA;
     bool mEnableDynamicBufferOffset;
 
-	BufferManagerDawn *bufferManager;
-
-    void *mappedData;
+    BufferManagerDawn *bufferManager;
 };
 
 #endif

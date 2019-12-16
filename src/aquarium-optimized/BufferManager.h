@@ -7,10 +7,11 @@
 // recycle.
 #pragma once
 
+#include <queue>
 #include <vector>
 #include "Context.h"
 
-constexpr size_t BUFFER_POOL_MAX_SIZE = 1048576;
+constexpr size_t BUFFER_POOL_MAX_SIZE = 409600000;
 
 class RingBuffer
 {
@@ -34,18 +35,20 @@ class BufferManager
 {
   public:
     BufferManager();
-    ~BufferManager();
+    virtual ~BufferManager();
 
     size_t GetSize() const { return mBufferPoolSize; }
     bool resetBuffer(RingBuffer *ringBuffer, size_t size);
     bool destoryBuffer(RingBuffer *ringBuffer);
-    void destroyBufferPool();
-    void flush();
+    virtual void destroyBufferPool() {}
+    virtual void flush();
 
-    virtual RingBuffer *allocate(size_t size) { return nullptr; }
+    virtual RingBuffer *allocate(size_t size, bool sync) { return nullptr; }
+
+    std::queue<RingBuffer *> mMappedBufferList;
 
   protected:
-    std::vector<RingBuffer *> mBufferPool;
+    std::vector<RingBuffer *> mEnqueuedBufferList;
     size_t mBufferPoolSize;
     size_t mUsedSize;
 

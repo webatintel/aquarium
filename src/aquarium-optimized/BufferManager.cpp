@@ -16,7 +16,7 @@ bool BufferManager::resetBuffer(RingBuffer *ringBuffer, size_t size)
 {
     size_t index = find(ringBuffer);
 
-    if (index >= mBufferPool.size())
+    if (index >= mEnqueuedBufferList.size())
     {
         return false;
     }
@@ -31,10 +31,11 @@ bool BufferManager::resetBuffer(RingBuffer *ringBuffer, size_t size)
     if (!result)
     {
         return false;
-    } else
+    }
+	else
 	{
-        mUsedSize = mUsedSize- oldSize + size;
-	}
+        mUsedSize = mUsedSize - oldSize + size;
+    }
 
 	return true;
 }
@@ -43,22 +44,22 @@ bool BufferManager::destoryBuffer(RingBuffer *ringBuffer)
 {
 	size_t index = find(ringBuffer);
 
-    if (index >= mBufferPool.size())
+    if (index >= mEnqueuedBufferList.size())
     {
         return false;
     }
 
     mUsedSize -= ringBuffer->getSize();
     ringBuffer->destory();
-    mBufferPool.erase(mBufferPool.begin() + index);
+    mEnqueuedBufferList.erase(mEnqueuedBufferList.begin() + index);
 
-	return true;
+    return true;
 }
 
 size_t BufferManager::find(RingBuffer *ringBuffer)
 {
     size_t index = 0;
-    for (auto buffer : mBufferPool)
+    for (auto buffer : mEnqueuedBufferList)
     {
         if (buffer == ringBuffer)
         {
@@ -69,19 +70,10 @@ size_t BufferManager::find(RingBuffer *ringBuffer)
     return index;
 }
 
-void BufferManager::destroyBufferPool()
-{
-    for (auto ringBuffer: mBufferPool)
-	{
-        ringBuffer->destory();
-	}
-    mBufferPool.clear();
-}
-
 // Flush copy commands in buffer pool
 void BufferManager::flush()
 {
-    for (auto buffer : mBufferPool)
+    for (auto buffer : mEnqueuedBufferList)
     {
         buffer->flush();
     }
