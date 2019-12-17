@@ -7,7 +7,7 @@
 is_msvc = is_win && !is_clang
 
 # Glad
-config("glad_public") {
+config("glad_public_config") {
   include_dirs = [ "glad/include" ]
 }
 
@@ -18,12 +18,12 @@ static_library("glad") {
     "glad/src/glad.c",
   ]
 
-  public_configs = [ ":glad_public" ]
+  public_configs = [ ":glad_public_config" ]
 }
 
 glfw_dir = "//third_party/glfw"
 
-config("glfw_public") {
+config("glfw_public_config") {
   include_dirs = [ "${glfw_dir}/include" ]
 
   if (is_win) {
@@ -40,7 +40,7 @@ config("glfw_public") {
 }
 
 static_library("glfw") {
-  public_configs = [ ":glfw_public" ]
+  public_configs = [ ":glfw_public_config" ]
 
    if (is_msvc) {
     # nonstandard extension, function/data pointer conversion in expression
