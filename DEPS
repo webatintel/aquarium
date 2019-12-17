@@ -54,7 +54,6 @@ deps = {
   },
   'third_party/glfw': {
     'url': '{chromium_git}/external/github.com/glfw/glfw@2de2589f910b1a85905f425be4d32f33cec092df',
-    'condition': 'dawn_standalone',
   },
   'third_party/rapidjson': {
     'url': '{github_git}/Tencent/rapidjson.git',
@@ -73,19 +72,15 @@ deps = {
   },
   'third_party/jsoncpp': {
     'url': '{chromium_git}/chromium/src/third_party/jsoncpp@{jsoncpp_revision}',
-    'condition': 'dawn_standalone',
   },
   'third_party/jsoncpp/source': {
     'url' : '{chromium_git}/external/github.com/open-source-parsers/jsoncpp@{jsoncpp_source_revision}',
-    'condition': 'dawn_standalone',
   },
   'third_party/vulkan-headers': {
     'url': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Headers@{vulkan-headers_revision}',
-    'condition': 'dawn_standalone',
   },
   'third_party/vulkan-validation-layers': {
     'url': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-ValidationLayers@{vulkan-validation-layers_revision}',
-    'condition': 'dawn_standalone',
   },
 }
 
@@ -161,7 +156,6 @@ hooks = [
     'name': 'clang',
     'pattern': '.',
     'action': ['python', 'tools/clang/scripts/update.py'],
-    'condition': 'dawn_standalone',
   },
   {
     # Pull rc binaries using checked-in hashes.
