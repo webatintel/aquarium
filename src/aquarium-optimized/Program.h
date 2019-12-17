@@ -22,7 +22,7 @@ class Program
     }
     virtual ~Program() {}
     virtual void setProgram() {}
-    virtual void compileProgram(bool enableAlphaBlending) = 0;
+    virtual void compileProgram(bool enableAlphaBlending, const std::string &alpha) = 0;
 
   protected:
     void loadProgram();

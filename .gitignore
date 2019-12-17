@@ -16,6 +16,7 @@
 # Third party libraries
 third_party/*
 !third_party/glad
+!third_party/imgui
 !third_party/BUILD.gn
 
 # Gn build dummy folders

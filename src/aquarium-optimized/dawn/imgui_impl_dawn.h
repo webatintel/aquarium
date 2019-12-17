@@ -12,9 +12,11 @@
 
 IMGUI_IMPL_API bool ImGui_ImplDawn_Init(ContextDawn *context, wgpu::TextureFormat rtv_format);
 IMGUI_IMPL_API void ImGui_ImplDawn_Shutdown();
-IMGUI_IMPL_API void ImGui_ImplDawn_NewFrame(bool enableMSAA);
+IMGUI_IMPL_API void ImGui_ImplDawn_NewFrame(bool enableMSAA,
+                                            bool enableAlphaBlending);
 IMGUI_IMPL_API void ImGui_ImplDawn_RenderDrawData(ImDrawData *draw_data);
 IMGUI_IMPL_API void ImGui_ImplDawn_Draw(ImDrawData *draw_data);
 
 // Use if you want to reset your rendering mDevice without losing ImGui state.
-IMGUI_IMPL_API bool ImGui_ImplDawn_CreateDeviceObjects();
+IMGUI_IMPL_API bool ImGui_ImplDawn_CreateDeviceObjects(bool enableMSAA,
+                                                       bool enableAlphaBlending);

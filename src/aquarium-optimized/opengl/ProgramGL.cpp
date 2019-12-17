@@ -45,7 +45,7 @@ ProgramGL::~ProgramGL()
     mContext->deleteProgram(mProgramId);
 }
 
-void ProgramGL::compileProgram(bool enableBlending)
+void ProgramGL::compileProgram(bool enableBlending, const std::string &alpha)
 {
     loadProgram();
 
@@ -79,7 +79,7 @@ void ProgramGL::compileProgram(bool enableBlending)
     if (enableBlending)
     {
         FragmentShaderCode =
-            std::regex_replace(FragmentShaderCode, std::regex(R"(diffuseColor.a)"), "0.5");
+            std::regex_replace(FragmentShaderCode, std::regex(R"(diffuseColor.a)"), alpha);
     }
 
     bool status = mContext->compileProgram(mProgramId, VertexShaderCode, FragmentShaderCode);

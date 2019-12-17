@@ -396,9 +396,6 @@ void ContextGL::initState()
 {
     glEnable(GL_DEPTH_TEST);
     glColorMask(true, true, true, true);
-    glClearColor(0, 0.8f, 1, 0);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glBlendEquation(GL_FUNC_ADD);
     glEnable(GL_CULL_FACE);
     glDepthMask(true);
 }
@@ -477,7 +474,9 @@ void ContextGL::updateFPS(const FPSTimer &fpsTimer,
                           std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> *toggleBitset)
 {
     // Start the Dear ImGui frame
-    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplOpenGL3_NewFrame(
+        toggleBitset->test(static_cast<TOGGLE>(TOGGLE::ENABLEMSAAx4)),
+        toggleBitset->test(static_cast<TOGGLE>(TOGGLE::ENABLEALPHABLENDING)));
     renderImgui(fpsTimer, fishCount, toggleBitset);
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
@@ -509,6 +508,8 @@ void ContextGL::enableBlend(bool flag) const
     if (flag)
     {
         glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glBlendEquation(GL_FUNC_ADD);
     }
     else
     {
@@ -555,7 +556,7 @@ Model *ContextGL::createModel(Aquarium *aquarium, MODELGROUP type, MODELNAME nam
 
 void ContextGL::preFrame()
 {
-    glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
+    glClearColor(0, 0.8, 1, 0);
     glEnable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 

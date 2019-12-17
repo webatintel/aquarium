@@ -180,10 +180,10 @@ void ImGui_ImplOpenGL3_Shutdown()
     ImGui_ImplOpenGL3_DestroyDeviceObjects();
 }
 
-void ImGui_ImplOpenGL3_NewFrame()
+void ImGui_ImplOpenGL3_NewFrame(bool enableMSAA, bool enableAlphaBlending)
 {
     if (!g_FontTexture)
-        ImGui_ImplOpenGL3_CreateDeviceObjects();
+        ImGui_ImplOpenGL3_CreateDeviceObjects(enableMSAA, enableAlphaBlending);
 }
 
 static void ImGui_ImplOpenGL3_SetupRenderState(ImDrawData *draw_data,
@@ -193,7 +193,7 @@ static void ImGui_ImplOpenGL3_SetupRenderState(ImDrawData *draw_data,
 {
     // Setup render state: alpha-blending enabled, no face culling, no depth testing, scissor
     // enabled, polygon fill
-    glEnable(GL_BLEND);
+    // glEnable(GL_BLEND);
     glBlendEquation(GL_FUNC_ADD);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDisable(GL_CULL_FACE);
@@ -436,19 +436,19 @@ void ImGui_ImplOpenGL3_RenderDrawData(ImDrawData *draw_data)
               (GLsizei)last_scissor_box[3]);
 }
 
-bool ImGui_ImplOpenGL3_CreateFontsTexture()
+bool ImGui_ImplOpenGL3_CreateFontsTexture(bool enableAlphaBlending)
 {
     // Build texture atlas
     ImGuiIO &io = ImGui::GetIO();
     unsigned char *pixels;
     int width, height;
-    io.Fonts->GetTexDataAsRGBA32(
-        &pixels, &width,
-        &height);  // Load as RGBA 32-bits (75% of the memory is wasted, but default font is so
-                   // small) because it is more likely to be compatible with user's existing
-                   // shaders. If your ImTextureId represent a higher-level concept than just a GL
-                   // texture id, consider calling GetTexDataAsAlpha8() instead to save on GPU
-                   // memory.
+    io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height,
+                                 enableAlphaBlending);  // Load as RGBA 32-bits (75% of the memory
+                                                        // is wasted, but default font is so
+    // small) because it is more likely to be compatible with user's existing
+    // shaders. If your ImTextureId represent a higher-level concept than just a GL
+    // texture id, consider calling GetTexDataAsAlpha8() instead to save on GPU
+    // memory.
 
     // Upload texture to graphics system
     GLint last_texture;
@@ -524,8 +524,17 @@ static bool CheckProgram(GLuint handle, const char *desc)
     return (GLboolean)status == GL_TRUE;
 }
 
-bool ImGui_ImplOpenGL3_CreateDeviceObjects()
+bool ImGui_ImplOpenGL3_CreateDeviceObjects(bool enableMSAA, bool enableAlphaBlending)
 {
+    if (enableAlphaBlending)
+    {
+        glEnable(GL_BLEND);
+    }
+    else
+    {
+        glDisable(GL_BLEND);
+    }
+
     // Backup GL state
     GLint last_texture, last_array_buffer;
     glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture);
@@ -692,7 +701,7 @@ bool ImGui_ImplOpenGL3_CreateDeviceObjects()
     glGenBuffers(1, &g_VboHandle);
     glGenBuffers(1, &g_ElementsHandle);
 
-    ImGui_ImplOpenGL3_CreateFontsTexture();
+    ImGui_ImplOpenGL3_CreateFontsTexture(enableAlphaBlending);
 
     // Restore modified GL state
     glBindTexture(GL_TEXTURE_2D, last_texture);
