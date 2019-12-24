@@ -138,21 +138,6 @@ hooks = [
                '--arch=x64'],
   },
   {
-    # Update the Windows toolchain if necessary. Must run before 'clang' below.
-    'name': 'win_toolchain',
-    'pattern': '.',
-    'condition': 'checkout_win',
-    'action': ['python', 'build/vs_toolchain.py', 'update', '--force'],
-  },
-  {
-    # Update the Mac toolchain if necessary.
-    'name': 'mac_toolchain',
-    'pattern': '.',
-    'condition': 'checkout_mac',
-    'action': ['python', '{angle_root}/build/mac_toolchain.py'],
-  },
-  {
-    # Note: On Win, this should run after win_toolchain, as it may use it.
     'name': 'clang',
     'pattern': '.',
     'action': ['python', 'tools/clang/scripts/update.py'],
