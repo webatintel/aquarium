@@ -43,17 +43,17 @@ deps = {
   },
   # This revision should be the same as the one in third_party/angle/DEPS
   'third_party/glslang': {
-    'url': '{chromium_git}/external/github.com/KhronosGroup/glslang@{glslang_revision}',
+    'url': '{github_git}/KhronosGroup/glslang.git@{glslang_revision}',
   },
 
   'third_party/googletest': {
-    'url': '{chromium_git}/external/github.com/google/googletest@5ec7f0c4a113e2f18ac2c6cc7df51ad6afc24081',
+    'url': '{github_git}/google/googletest.git@5ec7f0c4a113e2f18ac2c6cc7df51ad6afc24081',
   },
   'third_party/stb': {
     'url': '{github_git}/nothings/stb.git@c7110588a4d24c4bb5155c184fbb77dd90b3116e',
   },
   'third_party/glfw': {
-    'url': '{chromium_git}/external/github.com/glfw/glfw@2de2589f910b1a85905f425be4d32f33cec092df',
+    'url': '{github_git}/glfw/glfw.git@2de2589f910b1a85905f425be4d32f33cec092df',
   },
   'third_party/rapidjson': {
     'url': '{github_git}/Tencent/rapidjson.git',
@@ -65,7 +65,7 @@ deps = {
     'url': '{chromium_git}/angle/angle.git@{angle_revision}',
   },
   'third_party/SPIRV-Tools': {
-    'url': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Tools@{spirv_tools_revision}',
+    'url': '{github_git}/KhronosGroup/SPIRV-Tools.git@{spirv_tools_revision}',
   },
   'third_party/imgui': {
     'url': '{github_git}/ocornut/imgui.git@{imgui_revision}',
@@ -74,13 +74,13 @@ deps = {
     'url': '{chromium_git}/chromium/src/third_party/jsoncpp@{jsoncpp_revision}',
   },
   'third_party/jsoncpp/source': {
-    'url' : '{chromium_git}/external/github.com/open-source-parsers/jsoncpp@{jsoncpp_source_revision}',
+    'url' : '{github_git}/open-source-parsers/jsoncpp.git@{jsoncpp_source_revision}',
   },
   'third_party/vulkan-headers': {
-    'url': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Headers@{vulkan-headers_revision}',
+    'url': '{github_git}/KhronosGroup/Vulkan-Headers.git@{vulkan-headers_revision}',
   },
   'third_party/vulkan-validation-layers': {
-    'url': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-ValidationLayers@{vulkan-validation-layers_revision}',
+    'url': '{github_git}/KhronosGroup/Vulkan-ValidationLayers.git@{vulkan-validation-layers_revision}',
   },
 }
 
