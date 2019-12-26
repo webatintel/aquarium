@@ -5,7 +5,6 @@
 #
 
 dawn_standalone = true
-dawn_enable_opengl = false
 
 dawn_glfw_dir = "//third_party/glfw"
 dawn_jinja2_dir = "//third_party/dawn/third_party/jinja2"
