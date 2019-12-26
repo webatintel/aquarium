@@ -29,7 +29,7 @@ class ProgramD3D12 : public Program
     ProgramD3D12(ContextD3D12 *context, const std::string &mVId, const std::string &mFId);
     ~ProgramD3D12() override;
 
-    void compileProgram(bool enableAlphaBlending) override;
+    void compileProgram(bool enableAlphaBlending, const std::string &alpha) override;
     ComPtr<ID3DBlob> getVSModule() { return mVertexShader; }
     ComPtr<ID3DBlob> getFSModule() { return mPixelShader; }
 

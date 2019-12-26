@@ -508,7 +508,8 @@ void ContextD3D12::updateFPS(const FPSTimer &fpsTimer,
                              std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> *toggleBitset)
 {
     // Start the Dear ImGui frame
-    ImGui_ImplDX12_NewFrame(mEnableMSAA);
+    ImGui_ImplDX12_NewFrame(toggleBitset->test(static_cast<TOGGLE>(TOGGLE::ENABLEMSAAx4)),
+                            toggleBitset->test(static_cast<TOGGLE>(TOGGLE::ENABLEALPHABLENDING)));
     renderImgui(fpsTimer, fishCount, toggleBitset);
     ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), mCommandList.Get());
 }

@@ -325,8 +325,10 @@ aquarium.exe --num-fish 10000 --backend dawn_d3d12 --disable-d3d12-render-pass
 #“--disable-dawn-validation” : Disable Dawn validation.
 aquarium.exe --num-fish 10000 --backend dawn_d3d12 --disable-dawn-validation
 
-#"--enable-alpha-blending" : Force enable alpha blending for all models.
-aquarium.exe --num-fish 10000 --backend opengl --enable-alpha-blending
+#"--enable-alpha-blending=[0, 1]" : Force enable alpha blending for all models. By default, alpha blending is disabled.
+#Imgui uses stb truetype to render characters to gray bitmaps with format alpha8. The alpha value of the bitmap is 255 #or 0. When alpha blending is enabled, the pixels of the glyphs shows only if alpha is 255, while the other pixels are #rendered as background color. When alpha blending is disabled, the pixels are set to white if alpha is 255, and black
+#if alpha is 0.
+aquarium.exe --num-fish 10000 --backend opengl --enable-alpha-blending=0.5
 
 # aquarium-direct-map only has OpenGL backend
 # Enable MSAA

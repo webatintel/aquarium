@@ -16,14 +16,14 @@ ProgramD3D12::ProgramD3D12(ContextD3D12 *context, const std::string &mVId, const
 
 ProgramD3D12::~ProgramD3D12() {}
 
-void ProgramD3D12::compileProgram(bool enableBlending)
+void ProgramD3D12::compileProgram(bool enableBlending, const std::string& alpha)
 {
     loadProgram();
 
     if (enableBlending)
     {
         FragmentShaderCode =
-            std::regex_replace(FragmentShaderCode, std::regex(R"(diffuseColor.w)"), "0.5");
+            std::regex_replace(FragmentShaderCode, std::regex(R"(diffuseColor.w)"), alpha);
     }
 
     mVertexShader = context->createShaderModule("VS", VertexShaderCode);

@@ -23,7 +23,7 @@ ProgramDawn::~ProgramDawn()
     mFsModule = nullptr;
 }
 
-void ProgramDawn::compileProgram(bool enableBlending)
+void ProgramDawn::compileProgram(bool enableBlending, const std::string &alpha)
 {
     loadProgram();
 
@@ -35,7 +35,7 @@ void ProgramDawn::compileProgram(bool enableBlending)
     if (enableBlending)
     {
         FragmentShaderCode =
-            std::regex_replace(FragmentShaderCode, std::regex(R"(diffuseColor.a)"), "0.5");
+            std::regex_replace(FragmentShaderCode, std::regex(R"(diffuseColor.a)"), alpha);
     }
 
     mVsModule = context->createShaderModule(utils::SingleShaderStage::Vertex, VertexShaderCode);

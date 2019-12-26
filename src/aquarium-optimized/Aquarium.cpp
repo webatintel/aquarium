@@ -51,6 +51,7 @@ Aquarium::Aquarium()
     g.eyeClock      = 0.0;
     g.lastUpdateFps = 0.0;
     g.fpsCount      = 0;
+    g.alpha         = "1";
 
     lightUniforms.lightColor[0] = 1.0f;
     lightUniforms.lightColor[1] = 1.0f;
@@ -367,8 +368,18 @@ bool Aquarium::init(int argc, char **argv)
 
             toggleBitset.set(static_cast<size_t>(TOGGLE::DISABLEDAWNVALIDATION));
         }
-        else if (cmd == "--enable-alpha-blending")
+        else if (cmd.find("--enable-alpha-blending") != std::string::npos)
         {
+            size_t pos = cmd.find("=");
+            if (pos != std::string::npos)
+            {
+                g.alpha = cmd.substr(pos + 1).c_str();
+            }
+            else
+            {
+                g.alpha = "0.8";
+            }
+
             toggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEALPHABLENDING));
         }
         else
@@ -630,11 +641,11 @@ void Aquarium::loadModel(const G_sceneInfo &info)
             if (toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEALPHABLENDING)) &&
                 info.type != MODELGROUP::INNER && info.type != MODELGROUP::OUTSIDE)
             {
-                program->compileProgram(true);
+                program->compileProgram(true, g.alpha);
             }
             else
             {
-                program->compileProgram(false);
+                program->compileProgram(false, g.alpha);
             }
             mProgramMap[vsId + fsId] = program;
         }

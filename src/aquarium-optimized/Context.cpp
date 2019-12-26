@@ -85,6 +85,15 @@ void Context::renderImgui(const FPSTimer &fpsTimer,
             ImGui::Text("MSAAx4: OFF");
         }
 
+        if (toggleBitset->test(static_cast<size_t>(TOGGLE::ENABLEALPHABLENDING)))
+        {
+            ImGui::Text("ALPHABLENDING: ON");
+        }
+        else
+        {
+            ImGui::Text("ALPHABLENDING: OFF");
+        }
+
         if (toggleBitset->test(static_cast<size_t>(TOGGLE::ENABLEDYNAMICBUFFEROFFSET)))
         {
             ImGui::Text("DBO: ON");

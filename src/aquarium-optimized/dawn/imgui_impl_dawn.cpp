@@ -173,13 +173,13 @@ void ImGui_ImplDawn_Draw(ImDrawData *draw_data)
     }
 }
 
-static void ImGui_ImplDawn_CreateFontsTexture()
+static void ImGui_ImplDawn_CreateFontsTexture(bool enableAlphaBlending)
 {
     // Build texture atlas
     ImGuiIO &io = ImGui::GetIO();
     unsigned char *pixels;
     int width, height;
-    io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
+    io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height, enableAlphaBlending);
 
     // Upload texture to graphics system
     {
@@ -235,7 +235,7 @@ static void ImGui_ImplDawn_CreateFontsTexture()
     io.Fonts->TexID = (ImTextureID)mTextureView.Get();
 }
 
-bool ImGui_ImplDawn_CreateDeviceObjects(bool enableMSAA)
+bool ImGui_ImplDawn_CreateDeviceObjects(bool enableMSAA, bool enableAlphaBlending)
 {
     if (!mContextDawn->mDevice)
         return false;
@@ -269,23 +269,36 @@ bool ImGui_ImplDawn_CreateDeviceObjects(bool enableMSAA)
     std::string programPath        = resourceHelper->getProgramPath();
     mProgramDawn = new ProgramDawn(mContextDawn, programPath + "imguiVertexShader",
                                    programPath + "imguiFragmentShader");
-    mProgramDawn->compileProgram(true);
+    mProgramDawn->compileProgram(false, "");
+
+    wgpu::BlendDescriptor blendDescriptor;
+    wgpu::BlendDescriptor alphaDescriptor;
+    if (enableAlphaBlending)
+    {
+        blendDescriptor.operation = wgpu::BlendOperation::Add;
+        blendDescriptor.srcFactor = wgpu::BlendFactor::SrcAlpha;
+        blendDescriptor.dstFactor = wgpu::BlendFactor::OneMinusSrcAlpha;
+
+        alphaDescriptor.operation = wgpu::BlendOperation::Add;
+        alphaDescriptor.srcFactor = wgpu::BlendFactor::OneMinusSrcAlpha;
+        alphaDescriptor.dstFactor = wgpu::BlendFactor::Zero;
+    } else
+    {
+        blendDescriptor.operation = wgpu::BlendOperation::Add;
+        blendDescriptor.srcFactor = wgpu::BlendFactor::One;
+        blendDescriptor.dstFactor = wgpu::BlendFactor::Zero;
+
+        alphaDescriptor.operation = wgpu::BlendOperation::Add;
+        alphaDescriptor.srcFactor = wgpu::BlendFactor::One;
+        alphaDescriptor.dstFactor = wgpu::BlendFactor::Zero;
+    }
 
     const wgpu::ShaderModule &mVsModule = mProgramDawn->getVSModule();
     const wgpu::ShaderModule &mFsModule = mProgramDawn->getFSModule();
 
-    wgpu::BlendDescriptor blendDescriptor;
-    blendDescriptor.operation = wgpu::BlendOperation::Add;
-    blendDescriptor.srcFactor = wgpu::BlendFactor::SrcAlpha;
-    blendDescriptor.dstFactor = wgpu::BlendFactor::OneMinusSrcAlpha;
-    wgpu::BlendDescriptor alphaDescriptor;
-    alphaDescriptor.operation = wgpu::BlendOperation::Add;
-    alphaDescriptor.srcFactor = wgpu::BlendFactor::OneMinusSrcAlpha;
-    alphaDescriptor.dstFactor = wgpu::BlendFactor::Zero;
-
     wgpu::ColorStateDescriptor ColorStateDescriptor;
     ColorStateDescriptor.colorBlend = blendDescriptor;
-    ColorStateDescriptor.alphaBlend = alphaDescriptor;
+    ColorStateDescriptor.alphaBlend = blendDescriptor;
     ColorStateDescriptor.writeMask  = wgpu::ColorWriteMask::All;
 
     wgpu::RasterizationStateDescriptor rasterizationState;
@@ -314,7 +327,7 @@ bool ImGui_ImplDawn_CreateDeviceObjects(bool enableMSAA)
 
     mPipeline = mContextDawn->mDevice.CreateRenderPipeline(&mPipelineDescriptor);
 
-    ImGui_ImplDawn_CreateFontsTexture();
+    ImGui_ImplDawn_CreateFontsTexture(enableAlphaBlending);
 
     // Create uniform buffer
     wgpu::BufferDescriptor descriptor;
@@ -370,8 +383,8 @@ void ImGui_ImplDawn_Shutdown()
     mTextureView    = nullptr;
 }
 
-void ImGui_ImplDawn_NewFrame(bool enableMSAA)
+void ImGui_ImplDawn_NewFrame(bool enableMSAA, bool enableAlphaBlending)
 {
     if (!mPipeline.Get())
-        ImGui_ImplDawn_CreateDeviceObjects(enableMSAA);
+        ImGui_ImplDawn_CreateDeviceObjects(enableMSAA, enableAlphaBlending);
 }

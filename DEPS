@@ -9,7 +9,6 @@ vars = {
   'github_git': 'https://github.com',
   'dawn_git': 'https://dawn.googlesource.com',
   'dawn_revision': 'ce8bf128ec1327b28d933a15e055bda286f31231',
-  'imgui_revision': 'e16564e67a2e88d4cbe3afa6594650712790fba3',
   'angle_root': 'third_party/angle',
   'angle_revision': '6c824a1bc17b286b86cf05a0228ec549875351eb',
   'glslang_revision': '38b4db48f98c4e3a9cc405de3a76547b857e1c37',
@@ -66,9 +65,6 @@ deps = {
   },
   'third_party/SPIRV-Tools': {
     'url': '{github_git}/KhronosGroup/SPIRV-Tools.git@{spirv_tools_revision}',
-  },
-  'third_party/imgui': {
-    'url': '{github_git}/ocornut/imgui.git@{imgui_revision}',
   },
   'third_party/jsoncpp': {
     'url': '{chromium_git}/chromium/src/third_party/jsoncpp@{jsoncpp_revision}',

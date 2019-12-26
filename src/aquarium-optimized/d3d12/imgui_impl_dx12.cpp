@@ -268,13 +268,13 @@ void ImGui_ImplDX12_Draw(ImDrawData *draw_data, ID3D12GraphicsCommandList *ctx)
     }
 }
 
-static void ImGui_ImplDX12_CreateFontsTexture()
+static void ImGui_ImplDX12_CreateFontsTexture(bool enableAlphaBlending)
 {
     // Build texture atlas
     ImGuiIO &io = ImGui::GetIO();
     unsigned char *pixels;
     int width, height;
-    io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
+    io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height, enableAlphaBlending);
 
     // Upload texture to graphics system
     {
@@ -425,7 +425,7 @@ static void ImGui_ImplDX12_CreateFontsTexture()
     io.Fonts->TexID = (ImTextureID)g_hFontSrvGpuDescHandle.ptr;
 }
 
-bool ImGui_ImplDX12_CreateDeviceObjects(bool enableMSAA)
+bool ImGui_ImplDX12_CreateDeviceObjects(bool enableMSAA, bool enableAlphaBlending)
 {
     if (!g_pd3dDevice)
         return false;
@@ -589,7 +589,7 @@ bool ImGui_ImplDX12_CreateDeviceObjects(bool enableMSAA)
     {
         D3D12_BLEND_DESC &desc                     = psoDesc.BlendState;
         desc.AlphaToCoverageEnable                 = false;
-        desc.RenderTarget[0].BlendEnable           = true;
+        desc.RenderTarget[0].BlendEnable           = enableAlphaBlending;
         desc.RenderTarget[0].SrcBlend              = D3D12_BLEND_SRC_ALPHA;
         desc.RenderTarget[0].DestBlend             = D3D12_BLEND_INV_SRC_ALPHA;
         desc.RenderTarget[0].BlendOp               = D3D12_BLEND_OP_ADD;
@@ -632,7 +632,7 @@ bool ImGui_ImplDX12_CreateDeviceObjects(bool enableMSAA)
         S_OK)
         return false;
 
-    ImGui_ImplDX12_CreateFontsTexture();
+    ImGui_ImplDX12_CreateFontsTexture(enableAlphaBlending);
 
     return true;
 }
@@ -731,8 +731,8 @@ void ImGui_ImplDX12_Shutdown()
     g_frameIndex                = UINT_MAX;
 }
 
-void ImGui_ImplDX12_NewFrame(bool enableMSAA)
+void ImGui_ImplDX12_NewFrame(bool enableMSAA, bool enableAlphaBlending)
 {
     if (!g_pPipelineState)
-        ImGui_ImplDX12_CreateDeviceObjects(enableMSAA);
+        ImGui_ImplDX12_CreateDeviceObjects(enableMSAA, enableAlphaBlending);
 }
