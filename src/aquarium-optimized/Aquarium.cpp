@@ -739,13 +739,14 @@ void Aquarium::printRecordFps()
 void Aquarium::updateGlobalUniforms()
 {
     double elapsedTime   = getElapsedTime();
-    double renderingTime = g.then - g.start;
+    double renderingTime = g.then - g.lastUpdateFps;
     g.fpsCount++;
-    // Update fps every 50ms
-    if (g.then - g.lastUpdateFps > FPSUPDATEINTERVAL)
+    // Update fps every 2s
+    if (renderingTime > FPSUPDATEINTERVAL)
     {
         mFpsTimer.update(renderingTime, g.fpsCount, logCount);
         g.lastUpdateFps = g.then;
+        g.fpsCount      = 0;
     }
     g.mclock += elapsedTime * g_speed;
     g.eyeClock += elapsedTime * g_eyeSpeed;
