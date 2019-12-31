@@ -26,7 +26,7 @@ class Model;
 #include "math.h"
 #endif
 
-constexpr double FPSUPDATEINTERVAL = 0.05;
+constexpr double FPSUPDATEINTERVAL = 2;
 
 enum BACKENDTYPE : short
 {
