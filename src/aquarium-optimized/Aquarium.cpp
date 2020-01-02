@@ -49,8 +49,6 @@ Aquarium::Aquarium()
     g.then          = 0.0;
     g.mclock        = 0.0;
     g.eyeClock      = 0.0;
-    g.lastUpdateFps = 0.0;
-    g.fpsCount      = 0;
     g.alpha         = "1";
 
     lightUniforms.lightColor[0] = 1.0f;
@@ -427,8 +425,6 @@ void Aquarium::resetFpsTime()
     g.start    = clock() / 1000000.0;
 #endif
     g.then          = g.start;
-    g.lastUpdateFps = g.then;
-    g.fpsCount      = 0;
 }
 
 void Aquarium::display()
@@ -739,15 +735,10 @@ void Aquarium::printRecordFps()
 void Aquarium::updateGlobalUniforms()
 {
     double elapsedTime   = getElapsedTime();
-    double renderingTime = g.then - g.lastUpdateFps;
-    g.fpsCount++;
-    // Update fps every 2s
-    if (renderingTime > FPSUPDATEINTERVAL)
-    {
-        mFpsTimer.update(renderingTime, g.fpsCount, logCount);
-        g.lastUpdateFps = g.then;
-        g.fpsCount      = 0;
-    }
+    double renderingTime = g.then - g.start;
+  
+    mFpsTimer.update(elapsedTime, renderingTime, logCount);
+
     g.mclock += elapsedTime * g_speed;
     g.eyeClock += elapsedTime * g_eyeSpeed;
 

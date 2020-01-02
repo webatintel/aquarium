@@ -26,8 +26,6 @@ class Model;
 #include "math.h"
 #endif
 
-constexpr double FPSUPDATEINTERVAL = 2;
-
 enum BACKENDTYPE : short
 {
     BACKENDTYPEANGLE,
@@ -402,8 +400,6 @@ struct Global
     float colorMult[4] = {1, 1, 1, 1};
     double then;
     double start;
-    double lastUpdateFps;
-    int fpsCount;
     float mclock;
     float eyeClock;
     std::string alpha;
