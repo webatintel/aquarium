@@ -402,8 +402,6 @@ struct Global
     float colorMult[4] = {1, 1, 1, 1};
     double then;
     double start;
-    double lastUpdateFps;
-    int fpsCount;
     float mclock;
     float eyeClock;
     std::string alpha;

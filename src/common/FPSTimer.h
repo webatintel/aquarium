@@ -12,21 +12,34 @@
 #include <vector>
 
 constexpr int NUM_HISTORY_DATA = 100;
+constexpr int INITTIMETABLE    = 64;
+static int NUM_FRAMES_TO_AVERAGE = INITTIMETABLE;
+constexpr int MAX_TIME_TABLE     = 1024;
+constexpr int MIN_TIME_TABLE     = 32;
+constexpr double VARIANCE_UPPER  = 3;
+constexpr double VARIANCE_LOWER  = 0.01;
 
 class FPSTimer
 {
 public:
   FPSTimer();
 
-  void update(double renderingTime, int fpsCount, int logCount);
+  void update(double elapsedTime, double renderingTime, int logCount);
   double getAverageFPS() const { return mAverageFPS; }
   const float *getHistoryFps() const { return mHistoryFPS.data(); }
   const float *getHistoryFrameTime() const { return mHistoryFrameTime.data(); }
   std::vector<float> &getRecordFps() { return mRecordFps; }
+  void reset();
 
 private:
+  float variance();
+  double mTotalTime;
+  std::vector<double> mTimeTable;
+  int mTimeTableCursor;
+
   std::vector<float> mHistoryFPS;
   std::vector<float> mHistoryFrameTime;
+  int mHistoryFPSCursor;
   std::vector<float> mRecordFps;
   int mRecordFpsFrequencyCursor;
   double mAverageFPS;
