@@ -738,7 +738,6 @@ void Aquarium::updateGlobalUniforms()
     double renderingTime = g.then - g.start;
   
     mFpsTimer.update(elapsedTime, renderingTime, logCount);
-
     g.mclock += elapsedTime * g_speed;
     g.eyeClock += elapsedTime * g_eyeSpeed;
 
