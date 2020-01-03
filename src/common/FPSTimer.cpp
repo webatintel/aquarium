@@ -10,17 +10,30 @@
 #include "AQUARIUM_ASSERT.h"
 
 #include <cmath>
+#include <iostream>
 
 FPSTimer::FPSTimer()
-    : mHistoryFPS(NUM_HISTORY_DATA, 1.0),
-      mHistoryFrameTime(NUM_HISTORY_DATA, 100.0),
+    : mTotalTime(static_cast<double>(NUM_FRAMES_TO_AVERAGE)),
+      mTimeTable(NUM_FRAMES_TO_AVERAGE, 1.0f),
+	  mTimeTableCursor(0),
+      mHistoryFPS(NUM_HISTORY_DATA, 1.0f),
+      mHistoryFrameTime(NUM_HISTORY_DATA, 100.0f),
       mRecordFpsFrequencyCursor(0),
       mAverageFPS(0.0)
 {}
 
-void FPSTimer::update(double renderingTime, int fpsCount, int logCount)
+void FPSTimer::update(double elapsedTime, double renderingTime, int logCount)
 {
-    mAverageFPS = floor((1.0 / (renderingTime / fpsCount)) + 0.5);
+    mTotalTime += elapsedTime - mTimeTable[mTimeTableCursor];
+    mTimeTable[mTimeTableCursor] = elapsedTime;
+
+    ++mTimeTableCursor;
+    if (mTimeTableCursor == NUM_FRAMES_TO_AVERAGE)
+    {
+        mTimeTableCursor = 0;
+    }
+
+    mAverageFPS = floor((1.0f / (mTotalTime / static_cast<double>(NUM_FRAMES_TO_AVERAGE))) + 0.5);
 
     for (int i = 0; i < NUM_HISTORY_DATA; i++)
     {
@@ -30,7 +43,12 @@ void FPSTimer::update(double renderingTime, int fpsCount, int logCount)
     mHistoryFPS[NUM_HISTORY_DATA - 1]       = mAverageFPS;
     mHistoryFrameTime[NUM_HISTORY_DATA - 1] = 1000.0 / mAverageFPS;
 
-    ASSERT(logCount != 0);
+    // Ignore first 5s.
+    if (renderingTime < 5)
+	{
+       return;
+	}
+
     if (mRecordFpsFrequencyCursor % logCount == 0)
     {
         mRecordFps.push_back(mAverageFPS);
@@ -38,3 +56,4 @@ void FPSTimer::update(double renderingTime, int fpsCount, int logCount)
     }
     mRecordFpsFrequencyCursor++;
 }
+
