@@ -8,6 +8,6 @@ build_with_chromium = false
 
 use_system_xcode = true
 
-linux_use_bundled_binutils_override = true
+linux_use_bundled_binutils_override = false
 
 ignore_elf32_limitations = false
