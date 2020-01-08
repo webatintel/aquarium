@@ -147,11 +147,6 @@ executable("aquarium") {
       "third_party/dawn/src/dawn:libdawn",
       "third_party/dawn:libdawn_native",
       "third_party/dawn:dawn_bindings",
-      "third_party/dawn/third_party/shaderc:libshaderc",
-    ]
-
-    include_dirs += [
-      "third_party/dawn/third_party/shaderc/libshaderc/include",
     ]
   }
 

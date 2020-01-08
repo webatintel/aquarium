@@ -12,7 +12,6 @@
 #include <dawn_native/DawnNative.h>
 #include <array>
 #include <iostream>
-#include <shaderc/shaderc.hpp>
 #include <string>
 #include <vector>
 
