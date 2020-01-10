@@ -199,6 +199,7 @@ bool Aquarium::init(int argc, char **argv)
     {
         toggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEDYNAMICBUFFEROFFSET));
     }
+    toggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEALPHABLENDING));
 
     int windowWidth  = 0;
     int windowHeight = 0;
@@ -372,13 +373,11 @@ bool Aquarium::init(int argc, char **argv)
             if (pos != std::string::npos)
             {
                 g.alpha = cmd.substr(pos + 1).c_str();
+                if (g.alpha == "false")
+				{
+                    toggleBitset.reset(static_cast<size_t>(TOGGLE::ENABLEALPHABLENDING));
+				}
             }
-            else
-            {
-                g.alpha = "0.8";
-            }
-
-            toggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEALPHABLENDING));
         }
         else
         {
