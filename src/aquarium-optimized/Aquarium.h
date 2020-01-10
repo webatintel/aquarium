@@ -131,8 +131,8 @@ enum TOGGLE : short
     UPATEANDDRAWFOREACHMODEL,
     // Support Full Screen mode
     ENABLEFULLSCREENMODE,
-    // Log fps frequency
-    RECORDFPSFREQUENCY,
+    // Print logs such as avg fps
+    PRINTLOG,
     // Use async buffer mapping to upload data
     BUFFERMAPPINGASYNC,
     // Turn off vsync, donot limit fps to 60
@@ -478,7 +478,7 @@ class Aquarium
     void updateWorldProjections(const std::vector<float> &w);
     BACKENDTYPE getBackendType(const std::string &backendPath);
     double getElapsedTime();
-    void printRecordFps();
+    void printAvgFps();
     void resetFpsTime();
     void updateWorldMatrix(Model *model);
 
