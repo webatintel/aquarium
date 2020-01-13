@@ -14,10 +14,18 @@
 *.ini
 
 # Third party libraries
-/third_party/*
-!/third_party/glad
-!/third_party/imgui
-!/third_party/BUILD.gn
+/third_party/SPIRV-Tools/
+/third_party/angle/
+/third_party/dawn/
+/third_party/glfw/
+/third_party/glslang/
+/third_party/googletest/
+/third_party/jsoncpp/
+/third_party/llvm-build/
+/third_party/rapidjson/
+/third_party/stb/
+/third_party/vulkan-headers/
+/third_party/vulkan-validation-layers/
 
 # Gn build dummy folders
 /.cipd/
