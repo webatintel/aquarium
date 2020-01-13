@@ -20,7 +20,7 @@ const char *cmdArgsStrAquarium = R"(Options and arguments:
 --enable-full-screen-mode       : Render aquarium in full screen mode instead of window mode.
 --integrated-gpu        : Choose integrated gpu to render the application. This is only supported on Dawn and D3D12 backend.
 --num-fish [count]      : specifies how many fishes will be rendered.
---record-fps-frequency [count]  : Record fps every count frame and print fps log when exit.
+--print-log             : print logs including avarage fps when exit the application. 
 --test-time [second]    : Render the application for some second and then exit, and the application will run 5 min by default.
 --turn-off-vsync        : Unlimit 60 fps. 
 --disable-d3d12-render-pass   : Turn off render pass for dawn_d3d12 and d3d12 backend.

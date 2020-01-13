@@ -290,21 +290,9 @@ bool Aquarium::init(int argc, char **argv)
 
             toggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEFULLSCREENMODE));
         }
-        else if (cmd == "--record-fps-frequency")
+        else if (cmd == "--print-log")
         {
-            toggleBitset.set(static_cast<size_t>(TOGGLE::RECORDFPSFREQUENCY));
-            if (argv[i + 1] == nullptr)
-            {
-                std::cout << "Please specify record fps frequency." << std::endl;
-                return false;
-            }
-
-            logCount = strtol(argv[i++ + 1], &pNext, 10);
-            if (logCount == 0)
-            {
-                std::cout << "Please input a number after --record-fps-frequency." << std::endl;
-                return false;
-            }
+            toggleBitset.set(static_cast<size_t>(TOGGLE::PRINTLOG));
         }
         else if (cmd == "--buffer-mapping-async")
         {
@@ -444,9 +432,9 @@ void Aquarium::display()
 
     mContext->Terminate();
 
-    if (toggleBitset.test(static_cast<size_t>(TOGGLE::RECORDFPSFREQUENCY)))
+    if (toggleBitset.test(static_cast<size_t>(TOGGLE::PRINTLOG)))
     {
-        printRecordFps();
+        printAvgFps();
     }
 }
 
@@ -711,24 +699,15 @@ double Aquarium::getElapsedTime()
     return elapsedTime;
 }
 
-void Aquarium::printRecordFps()
+void Aquarium::printAvgFps()
 {
-    std::vector<float> fps = mFpsTimer.getRecordFps();
-    if (fps.size() == 0)
-    {
-        std::cout << "No fps data, maybe record frequency count is too large or rendering time is "
-                     "too short."
-                  << std::endl;
-        return;
-    }
+    int avg = mFpsTimer.variance();
 
-    std::cout << "Print FPS Data:" << std::endl;
-    for (auto f : fps)
+    std::cout << "Avg FPS: " << avg << std::endl;
+    if (avg == 0)
     {
-        std::cout << f << ";";
+        std::cout << "Invalid value. The fps is unstable." << std::endl;
     }
-
-    std::cout << std::endl << "End." << std::endl;
 }
 
 void Aquarium::updateGlobalUniforms()

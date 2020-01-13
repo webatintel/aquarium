@@ -13,6 +13,7 @@
 
 constexpr int NUM_HISTORY_DATA = 100;
 constexpr int NUM_FRAMES_TO_AVERAGE = 128;
+constexpr int FPS_VALID_THRESHOLD   = 5;
 
 class FPSTimer
 {
@@ -23,7 +24,7 @@ public:
   double getAverageFPS() const { return mAverageFPS; }
   const float *getHistoryFps() const { return mHistoryFPS.data(); }
   const float *getHistoryFrameTime() const { return mHistoryFrameTime.data(); }
-  std::vector<float> &getRecordFps() { return mRecordFps; }
+  int variance() const;
 
 private:
   double mTotalTime;
@@ -32,8 +33,7 @@ private:
 
   std::vector<float> mHistoryFPS;
   std::vector<float> mHistoryFrameTime;
-  std::vector<float> mRecordFps;
-  int mRecordFpsFrequencyCursor;
+
   double mAverageFPS;
 };
 

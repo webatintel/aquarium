@@ -305,8 +305,8 @@ aquarium.exe --num-fish 10000 --backend dawn_d3d12 --buffer-mapping-async
 # "--enable-full-screen-mode" : Render aquarium in full screen mode instead of window mode.
 aquarium.exe --num-fish 10000 --backend dawn_d3d12 --enable-full-screen-mode
 
-# "--record-fps-frequency [count]" : Run aquarium 10 min and print fps log when exit.
-aquarium.exe --num-fish 10000 --backend dawn_d3d12 --record-fps-frequency [count]
+# "--print-log" : print log including average fps when exit the application.
+aquarium.exe --num-fish 10000 --backend dawn_d3d12 --print-log
 
 # "--test-time [second]" : Render the application for some second and then exit, and the application will run 5 min by default.
 aquarium.exe --num-fish 10000 --backend dawn_d3d12 --test-time 30
