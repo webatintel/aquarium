@@ -41,7 +41,6 @@ Aquarium::Aquarium()
       mFpsTimer(),
       mCurFishCount(1),
       mPreFishCount(0),
-      logCount(INT_MAX),
       mTestTime(INT_MAX),
       mBackendType(BACKENDTYPE::BACKENDTYPELAST),
       mFactory(nullptr)
@@ -714,8 +713,8 @@ void Aquarium::updateGlobalUniforms()
 {
     double elapsedTime   = getElapsedTime();
     double renderingTime = g.then - g.start;
-  
-    mFpsTimer.update(elapsedTime, renderingTime, logCount);
+
+    mFpsTimer.update(elapsedTime, renderingTime, mTestTime);
     g.mclock += elapsedTime * g_speed;
     g.eyeClock += elapsedTime * g_eyeSpeed;
 

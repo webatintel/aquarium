@@ -498,7 +498,6 @@ class Aquarium
     FPSTimer mFpsTimer;  // object to measure frames per second;
     int mCurFishCount;
     int mPreFishCount;
-    int logCount;
     int mTestTime;
     BACKENDTYPE mBackendType;
     ContextFactory *mFactory;
