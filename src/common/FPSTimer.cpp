@@ -21,7 +21,7 @@ FPSTimer::FPSTimer()
       mAverageFPS(0.0)
 {}
 
-void FPSTimer::update(double elapsedTime, double renderingTime, int logCount)
+void FPSTimer::update(double elapsedTime, double renderingTime, int testTime)
 {
     mTotalTime += elapsedTime - mTimeTable[mTimeTableCursor];
     mTimeTable[mTimeTableCursor] = elapsedTime;
@@ -41,23 +41,29 @@ void FPSTimer::update(double elapsedTime, double renderingTime, int logCount)
     }
     mHistoryFPS[NUM_HISTORY_DATA - 1]       = mAverageFPS;
     mHistoryFrameTime[NUM_HISTORY_DATA - 1] = 1000.0 / mAverageFPS;
+
+    if (testTime - renderingTime > 5 && testTime - renderingTime < 25)
+    {
+        mLogFPS.push_back(mAverageFPS);
+    }
 }
 
 int FPSTimer::variance() const
 {
     float avg = 0.f;
-    for (int i = 0; i < NUM_HISTORY_DATA; i++)
+
+    for (size_t i = 0; i < mLogFPS.size(); i++)
     {
-        avg += mHistoryFPS[i];
+        avg += mLogFPS[i];
     }
-    avg /= NUM_HISTORY_DATA;
+    avg /= mLogFPS.size();
 
     float var = 0.f;
-    for (int i = 0; i < NUM_HISTORY_DATA; i++)
+    for (size_t i = 0; i < mLogFPS.size(); i++)
     {
-        var += pow(mHistoryFPS[i] - avg, 2);
+        var += pow(mLogFPS[i] - avg, 2);
     }
-    var /= NUM_HISTORY_DATA;
+    var /= mLogFPS.size();
 
     if (var < FPS_VALID_THRESHOLD)
     {

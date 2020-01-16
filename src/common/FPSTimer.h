@@ -20,7 +20,7 @@ class FPSTimer
 public:
   FPSTimer();
 
-  void update(double elapsedTime, double renderingTime, int logCount);
+  void update(double elapsedTime, double renderingTime, int testTime);
   double getAverageFPS() const { return mAverageFPS; }
   const float *getHistoryFps() const { return mHistoryFPS.data(); }
   const float *getHistoryFrameTime() const { return mHistoryFrameTime.data(); }
@@ -33,6 +33,7 @@ private:
 
   std::vector<float> mHistoryFPS;
   std::vector<float> mHistoryFrameTime;
+  std::vector<float> mLogFPS;
 
   double mAverageFPS;
 };
