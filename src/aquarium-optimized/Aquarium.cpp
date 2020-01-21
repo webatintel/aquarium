@@ -784,7 +784,10 @@ void Aquarium::render()
             calculateFishCount();
             bool enableDynamicBufferOffset =
                 toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEDYNAMICBUFFEROFFSET));
-            mContext->reallocResource(mPreFishCount, mCurFishCount, enableDynamicBufferOffset);
+            bool enableBufferMappingAsync =
+                toggleBitset.test(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC));
+            mContext->reallocResource(mPreFishCount, mCurFishCount, enableDynamicBufferOffset,
+                                      !enableBufferMappingAsync);
             mPreFishCount = mCurFishCount;
 
             resetFpsTime();
@@ -1020,3 +1023,4 @@ void Aquarium::updateWorldMatrix(Model *model)
 
     model->prepareForDraw();
 }
+

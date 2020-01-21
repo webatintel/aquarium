@@ -105,7 +105,8 @@ class ContextD3D12 : public Context
     void FlushPreviousFrames();
     void reallocResource(int preTotalInstance,
                          int curTotalInstance,
-                         bool enableDynamicBufferOffset) override;
+                         bool enableDynamicBufferOffset,
+                         bool enableBufferMappingAsync) override;
     void updateAllFishData(
         const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset) override;
     void updateConstantBufferSync(ComPtr<ID3D12Resource> defaultBuffer,
