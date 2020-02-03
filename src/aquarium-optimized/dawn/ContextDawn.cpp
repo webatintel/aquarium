@@ -225,7 +225,8 @@ bool ContextDawn::initialize(
     queue = mDevice.CreateQueue();
     wgpu::SwapChainDescriptor swapChainDesc;
     swapChainDesc.implementation = binding->GetSwapChainImplementation();
-    mSwapchain                   = mDevice.CreateSwapChain(&swapChainDesc);
+
+    mSwapchain = mDevice.CreateSwapChain(nullptr, &swapChainDesc);
 
     mPreferredSwapChainFormat =
         static_cast<wgpu::TextureFormat>(binding->GetPreferredSwapChainTextureFormat());
