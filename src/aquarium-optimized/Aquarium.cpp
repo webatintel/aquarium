@@ -859,10 +859,7 @@ void Aquarium::render()
             calculateFishCount();
             bool enableDynamicBufferOffset =
                 toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEDYNAMICBUFFEROFFSET));
-            bool enableBufferMappingAsync =
-                toggleBitset.test(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC));
-            mContext->reallocResource(mPreFishCount, mCurFishCount, enableDynamicBufferOffset,
-                                      !enableBufferMappingAsync);
+            mContext->reallocResource(mPreFishCount, mCurFishCount, enableDynamicBufferOffset);
             mPreFishCount = mCurFishCount;
 
             resetFpsTime();
@@ -1042,7 +1039,7 @@ void Aquarium::updateFishes()
         }
     }
 
-    mContext->updateAllFishData(toggleBitset);
+    mContext->updateAllFishData();
 }
 
 void Aquarium::drawFishes()

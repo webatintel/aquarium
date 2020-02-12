@@ -108,13 +108,20 @@ class ContextDawn : public Context
 
     void reallocResource(int preTotalInstance,
                          int curTotalInstance,
-                         bool enableDynamicBufferOffset,
-                         bool enableBufferMappingAsync) override;
-    void updateAllFishData(
-        const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset) override;
+                         bool enableDynamicBufferOffset) override;
+    void updateAllFishData() override;
+    void updateBufferData(
+        const wgpu::Buffer &buffer,
+        void *pixel,
+        size_t size) const;
     wgpu::CreateBufferMappedResult CreateBufferMapped(wgpu::BufferUsage usage, uint64_t size) const;
     void WaitABit();
     wgpu::CommandEncoder createCommandEncoder() const;
+    void setBufferData(const wgpu::Buffer &buffer,
+                       uint32_t start,
+                       uint32_t size,
+                       const void *pixels) const;
+    size_t CalcConstantBufferByteSize(size_t byteSize) const;
 
     std::vector<wgpu::CommandBuffer> mCommandBuffers;
     wgpu::Queue queue;

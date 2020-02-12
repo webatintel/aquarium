@@ -70,7 +70,6 @@ ContextDawn::ContextDawn(BACKENDTYPE backendType)
 ContextDawn::~ContextDawn()
 {
     delete mResourceHelper;
-    delete bufferManager;
     if (mWindow != nullptr)
     {
         destoryImgUI();
@@ -95,6 +94,7 @@ ContextDawn::~ContextDawn()
 
     groupLayoutFishPer = nullptr;
     destoryFishResource();
+    delete bufferManager;
 
     mSwapchain               = nullptr;
     queue                    = nullptr;
@@ -268,7 +268,7 @@ bool ContextDawn::initialize(
     ImGui_ImplGlfw_InitForOpenGL(mWindow, true);
     ImGui_ImplDawn_Init(this, mPreferredSwapChainFormat);
 
-    bufferManager = new BufferManagerDawn(this);
+    bufferManager = new BufferManagerDawn(this, !toggleBitset.test(static_cast<TOGGLE>(TOGGLE::BUFFERMAPPINGASYNC)));
 
     return true;
 }
@@ -578,17 +578,16 @@ void ContextDawn::initGeneralResources(Aquarium* aquarium)
     });
 
     mLightWorldPositionBuffer = createBufferFromData(
-        &aquarium->lightWorldPositionUniform, sizeof(aquarium->lightWorldPositionUniform),
+        &aquarium->lightWorldPositionUniform,
+        CalcConstantBufferByteSize(sizeof(aquarium->lightWorldPositionUniform)),
         wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
 
-    bindGroupWorld = makeBindGroup(
-        groupLayoutWorld,
-        {
-            {0, mLightWorldPositionBuffer, 0, sizeof(aquarium->lightWorldPositionUniform)},
-        });
-
-    setBufferData(mLightWorldPositionBuffer, 0, sizeof(LightWorldPositionUniform),
-                  &aquarium->lightWorldPositionUniform);
+    bindGroupWorld =
+        makeBindGroup(groupLayoutWorld,
+                      {
+                          {0, mLightWorldPositionBuffer, 0,
+                           CalcConstantBufferByteSize(sizeof(aquarium->lightWorldPositionUniform))},
+                      });
 
     bool enableDynamicBufferOffset =
         aquarium->toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEDYNAMICBUFFEROFFSET));
@@ -605,14 +604,13 @@ void ContextDawn::initGeneralResources(Aquarium* aquarium)
         });
     }
 
-    reallocResource(aquarium->getPreFishCount(), aquarium->getCurFishCount(), enableDynamicBufferOffset,
-        !aquarium->toggleBitset.test(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC)));
+    reallocResource(aquarium->getPreFishCount(), aquarium->getCurFishCount(), enableDynamicBufferOffset);
 }
 
 void ContextDawn::updateWorldlUniforms(Aquarium* aquarium)
 {
-    setBufferData(mLightWorldPositionBuffer, 0, sizeof(LightWorldPositionUniform),
-                  &aquarium->lightWorldPositionUniform);
+    updateBufferData(mLightWorldPositionBuffer, &aquarium->lightWorldPositionUniform,
+                     CalcConstantBufferByteSize(sizeof(LightWorldPositionUniform)));
 }
 
 Buffer *ContextDawn::createBuffer(int numComponents, std::vector<float> *buf, bool isIndex)
@@ -780,8 +778,7 @@ Model * ContextDawn::createModel(Aquarium* aquarium, MODELGROUP type, MODELNAME 
 
 void ContextDawn::reallocResource(int preTotalInstance,
                                   int curTotalInstance,
-                                  bool enableDynamicBufferOffset,
-                                  bool enableBufferMappingAsync)
+                                  bool enableDynamicBufferOffset)
 {
     mPreTotalInstance          = preTotalInstance;
     mCurTotalInstance          = curTotalInstance;
@@ -811,20 +808,23 @@ void ContextDawn::reallocResource(int preTotalInstance,
         bindGroupFishPers = new wgpu::BindGroup[curTotalInstance];
     }
 
-    size_t size    = sizeof(FishPer) * curTotalInstance;
+    size_t size    = CalcConstantBufferByteSize(sizeof(FishPer) * curTotalInstance);
     fishPersBuffer = createBuffer(size, wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
 
     if (enableDynamicBufferOffset)
     {
         bindGroupFishPers[0] =
-            makeBindGroup(groupLayoutFishPer, {{0, fishPersBuffer, 0, sizeof(FishPer)}});
+            makeBindGroup(groupLayoutFishPer,
+                          {{0, fishPersBuffer, 0, CalcConstantBufferByteSize(sizeof(FishPer))}});
     }
     else
     {
         for (int i = 0; i < curTotalInstance; i++)
         {
-            bindGroupFishPers[i] = makeBindGroup(
-                groupLayoutFishPer, {{0, fishPersBuffer, sizeof(FishPer) * i, sizeof(FishPer)}});
+            bindGroupFishPers[i] =
+                makeBindGroup(groupLayoutFishPer,
+                              {{0, fishPersBuffer, CalcConstantBufferByteSize(sizeof(FishPer) * i),
+                                CalcConstantBufferByteSize(sizeof(FishPer))}});
         }
     }
 }
@@ -854,12 +854,16 @@ wgpu::CommandEncoder ContextDawn::createCommandEncoder() const
     return mDevice.CreateCommandEncoder();
 }
 
-void ContextDawn::updateAllFishData(
-    const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset)
+void ContextDawn::updateAllFishData()
 {
-    size_t size                = sizeof(FishPer) * mCurTotalInstance;
-    RingBufferDawn *ringBuffer = bufferManager->allocate(
-        size, !toggleBitset.test(static_cast<TOGGLE>(TOGGLE::BUFFERMAPPINGASYNC)));
+    size_t size = CalcConstantBufferByteSize(sizeof(FishPer) * mCurTotalInstance);
+    updateBufferData(fishPersBuffer, fishPers, size);
+}
+
+void ContextDawn::updateBufferData(const wgpu::Buffer& buffer, void* pixel, size_t size) const
+{
+    size_t offset              = 0;
+    RingBufferDawn *ringBuffer = bufferManager->allocate(size, &offset);
 
     if (ringBuffer == nullptr)
     {
@@ -867,7 +871,7 @@ void ContextDawn::updateAllFishData(
         return;
     }
 
-    ringBuffer->push(bufferManager->mEncoder, fishPersBuffer, 0, fishPers, size);
+    ringBuffer->push(bufferManager->mEncoder, buffer, offset, 0, pixel, size);
 }
 
 void ContextDawn::destoryFishResource()
@@ -906,4 +910,9 @@ void ContextDawn::destoryFishResource()
     bindGroupFishPers = nullptr;
 
 	bufferManager->destroyBufferPool();
+}
+
+size_t ContextDawn::CalcConstantBufferByteSize(size_t byteSize) const
+{
+    return (byteSize + 255) & ~255;
 }

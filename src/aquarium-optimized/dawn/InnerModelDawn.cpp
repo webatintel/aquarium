@@ -113,9 +113,9 @@ void InnerModelDawn::init()
     mInnerBuffer =
         mContextDawn->createBufferFromData(&mInnerUniforms, sizeof(mInnerUniforms),
                                            wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
-    mViewBuffer =
-        mContextDawn->createBufferFromData(&mWorldUniformPer, sizeof(WorldUniforms),
-                                           wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
+    mViewBuffer = mContextDawn->createBufferFromData(
+        &mWorldUniformPer, mContextDawn->CalcConstantBufferByteSize(sizeof(WorldUniforms)),
+        wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
 
     mBindGroupModel =
         mContextDawn->makeBindGroup(mGroupLayoutModel, {{0, mInnerBuffer, 0, sizeof(InnerUniforms)},
@@ -126,10 +126,11 @@ void InnerModelDawn::init()
                                                         {5, mReflectionTexture->getTextureView()},
                                                         {6, mSkyboxTexture->getTextureView()}});
 
-    mBindGroupPer =
-        mContextDawn->makeBindGroup(mGroupLayoutPer, {
-                                                         {0, mViewBuffer, 0, sizeof(WorldUniforms)},
-                                                     });
+    mBindGroupPer = mContextDawn->makeBindGroup(
+        mGroupLayoutPer,
+        {
+            {0, mViewBuffer, 0, mContextDawn->CalcConstantBufferByteSize(sizeof(WorldUniforms))},
+        });
 
     mContextDawn->setBufferData(mInnerBuffer, 0, sizeof(InnerUniforms), &mInnerUniforms);
 }
@@ -157,5 +158,6 @@ void InnerModelDawn::updatePerInstanceUniforms(const WorldUniforms &worldUniform
 {
     std::memcpy(&mWorldUniformPer, &worldUniforms, sizeof(WorldUniforms));
 
-    mContextDawn->setBufferData(mViewBuffer, 0, sizeof(WorldUniforms), &mWorldUniformPer);
+    mContextDawn->updateBufferData(mViewBuffer, &mWorldUniformPer,
+                                   mContextDawn->CalcConstantBufferByteSize(sizeof(WorldUniforms)));
 }

@@ -837,8 +837,7 @@ void ContextD3D12::FlushPreviousFrames()
     m_frameIndex = mSwapChain->GetCurrentBackBufferIndex();
 }
 
-void ContextD3D12::updateAllFishData(
-    const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset)
+void ContextD3D12::updateAllFishData()
 {
     // TODO(yizhou): Split data updating and render pass.
     updateConstantBufferSync(mFishPersBuffer, stagingBuffer, fishPers,
@@ -1240,8 +1239,7 @@ UINT ContextD3D12::CalcConstantBufferByteSize(UINT byteSize)
 
 void ContextD3D12::reallocResource(int preTotalInstance,
                                    int curTotalInstance,
-                                   bool enableDynamicBufferOffset,
-                                   bool enableBufferMappingAsync)
+                                   bool enableDynamicBufferOffset)
 {
     mPreTotalInstance = preTotalInstance;
     mCurTotalInstance = curTotalInstance;
