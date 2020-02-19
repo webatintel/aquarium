@@ -66,6 +66,10 @@ ResourceHelper::ResourceHelper(const std::string &mBackendName,
                   << slash;
     mProgramPath = programStream.str();
 
+    std::ostringstream fishBehaviorStream;
+    fishBehaviorStream << mPath << "FishBehavior.json";
+    mFishBehaviorPath = fishBehaviorStream.str();
+
     switch (mBackendType)
     {
         case BACKENDTYPE::BACKENDTYPEDAWND3D12:

@@ -102,6 +102,16 @@ Aquarium::~Aquarium()
         delete mAquariumModels[i];
     }
 
+    if (toggleBitset.test(static_cast<size_t>(TOGGLE::SIMULATINGFISHCOMEANDGO)))
+    {
+        while (!mFishBehavior.empty())
+        {
+            Behavior *behave = mFishBehavior.front();
+            mFishBehavior.pop();
+            delete behave;
+        }
+    }
+
     delete mFactory;
 }
 
@@ -366,6 +376,17 @@ bool Aquarium::init(int argc, char **argv)
 				}
             }
         }
+        else if (cmd == "--simulating-fish-come-and-go")
+        {
+            if (!availableToggleBitset.test(static_cast<size_t>(TOGGLE::SIMULATINGFISHCOMEANDGO)))
+            {
+                std::cerr << "Simulating fish come and go is only implemented for Dawn backend."
+                          << std::endl;
+                return false;
+            }
+
+            toggleBitset.set(static_cast<size_t>(TOGGLE::SIMULATINGFISHCOMEANDGO));
+        }
         else
         {
         }
@@ -441,6 +462,10 @@ void Aquarium::loadReource()
 {
     loadModels();
     loadPlacement();
+    if (toggleBitset.test(static_cast<size_t>(TOGGLE::SIMULATINGFISHCOMEANDGO)))
+    {
+        loadFishScenario();
+    }
 }
 
 void Aquarium::setupModelEnumMap()
@@ -499,6 +524,30 @@ void Aquarium::loadModels()
             continue;
         }
         loadModel(info);
+    }
+}
+
+void Aquarium::loadFishScenario()
+{
+    const ResourceHelper *resourceHelper = mContext->getResourceHelper();
+    std::string fishBehaviorPath         = resourceHelper->getFishBehaviorPath();
+
+    std::ifstream FishStream(fishBehaviorPath, std::ios::in);
+    rapidjson::IStreamWrapper is(FishStream);
+    rapidjson::Document document;
+    document.ParseStream(is);
+    ASSERT(document.IsObject());
+    const rapidjson::Value &behaviors = document["behaviors"];
+    ASSERT(behaviors.IsArray());
+
+    for (rapidjson::SizeType i = 0; i < behaviors.Size(); ++i)
+    {
+        int frame      = behaviors[i]["frame"].GetInt();
+        std::string op = behaviors[i]["op"].GetString();
+        int count      = behaviors[i]["count"].GetInt();
+
+        Behavior *behave = new Behavior(frame, op, count);
+        mFishBehavior.push(behave);
     }
 }
 
@@ -773,6 +822,32 @@ void Aquarium::render()
 
     // Global Uniforms should update after command reallocation.
     updateGlobalUniforms();
+
+    if (toggleBitset.test(static_cast<size_t>(TOGGLE::SIMULATINGFISHCOMEANDGO)))
+    {
+        if (!mFishBehavior.empty())
+        {
+            Behavior *behave = mFishBehavior.front();
+            int frame        = behave->getFrame();
+            if (frame == 0)
+            {
+                mFishBehavior.pop();
+                if (behave->getOp() == "+")
+                {
+                    mCurFishCount += behave->getCount();
+                }
+                else
+                {
+                    mCurFishCount -= behave->getCount();
+                }
+                std::cout << "Fish count" << mCurFishCount << std::endl;
+            }
+            else
+            {
+                behave->setFrame(--frame);
+            }
+        }
+    }
 
     // TODO(yizhou): Functionality of reallocate fish count during rendering
     // isn't supported for instanced draw.

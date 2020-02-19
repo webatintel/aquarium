@@ -329,6 +329,7 @@ void ContextDawn::initAvailableToggleBitset(BACKENDTYPE backendType)
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::TURNOFFVSYNC));
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::DISABLED3D12RENDERPASS));
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::DISABLEDAWNVALIDATION));
+    mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::SIMULATINGFISHCOMEANDGO));
 }
 
 Texture *ContextDawn::createTexture(const std::string &name, const std::string &url)
