@@ -20,6 +20,8 @@ executable("aquarium") {
     "src/common/FPSTimer.h",
     "src/aquarium-optimized/Aquarium.cpp",
     "src/aquarium-optimized/Aquarium.h",
+    "src/aquarium-optimized/Behavior.h",
+    "src/aquarium-optimized/Behavior.cpp",
     "src/aquarium-optimized/Buffer.h",
     "src/aquarium-optimized/BufferManager.h",
     "src/aquarium-optimized/BufferManager.cpp",

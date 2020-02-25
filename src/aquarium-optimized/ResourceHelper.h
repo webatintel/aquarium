@@ -21,6 +21,7 @@ class ResourceHelper
     const std::string &getImagePath() const { return mImagePath; }
     std::string getModelPath(const std::string &modelName) const;
     const std::string &getProgramPath() const;
+    const std::string &getFishBehaviorPath() const { return mFishBehaviorPath; }
     const std::string &getBackendName() const { return mBackendName; }
     BACKENDTYPE getBackendType() const { return mBackendType; }
     const std::string &getShaderVersion() const { return mShaderVersion; }
@@ -33,6 +34,7 @@ class ResourceHelper
     std::string mProgramPath;
     std::string mPropPlacementPath;
     std::string mModelPath;
+    std::string mFishBehaviorPath;
 
     std::string mBackendName;
     BACKENDTYPE mBackendType;

@@ -331,6 +331,22 @@ aquarium.exe --num-fish 10000 --backend dawn_d3d12 --disable-dawn-validation
 aquarium.exe --num-fish 10000 --backend opengl --enable-alpha-blending=0.5
 aquarium.exe --num-fish 10000 --backend opengl --enable-alpha-blending=false
 
+# "--simulating-fish-come-and-go" : Load fish behavior from FishBehavior.json from the path of aquarium repo. The mode is only implemented for Dawn backend.
+# The fish number will increase or decrease according to the fish behavior. Please follow the format of fish number definition
+# in the json file. "frame" means the fish number will change after some frames. "op" means to increase or decrease fish,
+# "count" defines fish number to be changed.
+{
+  "behaviors": [
+    {
+      "frame": 2,
+      "op": "+",
+      "count": 5000
+    }
+  ]
+}
+
+aquarium.exe --num-fish 10000 --backend dawn_d3d12 --simulating-fish-come-and-go
+
 # aquarium-direct-map only has OpenGL backend
 # Enable MSAA
 ./aquarium-direct-map  --num-fish 10000 --backend opengl --enable-msaa

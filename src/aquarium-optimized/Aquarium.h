@@ -8,7 +8,10 @@
 #ifndef AQUARIUM_H
 #define AQUARIUM_H
 
+#include "Behavior.h"
+
 #include <bitset>
+#include <queue>
 #include <string>
 #include <unordered_map>
 
@@ -135,6 +138,8 @@ enum TOGGLE : short
     PRINTLOG,
     // Use async buffer mapping to upload data
     BUFFERMAPPINGASYNC,
+    // Simulate fish come and go for Dawn backend
+    SIMULATINGFISHCOMEANDGO,
     // Turn off vsync, donot limit fps to 60
     TURNOFFVSYNC,
     TOGGLEMAX
@@ -469,6 +474,7 @@ class Aquarium
     void loadReource();
     void loadPlacement();
     void loadModels();
+    void loadFishScenario();
     void loadModel(const G_sceneInfo &info);
     void setupModelEnumMap();
     void calculateFishCount();
@@ -502,6 +508,7 @@ class Aquarium
     BACKENDTYPE mBackendType;
     ContextFactory *mFactory;
     std::vector<std::string> mSkyUrls;
+    std::queue<Behavior *> mFishBehavior;
 };
 
 #endif
