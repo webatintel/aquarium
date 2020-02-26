@@ -19,7 +19,11 @@
 class SeaweedModelDawn : public SeaweedModel
 {
   public:
-    SeaweedModelDawn(const Context *context, Aquarium *aquarium, MODELGROUP type, MODELNAME name, bool blend);
+    SeaweedModelDawn(Context *context,
+                     Aquarium *aquarium,
+                     MODELGROUP type,
+                     MODELNAME name,
+                     bool blend);
     ~SeaweedModelDawn();
 
     void init() override;
@@ -72,7 +76,7 @@ class SeaweedModelDawn : public SeaweedModel
     wgpu::Buffer mTimeBuffer;
     wgpu::Buffer mViewBuffer;
 
-    const ContextDawn *mContextDawn;
+    ContextDawn *mContextDawn;
     ProgramDawn *mProgramDawn;
     Aquarium * mAquarium;
 

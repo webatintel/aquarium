@@ -96,7 +96,7 @@ class ContextDawn : public Context
     void setBufferData(const wgpu::Buffer &buffer,
                        uint32_t start,
                        uint32_t size,
-                       const void *pixels) const;
+                       const void *pixels);
     wgpu::BindGroup makeBindGroup(
         const wgpu::BindGroupLayout &layout,
         std::initializer_list<utils::BindingInitializationHelper> bindingsInitializer) const;

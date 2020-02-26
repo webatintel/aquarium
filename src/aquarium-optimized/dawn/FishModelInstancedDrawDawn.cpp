@@ -8,14 +8,14 @@
 #include "BufferDawn.h"
 #include "FishModelInstancedDrawDawn.h"
 
-FishModelInstancedDrawDawn::FishModelInstancedDrawDawn(const Context *context,
+FishModelInstancedDrawDawn::FishModelInstancedDrawDawn(Context *context,
                                                        Aquarium *aquarium,
                                                        MODELGROUP type,
                                                        MODELNAME name,
                                                        bool blend)
     : FishModel(type, name, blend, aquarium), instance(0)
 {
-    mContextDawn = static_cast<const ContextDawn *>(context);
+    mContextDawn = static_cast<ContextDawn *>(context);
 
     mLightFactorUniforms.shininess      = 5.0f;
     mLightFactorUniforms.specularFactor = 0.3f;

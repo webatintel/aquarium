@@ -19,7 +19,7 @@
 class GenericModelDawn : public Model
 {
   public:
-    GenericModelDawn(const Context *context,
+    GenericModelDawn(Context *context,
                      Aquarium *aquarium,
                      MODELGROUP type,
                      MODELNAME name,
@@ -71,7 +71,7 @@ class GenericModelDawn : public Model
     wgpu::Buffer mLightFactorBuffer;
     wgpu::Buffer mWorldBuffer;
 
-    const ContextDawn *mContextDawn;
+    ContextDawn *mContextDawn;
     ProgramDawn *mProgramDawn;
 
     int instance;

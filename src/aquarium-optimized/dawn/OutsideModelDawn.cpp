@@ -5,14 +5,14 @@
 //
 #include "OutsideModelDawn.h"
 
-OutsideModelDawn::OutsideModelDawn(const Context *context,
+OutsideModelDawn::OutsideModelDawn(Context *context,
                                    Aquarium *aquarium,
                                    MODELGROUP type,
                                    MODELNAME name,
                                    bool blend)
     : Model(type, name, blend)
 {
-    mContextDawn = static_cast<const ContextDawn *>(context);
+    mContextDawn = static_cast<ContextDawn *>(context);
 
     mLightFactorUniforms.shininess      = 50.0f;
     mLightFactorUniforms.specularFactor = 0.0f;

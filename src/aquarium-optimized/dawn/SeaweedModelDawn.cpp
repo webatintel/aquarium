@@ -7,14 +7,14 @@
 
 #include "SeaweedModelDawn.h"
 
-SeaweedModelDawn::SeaweedModelDawn(const Context *context,
+SeaweedModelDawn::SeaweedModelDawn(Context *context,
                                    Aquarium *aquarium,
                                    MODELGROUP type,
                                    MODELNAME name,
                                    bool blend)
     : SeaweedModel(type, name, blend), instance(0)
 {
-    mContextDawn = static_cast<const ContextDawn *>(context);
+    mContextDawn = static_cast<ContextDawn *>(context);
     mAquarium   = aquarium;
 
     mLightFactorUniforms.shininess      = 50.0f;
