@@ -359,9 +359,12 @@ wgpu::Sampler ContextDawn::createSampler(const wgpu::SamplerDescriptor &descript
 
 wgpu::Buffer ContextDawn::createBufferFromData(const void *pixels,
                                                int size,
-                                               wgpu::BufferUsage usage) const
+                                               wgpu::BufferUsage usage)
 {
-    return utils::CreateBufferFromData(mDevice, pixels, size, usage);
+    wgpu::Buffer buffer = createBuffer(size, usage | wgpu::BufferUsage::CopyDst);
+
+    setBufferData(buffer, 0, size, pixels);
+    return buffer;
 }
 
 wgpu::BufferCopyView ContextDawn::createBufferCopyView(const wgpu::Buffer &buffer,
