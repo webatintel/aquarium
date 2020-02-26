@@ -61,7 +61,7 @@ class ContextDawn : public Context
     Texture *createTexture(const std::string &name, const std::vector<std::string> &urls) override;
     wgpu::Texture createTexture(const wgpu::TextureDescriptor &descriptor) const;
     wgpu::Sampler createSampler(const wgpu::SamplerDescriptor &descriptor) const;
-    wgpu::Buffer createBufferFromData(const void *pixels, int size, wgpu::BufferUsage usage) const;
+    wgpu::Buffer createBufferFromData(const void *pixels, int size, wgpu::BufferUsage usage);
     wgpu::BufferCopyView createBufferCopyView(const wgpu::Buffer &buffer,
                                               uint32_t offset,
                                               uint32_t rowPitch,
