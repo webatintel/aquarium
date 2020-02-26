@@ -8,14 +8,14 @@
 
 #include "../Aquarium.h"
 
-GenericModelDawn::GenericModelDawn(const Context *context,
+GenericModelDawn::GenericModelDawn(Context *context,
                                    Aquarium *aquarium,
                                    MODELGROUP type,
                                    MODELNAME name,
                                    bool blend)
     : Model(type, name, blend), instance(0)
 {
-    mContextDawn = static_cast<const ContextDawn *>(context);
+    mContextDawn = static_cast<ContextDawn *>(context);
 
     mLightFactorUniforms.shininess      = 50.0f;
     mLightFactorUniforms.specularFactor = 1.0f;

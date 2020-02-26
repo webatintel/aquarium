@@ -7,14 +7,14 @@
 
 #include "InnerModelDawn.h"
 
-InnerModelDawn::InnerModelDawn(const Context *context,
+InnerModelDawn::InnerModelDawn(Context *context,
                                Aquarium *aquarium,
                                MODELGROUP type,
                                MODELNAME name,
                                bool blend)
     : Model(type, name, blend)
 {
-    mContextDawn = static_cast<const ContextDawn *>(context);
+    mContextDawn = static_cast<ContextDawn *>(context);
 
     mInnerUniforms.eta             = 1.0f;
     mInnerUniforms.tankColorFudge  = 0.796f;

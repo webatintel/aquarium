@@ -531,9 +531,15 @@ wgpu::Buffer ContextDawn::createBuffer(uint32_t size, wgpu::BufferUsage bit) con
 void ContextDawn::setBufferData(const wgpu::Buffer &buffer,
                                 uint32_t start,
                                 uint32_t size,
-                                const void *pixels) const
+                                const void *pixels)
 {
-    buffer.SetSubData(start, size, reinterpret_cast<const uint8_t*>(pixels));
+    wgpu::CreateBufferMappedResult result =
+        CreateBufferMapped(wgpu::BufferUsage::MapWrite | wgpu::BufferUsage::CopySrc, size);
+    memcpy(result.data, pixels, size);
+    result.buffer.Unmap();
+
+    wgpu::CommandBuffer command = copyBufferToBuffer(result.buffer, 0, buffer, 0, size);
+    mCommandBuffers.emplace_back(command);
 }
 
 wgpu::BindGroup ContextDawn::makeBindGroup(

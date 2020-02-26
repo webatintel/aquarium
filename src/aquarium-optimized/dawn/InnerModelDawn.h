@@ -19,7 +19,11 @@
 class InnerModelDawn : public Model
 {
   public:
-    InnerModelDawn(const Context *context, Aquarium *aquarium, MODELGROUP type, MODELNAME name, bool blend);
+    InnerModelDawn(Context *context,
+                   Aquarium *aquarium,
+                   MODELGROUP type,
+                   MODELNAME name,
+                   bool blend);
     ~InnerModelDawn();
 
     void init() override;
@@ -64,7 +68,7 @@ class InnerModelDawn : public Model
     wgpu::Buffer mInnerBuffer;
     wgpu::Buffer mViewBuffer;
 
-    const ContextDawn *mContextDawn;
+    ContextDawn *mContextDawn;
     ProgramDawn *mProgramDawn;
 };
 

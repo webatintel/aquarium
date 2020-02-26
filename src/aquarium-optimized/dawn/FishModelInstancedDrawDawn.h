@@ -19,7 +19,7 @@
 class FishModelInstancedDrawDawn : public FishModel
 {
   public:
-    FishModelInstancedDrawDawn(const Context *context,
+    FishModelInstancedDrawDawn(Context *context,
                                Aquarium *aquarium,
                                MODELGROUP type,
                                MODELNAME name,
@@ -95,7 +95,7 @@ class FishModelInstancedDrawDawn : public FishModel
     int instance;
 
     ProgramDawn *mProgramDawn;
-    const ContextDawn *mContextDawn;
+    ContextDawn *mContextDawn;
 };
 
 #endif

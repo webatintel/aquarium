@@ -24,14 +24,7 @@ BufferDawn::BufferDawn(ContextDawn *context,
     int bufferSize = sizeof(float) * static_cast<int>(buffer->size());
     mBuf           = context->createBuffer(bufferSize, mUsage | wgpu::BufferUsage::CopyDst);
 
-    wgpu::CreateBufferMappedResult result = context->CreateBufferMapped(
-        wgpu::BufferUsage::MapWrite | wgpu::BufferUsage::CopySrc, bufferSize);
-    memcpy(result.data, buffer->data(), bufferSize);
-    result.buffer.Unmap();
-
-    wgpu::CommandBuffer command =
-        context->copyBufferToBuffer(result.buffer, 0, mBuf, 0, bufferSize);
-    context->mCommandBuffers.emplace_back(command);
+    context->setBufferData(mBuf, 0, bufferSize, buffer->data());
 }
 
 BufferDawn::BufferDawn(ContextDawn *context,
@@ -55,14 +48,7 @@ BufferDawn::BufferDawn(ContextDawn *context,
     int bufferSize = sizeof(unsigned short) * static_cast<int>(buffer->size());
     mBuf           = context->createBuffer(bufferSize, mUsage | wgpu::BufferUsage::CopyDst);
 
-    wgpu::CreateBufferMappedResult result = context->CreateBufferMapped(
-        wgpu::BufferUsage::MapWrite | wgpu::BufferUsage::CopySrc, bufferSize);
-    memcpy(result.data, buffer->data(), bufferSize);
-    result.buffer.Unmap();
-
-    wgpu::CommandBuffer command =
-        context->copyBufferToBuffer(result.buffer, 0, mBuf, 0, bufferSize);
-    context->mCommandBuffers.emplace_back(command);
+    context->setBufferData(mBuf, 0, bufferSize, buffer->data());
 }
 
 BufferDawn::~BufferDawn()
