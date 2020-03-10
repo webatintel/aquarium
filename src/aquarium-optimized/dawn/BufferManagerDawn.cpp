@@ -11,21 +11,15 @@ RingBufferDawn::RingBufferDawn(BufferManagerDawn *bufferManager, size_t size)
 }
 
 bool RingBufferDawn::push(const wgpu::CommandEncoder &encoder,
-                          wgpu::Buffer &destBuffer,
+                          const wgpu::Buffer &destBuffer,
+                          size_t src_offset,
                           size_t dest_offset,
                           void *pixels,
                           size_t size)
 {
-    mTail = mHead + size;
-    if (mTail > mSize)
-    {
-        return false;
-    }
-
-    memcpy(mPixels, pixels, size);
-    encoder.CopyBufferToBuffer(mBufferMappedResult.buffer, mHead, destBuffer, dest_offset, size);
-
-    mHead = mTail;
+    memcpy(static_cast<unsigned char *>(mPixels) + src_offset, pixels, size);
+    encoder.CopyBufferToBuffer(mBufferMappedResult.buffer, src_offset, destBuffer, dest_offset,
+                               size);
     return true;
 }
 
@@ -77,7 +71,15 @@ void RingBufferDawn::reMap()
     mBufferMappedResult.buffer.MapWriteAsync(MapWriteCallback, this);
 }
 
-BufferManagerDawn::BufferManagerDawn(ContextDawn *context) : mContext(context)
+size_t RingBufferDawn::allocate(size_t size)
+{
+    mTail += size;
+    ASSERT(mTail < mSize);
+
+    return mTail - size;
+}
+
+BufferManagerDawn::BufferManagerDawn(ContextDawn *context, bool sync) : mContext(context), mSync(sync)
 {
     mEncoder = context->createCommandEncoder();
 }
@@ -88,18 +90,22 @@ BufferManagerDawn::~BufferManagerDawn()
 }
 
 // Allocate new buffer from buffer pool.
-RingBufferDawn *BufferManagerDawn::allocate(size_t size, bool sync)
+RingBufferDawn *BufferManagerDawn::allocate(size_t size, size_t *offset)
 {
-    // TODO(yizhou): Refactor ring buffer allocation. Get the last one and check if the ring buffer
-    // is full. If the buffer can hold extra size space, use the last one directly.
     // If update data by sync method, create new buffer to upload every frame.
     // If updaye data by async method, get new buffer from pool if available. If no available
-    // buffer, create a new buffer.
-    mSync = sync;
+    // buffer and size is enough in the buffer pool, create a new buffer. If size reach the
+    // limit of the buffer pool, force wait for the buffer on mapping.
+    // Get the last one and check if the ring buffer is full. If the buffer can hold extra
+    // size space, use the last one directly.
+    // TODO(yizhou): Return nullptr if size reach the limit or no available buffer, this means
+    // small bubbles in some of the ring buffers and we haven't deal with the problem now.
 
     RingBufferDawn *ringBuffer = nullptr;
-    if (sync)
+    size_t cur_offset          = 0;
+    if (mSync)
     {
+        // Upper limit
         if (mUsedSize + size > mBufferPoolSize)
         {
             return nullptr;
@@ -108,16 +114,14 @@ RingBufferDawn *BufferManagerDawn::allocate(size_t size, bool sync)
         ringBuffer = new RingBufferDawn(this, size);
         mEnqueuedBufferList.emplace_back(ringBuffer);
     }
-    else
+    else  // Buffer mapping async
     {
         while (!mMappedBufferList.empty())
         {
             ringBuffer = static_cast<RingBufferDawn *>(mMappedBufferList.front());
-            mMappedBufferList.pop();
-            if (ringBuffer->getSize() < size)
+            if (ringBuffer->getAvailableSize() < size)
             {
-                mUsedSize += ringBuffer->getSize();
-                ringBuffer->destory();
+                mMappedBufferList.pop();
                 ringBuffer = nullptr;
             }
             else
@@ -128,19 +132,42 @@ RingBufferDawn *BufferManagerDawn::allocate(size_t size, bool sync)
 
         if (ringBuffer == nullptr)
         {
-            if (mUsedSize + size > mBufferPoolSize)
+            if (mCount < BUFFER_MAX_COUNT)
+            {
+                mUsedSize += size;
+                ringBuffer = new RingBufferDawn(this, BUFFER_PER_ALLOCATE_SIZE);
+                mMappedBufferList.push(ringBuffer);
+                mCount++;
+            }
+            else if (mMappedBufferList.size() + mEnqueuedBufferList.size() < mCount)
+            {
+                // Force wait for the buffer remapping
+                while (mMappedBufferList.empty())
+                {
+                    mContext->WaitABit();
+                }
+
+                ringBuffer = static_cast<RingBufferDawn *>(mMappedBufferList.front());
+                if (ringBuffer->getAvailableSize() < size)
+                {
+                    mMappedBufferList.pop();
+                    ringBuffer = nullptr;
+                }
+            }
+            else  // Upper limit
             {
                 return nullptr;
             }
-            mUsedSize += size;
-            std::cout << mUsedSize << std::endl;
-            ringBuffer = new RingBufferDawn(this, size);
         }
 
         if (mEnqueuedBufferList.empty() || mEnqueuedBufferList.back() != ringBuffer)
         {
             mEnqueuedBufferList.emplace_back(ringBuffer);
         }
+
+        // allocate size in the ring buffer
+        cur_offset = ringBuffer->allocate(size);
+        *offset = cur_offset;
     }
 
     return ringBuffer;
@@ -148,6 +175,13 @@ RingBufferDawn *BufferManagerDawn::allocate(size_t size, bool sync)
 
 void BufferManagerDawn::flush()
 {
+    // The front buffer in MappedBufferList will be remap after submit, pop the buffer from
+    // MappedBufferList.
+    if (!mMappedBufferList.empty() && mEnqueuedBufferList.back() == mMappedBufferList.front())
+    {
+        mMappedBufferList.pop();
+    }
+
     for (auto buffer : mEnqueuedBufferList)
     {
         buffer->flush();

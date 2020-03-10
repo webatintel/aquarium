@@ -94,12 +94,12 @@ void SeaweedModelDawn::init()
     mLightFactorBuffer =
         mContextDawn->createBufferFromData(&mLightFactorUniforms, sizeof(mLightFactorUniforms),
                                            wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
-    mTimeBuffer =
-        mContextDawn->createBufferFromData(&mSeaweedPer, sizeof(mSeaweedPer) * 4,
-                                           wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
-    mViewBuffer =
-        mContextDawn->createBufferFromData(&mWorldUniformPer, sizeof(WorldUniformPer),
-                                           wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
+    mTimeBuffer = mContextDawn->createBufferFromData(
+        &mSeaweedPer, mContextDawn->CalcConstantBufferByteSize(sizeof(mSeaweedPer)) * 4,
+        wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
+    mViewBuffer = mContextDawn->createBufferFromData(
+        &mWorldUniformPer, mContextDawn->CalcConstantBufferByteSize(sizeof(WorldUniformPer)),
+        wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
 
     mBindGroupModel = mContextDawn->makeBindGroup(
         mGroupLayoutModel, {
@@ -108,11 +108,12 @@ void SeaweedModelDawn::init()
                                {2, mDiffuseTexture->getTextureView()},
                            });
 
-    mBindGroupPer = mContextDawn->makeBindGroup(mGroupLayoutPer,
-                                                {
-                                                    {0, mViewBuffer, 0, sizeof(WorldUniformPer)},
-                                                    {1, mTimeBuffer, 0, sizeof(SeaweedPer)},
-                                                });
+    mBindGroupPer = mContextDawn->makeBindGroup(
+        mGroupLayoutPer,
+        {
+            {0, mViewBuffer, 0, mContextDawn->CalcConstantBufferByteSize(sizeof(WorldUniformPer))},
+            {1, mTimeBuffer, 0, mContextDawn->CalcConstantBufferByteSize(sizeof(SeaweedPer))},
+        });
 
     mContextDawn->setBufferData(mLightFactorBuffer, 0, sizeof(mLightFactorUniforms),
                                 &mLightFactorUniforms);
@@ -120,8 +121,11 @@ void SeaweedModelDawn::init()
 
 void SeaweedModelDawn::prepareForDraw()
 {
-    mContextDawn->setBufferData(mViewBuffer, 0, sizeof(WorldUniformPer), &mWorldUniformPer);
-    mContextDawn->setBufferData(mTimeBuffer, 0, sizeof(SeaweedPer), &mSeaweedPer);
+    mContextDawn->updateBufferData(
+        mViewBuffer, &mWorldUniformPer,
+        mContextDawn->CalcConstantBufferByteSize(sizeof(WorldUniformPer)));
+    mContextDawn->updateBufferData(mTimeBuffer, &mSeaweedPer,
+                                   mContextDawn->CalcConstantBufferByteSize(sizeof(SeaweedPer)));
 }
 
 void SeaweedModelDawn::draw()

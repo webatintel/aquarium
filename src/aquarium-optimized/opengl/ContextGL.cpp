@@ -381,8 +381,7 @@ void ContextGL::generateMipmap(unsigned int target)
     glGenerateMipmap(target);
 }
 
-void ContextGL::updateAllFishData(
-    const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset)
+void ContextGL::updateAllFishData()
 {
 }
 

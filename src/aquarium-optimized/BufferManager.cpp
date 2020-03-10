@@ -2,10 +2,7 @@
 
 #include "common/AQUARIUM_ASSERT.h"
 
-BufferManager::BufferManager()
-    : mBufferPoolSize(BUFFER_POOL_MAX_SIZE), mUsedSize(0)
-{
-}
+BufferManager::BufferManager() : mBufferPoolSize(BUFFER_POOL_MAX_SIZE), mUsedSize(0), mCount(0) {}
 
 BufferManager::~BufferManager()
 {
@@ -78,4 +75,3 @@ void BufferManager::flush()
         buffer->flush();
     }
 }
-

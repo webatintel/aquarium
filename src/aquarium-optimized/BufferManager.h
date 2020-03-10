@@ -11,7 +11,9 @@
 #include <vector>
 #include "Context.h"
 
-constexpr size_t BUFFER_POOL_MAX_SIZE = 409600000;
+constexpr size_t BUFFER_POOL_MAX_SIZE    = 409600000;
+constexpr size_t BUFFER_MAX_COUNT        = 10;
+constexpr size_t BUFFER_PER_ALLOCATE_SIZE = BUFFER_POOL_MAX_SIZE / BUFFER_MAX_COUNT;
 
 class RingBuffer
 {
@@ -20,10 +22,15 @@ class RingBuffer
     ~RingBuffer() {}
 
     size_t getSize() const { return mSize; }
+    size_t getAvailableSize() const { return mSize - mTail; }
 
     virtual bool reset(size_t size) { return false; }
     virtual void flush() {}
     virtual void destory() {}
+    virtual size_t allocate(size_t size)
+    {
+        return 0;
+    }  // allocate size in a RingBuffer, return offset of the buffer
 
   protected:
     size_t mHead;
@@ -43,7 +50,7 @@ class BufferManager
     virtual void destroyBufferPool() {}
     virtual void flush();
 
-    virtual RingBuffer *allocate(size_t size, bool sync) { return nullptr; }
+    virtual RingBuffer *allocate(size_t size, size_t *offset) { return nullptr; }
 
     std::queue<RingBuffer *> mMappedBufferList;
 
@@ -51,6 +58,7 @@ class BufferManager
     std::vector<RingBuffer *> mEnqueuedBufferList;
     size_t mBufferPoolSize;
     size_t mUsedSize;
+    size_t mCount;
 
   private:
     size_t find(RingBuffer *ringBuffer);

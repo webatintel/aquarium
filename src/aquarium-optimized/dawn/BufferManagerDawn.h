@@ -22,7 +22,8 @@ class RingBufferDawn : public RingBuffer
     ~RingBufferDawn() {}
 
     bool push(const wgpu::CommandEncoder &encoder,
-              wgpu::Buffer &destBuffer,
+              const wgpu::Buffer &destBuffer,
+              size_t src_offset,
               size_t dest_offset,
               void *pixels,
               size_t size);
@@ -30,6 +31,7 @@ class RingBufferDawn : public RingBuffer
     void flush() override;
     void destory() override;
     void reMap();
+    size_t allocate(size_t size) override;
 
   private:
     static void MapWriteCallback(WGPUBufferMapAsyncStatus status,
@@ -47,10 +49,10 @@ class RingBufferDawn : public RingBuffer
 class BufferManagerDawn: public BufferManager
 {
   public:
-    BufferManagerDawn(ContextDawn *context);
+    BufferManagerDawn(ContextDawn *context, bool sync);
     ~BufferManagerDawn();
 
-    RingBufferDawn *allocate(size_t size, bool sync) override;
+    RingBufferDawn *allocate(size_t size, size_t *offset) override;
     void flush() override;
     void destroyBufferPool() override;
 

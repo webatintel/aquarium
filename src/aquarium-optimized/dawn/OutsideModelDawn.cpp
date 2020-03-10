@@ -103,9 +103,9 @@ void OutsideModelDawn::init()
     mLightFactorBuffer =
         mContextDawn->createBufferFromData(&mLightFactorUniforms, sizeof(mLightFactorUniforms),
                                            wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
-    mViewBuffer =
-        mContextDawn->createBufferFromData(&mWorldUniformPer, sizeof(WorldUniforms) * 20,
-                                           wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
+    mViewBuffer = mContextDawn->createBufferFromData(
+        &mWorldUniformPer, mContextDawn->CalcConstantBufferByteSize(sizeof(WorldUniforms)) * 20,
+        wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
 
     mBindGroupModel = mContextDawn->makeBindGroup(
         mGroupLayoutModel, {
@@ -150,5 +150,6 @@ void OutsideModelDawn::updatePerInstanceUniforms(const WorldUniforms &worldUnifo
 {
     memcpy(&mWorldUniformPer, &worldUniforms, sizeof(WorldUniforms));
 
-    mContextDawn->setBufferData(mViewBuffer, 0, sizeof(WorldUniforms), &mWorldUniformPer);
+    mContextDawn->updateBufferData(mViewBuffer, &mWorldUniformPer,
+                                   mContextDawn->CalcConstantBufferByteSize(sizeof(WorldUniforms)));
 }

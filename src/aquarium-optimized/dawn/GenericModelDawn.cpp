@@ -222,7 +222,7 @@ void GenericModelDawn::init()
 
 void GenericModelDawn::prepareForDraw()
 {
-    mContextDawn->setBufferData(mWorldBuffer, 0, sizeof(WorldUniformPer), &mWorldUniformPer);
+    mContextDawn->updateBufferData(mWorldBuffer, &mWorldUniformPer, sizeof(WorldUniformPer));
 }
 
 void GenericModelDawn::draw()

@@ -66,12 +66,10 @@ class Context
     virtual void destoryImgUI() = 0;
     virtual void reallocResource(int preTotalInstance,
                                  int curTotalInstance,
-                                 bool enableDynamicBufferOffset,
-                                 bool enableBufferMappingAsync)
+                                 bool enableDynamicBufferOffset)
     {
     }
-    virtual void updateAllFishData(
-        const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset) = 0;
+    virtual void updateAllFishData() = 0;
     virtual void beginRenderPass() {}
 
     int getClientWidth() const { return mClientWidth; }
