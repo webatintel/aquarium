@@ -26,6 +26,7 @@ const char *cmdArgsStrAquarium = R"(Options and arguments:
 --turn-off-vsync        : Unlimit 60 fps. 
 --disable-d3d12-render-pass   : Turn off render pass for dawn_d3d12 and d3d12 backend.
 --disable-dawn-validation : Turn off dawn validation.
+--disable-control-panel : Turn off control panel. You can show fps by passing '--print-log --test-time 30' to print the fps to cmd line.
 --window-size=[width],[height]  : Input window size.";
 
 

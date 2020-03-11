@@ -387,8 +387,9 @@ bool Aquarium::init(int argc, char **argv)
 
             toggleBitset.set(static_cast<size_t>(TOGGLE::SIMULATINGFISHCOMEANDGO));
         }
-        else
+        else if (cmd == "--disable-control-panel")
         {
+            toggleBitset.set(static_cast<size_t>(TOGGLE::DISABLECONTROLPANEL));
         }
     }
 

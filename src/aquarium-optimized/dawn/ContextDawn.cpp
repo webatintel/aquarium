@@ -70,7 +70,7 @@ ContextDawn::ContextDawn(BACKENDTYPE backendType)
 ContextDawn::~ContextDawn()
 {
     delete mResourceHelper;
-    if (mWindow != nullptr)
+    if (mWindow != nullptr && !mDisableControlPanel)
     {
         destoryImgUI();
     }
@@ -139,6 +139,7 @@ bool ContextDawn::initialize(
     }
 
     mEnableMSAA = toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEMSAAx4));
+    mDisableControlPanel = toggleBitset.test(static_cast<TOGGLE>(TOGGLE::DISABLECONTROLPANEL));
 
     // initialise GLFW
     if (!glfwInit())
@@ -254,20 +255,22 @@ bool ContextDawn::initialize(
         glfwSetWindowUserPointer(mWindow, this);
     }
 
-    // Setup Dear ImGui context
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
+    if (!mDisableControlPanel)
+    {
+        // Setup Dear ImGui context
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
 
-    // Setup Dear ImGui style
-    ImGui::StyleColorsDark();
+        // Setup Dear ImGui style
+        ImGui::StyleColorsDark();
 
-    // Setup Platform/Renderer bindings
-    // We use glfw to create window for dawn backend as well.
-    // Because imgui doesn't have dawn backend, we rewrite the functions by dawn API in
-    // imgui_impl_dawn.cpp and imgui_impl_dawn.h
-    ImGui_ImplGlfw_InitForOpenGL(mWindow, true);
-    ImGui_ImplDawn_Init(this, mPreferredSwapChainFormat);
-
+        // Setup Platform/Renderer bindings
+        // We use glfw to create window for dawn backend as well.
+        // Because imgui doesn't have dawn backend, we rewrite the functions by dawn API in
+        // imgui_impl_dawn.cpp and imgui_impl_dawn.h
+        ImGui_ImplGlfw_InitForOpenGL(mWindow, true);
+        ImGui_ImplDawn_Init(this, mPreferredSwapChainFormat);
+    }
     bufferManager = new BufferManagerDawn(this, !toggleBitset.test(static_cast<TOGGLE>(TOGGLE::BUFFERMAPPINGASYNC)));
 
     return true;
@@ -686,6 +689,11 @@ void ContextDawn::updateFPS(const FPSTimer &fpsTimer,
                             int *fishCount,
                             std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> *toggleBitset)
 {
+    if (mDisableControlPanel)
+    {
+        return;
+    }
+
     // Start the Dear ImGui frame
     ImGui_ImplDawn_NewFrame(toggleBitset->test(static_cast<TOGGLE>(TOGGLE::ENABLEMSAAx4)),
                             toggleBitset->test(static_cast<TOGGLE>(TOGGLE::ENABLEALPHABLENDING)));
@@ -695,6 +703,11 @@ void ContextDawn::updateFPS(const FPSTimer &fpsTimer,
 
 void ContextDawn::showFPS()
 {
+    if (mDisableControlPanel)
+    {
+        return;
+    }
+
     ImGui_ImplDawn_Draw(ImGui::GetDrawData());
 }
 

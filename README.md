@@ -347,6 +347,10 @@ aquarium.exe --num-fish 10000 --backend opengl --enable-alpha-blending=false
 
 aquarium.exe --num-fish 10000 --backend dawn_d3d12 --simulating-fish-come-and-go
 
+#“--disable-control-panel” : Turn off control panel because it impacts on performance of Aquarium on different conditions. You can show fps by passing '--print-log --test-time 30' to print the fps to cmd line instead.
+
+aquarium.exe --num-fish 10000 --backend dawn_d3d12 --disable-control-panel --print-log --test-time 30
+
 # aquarium-direct-map only has OpenGL backend
 # Enable MSAA
 ./aquarium-direct-map  --num-fish 10000 --backend opengl --enable-msaa
