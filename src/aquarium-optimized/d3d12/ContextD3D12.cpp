@@ -78,7 +78,10 @@ ContextD3D12::ContextD3D12(BACKENDTYPE backendType)
 ContextD3D12::~ContextD3D12()
 {
     delete mResourceHelper;
-    //destoryImgUI();
+    if (!mDisableControlPanel)
+    {
+        destoryImgUI();
+    }
     destoryFishResource();
 }
 
@@ -90,6 +93,7 @@ bool ContextD3D12::initialize(
 {
     mEnableMSAA = toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEMSAAx4));
     mVsync      = toggleBitset.test(static_cast<size_t>(TOGGLE::TURNOFFVSYNC)) ? 0 : 1;
+    mDisableControlPanel = toggleBitset.test(static_cast<TOGGLE>(TOGGLE::DISABLECONTROLPANEL));
 
     // initialise GLFW
     if (!glfwInit())
@@ -280,20 +284,24 @@ bool ContextD3D12::initialize(
     }
     createDepthStencilView();
 
-    // Setup Dear ImGui context
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
+    if (!mDisableControlPanel)
+    {
+        // Setup Dear ImGui context
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
 
-    // Setup Dear ImGui style
-    ImGui::StyleColorsDark();
+        // Setup Dear ImGui style
+        ImGui::StyleColorsDark();
 
-    // Setup Platform/Renderer bindings
-    // We use glfw for d3d12 backend as well, but imgui only expose glfw to OpenGL and Vulkan.
-    // However, the glfw api is totoally independent of Graphics API, so we could just ingnore the
-    // name of the function.
-    ImGui_ImplGlfw_InitForOpenGL(mWindow, true);
-    ImGui_ImplDX12_Init(mDevice.Get(), mFrameCount, mPreferredSwapChainFormat, cbvsrvCPUHandle,
-                        cbvsrvGPUHandle);
+        // Setup Platform/Renderer bindings
+        // We use glfw for d3d12 backend as well, but imgui only expose glfw to OpenGL and Vulkan.
+        // However, the glfw api is totoally independent of Graphics API, so we could just ingnore
+        // the name of the function.
+        ImGui_ImplGlfw_InitForOpenGL(mWindow, true);
+        ImGui_ImplDX12_Init(mDevice.Get(), mFrameCount, mPreferredSwapChainFormat, cbvsrvCPUHandle,
+                            cbvsrvGPUHandle);
+    }
+
     cbvsrvCPUHandle.Offset(mCbvmSrvDescriptorSize);
     cbvsrvGPUHandle.Offset(mCbvmSrvDescriptorSize);
 
@@ -507,6 +515,11 @@ void ContextD3D12::updateFPS(const FPSTimer &fpsTimer,
                              int *fishCount,
                              std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> *toggleBitset)
 {
+    if (mDisableControlPanel)
+    {
+        return;
+    }
+
     // Start the Dear ImGui frame
     ImGui_ImplDX12_NewFrame(toggleBitset->test(static_cast<TOGGLE>(TOGGLE::ENABLEMSAAx4)),
                             toggleBitset->test(static_cast<TOGGLE>(TOGGLE::ENABLEALPHABLENDING)));
@@ -516,6 +529,11 @@ void ContextD3D12::updateFPS(const FPSTimer &fpsTimer,
 
 void ContextD3D12::showFPS()
 {
+    if (mDisableControlPanel)
+    {
+        return;
+    }
+
     ImGui_ImplDX12_Draw(ImGui::GetDrawData(), mCommandList.Get());
 }
 

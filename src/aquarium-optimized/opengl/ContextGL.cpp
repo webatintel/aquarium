@@ -38,7 +38,10 @@ ContextGL::ContextGL(BACKENDTYPE backendType) : mWindow(nullptr)
 ContextGL::~ContextGL()
 {
     delete mResourceHelper;
-    destoryImgUI();
+    if (!mDisableControlPanel)
+    {
+        destoryImgUI();
+    }
 }
 
 bool ContextGL::initialize(BACKENDTYPE backend,
@@ -63,6 +66,7 @@ bool ContextGL::initialize(BACKENDTYPE backend,
     {
         glfwWindowHint(GLFW_SAMPLES, 4);
     }
+    mDisableControlPanel = (toggleBitset.test(static_cast<TOGGLE>(TOGGLE::DISABLECONTROLPANEL)));
 
     mResourceHelper = new ResourceHelper("opengl", "450", backend);
 
@@ -107,7 +111,7 @@ bool ContextGL::initialize(BACKENDTYPE backend,
     glfwSetFramebufferSizeCallback(mWindow, framebufferResizeCallback);
     glfwSetWindowUserPointer(mWindow, this);
 
-#ifndef GL_GLES_PROTOTYPES 
+#ifndef GL_GLES_PROTOTYPES
     glfwWindowHint(GLFW_DECORATED, GL_FALSE);
     glfwMakeContextCurrent(mWindow);
 #else
@@ -116,7 +120,7 @@ bool ContextGL::initialize(BACKENDTYPE backend,
     std::vector<EGLAttrib> display_attribs;
 
     display_attribs.push_back(EGL_PLATFORM_ANGLE_TYPE_ANGLE);
-    //display_attribs.push_back(EGL_PLATFORM_ANGLE_TYPE_OPENGL_ANGLE);
+    // display_attribs.push_back(EGL_PLATFORM_ANGLE_TYPE_OPENGL_ANGLE);
     display_attribs.push_back(EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE);
     display_attribs.push_back(EGL_PLATFORM_ANGLE_MAX_VERSION_MAJOR_ANGLE);
     display_attribs.push_back(-1);
@@ -127,10 +131,10 @@ bool ContextGL::initialize(BACKENDTYPE backend,
     display_attribs.push_back(EGL_NONE);
 
     HWND hwnd = glfwGetWin32Window(mWindow);
-    mDisplay = eglGetPlatformDisplay(EGL_PLATFORM_ANGLE_ANGLE,
-        reinterpret_cast<void *>(GetDC(hwnd)),
-        &display_attribs[0]);
-    if (mDisplay == EGL_NO_DISPLAY) {
+    mDisplay  = eglGetPlatformDisplay(EGL_PLATFORM_ANGLE_ANGLE,
+                                     reinterpret_cast<void *>(GetDC(hwnd)), &display_attribs[0]);
+    if (mDisplay == EGL_NO_DISPLAY)
+    {
         std::cout << "EGL display query failed with error " << std::endl;
     }
     GLint mEGLMajorVersion = 0;
@@ -192,7 +196,8 @@ bool ContextGL::initialize(BACKENDTYPE backend,
 
     surfaceAttributes.push_back(EGL_NONE);
 
-    mSurface = eglCreateWindowSurface(mDisplay, mConfig, reinterpret_cast<EGLNativeWindowType>(hwnd), &surfaceAttributes[0]);
+    mSurface = eglCreateWindowSurface(
+        mDisplay, mConfig, reinterpret_cast<EGLNativeWindowType>(hwnd), &surfaceAttributes[0]);
 
     if (eglGetError() != EGL_SUCCESS)
     {
@@ -219,22 +224,25 @@ bool ContextGL::initialize(BACKENDTYPE backend,
     // Set the window full screen
     // glfwSetWindowPos(window, 0, 0);
 
-    #ifndef EGL_EGL_PROTOTYPES
+#ifndef EGL_EGL_PROTOTYPES
     if (!gladLoadGL())
     {
         std::cout << "Something went wrong!" << std::endl;
         exit(-1);
     }
-    #endif
+#endif
 
-    // Setup Dear ImGui context
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGui::StyleColorsDark();
+    if (!mDisableControlPanel)
+    {
+        // Setup Dear ImGui context
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
+        ImGui::StyleColorsDark();
 
-    // Setup Platform/Renderer bindings
-    ImGui_ImplGlfw_InitForOpenGL(mWindow, true);
-    ImGui_ImplOpenGL3_Init(mGLSLVersion.c_str());
+        // Setup Platform/Renderer bindings
+        ImGui_ImplGlfw_InitForOpenGL(mWindow, true);
+        ImGui_ImplOpenGL3_Init(mGLSLVersion.c_str());
+    }
 
     std::string renderer((const char *)glGetString(GL_RENDERER));
     size_t index = renderer.find("/");
@@ -381,9 +389,7 @@ void ContextGL::generateMipmap(unsigned int target)
     glGenerateMipmap(target);
 }
 
-void ContextGL::updateAllFishData()
-{
-}
+void ContextGL::updateAllFishData() {}
 
 void ContextGL::initState()
 {
@@ -402,7 +408,8 @@ void ContextGL::initAvailableToggleBitset(BACKENDTYPE backendType)
 
 Buffer *ContextGL::createBuffer(int numComponents, std::vector<float> *buf, bool isIndex)
 {
-    BufferGL *buffer = new BufferGL(this, static_cast<int>(buf->size()), numComponents, isIndex, GL_FLOAT, false);
+    BufferGL *buffer =
+        new BufferGL(this, static_cast<int>(buf->size()), numComponents, isIndex, GL_FLOAT, false);
     buffer->loadBuffer(*buf);
 
     return buffer;
@@ -466,6 +473,10 @@ void ContextGL::updateFPS(const FPSTimer &fpsTimer,
                           int *fishCount,
                           std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> *toggleBitset)
 {
+    if (mDisableControlPanel)
+    {
+        return;
+    }
     // Start the Dear ImGui frame
     ImGui_ImplOpenGL3_NewFrame(
         toggleBitset->test(static_cast<TOGGLE>(TOGGLE::ENABLEMSAAx4)),
@@ -722,7 +733,8 @@ bool ContextGL::compileProgram(unsigned int programId,
     {
         glGetShaderiv(FragmentShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
         std::vector<char> FragmentShaderErrorMessage(InfoLogLength);
-        glGetShaderInfoLog(FragmentShaderID, InfoLogLength, nullptr, &FragmentShaderErrorMessage[0]);
+        glGetShaderInfoLog(FragmentShaderID, InfoLogLength, nullptr,
+                           &FragmentShaderErrorMessage[0]);
         std::cout << stdout << &FragmentShaderErrorMessage[0] << std::endl;
     }
 

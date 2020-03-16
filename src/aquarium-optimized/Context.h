@@ -35,7 +35,7 @@ static char fishCountInputBuffer[64];
 class Context
 {
   public:
-    Context() : show_option_window(false) {}
+    Context() : mDisableControlPanel(false), show_option_window(false) {}
     virtual ~Context() {}
     virtual bool initialize(BACKENDTYPE backend,
                             const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset,
@@ -101,6 +101,8 @@ class Context
 
     std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> mAvailableToggleBitset;
     virtual void initAvailableToggleBitset(BACKENDTYPE backendType) = 0;
+
+    bool mDisableControlPanel;
 
   private:
     bool show_option_window;

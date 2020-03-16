@@ -125,6 +125,8 @@ enum TOGGLE : short
     DISABLED3D12RENDERPASS,
     // Turn off dawn validation,
     DISABLEDAWNVALIDATION,
+    // Disable control panel,
+    DISABLECONTROLPANEL,
     // Select integrated gpu if available.
     INTEGRATEDGPU,
     // Select discrete gpu if available.
