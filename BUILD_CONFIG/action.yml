@@ -1,0 +1,9 @@
+name: 'BUILD_CONFIG'
+description: ''
+inputs:
+  build-config:
+    description: ''
+    required: false
+runs:
+  using: 'node12'
+  main: 'index.js'
