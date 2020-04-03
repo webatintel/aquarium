@@ -11,5 +11,3 @@ vvl_glslang_dir = "//third_party/glslang"
 # Subdirectories for generated files
 vulkan_data_subdir = "vulkandata"
 vulkan_gen_subdir = ""
-
-

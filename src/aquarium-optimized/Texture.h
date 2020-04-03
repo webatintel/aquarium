@@ -51,4 +51,3 @@ class Texture
 };
 
 #endif // !TEXTURE_H
-

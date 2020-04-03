@@ -39,4 +39,3 @@ void main() {
   v_tangent = (worldUniforms.worlds[gl_InstanceIndex].worldInverseTranspose * vec4(tangent, 0)).xyz;  // #normalMap
   gl_Position = v_position;
 }
-
