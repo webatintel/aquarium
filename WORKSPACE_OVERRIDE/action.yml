@@ -1,0 +1,9 @@
+name: 'WORKSPACE_OVERRIDE'
+description: ''
+inputs:
+  workspace-override:
+    description: ''
+    required: false
+runs:
+  using: 'node12'
+  main: 'index.js'
