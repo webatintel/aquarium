@@ -1,0 +1,56 @@
+on: [ 'pull_request' ]
+jobs:
+  build:
+    runs-on: '${{ matrix.runs-on }}'
+    steps:
+    - uses: 'actions/checkout@v1'
+      with:
+        ref: '9787001a33f085680ee23f9877f5ab7cd96f6c27'
+
+        # Here is a very ugly hack that uses an undocumented input.
+        # Without this, it seems that actions/checkout@v1 will ignore
+        # ref when it's a SHA and the workflow is triggered by a pull
+        # request event.
+        version: '9787001a33f085680ee23f9877f5ab7cd96f6c27'
+
+        path: 'gh-actions'
+    - uses: './npm-init'
+    - uses: './npm-install'
+
+    # actions/checkout@v1 would reset GITHUB_WORKSPACE to the repo
+    # checkout directory, while it's preferable to move back to the
+    # original workspace in the following steps. This workaround will
+    # not be necessary after upgrading to actions/checkout@v2.
+    - uses: './WORKSPACE_OVERRIDE'
+      with:
+        workspace-override: '..'
+
+    - uses: './BUILD_CONFIG'
+      with:
+        build-config: '${{ github.sha }}${{ matrix.gl }}${{ matrix.target-cpu }}${{ matrix.component-type }}${{ matrix.build-type }}'
+    - uses: './GIT_TEMPLATE_DIR'
+    - uses: './GIT_EDITOR'
+    - uses: './GN_EDITOR'
+    - uses: './editor'
+    - uses: './git'
+    - name: 'git clone -c remote.origin.fetch=+refs/pull/*/merge:refs/pull/origin/*/merge https://github.com/${{ github.repository }}.git aquarium'
+      uses: './git-clone'
+    - name: 'git rebase -i --onto refs/tags/GITHUB_SHA^1 refs/tags/GITHUB_SHA^1'
+      uses: './git-rebase'
+    - name: 'git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git depot_tools'
+      uses: './depot_tools'
+    - name: 'update_depot_tools'
+      uses: './update_depot_tools'
+    - name: 'gclient sync'
+      uses: './gclient-sync'
+    - name: 'gn args out'
+      uses: './gn-args'
+    - name: 'ninja -C out'
+      uses: './ninja'
+    strategy:
+      matrix:
+        runs-on:        [ 'windows-latest', 'ubuntu-latest' ]
+        gl:             [ '' ]
+        target-cpu:     [ '' ]
+        component-type: [ '', '-component', '-nocomponent' ]
+        build-type:     [ '', '-debug', '-release' ]
