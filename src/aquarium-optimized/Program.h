@@ -35,4 +35,3 @@ class Program
 };
 
 #endif // !PROGRAM_H
-

@@ -196,4 +196,3 @@ void TextureDawn::loadTexture()
 
     // TODO(yizhou): check if the pixel destory should delay or fence
 }
-

@@ -1096,4 +1096,3 @@ void Aquarium::updateWorldMatrix(Model *model)
 
     model->prepareForDraw();
 }
-

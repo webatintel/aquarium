@@ -179,4 +179,3 @@ void FishModelGL::updateFishPerUniforms(float x,
     mScaleUniform.first            = scale;
     mTimeUniform.first             = time;
 }
-

@@ -155,4 +155,3 @@ void SeaweedModelDawn::updatePerInstanceUniforms(const WorldUniforms &worldUnifo
 void SeaweedModelDawn::updateSeaweedModelTime(float time)
 {
 }
-
