@@ -149,10 +149,11 @@ executable("aquarium") {
 
     deps += [
       "third_party/dawn/src/dawn:dawn_headers",
-      "third_party/dawn:dawn_utils",
-      "third_party/dawn/src/dawn:libdawn",
-      "third_party/dawn:libdawn_native",
-      "third_party/dawn:dawn_bindings",
+      "third_party/dawn/src/dawn:dawncpp",
+      "third_party/dawn/src/dawn:libdawn_proc",
+      "third_party/dawn/src/dawn_native",
+      "third_party/dawn/src/utils:dawn_bindings",
+      "third_party/dawn/src/utils:dawn_utils",
     ]
   }
 
