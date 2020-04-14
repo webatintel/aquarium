@@ -79,24 +79,24 @@ constexpr float g_net_offset[3] = { 0.0f, 0.0f, 0.0f };
 constexpr float g_net_offsetMult = 1.21f;
 
 struct G_viewSettings {
-	float targetHeight = 63.3f;
-	float targetRadius = 91.6f;
-	float eyeHeight = 7.5f;
-	float eyeRadius = 13.2f;
-	float eyeSpeed = 0.0258f;
-	float fieldOfView = 82.699f;
-	float ambientRed = 0.218f;
-	float ambientGreen = 0.502f;
-	float ambientBlue = 0.706f;
-	float fogPower = 16.5f;
-	float fogMult = 1.5f; //2.02,
-	float fogOffset = 0.738f;
-	float fogRed = 0.338f;
-	float fogGreen = 0.81f;
-	float fogBlue = 1.0f;
-	float refractionFudge = 3.0f;
-	float eta = 1.0f;
-	float tankColorFudge = 0.796f;
+    float targetHeight = 63.3f;
+    float targetRadius = 91.6f;
+    float eyeHeight = 7.5f;
+    float eyeRadius = 13.2f;
+    float eyeSpeed = 0.0258f;
+    float fieldOfView = 82.699f;
+    float ambientRed = 0.218f;
+    float ambientGreen = 0.502f;
+    float ambientBlue = 0.706f;
+    float fogPower = 16.5f;
+    float fogMult = 1.5f; //2.02,
+    float fogOffset = 0.738f;
+    float fogRed = 0.338f;
+    float fogGreen = 0.81f;
+    float fogBlue = 1.0f;
+    float refractionFudge = 3.0f;
+    float eta = 1.0f;
+    float tankColorFudge = 0.796f;
 }constexpr g_viewSettings;
 
 static std::vector<float> projection(16);
@@ -188,9 +188,9 @@ struct G_sceneInfo
 
 struct ConstUniforms
 {
-	float fishLength;
-	float fishWaveLength;
-	float fishBendAmount;
+    float fishLength;
+    float fishWaveLength;
+    float fishBendAmount;
 };
 
 struct Fish {
@@ -214,8 +214,8 @@ struct Fish {
 
 struct FishConst
 {
-	GenericConst genericConst;
-	ConstUniforms constUniforms;
+    GenericConst genericConst;
+    ConstUniforms constUniforms;
 };
 
 static FishConst fishConst;

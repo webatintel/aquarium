@@ -16,10 +16,10 @@ layout(std140, set = 0, binding = 0) uniform LightUniforms {
 } lightUniforms;
 
 layout(std140, set = 2, binding = 0) uniform InnerUniforms{
-	float eta;
-	float tankColorFudge;
-	float refractionFudge;
-	float padding;
+    float eta;
+    float tankColorFudge;
+    float refractionFudge;
+    float padding;
 } innerUniforms;
 
 layout(set = 2, binding = 1) uniform sampler samplerTex2D;
@@ -32,10 +32,10 @@ layout(set = 2, binding = 6) uniform textureCube skybox; // #reflecton
 layout(std140, set = 0, binding = 1) uniform Fogs
 {
     float fogPower;
-	float fogMult;
-	float fogOffset;
-	float padding;
-	vec4 fogColor;
+    float fogMult;
+    float fogOffset;
+    float padding;
+    vec4 fogColor;
 } fogs;
 
 vec4 lit(float l ,float h, float m) {
@@ -74,5 +74,5 @@ void main() {
       mix(skyColor * diffuseColor, diffuseColor, refraction.r).rgb,
       diffuseColor.a);
   outColor = mix(outColor, vec4(fogs.fogColor.rgb, diffuseColor.a),
-		clamp(pow((v_position.z / v_position.w), fogs.fogPower) * fogs.fogMult - fogs.fogOffset,0.0,1.0));
+      clamp(pow((v_position.z / v_position.w), fogs.fogPower) * fogs.fogMult - fogs.fogOffset,0.0,1.0));
 }

@@ -8,7 +8,7 @@ layout(std140, set = 1, binding = 0) uniform LightWorldPositionUniform {
 
 layout(std140, set = 3, binding = 0) uniform WorldUniforms {
     mat4 world;
-	mat4 worldInverseTranspose;
+    mat4 worldInverseTranspose;
     mat4 worldViewProjection;
 } worldUniforms;
 

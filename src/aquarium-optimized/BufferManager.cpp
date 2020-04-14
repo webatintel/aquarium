@@ -21,25 +21,25 @@ bool BufferManager::resetBuffer(RingBuffer *ringBuffer, size_t size)
     size_t oldSize = ringBuffer->getSize(); 
 
     bool result = ringBuffer->reset(size);
-	// If the size is larger than the ring buffer size, reset fails and the ring
-	// buffer retains.
-	// If the size is equal or smaller than the ring buffer size, reset success
-	// and the used size need to be updated.
+    // If the size is larger than the ring buffer size, reset fails and the ring
+    // buffer retains.
+    // If the size is equal or smaller than the ring buffer size, reset success
+    // and the used size need to be updated.
     if (!result)
     {
         return false;
     }
-	else
-	{
+    else
+    {
         mUsedSize = mUsedSize - oldSize + size;
     }
 
-	return true;
+    return true;
 }
 
 bool BufferManager::destoryBuffer(RingBuffer *ringBuffer)
 {
-	size_t index = find(ringBuffer);
+    size_t index = find(ringBuffer);
 
     if (index >= mEnqueuedBufferList.size())
     {

@@ -180,10 +180,10 @@ bool ContextDawn::initialize(
 
     mInstance = std::make_unique<dawn_native::Instance>();
 
-	// Enable debug layer in Debug mode
-	#if defined(_DEBUG)
-	mInstance->EnableBackendValidation(true);
-	#endif
+    // Enable debug layer in Debug mode
+#if defined(_DEBUG)
+    mInstance->EnableBackendValidation(true);
+#endif
 
     utils::DiscoverAdapter(mInstance.get(), mWindow, backendType);
 
@@ -657,7 +657,7 @@ void ContextDawn::DoFlush(const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMA
 {
     mRenderPass.EndPass();
 
-	bufferManager->flush();
+    bufferManager->flush();
 
     wgpu::CommandBuffer cmd = mCommandEncoder.Finish();
     mCommandBuffers.emplace_back(cmd);
@@ -922,7 +922,7 @@ void ContextDawn::destoryFishResource()
 
     bindGroupFishPers = nullptr;
 
-	bufferManager->destroyBufferPool();
+    bufferManager->destroyBufferPool();
 }
 
 size_t ContextDawn::CalcConstantBufferByteSize(size_t byteSize) const
