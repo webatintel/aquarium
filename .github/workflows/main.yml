@@ -27,7 +27,7 @@ jobs:
 
     - uses: './BUILD_CONFIG'
       with:
-        build-config: '${{ github.sha }}${{ matrix.gl }}${{ matrix.target-cpu }}${{ matrix.component-type }}${{ matrix.build-type }}'
+        build-config: '${{ github.sha }}${{ matrix.gl }}${{ matrix.target-cpu }}${{ matrix.build-type }}'
     - uses: './GIT_TEMPLATE_DIR'
     - uses: './GIT_EDITOR'
     - uses: './GN_EDITOR'
@@ -52,5 +52,4 @@ jobs:
         runs-on:        [ 'windows-latest', 'ubuntu-latest' ]
         gl:             [ '' ]
         target-cpu:     [ '' ]
-        component-type: [ '', '-component', '-nocomponent' ]
         build-type:     [ '', '-debug', '-release' ]
