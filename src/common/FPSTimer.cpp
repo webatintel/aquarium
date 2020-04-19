@@ -15,7 +15,7 @@
 FPSTimer::FPSTimer()
     : mTotalTime(static_cast<double>(NUM_FRAMES_TO_AVERAGE)),
       mTimeTable(NUM_FRAMES_TO_AVERAGE, 1.0f),
-	  mTimeTableCursor(0),
+      mTimeTableCursor(0),
       mHistoryFPS(NUM_HISTORY_DATA, 1.0f),
       mHistoryFrameTime(NUM_HISTORY_DATA, 100.0f),
       mAverageFPS(0.0)

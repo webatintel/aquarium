@@ -721,8 +721,8 @@ void ContextD3D12::initGeneralResources(Aquarium *aquarium)
         stagingBuffer);
     mFishPersBufferView.BufferLocation = mFishPersBuffer->GetGPUVirtualAddress();
     mFishPersBufferView.SizeInBytes    = CalcConstantBufferByteSize(sizeof(FishPer));
-	
-	mPreTotalInstance = aquarium->getPreFishCount();
+
+    mPreTotalInstance = aquarium->getPreFishCount();
     mCurTotalInstance = aquarium->getCurFishCount();
 }
 

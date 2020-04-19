@@ -2,8 +2,8 @@
 
 layout(std140, set = 1, binding = 0) uniform LightWorldPositionUniform {
     vec3 lightWorldPos;
-	mat4 viewProjection;
-	mat4 viewInverse;
+    mat4 viewProjection;
+    mat4 viewInverse;
 } lightWorldPositionUniform;
 
 layout(std140, set = 2, binding = 0) uniform FishVertexUniforms {

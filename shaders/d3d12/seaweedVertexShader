@@ -16,7 +16,7 @@ cbuffer seaweedPer : register(b1, space3)
 cbuffer lightWorldPositionUniform : register(b0, space1)
 {
     float3 lightWorldPositionUniform_lightWorldPos : packoffset(c0);
-	row_major float4x4 viewProjection : packoffset(c1);
+    row_major float4x4 viewProjection : packoffset(c1);
     row_major float4x4 viewInverse : packoffset(c5);
 };
 

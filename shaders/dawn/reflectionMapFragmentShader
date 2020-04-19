@@ -30,9 +30,9 @@ layout(set = 2, binding = 6) uniform textureCube skybox; // #reflecton
 layout(std140, set = 0, binding = 1) uniform Fogs
 {
     float fogPower;
-	float fogMult;
-	float fogOffset;
-	vec4 fogColor;
+    float fogMult;
+    float fogOffset;
+    vec4 fogColor;
 } fogs;
 
 vec4 lit(float l ,float h, float m) {
@@ -64,5 +64,5 @@ void main() {
       1.0 - reflection.r).rgb,
       diffuseColor.a);
   outColor = mix(outColor, vec4(fogs.fogColor.rgb, diffuseColor.a),
-		clamp(pow((v_position.z / v_position.w), fogs.fogPower) * fogs.fogMult - fogs.fogOffset,0.0,1.0));
+      clamp(pow((v_position.z / v_position.w), fogs.fogPower) * fogs.fogMult - fogs.fogOffset,0.0,1.0));
 }

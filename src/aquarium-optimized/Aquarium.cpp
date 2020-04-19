@@ -371,9 +371,9 @@ bool Aquarium::init(int argc, char **argv)
             {
                 g.alpha = cmd.substr(pos + 1).c_str();
                 if (g.alpha == "false")
-				{
+                {
                     toggleBitset.reset(static_cast<size_t>(TOGGLE::ENABLEALPHABLENDING));
-				}
+                }
             }
         }
         else if (cmd == "--simulating-fish-come-and-go")
