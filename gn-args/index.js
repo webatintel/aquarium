@@ -1,3 +1,7 @@
+// Copyright (c) 2020 The Aquarium Project Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 // The GitHub runner environment is optional for this script, so it can work in local.
 
 // When running in GitHub hosted runners, the script translates
