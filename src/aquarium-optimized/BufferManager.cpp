@@ -18,7 +18,7 @@ bool BufferManager::resetBuffer(RingBuffer *ringBuffer, size_t size)
         return false;
     }
 
-    size_t oldSize = ringBuffer->getSize(); 
+    size_t oldSize = ringBuffer->getSize();
 
     bool result = ringBuffer->reset(size);
     // If the size is larger than the ring buffer size, reset fails and the ring

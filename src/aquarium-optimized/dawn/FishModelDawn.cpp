@@ -5,7 +5,7 @@
 //
 // FishModelDawn.cpp: Implements fish model of Dawn.
 
-#include "BufferDawn.h" 
+#include "BufferDawn.h"
 #include "FishModelDawn.h"
 
 #include <iostream>
