@@ -231,13 +231,13 @@ executable("aquarium-direct-map") {
     "src/aquarium-direct-map/Uniform.h",
     "src/aquarium-direct-map/Uniform.cpp",
   ]
-  
+
   deps = [
     "third_party:stb",
     "third_party:glad",
     "third_party:glfw",
   ]
-  
+
   include_dirs = [
     "third_party/glad/include",
     "third_party/rapidjson/include",
@@ -245,7 +245,7 @@ executable("aquarium-direct-map") {
     "third_party/glfw/include",
     "src",
   ]
-  
+
   cflags_cc = [
     "-Wno-string-conversion",
     "-Wno-unused-result",
