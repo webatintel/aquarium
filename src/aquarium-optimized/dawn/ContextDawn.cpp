@@ -223,7 +223,7 @@ bool ContextDawn::initialize(
     dawnProcSetProcs(&backendProcs);
     mDevice = wgpu::Device::Acquire(backendDevice);
 
-    queue = mDevice.CreateQueue();
+    queue = mDevice.GetDefaultQueue();
     wgpu::SwapChainDescriptor swapChainDesc;
     swapChainDesc.implementation = binding->GetSwapChainImplementation();
 
