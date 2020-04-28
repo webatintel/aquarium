@@ -72,7 +72,7 @@ void SeaweedModelDawn::init()
     mGroupLayoutModel = mContextDawn->MakeBindGroupLayout({
         {0, wgpu::ShaderStage::Fragment, wgpu::BindingType::UniformBuffer},
         {1, wgpu::ShaderStage::Fragment, wgpu::BindingType::Sampler},
-        {2, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture, false, false,
+        {2, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture, false, false, {},
          wgpu::TextureViewDimension::e2D, wgpu::TextureComponentType::Float},
     });
 

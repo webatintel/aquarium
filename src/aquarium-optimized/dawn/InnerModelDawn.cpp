@@ -86,13 +86,13 @@ void InnerModelDawn::init()
         {0, wgpu::ShaderStage::Fragment, wgpu::BindingType::UniformBuffer},
         {1, wgpu::ShaderStage::Fragment, wgpu::BindingType::Sampler},
         {2, wgpu::ShaderStage::Fragment, wgpu::BindingType::Sampler},
-        {3, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture, false, false,
+        {3, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture, false, false, {},
          wgpu::TextureViewDimension::e2D, wgpu::TextureComponentType::Float},
-        {4, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture, false, false,
+        {4, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture, false, false, {},
          wgpu::TextureViewDimension::e2D, wgpu::TextureComponentType::Float},
-        {5, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture, false, false,
+        {5, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture, false, false, {},
          wgpu::TextureViewDimension::e2D, wgpu::TextureComponentType::Float},
-        {6, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture, false, false,
+        {6, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture, false, false, {},
          wgpu::TextureViewDimension::Cube, wgpu::TextureComponentType::Float},
     });
 
