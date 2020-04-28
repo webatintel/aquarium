@@ -47,7 +47,7 @@ TextureDawn::TextureDawn(ContextDawn *context,
 
 void TextureDawn::loadTexture()
 {
-    wgpu::SamplerDescriptor samplerDesc;
+    wgpu::SamplerDescriptor samplerDesc = {};
     const int kPadding = 256;
     loadImage(mUrls, &mPixelVec);
 
@@ -99,9 +99,6 @@ void TextureDawn::loadTexture()
         samplerDesc.minFilter    = wgpu::FilterMode::Linear;
         samplerDesc.magFilter    = wgpu::FilterMode::Linear;
         samplerDesc.mipmapFilter = wgpu::FilterMode::Nearest;
-        samplerDesc.lodMinClamp  = 0.0f;
-        samplerDesc.lodMaxClamp  = 1000.0f;
-        samplerDesc.compare      = wgpu::CompareFunction::Never;
 
         mSampler = mContext->createSampler(samplerDesc);
     }
@@ -178,9 +175,6 @@ void TextureDawn::loadTexture()
         samplerDesc.addressModeW = wgpu::AddressMode::ClampToEdge;
         samplerDesc.minFilter    = wgpu::FilterMode::Linear;
         samplerDesc.magFilter    = wgpu::FilterMode::Linear;
-        samplerDesc.lodMinClamp  = 0.0f;
-        samplerDesc.lodMaxClamp  = 1000.0f;
-        samplerDesc.compare      = wgpu::CompareFunction::Never;
 
         if (isPowerOf2(mWidth) && isPowerOf2(mHeight))
         {
