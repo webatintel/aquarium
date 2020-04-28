@@ -221,15 +221,12 @@ static void ImGui_ImplDawn_CreateFontsTexture(bool enableAlphaBlending)
 
         mTextureView = mTexture.CreateView(&viewDescriptor);
 
-        wgpu::SamplerDescriptor samplerDesc;
+        wgpu::SamplerDescriptor samplerDesc = {};
         samplerDesc.addressModeU = wgpu::AddressMode::Repeat;
         samplerDesc.addressModeV = wgpu::AddressMode::Repeat;
         samplerDesc.addressModeW = wgpu::AddressMode::Repeat;
         samplerDesc.minFilter    = wgpu::FilterMode::Linear;
         samplerDesc.magFilter    = wgpu::FilterMode::Linear;
-        samplerDesc.lodMinClamp  = 0.0f;
-        samplerDesc.lodMaxClamp  = 0.0f;
-        samplerDesc.compare      = wgpu::CompareFunction::Always;
         samplerDesc.mipmapFilter = wgpu::FilterMode::Linear;
 
         mSampler = mContextDawn->createSampler(samplerDesc);
