@@ -3,6 +3,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
+
 #include "GenericModelD3D12.h"
 
 GenericModelD3D12::GenericModelD3D12(Context *context,
