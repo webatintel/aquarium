@@ -82,7 +82,7 @@ class ContextDawn : public Context
     wgpu::ShaderModule createShaderModule(utils::SingleShaderStage stage,
                                           const std::string &str) const;
     wgpu::BindGroupLayout MakeBindGroupLayout(
-        std::initializer_list<wgpu::BindGroupLayoutBinding> bindingsInitializer) const;
+        std::initializer_list<wgpu::BindGroupLayoutEntry> bindingsInitializer) const;
     wgpu::PipelineLayout MakeBasicPipelineLayout(
         std::vector<wgpu::BindGroupLayout> bindingsInitializer) const;
     wgpu::RenderPipeline createRenderPipeline(

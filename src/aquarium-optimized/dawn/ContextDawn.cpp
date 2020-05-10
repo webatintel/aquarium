@@ -418,7 +418,7 @@ wgpu::ShaderModule ContextDawn::createShaderModule(utils::SingleShaderStage stag
 }
 
 wgpu::BindGroupLayout ContextDawn::MakeBindGroupLayout(
-    std::initializer_list<wgpu::BindGroupLayoutBinding> bindingsInitializer) const
+    std::initializer_list<wgpu::BindGroupLayoutEntry> bindingsInitializer) const
 {
 
     return utils::MakeBindGroupLayout(mDevice, bindingsInitializer);
