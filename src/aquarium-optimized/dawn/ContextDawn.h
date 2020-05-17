@@ -64,8 +64,8 @@ class ContextDawn : public Context
     wgpu::Buffer createBufferFromData(const void *pixels, int size, wgpu::BufferUsage usage);
     wgpu::BufferCopyView createBufferCopyView(const wgpu::Buffer &buffer,
                                               uint32_t offset,
-                                              uint32_t rowPitch,
-                                              uint32_t imageHeight) const;
+                                              uint32_t bytesPerRow,
+                                              uint32_t rowsPerImage) const;
     wgpu::CommandBuffer copyBufferToTexture(const wgpu::BufferCopyView &bufferCopyView,
                                             const wgpu::TextureCopyView &textureCopyView,
                                             const wgpu::Extent3D &ext3D) const;

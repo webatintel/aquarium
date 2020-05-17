@@ -372,11 +372,11 @@ wgpu::Buffer ContextDawn::createBufferFromData(const void *pixels,
 
 wgpu::BufferCopyView ContextDawn::createBufferCopyView(const wgpu::Buffer &buffer,
                                                        uint32_t offset,
-                                                       uint32_t rowPitch,
-                                                       uint32_t imageHeight) const
+                                                       uint32_t bytesPerRow,
+                                                       uint32_t rowsPerImage) const
 {
 
-    return utils::CreateBufferCopyView(buffer, offset, rowPitch, imageHeight);
+    return utils::CreateBufferCopyView(buffer, offset, bytesPerRow, rowsPerImage);
 }
 
 wgpu::TextureCopyView ContextDawn::createTextureCopyView(wgpu::Texture texture,
