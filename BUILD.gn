@@ -15,39 +15,39 @@ executable("aquarium") {
   libs = []
 
   sources = [
-    "src/common/AQUARIUM_ASSERT.h",
-    "src/common/FPSTimer.cpp",
-    "src/common/FPSTimer.h",
     "src/aquarium-optimized/Aquarium.cpp",
     "src/aquarium-optimized/Aquarium.h",
-    "src/aquarium-optimized/Behavior.h",
     "src/aquarium-optimized/Behavior.cpp",
+    "src/aquarium-optimized/Behavior.h",
     "src/aquarium-optimized/Buffer.h",
-    "src/aquarium-optimized/BufferManager.h",
     "src/aquarium-optimized/BufferManager.cpp",
-    "src/aquarium-optimized/Context.h",
+    "src/aquarium-optimized/BufferManager.h",
     "src/aquarium-optimized/Context.cpp",
+    "src/aquarium-optimized/Context.h",
     "src/aquarium-optimized/ContextFactory.cpp",
     "src/aquarium-optimized/ContextFactory.h",
-    "src/aquarium-optimized/FishModel.h",
     "src/aquarium-optimized/FishModel.cpp",
+    "src/aquarium-optimized/FishModel.h",
     "src/aquarium-optimized/Main.cpp",
     "src/aquarium-optimized/Matrix.h",
     "src/aquarium-optimized/Model.cpp",
     "src/aquarium-optimized/Model.h",
-    "src/aquarium-optimized/Program.h",
     "src/aquarium-optimized/Program.cpp",
-    "src/aquarium-optimized/ResourceHelper.h",
+    "src/aquarium-optimized/Program.h",
     "src/aquarium-optimized/ResourceHelper.cpp",
+    "src/aquarium-optimized/ResourceHelper.h",
     "src/aquarium-optimized/SeaweedModel.h",
     "src/aquarium-optimized/Texture.cpp",
     "src/aquarium-optimized/Texture.h",
+    "src/common/AQUARIUM_ASSERT.h",
+    "src/common/FPSTimer.cpp",
+    "src/common/FPSTimer.h",
   ]
 
   deps = [
-    "third_party:stb",
-    "third_party:imgui",
     "third_party:glfw",
+    "third_party:imgui",
+    "third_party:stb",
   ]
 
   include_dirs = [
@@ -59,8 +59,8 @@ executable("aquarium") {
     "third_party/glfw/include",
   ]
 
-  if(enable_angle || enable_opengl) {
-      sources += [
+  if (enable_angle || enable_opengl) {
+    sources += [
       "src/aquarium-optimized/opengl/BufferGL.cpp",
       "src/aquarium-optimized/opengl/BufferGL.h",
       "src/aquarium-optimized/opengl/ContextGL.cpp",
@@ -79,8 +79,8 @@ executable("aquarium") {
       "src/aquarium-optimized/opengl/SeaweedModelGL.h",
       "src/aquarium-optimized/opengl/TextureGL.cpp",
       "src/aquarium-optimized/opengl/TextureGL.h",
-      "src/aquarium-optimized/opengl/imgui_impl_opengl3.h",
       "src/aquarium-optimized/opengl/imgui_impl_opengl3.cpp",
+      "src/aquarium-optimized/opengl/imgui_impl_opengl3.h",
     ]
   }
 
@@ -103,16 +103,16 @@ executable("aquarium") {
     ]
 
     deps += [
-      "third_party/angle:libANGLE",
-      "third_party/angle:libGLESv2",
-      "third_party/angle:libEGL",
       "third_party/angle:angle_util_static",
+      "third_party/angle:libANGLE",
+      "third_party/angle:libEGL",
+      "third_party/angle:libGLESv2",
     ]
   } else {
     deps += [ "third_party:glad" ]
 
     include_dirs += [ "third_party/glad/include" ]
-    defines += [ "IMGUI_IMPL_OPENGL_LOADER_GLAD", ]
+    defines += [ "IMGUI_IMPL_OPENGL_LOADER_GLAD" ]
   }
 
   if (enable_dawn) {
@@ -123,6 +123,8 @@ executable("aquarium") {
     sources += [
       "src/aquarium-optimized/dawn/BufferDawn.cpp",
       "src/aquarium-optimized/dawn/BufferDawn.h",
+      "src/aquarium-optimized/dawn/BufferManagerDawn.cpp",
+      "src/aquarium-optimized/dawn/BufferManagerDawn.h",
       "src/aquarium-optimized/dawn/ContextDawn.cpp",
       "src/aquarium-optimized/dawn/ContextDawn.h",
       "src/aquarium-optimized/dawn/FishModelDawn.cpp",
@@ -143,8 +145,6 @@ executable("aquarium") {
       "src/aquarium-optimized/dawn/TextureDawn.h",
       "src/aquarium-optimized/dawn/imgui_impl_dawn.cpp",
       "src/aquarium-optimized/dawn/imgui_impl_dawn.h",
-      "src/aquarium-optimized/dawn/BufferManagerDawn.h",
-      "src/aquarium-optimized/dawn/BufferManagerDawn.cpp",
     ]
 
     deps += [
@@ -160,9 +160,7 @@ executable("aquarium") {
   if (enable_d3d12) {
     defines += [ "ENABLE_D3D12_BACKEND" ]
 
-    include_dirs += [
-      "src/include/d3d12",
-    ]
+    include_dirs += [ "src/include/d3d12" ]
 
     libs += [
       "d3d12.lib",
@@ -191,8 +189,8 @@ executable("aquarium") {
       "src/aquarium-optimized/d3d12/SeaweedModelD3D12.h",
       "src/aquarium-optimized/d3d12/TextureD3D12.cpp",
       "src/aquarium-optimized/d3d12/TextureD3D12.h",
-      "src/aquarium-optimized/d3d12/imgui_impl_dx12.h",
       "src/aquarium-optimized/d3d12/imgui_impl_dx12.cpp",
+      "src/aquarium-optimized/d3d12/imgui_impl_dx12.h",
     ]
   }
 
@@ -210,32 +208,32 @@ executable("aquarium") {
 
 executable("aquarium-direct-map") {
   sources = [
-    "src/common/AQUARIUM_ASSERT.h",
-    "src/common/FPSTimer.h",
-    "src/common/FPSTimer.cpp",
-    "src/aquarium-direct-map/AttribBuffer.h",
     "src/aquarium-direct-map/AttribBuffer.cpp",
-    "src/aquarium-direct-map/Buffer.h",
+    "src/aquarium-direct-map/AttribBuffer.h",
     "src/aquarium-direct-map/Buffer.cpp",
+    "src/aquarium-direct-map/Buffer.h",
     "src/aquarium-direct-map/Globals.h",
     "src/aquarium-direct-map/Main.cpp",
     "src/aquarium-direct-map/Matrix.h",
-    "src/aquarium-direct-map/Model.h",
     "src/aquarium-direct-map/Model.cpp",
-    "src/aquarium-direct-map/Program.h",
+    "src/aquarium-direct-map/Model.h",
     "src/aquarium-direct-map/Program.cpp",
-    "src/aquarium-direct-map/Scene.h",
+    "src/aquarium-direct-map/Program.h",
     "src/aquarium-direct-map/Scene.cpp",
-    "src/aquarium-direct-map/Texture.h",
+    "src/aquarium-direct-map/Scene.h",
     "src/aquarium-direct-map/Texture.cpp",
-    "src/aquarium-direct-map/Uniform.h",
+    "src/aquarium-direct-map/Texture.h",
     "src/aquarium-direct-map/Uniform.cpp",
+    "src/aquarium-direct-map/Uniform.h",
+    "src/common/AQUARIUM_ASSERT.h",
+    "src/common/FPSTimer.cpp",
+    "src/common/FPSTimer.h",
   ]
 
   deps = [
-    "third_party:stb",
     "third_party:glad",
     "third_party:glfw",
+    "third_party:stb",
   ]
 
   include_dirs = [
