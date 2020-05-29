@@ -18,8 +18,8 @@ vars = {
   'spirv_tools_revision': '85f3e93d13f32d45bd7f9999aa51baddf2452aae',
   'jsoncpp_revision': '571788934b5ee8643d53e5d054534abbe6006168',
   'jsoncpp_source_revision': '645250b6690785be60ab6780ce4b58698d884d11',
-  'vulkan-headers_revision':'5b44df19e040fca0048ab30c553a8c2d2cb9623e',
-  'vulkan-validation-layers_revision':'9fba37afae13a11bd49ae942bf82e5bf1098e381',
+  'vulkan-headers_revision': 'e01f13e1f777cf592ebd1a5f4836d4cd10ed85f6',
+  'vulkan-validation-layers_revision': '1533266eac486fae0c34bffe4868c4bc91dbe078',
 }
 
 deps = {
