@@ -8,7 +8,7 @@ vars = {
   'chromium_git': 'https://chromium.googlesource.com',
   'github_git': 'https://github.com',
   'dawn_git': 'https://dawn.googlesource.com',
-  'dawn_revision': 'b761fe1346684c8d5a5063b49a83739491c5058e',
+  'dawn_revision': '73c99092667f3402ac91852923987067e3ec5f2f',
   'angle_root': 'third_party/angle',
   'angle_revision': '6c824a1bc17b286b86cf05a0228ec549875351eb',
   'glslang_revision': 'b5f003d7a3ece37db45578a8a3140b370036fc64',
@@ -18,8 +18,8 @@ vars = {
   'spirv_tools_revision': '85f3e93d13f32d45bd7f9999aa51baddf2452aae',
   'jsoncpp_revision': '571788934b5ee8643d53e5d054534abbe6006168',
   'jsoncpp_source_revision': '645250b6690785be60ab6780ce4b58698d884d11',
-  'vulkan-headers_revision': 'e01f13e1f777cf592ebd1a5f4836d4cd10ed85f6',
-  'vulkan-validation-layers_revision': '1533266eac486fae0c34bffe4868c4bc91dbe078',
+  'vulkan-headers_revision': '09531f27933bf04bffde9074acb302e026e8f181',
+  'vulkan-validation-layers_revision': '31bdb2d4376919f5964dd8314dd2192810f08b36',
 }
 
 deps = {
