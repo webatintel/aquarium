@@ -4,6 +4,8 @@
 # found in the LICENSE file.
 #
 
+import("third_party/dawn/scripts/dawn_features.gni")
+
 declare_args() {
   enable_dawn = is_win || is_linux || is_mac
   enable_angle = false
@@ -117,6 +119,15 @@ executable("aquarium") {
 
   if (enable_dawn) {
     defines += [ "ENABLE_DAWN_BACKEND" ]
+    if (dawn_enable_d3d12) {
+      defines += [ "DAWN_ENABLE_D3D12_BACKEND" ]
+    }
+    if (dawn_enable_metal) {
+      defines += [ "DAWN_ENABLE_METAL_BACKEND" ]
+    }
+    if (dawn_enable_vulkan) {
+      defines += [ "DAWN_ENABLE_VULKAN_BACKEND" ]
+    }
 
     include_dirs += [ "third_party/dawn/src" ]
 
