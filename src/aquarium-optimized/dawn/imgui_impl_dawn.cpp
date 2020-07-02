@@ -185,16 +185,15 @@ static void ImGui_ImplDawn_CreateFontsTexture(bool enableAlphaBlending)
     // Upload texture to graphics system
     {
         wgpu::TextureDescriptor descriptor;
-        descriptor.dimension       = wgpu::TextureDimension::e2D;
-        descriptor.size.width      = width;
-        descriptor.size.height     = height;
-        descriptor.size.depth      = 1;
-        descriptor.arrayLayerCount = 1;
-        descriptor.sampleCount     = 1;
-        descriptor.format          = mFormat;
-        descriptor.mipLevelCount   = 1;
-        descriptor.usage           = wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::Sampled;
-        mTexture                   = mContextDawn->createTexture(descriptor);
+        descriptor.dimension     = wgpu::TextureDimension::e2D;
+        descriptor.size.width    = width;
+        descriptor.size.height   = height;
+        descriptor.size.depth    = 1;
+        descriptor.sampleCount   = 1;
+        descriptor.format        = mFormat;
+        descriptor.mipLevelCount = 1;
+        descriptor.usage         = wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::Sampled;
+        mTexture                 = mContextDawn->createTexture(descriptor);
 
         wgpu::CreateBufferMappedResult result = mContextDawn->CreateBufferMapped(
             wgpu::BufferUsage::CopySrc | wgpu::BufferUsage::MapWrite, width * height * 4);

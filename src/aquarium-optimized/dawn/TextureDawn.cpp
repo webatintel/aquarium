@@ -57,8 +57,7 @@ void TextureDawn::loadTexture()
         descriptor.dimension = mTextureDimension;
         descriptor.size.width = mWidth;
         descriptor.size.height = mHeight;
-        descriptor.size.depth = 1;
-        descriptor.arrayLayerCount = 6;
+        descriptor.size.depth = 6;
         descriptor.sampleCount = 1;
         descriptor.format = mFormat;
         descriptor.mipLevelCount   = 1;
@@ -121,7 +120,6 @@ void TextureDawn::loadTexture()
         descriptor.size.width  = resizedWidth;
         descriptor.size.height = mHeight;
         descriptor.size.depth = 1;
-        descriptor.arrayLayerCount = 1;
         descriptor.sampleCount = 1;
         descriptor.format = mFormat;
         descriptor.mipLevelCount   = static_cast<uint32_t>(std::floor(

@@ -495,15 +495,14 @@ wgpu::RenderPipeline ContextDawn::createRenderPipeline(
 wgpu::TextureView ContextDawn::createMultisampledRenderTargetView() const
 {
     wgpu::TextureDescriptor descriptor;
-    descriptor.dimension       = wgpu::TextureDimension::e2D;
-    descriptor.size.width      = mClientWidth;
-    descriptor.size.height     = mClientHeight;
-    descriptor.size.depth      = 1;
-    descriptor.arrayLayerCount = 1;
-    descriptor.sampleCount     = 4;
-    descriptor.format          = mPreferredSwapChainFormat;
-    descriptor.mipLevelCount   = 1;
-    descriptor.usage           = wgpu::TextureUsage::OutputAttachment;
+    descriptor.dimension     = wgpu::TextureDimension::e2D;
+    descriptor.size.width    = mClientWidth;
+    descriptor.size.height   = mClientHeight;
+    descriptor.size.depth    = 1;
+    descriptor.sampleCount   = 4;
+    descriptor.format        = mPreferredSwapChainFormat;
+    descriptor.mipLevelCount = 1;
+    descriptor.usage         = wgpu::TextureUsage::OutputAttachment;
 
     return mDevice.CreateTexture(&descriptor).CreateView();
 }
@@ -511,16 +510,15 @@ wgpu::TextureView ContextDawn::createMultisampledRenderTargetView() const
 wgpu::TextureView ContextDawn::createDepthStencilView() const
 {
     wgpu::TextureDescriptor descriptor;
-    descriptor.dimension       = wgpu::TextureDimension::e2D;
-    descriptor.size.width      = mClientWidth;
-    descriptor.size.height     = mClientHeight;
-    descriptor.size.depth      = 1;
-    descriptor.arrayLayerCount = 1;
-    descriptor.sampleCount     = mEnableMSAA ? 4 : 1;
-    descriptor.format          = wgpu::TextureFormat::Depth24PlusStencil8;
-    descriptor.mipLevelCount   = 1;
-    descriptor.usage           = wgpu::TextureUsage::OutputAttachment;
-    auto depthStencilTexture   = mDevice.CreateTexture(&descriptor);
+    descriptor.dimension     = wgpu::TextureDimension::e2D;
+    descriptor.size.width    = mClientWidth;
+    descriptor.size.height   = mClientHeight;
+    descriptor.size.depth    = 1;
+    descriptor.sampleCount   = mEnableMSAA ? 4 : 1;
+    descriptor.format        = wgpu::TextureFormat::Depth24PlusStencil8;
+    descriptor.mipLevelCount = 1;
+    descriptor.usage         = wgpu::TextureUsage::OutputAttachment;
+    auto depthStencilTexture = mDevice.CreateTexture(&descriptor);
     return depthStencilTexture.CreateView();
 }
 
