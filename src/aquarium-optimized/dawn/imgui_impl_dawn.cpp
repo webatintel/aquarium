@@ -203,7 +203,7 @@ static void ImGui_ImplDawn_CreateFontsTexture(bool enableAlphaBlending)
         wgpu::BufferCopyView bufferCopyView =
             mContextDawn->createBufferCopyView(result.buffer, 0, width * 4, height);
         wgpu::TextureCopyView textureCopyView =
-            mContextDawn->createTextureCopyView(mTexture, 0, 0, {0, 0, 0});
+            mContextDawn->createTextureCopyView(mTexture, 0, {0, 0, 0});
         wgpu::Extent3D copySize = {static_cast<uint32_t>(width), static_cast<uint32_t>(height), 1};
         wgpu::CommandBuffer copyCommand =
             mContextDawn->copyBufferToTexture(bufferCopyView, textureCopyView, copySize);

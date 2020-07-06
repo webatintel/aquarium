@@ -381,11 +381,10 @@ wgpu::BufferCopyView ContextDawn::createBufferCopyView(const wgpu::Buffer &buffe
 
 wgpu::TextureCopyView ContextDawn::createTextureCopyView(wgpu::Texture texture,
                                                          uint32_t level,
-                                                         uint32_t slice,
                                                          wgpu::Origin3D origin)
 {
 
-    return utils::CreateTextureCopyView(texture, level, slice, origin);
+    return utils::CreateTextureCopyView(texture, level, origin);
 }
 
 wgpu::CommandBuffer ContextDawn::copyBufferToTexture(const wgpu::BufferCopyView &bufferCopyView,
