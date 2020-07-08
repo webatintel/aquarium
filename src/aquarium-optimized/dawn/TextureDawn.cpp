@@ -74,7 +74,7 @@ void TextureDawn::loadTexture()
             wgpu::BufferCopyView bufferCopyView =
                 mContext->createBufferCopyView(result.buffer, 0, mWidth * 4, mHeight);
             wgpu::TextureCopyView textureCopyView =
-                mContext->createTextureCopyView(mTexture, 0, i, {0, 0, 0});
+                mContext->createTextureCopyView(mTexture, 0, {0, 0, i});
             wgpu::Extent3D copySize = {static_cast<uint32_t>(mWidth),
                                        static_cast<uint32_t>(mHeight), 1};
             mContext->mCommandBuffers.emplace_back(
@@ -147,7 +147,7 @@ void TextureDawn::loadTexture()
             wgpu::BufferCopyView bufferCopyView =
                 mContext->createBufferCopyView(result.buffer, 0, resizedWidth * 4, height);
             wgpu::TextureCopyView textureCopyView =
-                mContext->createTextureCopyView(mTexture, i, 0, {0, 0, 0});
+                mContext->createTextureCopyView(mTexture, i, {0, 0, 0});
             wgpu::Extent3D copySize = {static_cast<uint32_t>(width), static_cast<uint32_t>(height),
                                        1};
             mContext->mCommandBuffers.emplace_back(

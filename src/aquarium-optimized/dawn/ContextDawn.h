@@ -77,7 +77,6 @@ class ContextDawn : public Context
 
     wgpu::TextureCopyView createTextureCopyView(wgpu::Texture texture,
                                                 uint32_t level,
-                                                uint32_t slice,
                                                 wgpu::Origin3D origin);
     wgpu::ShaderModule createShaderModule(utils::SingleShaderStage stage,
                                           const std::string &str) const;
