@@ -62,9 +62,9 @@ bool ContextGL::initialize(BACKENDTYPE backend,
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     mResourceHelper = new ResourceHelper("opengl", std::string("100"), backend);
 #else
-    if (toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEMSAAx4)))
+    if (mMSAASampleCount > 1)
     {
-        glfwWindowHint(GLFW_SAMPLES, 4);
+        glfwWindowHint(GLFW_SAMPLES, mMSAASampleCount);
     }
     mDisableControlPanel = (toggleBitset.test(static_cast<TOGGLE>(TOGGLE::DISABLECONTROLPANEL)));
 
@@ -401,7 +401,6 @@ void ContextGL::initState()
 
 void ContextGL::initAvailableToggleBitset(BACKENDTYPE backendType)
 {
-    mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEMSAAx4));
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::UPATEANDDRAWFOREACHMODEL));
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEFULLSCREENMODE));
 }
@@ -479,7 +478,7 @@ void ContextGL::updateFPS(const FPSTimer &fpsTimer,
     }
     // Start the Dear ImGui frame
     ImGui_ImplOpenGL3_NewFrame(
-        toggleBitset->test(static_cast<TOGGLE>(TOGGLE::ENABLEMSAAx4)),
+        mMSAASampleCount,
         toggleBitset->test(static_cast<TOGGLE>(TOGGLE::ENABLEALPHABLENDING)));
     renderImgui(fpsTimer, fishCount, toggleBitset);
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

@@ -60,7 +60,6 @@ ContextDawn::ContextDawn(BACKENDTYPE backendType)
       mPipeline(nullptr),
       mBindGroup(nullptr),
       mPreferredSwapChainFormat(wgpu::TextureFormat::RGBA8Unorm),
-      mEnableMSAA(false),
       bufferManager(nullptr)
 {
     mResourceHelper = new ResourceHelper("dawn", "", backendType);
@@ -138,7 +137,6 @@ bool ContextDawn::initialize(
         }
     }
 
-    mEnableMSAA = toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEMSAAx4));
     mDisableControlPanel = toggleBitset.test(static_cast<TOGGLE>(TOGGLE::DISABLECONTROLPANEL));
 
     // initialise GLFW
@@ -240,7 +238,7 @@ bool ContextDawn::initialize(
     mResourceHelper->setRenderer(renderer);
 
     // When MSAA is enabled, we create an intermediate multisampled texture to render the scene to.
-    if (mEnableMSAA)
+    if (mMSAASampleCount > 1)
     {
         mSceneRenderTargetView = createMultisampledRenderTargetView();
     }
@@ -323,7 +321,6 @@ bool ContextDawn::GetHardwareAdapter(
 
 void ContextDawn::initAvailableToggleBitset(BACKENDTYPE backendType)
 {
-    mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEMSAAx4));
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEINSTANCEDDRAWS));
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEDYNAMICBUFFEROFFSET));
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::DISCRETEGPU));
@@ -483,7 +480,7 @@ wgpu::RenderPipeline ContextDawn::createRenderPipeline(
     descriptor.cDepthStencilState.depthWriteEnabled = true;
     descriptor.cDepthStencilState.depthCompare      = wgpu::CompareFunction::Less;
     descriptor.primitiveTopology                    = wgpu::PrimitiveTopology::TriangleList;
-    descriptor.sampleCount                          = mEnableMSAA ? 4 : 1;
+    descriptor.sampleCount                          = mMSAASampleCount;
     descriptor.rasterizationState                   = &rasterizationState;
 
     wgpu::RenderPipeline mPipeline = mDevice.CreateRenderPipeline(&descriptor);
@@ -498,7 +495,7 @@ wgpu::TextureView ContextDawn::createMultisampledRenderTargetView() const
     descriptor.size.width    = mClientWidth;
     descriptor.size.height   = mClientHeight;
     descriptor.size.depth    = 1;
-    descriptor.sampleCount   = 4;
+    descriptor.sampleCount   = mMSAASampleCount;
     descriptor.format        = mPreferredSwapChainFormat;
     descriptor.mipLevelCount = 1;
     descriptor.usage         = wgpu::TextureUsage::OutputAttachment;
@@ -513,7 +510,7 @@ wgpu::TextureView ContextDawn::createDepthStencilView() const
     descriptor.size.width    = mClientWidth;
     descriptor.size.height   = mClientHeight;
     descriptor.size.depth    = 1;
-    descriptor.sampleCount   = mEnableMSAA ? 4 : 1;
+    descriptor.sampleCount   = mMSAASampleCount;
     descriptor.format        = wgpu::TextureFormat::Depth24PlusStencil8;
     descriptor.mipLevelCount = 1;
     descriptor.usage         = wgpu::TextureUsage::OutputAttachment;
@@ -692,7 +689,7 @@ void ContextDawn::updateFPS(const FPSTimer &fpsTimer,
     }
 
     // Start the Dear ImGui frame
-    ImGui_ImplDawn_NewFrame(toggleBitset->test(static_cast<TOGGLE>(TOGGLE::ENABLEMSAAx4)),
+    ImGui_ImplDawn_NewFrame(mMSAASampleCount,
                             toggleBitset->test(static_cast<TOGGLE>(TOGGLE::ENABLEALPHABLENDING)));
     renderImgui(fpsTimer, fishCount, toggleBitset);
     ImGui_ImplDawn_RenderDrawData(ImGui::GetDrawData());
@@ -719,7 +716,7 @@ void ContextDawn::preFrame()
 {
     if (mIsSwapchainOutOfDate) {
         glfwGetFramebufferSize(mWindow, &mClientWidth, &mClientHeight);
-        if (mEnableMSAA) {
+        if (mMSAASampleCount > 1) {
             mSceneRenderTargetView = createMultisampledRenderTargetView();
         }
         mSceneDepthStencilView = createDepthStencilView();
@@ -732,7 +729,7 @@ void ContextDawn::preFrame()
     mCommandEncoder = mDevice.CreateCommandEncoder();
     mBackbufferView = mSwapchain.GetCurrentTextureView();
 
-    if (mEnableMSAA)
+    if (mMSAASampleCount > 1)
     {
         // If MSAA is enabled, we render to a multisampled texture and then resolve to the backbuffer
         mRenderPassDescriptor = utils::ComboRenderPassDescriptor({mSceneRenderTargetView},

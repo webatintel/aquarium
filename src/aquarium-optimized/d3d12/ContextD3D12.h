@@ -193,7 +193,6 @@ class ContextD3D12 : public Context
     ComPtr<ID3D12Resource> mSceneRenderTargetTexture;
     D3D12_RENDER_TARGET_VIEW_DESC mSceneRenderTargetView;
 
-    bool mEnableMSAA;
     UINT mVsync;
     bool mDisableD3D12RenderPass;
 };

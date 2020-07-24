@@ -235,7 +235,7 @@ static void ImGui_ImplDawn_CreateFontsTexture(bool enableAlphaBlending)
     io.Fonts->TexID = (ImTextureID)mTextureView.Get();
 }
 
-bool ImGui_ImplDawn_CreateDeviceObjects(bool enableMSAA, bool enableAlphaBlending)
+bool ImGui_ImplDawn_CreateDeviceObjects(int MSAASampleCount, bool enableAlphaBlending)
 {
     if (!mContextDawn->mDevice)
         return false;
@@ -322,7 +322,7 @@ bool ImGui_ImplDawn_CreateDeviceObjects(bool enableMSAA, bool enableAlphaBlendin
     mPipelineDescriptor.cDepthStencilState.depthWriteEnabled = false;
     mPipelineDescriptor.cDepthStencilState.depthCompare      = wgpu::CompareFunction::Always;
     mPipelineDescriptor.primitiveTopology  = wgpu::PrimitiveTopology::TriangleList;
-    mPipelineDescriptor.sampleCount                          = enableMSAA ? 4 : 1;
+    mPipelineDescriptor.sampleCount                          = MSAASampleCount;
     mPipelineDescriptor.rasterizationState = &rasterizationState;
 
     mPipeline = mContextDawn->mDevice.CreateRenderPipeline(&mPipelineDescriptor);
@@ -383,8 +383,8 @@ void ImGui_ImplDawn_Shutdown()
     mTextureView    = nullptr;
 }
 
-void ImGui_ImplDawn_NewFrame(bool enableMSAA, bool enableAlphaBlending)
+void ImGui_ImplDawn_NewFrame(int MSAASampleCount, bool enableAlphaBlending)
 {
     if (!mPipeline.Get())
-        ImGui_ImplDawn_CreateDeviceObjects(enableMSAA, enableAlphaBlending);
+        ImGui_ImplDawn_CreateDeviceObjects(MSAASampleCount, enableAlphaBlending);
 }

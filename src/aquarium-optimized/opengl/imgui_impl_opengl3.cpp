@@ -180,10 +180,10 @@ void ImGui_ImplOpenGL3_Shutdown()
     ImGui_ImplOpenGL3_DestroyDeviceObjects();
 }
 
-void ImGui_ImplOpenGL3_NewFrame(bool enableMSAA, bool enableAlphaBlending)
+void ImGui_ImplOpenGL3_NewFrame(int MSAASampleCount, bool enableAlphaBlending)
 {
     if (!g_FontTexture)
-        ImGui_ImplOpenGL3_CreateDeviceObjects(enableMSAA, enableAlphaBlending);
+        ImGui_ImplOpenGL3_CreateDeviceObjects(MSAASampleCount, enableAlphaBlending);
 }
 
 static void ImGui_ImplOpenGL3_SetupRenderState(ImDrawData *draw_data,
@@ -524,7 +524,7 @@ static bool CheckProgram(GLuint handle, const char *desc)
     return (GLboolean)status == GL_TRUE;
 }
 
-bool ImGui_ImplOpenGL3_CreateDeviceObjects(bool enableMSAA, bool enableAlphaBlending)
+bool ImGui_ImplOpenGL3_CreateDeviceObjects(int MSAASampleCount, bool enableAlphaBlending)
 {
     if (enableAlphaBlending)
     {

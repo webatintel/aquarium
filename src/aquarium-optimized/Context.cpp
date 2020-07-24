@@ -76,13 +76,13 @@ void Context::renderImgui(const FPSTimer &fpsTimer,
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
                     1000.0f / fpsTimer.getAverageFPS(), fpsTimer.getAverageFPS());
 
-        if (toggleBitset->test(static_cast<size_t>(TOGGLE::ENABLEMSAAx4)))
+        if (mMSAASampleCount > 1)
         {
-            ImGui::Text("MSAAx4: ON");
+            ImGui::Text("MSAA: ON, Sample Count: %d", mMSAASampleCount);
         }
         else
         {
-            ImGui::Text("MSAAx4: OFF");
+            ImGui::Text("MSAA: OFF");
         }
 
         if (toggleBitset->test(static_cast<size_t>(TOGGLE::ENABLEALPHABLENDING)))

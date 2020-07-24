@@ -280,10 +280,10 @@ aquarium.exe --num-fish 10000 --backend dawn_d3d12 --enable-instanced-draws
 aquarium.exe --num-fish 10000 --backend dawn_vulkan --enable-instanced-draws
 aquarium.exe --num-fish 10000 --backend d3d12 --enable-instanced-draws
 
-# MSAA is disabled by default. To Enable MSAA, "--enable-msaa", 4 samples.
+# MSAA is disabled by default. To Enable MSAA, add option "--msaa-sample-count [count]" with [count] value greater than 1.
 # MSAA of ANGLE is not supported now.
 
-aquarium.exe --num-fish 10000 --backend opengl --enable-msaa
+aquarium.exe --num-fish 10000 --backend opengl --msaa-sample-count 4
 
 
 # “--disable-dynamic-buffer-offset” ：The path is to test individual draw by creating many binding groups on dawn backend.

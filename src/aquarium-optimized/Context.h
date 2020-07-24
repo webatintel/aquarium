@@ -35,7 +35,7 @@ static char fishCountInputBuffer[64];
 class Context
 {
   public:
-    Context() : mDisableControlPanel(false), show_option_window(false) {}
+    Context() : mDisableControlPanel(false), mMSAASampleCount(1), show_option_window(false) {}
     virtual ~Context() {}
     virtual bool initialize(BACKENDTYPE backend,
                             const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset,
@@ -85,6 +85,7 @@ class Context
     virtual void updateWorldlUniforms(Aquarium *aquarium) {}
 
     ResourceHelper *getResourceHelper() { return mResourceHelper; }
+    void setMSAASampleCount(int MSAASampleCount) { mMSAASampleCount = MSAASampleCount; }
 
   protected:
     void renderImgui(const FPSTimer &fpsTimer,
@@ -103,6 +104,7 @@ class Context
     virtual void initAvailableToggleBitset(BACKENDTYPE backendType) = 0;
 
     bool mDisableControlPanel;
+    int mMSAASampleCount;
 
   private:
     bool show_option_window;

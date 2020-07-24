@@ -113,8 +113,6 @@ enum TOGGLE : short
     AUTOSTOP,
     // Enable alpha blending.
     ENABLEALPHABLENDING,
-    // Enable 4 times MSAA.
-    ENABLEMSAAx4,
     // Go through instanced draw.
     ENABLEINSTANCEDDRAWS,
     // The toggle is only supported on Dawn backend.
