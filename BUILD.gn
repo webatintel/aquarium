@@ -59,6 +59,12 @@ executable("aquarium") {
     "third_party/imgui",
     "third_party/imgui/examples",
     "third_party/glfw/include",
+    "third_party/cxxopts/include",
+  ]
+
+  defines = [
+    "CXXOPTS_NO_EXCEPTIONS",
+    "CXXOPTS_NO_RTTI",
   ]
 
   if (enable_angle || enable_opengl) {
@@ -85,8 +91,6 @@ executable("aquarium") {
       "src/aquarium-optimized/opengl/imgui_impl_opengl3.h",
     ]
   }
-
-  defines = []
 
   if (enable_angle) {
     enable_dawn = false
