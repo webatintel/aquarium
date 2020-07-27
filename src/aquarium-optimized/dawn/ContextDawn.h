@@ -174,7 +174,6 @@ class ContextDawn : public Context
     wgpu::Buffer mLightBuffer;
     wgpu::Buffer mFogBuffer;
 
-    bool mEnableMSAA;
     bool mEnableDynamicBufferOffset;
 
     BufferManagerDawn *bufferManager;

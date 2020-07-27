@@ -62,7 +62,6 @@ ContextD3D12::ContextD3D12(BACKENDTYPE backendType)
       mLightView({}),
       mFogView({}),
       mSceneRenderTargetView({}),
-      mEnableMSAA(false),
       mVsync(1u),
       mDisableD3D12RenderPass(false)
 {
@@ -91,7 +90,6 @@ bool ContextD3D12::initialize(
     int windowWidth,
     int windowHeight)
 {
-    mEnableMSAA = toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEMSAAx4));
     mVsync      = toggleBitset.test(static_cast<size_t>(TOGGLE::TURNOFFVSYNC)) ? 0 : 1;
     mDisableControlPanel = toggleBitset.test(static_cast<TOGGLE>(TOGGLE::DISABLECONTROLPANEL));
 
@@ -198,7 +196,7 @@ bool ContextD3D12::initialize(
 
     // Describe and create a render target view (RTV) descriptor heap.
     D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-    rtvHeapDesc.NumDescriptors             = mEnableMSAA ? mFrameCount + 1 : mFrameCount;
+    rtvHeapDesc.NumDescriptors             = mMSAASampleCount > 1 ? mFrameCount + 1 : mFrameCount;
     rtvHeapDesc.Type                       = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
     rtvHeapDesc.Flags                      = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
     ThrowIfFailed(mDevice->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&mRtvHeap)));
@@ -258,7 +256,7 @@ bool ContextD3D12::initialize(
         !getRenderPassesTier(mDevice.Get()) ||
         toggleBitset.test(static_cast<size_t>(TOGGLE::DISABLED3D12RENDERPASS));
 
-    if (mEnableMSAA)
+    if (mMSAASampleCount > 1)
     {
         D3D12_RESOURCE_DESC textureDesc = {};
         textureDesc.MipLevels           = 1;
@@ -267,7 +265,7 @@ bool ContextD3D12::initialize(
         textureDesc.Height              = mClientHeight;
         textureDesc.Flags               = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
         textureDesc.DepthOrArraySize    = 1;
-        textureDesc.SampleDesc.Count    = 4u;
+        textureDesc.SampleDesc.Count    = mMSAASampleCount;
         textureDesc.SampleDesc.Quality  = 0;
         textureDesc.Dimension           = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 
@@ -387,7 +385,6 @@ void ContextD3D12::stateTransition(ComPtr<ID3D12Resource> resource,
 
 void ContextD3D12::initAvailableToggleBitset(BACKENDTYPE backendType)
 {
-    mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEMSAAx4));
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEINSTANCEDDRAWS));
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::DISCRETEGPU));
     mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::INTEGRATEDGPU));
@@ -401,7 +398,7 @@ void ContextD3D12::DoFlush(const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEM
     if (mDisableD3D12RenderPass)
     {
         // Resolve MSAA texture to non MSAA texture, and then present.
-        if (mEnableMSAA)
+        if (mMSAASampleCount > 1)
         {
             stateTransition(mSceneRenderTargetTexture, D3D12_RESOURCE_STATE_RENDER_TARGET,
                             D3D12_RESOURCE_STATE_RESOLVE_SOURCE);
@@ -433,7 +430,7 @@ void ContextD3D12::DoFlush(const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEM
     {
         mCommandList->EndRenderPass();
 
-        if (mEnableMSAA)
+        if (mMSAASampleCount > 1)
         {
             stateTransition(mRenderTargets[m_frameIndex], D3D12_RESOURCE_STATE_RESOLVE_DEST,
                             D3D12_RESOURCE_STATE_COMMON);
@@ -521,7 +518,7 @@ void ContextD3D12::updateFPS(const FPSTimer &fpsTimer,
     }
 
     // Start the Dear ImGui frame
-    ImGui_ImplDX12_NewFrame(toggleBitset->test(static_cast<TOGGLE>(TOGGLE::ENABLEMSAAx4)),
+    ImGui_ImplDX12_NewFrame(mMSAASampleCount,
                             toggleBitset->test(static_cast<TOGGLE>(TOGGLE::ENABLEALPHABLENDING)));
     renderImgui(fpsTimer, fishCount, toggleBitset);
     ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), mCommandList.Get());
@@ -564,7 +561,7 @@ void ContextD3D12::preFrame()
 
     CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle;
     CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle;
-    if (mEnableMSAA)
+    if (mMSAASampleCount > 1)
     {
         rtvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(mRtvHeap->GetCPUDescriptorHandleForHeapStart(),
                                                   mFrameCount, mRtvDescriptorSize);
@@ -902,7 +899,7 @@ void ContextD3D12::beginRenderPass()
     CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle;
     CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle;
 
-    if (mEnableMSAA)
+    if (mMSAASampleCount > 1)
     {
         // Set MSAA texture as render target
         rtvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(mRtvHeap->GetCPUDescriptorHandleForHeapStart(),
@@ -917,7 +914,7 @@ void ContextD3D12::beginRenderPass()
 
     if (mDisableD3D12RenderPass)
     {
-        if (!mEnableMSAA)
+        if (mMSAASampleCount == 1)
         {
             stateTransition(mRenderTargets[m_frameIndex], D3D12_RESOURCE_STATE_COMMON,
                             D3D12_RESOURCE_STATE_RENDER_TARGET);
@@ -943,7 +940,7 @@ void ContextD3D12::beginRenderPass()
         renderPassRenderTargetDesc.cpuDescriptor   = rtvHandle;
         renderPassRenderTargetDesc.BeginningAccess = renderPassBeginningAccessClear;
 
-        if (mEnableMSAA)
+        if (mMSAASampleCount > 1)
         {
             stateTransition(mRenderTargets[m_frameIndex],
                             D3D12_RESOURCE_STATE_COMMON,  // D3D12_RESOURCE_STATE_RENDER_TARGET
@@ -1003,7 +1000,7 @@ void ContextD3D12::createDepthStencilView()
     D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
     depthStencilViewDesc.Format                        = DXGI_FORMAT_D24_UNORM_S8_UINT;
     depthStencilViewDesc.ViewDimension =
-        mEnableMSAA ? D3D12_DSV_DIMENSION_TEXTURE2DMS : D3D12_DSV_DIMENSION_TEXTURE2D;
+        mMSAASampleCount > 1 ? D3D12_DSV_DIMENSION_TEXTURE2DMS : D3D12_DSV_DIMENSION_TEXTURE2D;
     depthStencilViewDesc.Flags = D3D12_DSV_FLAG_NONE;
 
     D3D12_CLEAR_VALUE depthOptimizedClearValue    = {};
@@ -1019,7 +1016,7 @@ void ContextD3D12::createDepthStencilView()
     depthStencilDesc.DepthOrArraySize   = 1;
     depthStencilDesc.MipLevels          = 1;
     depthStencilDesc.Format             = DXGI_FORMAT_D24_UNORM_S8_UINT;
-    depthStencilDesc.SampleDesc.Count   = mEnableMSAA ? 4 : 1;
+    depthStencilDesc.SampleDesc.Count   = mMSAASampleCount;
     depthStencilDesc.SampleDesc.Quality = 0;
     depthStencilDesc.Layout             = D3D12_TEXTURE_LAYOUT_UNKNOWN;
     depthStencilDesc.Flags              = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
@@ -1194,7 +1191,7 @@ void ContextD3D12::createGraphicsPipelineState(
     psoDesc.RasterizerState.DepthBiasClamp        = D3D12_DEFAULT_DEPTH_BIAS_CLAMP;
     psoDesc.RasterizerState.SlopeScaledDepthBias  = D3D12_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;
     psoDesc.RasterizerState.DepthClipEnable       = TRUE;
-    psoDesc.RasterizerState.MultisampleEnable     = mEnableMSAA;
+    psoDesc.RasterizerState.MultisampleEnable     = mMSAASampleCount > 1;
     psoDesc.RasterizerState.AntialiasedLineEnable = FALSE;
     psoDesc.RasterizerState.ForcedSampleCount     = 0;
     psoDesc.RasterizerState.ConservativeRaster    = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
@@ -1212,7 +1209,7 @@ void ContextD3D12::createGraphicsPipelineState(
     psoDesc.PrimitiveTopologyType                 = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
     psoDesc.NumRenderTargets                      = 1u;
     psoDesc.RTVFormats[0]                         = mPreferredSwapChainFormat;
-    psoDesc.SampleDesc.Count                      = mEnableMSAA ? 4u : 1u;
+    psoDesc.SampleDesc.Count                      = mMSAASampleCount;
     psoDesc.SampleDesc.Quality                    = 0;
 
     ThrowIfFailed(mDevice->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mPipelineState)));

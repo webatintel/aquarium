@@ -159,11 +159,6 @@ bool Aquarium::init(int argc, char **argv)
 {
     mFactory = new ContextFactory();
 
-    // Create context of different backends through the cmd args.
-    // "--backend" {backend}: create different backends. currently opengl is supported.
-    // "--num-fish" {numfish}: imply rendering fish count.
-    // "--enable-msaa": enable 4 times MSAA.
-    // "--enable-instanced-draws": use instanced draw. By default, it's individual draw.
     char *pNext;
     for (int i = 1; i < argc; ++i)
     {
@@ -225,14 +220,9 @@ bool Aquarium::init(int argc, char **argv)
                 return false;
             }
         }
-        else if (cmd == "--enable-msaa")
+        else if (cmd == "--msaa-sample-count")
         {
-            if (!availableToggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEMSAAx4)))
-            {
-                std::cerr << "MSAA isn't implemented for the backend." << std::endl;
-                return false;
-            }
-            toggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEMSAAx4));
+            mContext->setMSAASampleCount(strtol(argv[i++ + 1], &pNext, 10));
         }
         else if (cmd == "--enable-instanced-draws")
         {

@@ -425,7 +425,7 @@ static void ImGui_ImplDX12_CreateFontsTexture(bool enableAlphaBlending)
     io.Fonts->TexID = (ImTextureID)g_hFontSrvGpuDescHandle.ptr;
 }
 
-bool ImGui_ImplDX12_CreateDeviceObjects(bool enableMSAA, bool enableAlphaBlending)
+bool ImGui_ImplDX12_CreateDeviceObjects(int MSAASampleCount, bool enableAlphaBlending)
 {
     if (!g_pd3dDevice)
         return false;
@@ -504,7 +504,7 @@ bool ImGui_ImplDX12_CreateDeviceObjects(bool enableMSAA, bool enableAlphaBlendin
     psoDesc.SampleMask            = UINT_MAX;
     psoDesc.NumRenderTargets      = 1;
     psoDesc.RTVFormats[0]         = g_RTVFormat;
-    psoDesc.SampleDesc.Count      = enableMSAA ? 4 : 1;
+    psoDesc.SampleDesc.Count      = MSAASampleCount;
     psoDesc.Flags                 = D3D12_PIPELINE_STATE_FLAG_NONE;
 
     // Create the vertex shader
@@ -609,7 +609,7 @@ bool ImGui_ImplDX12_CreateDeviceObjects(bool enableMSAA, bool enableAlphaBlendin
         desc.DepthBiasClamp         = D3D12_DEFAULT_DEPTH_BIAS_CLAMP;
         desc.SlopeScaledDepthBias   = D3D12_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;
         desc.DepthClipEnable        = true;
-        desc.MultisampleEnable      = enableMSAA;
+        desc.MultisampleEnable      = MSAASampleCount > 1;
         desc.AntialiasedLineEnable  = FALSE;
         desc.ForcedSampleCount      = 0u;
         desc.ConservativeRaster     = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
@@ -731,8 +731,8 @@ void ImGui_ImplDX12_Shutdown()
     g_frameIndex                = UINT_MAX;
 }
 
-void ImGui_ImplDX12_NewFrame(bool enableMSAA, bool enableAlphaBlending)
+void ImGui_ImplDX12_NewFrame(int MSAASampleCount, bool enableAlphaBlending)
 {
     if (!g_pPipelineState)
-        ImGui_ImplDX12_CreateDeviceObjects(enableMSAA, enableAlphaBlending);
+        ImGui_ImplDX12_CreateDeviceObjects(MSAASampleCount, enableAlphaBlending);
 }
