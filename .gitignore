@@ -7,15 +7,16 @@
 # third party libraries and gn build dummy folders.
 
 # User-specific files
+*.ini
+*.sln.docstates
 *.suo
 *.user
 *.userosscache
-*.sln.docstates
-*.ini
 
 # Third party libraries
 /third_party/SPIRV-Tools/
 /third_party/angle/
+/third_party/cxxopts/
 /third_party/dawn/
 /third_party/glfw/
 /third_party/glslang/

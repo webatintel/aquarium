@@ -20,6 +20,7 @@ vars = {
   'jsoncpp_source_revision': '645250b6690785be60ab6780ce4b58698d884d11',
   'vulkan-headers_revision': '09531f27933bf04bffde9074acb302e026e8f181',
   'vulkan-validation-layers_revision': '31bdb2d4376919f5964dd8314dd2192810f08b36',
+  'cxxopts_revision': '07f5cb24f1d75aad6c27eafd83863a78a37f16cb',
 }
 
 deps = {
@@ -77,6 +78,9 @@ deps = {
   },
   'third_party/vulkan-validation-layers': {
     'url': '{github_git}/KhronosGroup/Vulkan-ValidationLayers.git@{vulkan-validation-layers_revision}',
+  },
+  'third_party/cxxopts': {
+    'url': '{github_git}/jarro2783/cxxopts.git@{cxxopts_revision}',
   },
 }
 

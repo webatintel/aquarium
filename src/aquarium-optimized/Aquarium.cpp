@@ -23,9 +23,9 @@
 #include "Texture.h"
 
 #include "common/AQUARIUM_ASSERT.h"
-#include "include/CmdArgsHelper.h"
 #include "opengl/ContextGL.h"
 
+#include "cxxopts.hpp"
 #include "rapidjson/document.h"
 #include "rapidjson/filewritestream.h"
 #include "rapidjson/istreamwrapper.h"
@@ -157,42 +157,56 @@ BACKENDTYPE Aquarium::getBackendType(const std::string &backendPath)
 
 bool Aquarium::init(int argc, char **argv)
 {
-    mFactory = new ContextFactory();
+    int windowWidth = 0;
+    int windowHeight = 0;
 
-    char *pNext;
-    for (int i = 1; i < argc; ++i)
+    cxxopts::Options options(argv[0], "A native implementation of WebGL Aquarium");
+    options.allow_unrecognised_options().add_options()
+        ("backend", "Specifies running a certain backend, 'opengl', 'dawn_d3d12', 'dawn_vulkan', 'dawn_metal', 'dawn_opengl', 'angle', 'd3d12'", cxxopts::value<std::string>())
+        ("alpha-blending", "Format is <0-1|false>. Force enable alpha blending to a specific value or disable alpha blending for all models. By default, alpha blending is enabled.", cxxopts::value<std::string>())
+        ("buffer-mapping-async", "Upload uniforms by buffer mapping async for Dawn backend")
+        ("disable-control-panel", "Turn off control panel. You can show fps by passing '--print-log --test-time 30' to print the fps to cmd line.")
+        ("disable-d3d12-render-pass", "Turn off render pass for dawn_d3d12 and d3d12 backend")
+        ("disable-dawn-validation", "Turn off dawn validation")
+        ("disable-dynamic-buffer-offset", "The path is to test individual draw by creating many binding groups on dawn backend. By default, dynamic buffer offset is enabled. This option is only supported on dawn backend.")
+        ("discrete-gpu", "Choose discrete gpu to render the application. This is only supported on Dawn and D3D12 backend.")
+        ("integrated-gpu", "Choose integrated gpu to render the application. This is only supported on Dawn and D3D12 backend.")
+        ("enable-full-screen-mode", "Render aquarium in full screen mode instead of window mode")
+        ("msaa-sample-count", "specifies sample count of MSAA, while 1 for non-MSAA", cxxopts::value<int>())
+        ("num-fish", "specifies how many fishes will be rendered.", cxxopts::value<int>(mCurFishCount))
+        ("print-log", "print logs including avarage fps when exit the application.")
+        ("simulating-fish-come-and-go", "Load fish behavior from FishBehavior.json. The mode is only implemented for Dawn backend.")
+        ("test-time", "Render the application for some seconds and then exit, and the application will run 5 min by default.", cxxopts::value<int>(mTestTime))
+        ("turn-off-vsync", "Unlimit 60 fps")
+        ("window-size", "Format is <width,height>. Input window size", cxxopts::value<std::string>())
+        ("help", "Print help");
+    auto result = options.parse(argc, argv);
+
+    if (result.count("help"))
     {
-        std::string cmd(argv[i]);
-        if (cmd == "-h" || cmd == "--h")
-        {
-            std::cout << cmdArgsStrAquarium << std::endl;
-
-            return false;
-        }
-        if (cmd == "--backend")
-        {
-            std::string backend = argv[i++ + 1];
-            mBackendType        = getBackendType(backend);
-
-            if (mBackendType == BACKENDTYPE::BACKENDTYPELAST)
-            {
-                std::cout << "Can not create " << backend << " backend" << std::endl;
-                return false;
-            }
-
-            mContext = mFactory->createContext(mBackendType);
-        }
-        else
-        {
-        }
+        std::cout << options.help() << std::endl;
+        return false;
     }
 
+    if (!result.count("backend"))
+    {
+        std::cout << "Option --backend needs to be designated" << std::endl;
+        return false;
+    }
+    std::string backend = result["backend"].as<std::string>();
+    mBackendType = getBackendType(backend);
+    if (mBackendType == BACKENDTYPE::BACKENDTYPELAST)
+    {
+        std::cout << "Can not create " << backend << " backend" << std::endl;
+        return false;
+    }
+    mFactory = new ContextFactory();
+    mContext = mFactory->createContext(mBackendType);
     if (mContext == nullptr)
     {
         std::cout << "Failed to create context." << std::endl;
         return false;
     }
-
     std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> availableToggleBitset =
         mContext->getAvailableToggleBitset();
     if (availableToggleBitset.test(static_cast<size_t>(TOGGLE::UPATEANDDRAWFOREACHMODEL)))
@@ -205,181 +219,168 @@ bool Aquarium::init(int argc, char **argv)
     }
     toggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEALPHABLENDING));
 
-    int windowWidth  = 0;
-    int windowHeight = 0;
-
-    for (int i = 1; i < argc; ++i)
+    if (result.count("alpha-blending"))
     {
-        std::string cmd(argv[i]);
-        if (cmd == "--num-fish")
+        g.alpha = result["alpha-blending"].as<std::string>();
+        if (g.alpha == "false")
         {
-            mCurFishCount = strtol(argv[i++ + 1], &pNext, 10);
-            if (mCurFishCount < 0)
-            {
-                std::cerr << "Fish count should larger or equal to 0." << std::endl;
-                return false;
-            }
+            toggleBitset.reset(static_cast<size_t>(TOGGLE::ENABLEALPHABLENDING));
         }
-        else if (cmd == "--msaa-sample-count")
+    }
+
+    if (result.count("buffer-mapping-async"))
+    {
+        if (!availableToggleBitset.test(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC)))
         {
-            mContext->setMSAASampleCount(strtol(argv[i++ + 1], &pNext, 10));
-        }
-        else if (cmd == "--enable-instanced-draws")
-        {
-            /*if (!availableToggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEINSTANCEDDRAWS)))
-            {
-                std::cerr << "Instanced draw path isn't implemented for the backend." << std::endl;
-                return false;
-            }
-            toggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEINSTANCEDDRAWS));
-            // Disable map write aync for instanced draw mode
-            toggleBitset.reset(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC));*/
-            std::cerr << "Instanced draw path is deprecated." << std::endl;
+            std::cerr << "Buffer mapping async isn't supported for the backend." << std::endl;
             return false;
         }
-        else if (cmd == "--disable-dynamic-buffer-offset")
-        {
-            if (!availableToggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEDYNAMICBUFFEROFFSET)))
-            {
-                std::cerr << "Dynamic buffer offset is only implemented for Dawn Vulkan, Dawn "
-                             "Metal and D3D12 backend."
-                          << std::endl;
-                return false;
-            }
-            toggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEDYNAMICBUFFEROFFSET), false);
-        }
-        else if (cmd == "--integrated-gpu")
-        {
-            if (!availableToggleBitset.test(static_cast<size_t>(TOGGLE::INTEGRATEDGPU)) &&
-                !availableToggleBitset.test(static_cast<size_t>(TOGGLE::DISCRETEGPU)))
-            {
-                std::cerr << "Dynamically choose gpu isn't supported for the backend." << std::endl;
-                return false;
-            }
 
-            if (toggleBitset.test(static_cast<size_t>(TOGGLE::DISCRETEGPU)))
-            {
-                std::cerr << "Integrated and Discrete gpu cannot be used simultaneosly.";
-            }
-            toggleBitset.set(static_cast<size_t>(TOGGLE::INTEGRATEDGPU));
-        }
-        else if (cmd == "--discrete-gpu")
-        {
-            if (!availableToggleBitset.test(static_cast<size_t>(TOGGLE::INTEGRATEDGPU)) &&
-                !availableToggleBitset.test(static_cast<size_t>(TOGGLE::DISCRETEGPU)))
-            {
-                std::cerr << "Dynamically choose gpu isn't supported for the backend." << std::endl;
-                return false;
-            }
+        toggleBitset.set(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC));
+    }
 
-            if (toggleBitset.test(static_cast<size_t>(TOGGLE::INTEGRATEDGPU)))
-            {
-                std::cerr << "Integrated and Discrete gpu cannot be used simultaneosly.";
-            }
+    if (result.count("disable-control-panel"))
+    {
+        toggleBitset.set(static_cast<size_t>(TOGGLE::DISABLECONTROLPANEL));
+    }
 
-            toggleBitset.set(static_cast<size_t>(TOGGLE::DISCRETEGPU));
-        }
-        else if (cmd == "--enable-full-screen-mode")
+    if (result.count("disable-d3d12-render-pass"))
+    {
+        if (!availableToggleBitset.test(static_cast<size_t>(TOGGLE::DISABLED3D12RENDERPASS)))
         {
-            if (!availableToggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEFULLSCREENMODE)))
-            {
-                std::cerr << "Full screen mode isn't supported for the backend." << std::endl;
-                return false;
-            }
+            std::cerr << "Render pass is only supported for dawn_d3d12 backend. This feature "
+                         "is only supported on Intel gen 10 or more advanced platforms. "
+                         "Windows 1809 or later version is also required."
+                      << std::endl;
+            return false;
+        }
+        toggleBitset.set(static_cast<size_t>(TOGGLE::DISABLED3D12RENDERPASS));
+    }
 
-            toggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEFULLSCREENMODE));
-        }
-        else if (cmd == "--print-log")
+    if (result.count("disable-dawn-validation"))
+    {
+        if (!availableToggleBitset.test(static_cast<size_t>(TOGGLE::DISABLEDAWNVALIDATION)))
         {
-            toggleBitset.set(static_cast<size_t>(TOGGLE::PRINTLOG));
+            std::cerr << "Disable validation for Dawn backend." << std::endl;
+            return false;
         }
-        else if (cmd == "--buffer-mapping-async")
-        {
-            if (!availableToggleBitset.test(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC)))
-            {
-                std::cerr << "Buffer mapping async isn't supported for the backend." << std::endl;
-                return false;
-            }
+        toggleBitset.set(static_cast<size_t>(TOGGLE::DISABLEDAWNVALIDATION));
+    }
 
-            toggleBitset.set(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC));
-        }
-        else if (cmd == "--turn-off-vsync")
+    if (result.count("disable-dynamic-buffer-offset"))
+    {
+        if (!availableToggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEDYNAMICBUFFEROFFSET)))
         {
-            if (!availableToggleBitset.test(static_cast<size_t>(TOGGLE::TURNOFFVSYNC)))
-            {
-                std::cerr << "Turn off vsync isn't supported for the backend." << std::endl;
-                return false;
-            }
+            std::cerr << "Dynamic buffer offset is only implemented for Dawn Vulkan, Dawn "
+                         "Metal and D3D12 backend."
+                      << std::endl;
+            return false;
+        }
+        toggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEDYNAMICBUFFEROFFSET), false);
+    }
 
-            toggleBitset.set(static_cast<size_t>(TOGGLE::TURNOFFVSYNC));
-        }
-        else if (cmd == "--test-time")
+    if (result.count("discrete-gpu"))
+    {
+        if (!availableToggleBitset.test(static_cast<size_t>(TOGGLE::INTEGRATEDGPU)) &&
+            !availableToggleBitset.test(static_cast<size_t>(TOGGLE::DISCRETEGPU)))
         {
+            std::cerr << "Dynamically choose gpu isn't supported for the backend." << std::endl;
+            return false;
+        }
+        if (toggleBitset.test(static_cast<size_t>(TOGGLE::INTEGRATEDGPU)))
+        {
+            std::cerr << "Integrated and Discrete gpu cannot be used simultaneosly.";
+        }
+        toggleBitset.set(static_cast<size_t>(TOGGLE::DISCRETEGPU));
+    }
 
-            mTestTime = strtol(argv[i++ + 1], &pNext, 10);
-            toggleBitset.set(static_cast<size_t>(TOGGLE::AUTOSTOP));
-        }
-        else if (cmd.find("--window-size") != std::string::npos)
+    if (result.count("integrated-gpu"))
+    {
+        if (!availableToggleBitset.test(static_cast<size_t>(TOGGLE::INTEGRATEDGPU)) &&
+            !availableToggleBitset.test(static_cast<size_t>(TOGGLE::DISCRETEGPU)))
         {
-            size_t pos1  = cmd.find("=");
-            size_t pos2  = cmd.find(",");
-            windowWidth  = strtol(cmd.substr(pos1 + 1, pos2 - pos1).c_str(), &pNext, 10);
-            windowHeight = strtol(cmd.substr(pos2 + 1).c_str(), &pNext, 10);
-            if (windowWidth == 0 || windowHeight == 0)
-            {
-                std::cerr << "Please input window size with the format: "
-                             "'--window-size=[width],[height].' ";
-            }
+            std::cerr << "Dynamically choose gpu isn't supported for the backend." << std::endl;
+            return false;
         }
-        else if (cmd == "--disable-d3d12-render-pass")
+        if (toggleBitset.test(static_cast<size_t>(TOGGLE::DISCRETEGPU)))
         {
-            if (!availableToggleBitset.test(static_cast<size_t>(TOGGLE::DISABLED3D12RENDERPASS)))
-            {
-                std::cerr << "Render pass is only supported for dawn_d3d12 backend. This feature "
-                             "is only supported on Intel gen 10 or more advanced platforms. "
-                             "Windows 1809 or later version is also required."
-                          << std::endl;
-                return false;
-            }
+            std::cerr << "Integrated and Discrete gpu cannot be used simultaneosly.";
+        }
+        toggleBitset.set(static_cast<size_t>(TOGGLE::INTEGRATEDGPU));
+    }
 
-            toggleBitset.set(static_cast<size_t>(TOGGLE::DISABLED3D12RENDERPASS));
-        }
-        else if (cmd == "--disable-dawn-validation")
+    if (result.count("enable-full-screen-mode"))
+    {
+        if (!availableToggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEFULLSCREENMODE)))
         {
-            if (!availableToggleBitset.test(static_cast<size_t>(TOGGLE::DISABLEDAWNVALIDATION)))
-            {
-                std::cerr << "Disable validation for Dawn backend." << std::endl;
-                return false;
-            }
+            std::cerr << "Full screen mode isn't supported for the backend." << std::endl;
+            return false;
+        }
 
-            toggleBitset.set(static_cast<size_t>(TOGGLE::DISABLEDAWNVALIDATION));
-        }
-        else if (cmd.find("--enable-alpha-blending") != std::string::npos)
-        {
-            size_t pos = cmd.find("=");
-            if (pos != std::string::npos)
-            {
-                g.alpha = cmd.substr(pos + 1).c_str();
-                if (g.alpha == "false")
-                {
-                    toggleBitset.reset(static_cast<size_t>(TOGGLE::ENABLEALPHABLENDING));
-                }
-            }
-        }
-        else if (cmd == "--simulating-fish-come-and-go")
-        {
-            if (!availableToggleBitset.test(static_cast<size_t>(TOGGLE::SIMULATINGFISHCOMEANDGO)))
-            {
-                std::cerr << "Simulating fish come and go is only implemented for Dawn backend."
-                          << std::endl;
-                return false;
-            }
+        toggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEFULLSCREENMODE));
+    }
 
-            toggleBitset.set(static_cast<size_t>(TOGGLE::SIMULATINGFISHCOMEANDGO));
-        }
-        else if (cmd == "--disable-control-panel")
+    if (result.count("enable-instanced-draws"))
+    {
+        /*if (!availableToggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEINSTANCEDDRAWS)))
         {
-            toggleBitset.set(static_cast<size_t>(TOGGLE::DISABLECONTROLPANEL));
+            std::cerr << "Instanced draw path isn't implemented for the backend." << std::endl;
+            return false;
+        }
+        toggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEINSTANCEDDRAWS));
+        // Disable map write aync for instanced draw mode
+        toggleBitset.reset(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC));*/
+        std::cerr << "Instanced draw path is deprecated." << std::endl;
+        return false;
+    }
+
+    if (result.count("msaa-sample-count"))
+    {
+        mContext->setMSAASampleCount(result["msaa-sample-count"].as<int>());
+    }
+
+    if (result.count("print-log"))
+    {
+        toggleBitset.set(static_cast<size_t>(TOGGLE::PRINTLOG));
+    }
+
+    if (result.count("simulating-fish-come-and-go"))
+    {
+        if (!availableToggleBitset.test(static_cast<size_t>(TOGGLE::SIMULATINGFISHCOMEANDGO)))
+        {
+            std::cerr << "Simulating fish come and go is only implemented for Dawn backend."
+                      << std::endl;
+            return false;
+        }
+
+        toggleBitset.set(static_cast<size_t>(TOGGLE::SIMULATINGFISHCOMEANDGO));
+    }
+
+    if (result.count("test-time"))
+    {
+        toggleBitset.set(static_cast<size_t>(TOGGLE::AUTOSTOP));
+    }
+
+    if (result.count("turn-off-vsync"))
+    {
+        if (!availableToggleBitset.test(static_cast<size_t>(TOGGLE::TURNOFFVSYNC)))
+        {
+            std::cerr << "Turn off vsync isn't supported for the backend." << std::endl;
+            return false;
+        }
+
+        toggleBitset.set(static_cast<size_t>(TOGGLE::TURNOFFVSYNC));
+    }
+
+    if (result.count("window-size"))
+    {
+        std::string windowSize = result["window-size"].as<std::string>();
+        size_t pos             = windowSize.find(",");
+        windowWidth            = stoi(windowSize.substr(0, pos + 1));
+        windowHeight           = stoi(windowSize.substr(pos + 1));
+        if (windowWidth == 0 || windowHeight == 0)
+        {
+            std::cerr << "Please designate window size correctly.";
         }
     }
 

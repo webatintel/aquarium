@@ -258,7 +258,6 @@ build aquarium by vs
 # "--num-fish" : specifies how many fishes will be rendered
 # "--backend" : specifies running a certain backend, 'opengl', 'dawn_d3d12', 'dawn_vulkan', 'dawn_metal', 'dawn_opengl', 'angle'
 # "--enable-full-screen-mode" : specifies rendering a full screen mode
-# "--auto-test [count]" : log fps
 
 # run on Windows
 aquarium.exe --num-fish 10000 --backend dawn_d3d12
@@ -280,7 +279,7 @@ aquarium.exe --num-fish 10000 --backend dawn_d3d12 --enable-instanced-draws
 aquarium.exe --num-fish 10000 --backend dawn_vulkan --enable-instanced-draws
 aquarium.exe --num-fish 10000 --backend d3d12 --enable-instanced-draws
 
-# MSAA is disabled by default. To Enable MSAA, add option "--msaa-sample-count [count]" with [count] value greater than 1.
+# MSAA is disabled by default. To Enable MSAA, add option "--msaa-sample-count <count>" with <count> value greater than 1.
 # MSAA of ANGLE is not supported now.
 
 aquarium.exe --num-fish 10000 --backend opengl --msaa-sample-count 4
@@ -308,11 +307,11 @@ aquarium.exe --num-fish 10000 --backend dawn_d3d12 --enable-full-screen-mode
 # "--print-log" : print log including average fps when exit the application.
 aquarium.exe --num-fish 10000 --backend dawn_d3d12 --print-log
 
-# "--test-time [second]" : Render the application for some second and then exit, and the application will run 5 min by default.
+# "--test-time <second>" : Render the application for some second and then exit, and the application will run 5 min by default.
 aquarium.exe --num-fish 10000 --backend dawn_d3d12 --test-time 30
 
-#"--window-size=[width],[height]" : Set window size.
-aquarium.exe --num-fish 10000 --backend dawn_d3d12 --window-size=2560,1440
+#"--window-size <width,height>" : Set window size.
+aquarium.exe --num-fish 10000 --backend dawn_d3d12 --window-size 2560,1440
 
 #“--turn-off-vsync” : Unlimit 60 fps.
 aquarium.exe --num-fish 10000 --backend dawn_vulkan --turn-off-vsync
@@ -325,11 +324,11 @@ aquarium.exe --num-fish 10000 --backend dawn_d3d12 --disable-d3d12-render-pass
 #“--disable-dawn-validation” : Disable Dawn validation.
 aquarium.exe --num-fish 10000 --backend dawn_d3d12 --disable-dawn-validation
 
-#"--enable-alpha-blending=[0, 1] | false" : Force enable alpha blending to a specific value for all models or disable alpha blending. By default, alpha blending is enabled.
+#"--alpha-blending <0-1|false>" : Force enable alpha blending to a specific value for all models or disable alpha blending. By default, alpha blending is enabled.
 #Imgui uses stb truetype to render characters to gray bitmaps with format alpha8. The alpha value of the bitmap is 255 #or 0. When alpha blending is enabled, the pixels of the glyphs shows only if alpha is 255, while the other pixels are #rendered as background color. When alpha blending is disabled, the pixels are set to white if alpha is 255, and black
 #if alpha is 0.
-aquarium.exe --num-fish 10000 --backend opengl --enable-alpha-blending=0.5
-aquarium.exe --num-fish 10000 --backend opengl --enable-alpha-blending=false
+aquarium.exe --num-fish 10000 --backend opengl --alpha-blending 0.5
+aquarium.exe --num-fish 10000 --backend opengl --alpha-blending false
 
 # "--simulating-fish-come-and-go" : Load fish behavior from FishBehavior.json from the path of aquarium repo. The mode is only implemented for Dawn backend.
 # The fish number will increase or decrease according to the fish behavior. Please follow the format of fish number definition
