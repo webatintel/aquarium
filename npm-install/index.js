@@ -29,13 +29,13 @@ switch (process.platform) {
 var cmd;
 switch (process.platform) {
     case 'win32':
-        cmd = [ 'npm', 'install', 'glob', '@actions/core' ];
+        cmd = [ 'npm', 'install', 'glob', '@actions/core', '@octokit/graphql' ];
         break;
     case 'linux':
         // Git needs a fake email address in this workflow. During the
         // construction of the address, the D-Bus protocol will be used
         // for the domain name part of the FQDN.
-        cmd = [ 'npm', 'install', 'glob', '@actions/core', 'dbus-native' ];
+        cmd = [ 'npm', 'install', 'glob', '@actions/core', '@octokit/graphql', 'dbus-native' ];
         break;
     default:
         assert.fail();
