@@ -11,13 +11,13 @@ jobs:
     steps:
     - uses: 'actions/checkout@v1'
       with:
-        ref: '9787001a33f085680ee23f9877f5ab7cd96f6c27'
+        ref: '97eb5746acf8a3cb28eb2688e728e98876b29d4f'
 
         # Here is a very ugly hack that uses an undocumented input.
         # Without this, it seems that actions/checkout@v1 will ignore
         # ref when it's a SHA and the workflow is triggered by a pull
         # request event.
-        version: '9787001a33f085680ee23f9877f5ab7cd96f6c27'
+        version: '97eb5746acf8a3cb28eb2688e728e98876b29d4f'
 
         path: 'gh-actions'
     - uses: './npm-init'
@@ -34,6 +34,9 @@ jobs:
     - uses: './BUILD_CONFIG'
       with:
         build-config: '${{ github.sha }}${{ matrix.gl }}${{ matrix.target-cpu }}${{ matrix.build-type }}'
+    - uses: './GITHUB_TOKEN'
+      with:
+        github-token: '${{ github.token }}'
     - uses: './GIT_TEMPLATE_DIR'
     - uses: './GIT_EDITOR'
     - uses: './GN_EDITOR'
