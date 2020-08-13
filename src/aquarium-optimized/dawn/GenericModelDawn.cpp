@@ -170,12 +170,12 @@ void GenericModelDawn::init()
     mPipeline = mContextDawn->createRenderPipeline(mPipelineLayout, mProgramDawn,
                                                    mVertexStateDescriptor, mBlend);
 
-    mLightFactorBuffer =
-        mContextDawn->createBufferFromData(&mLightFactorUniforms, sizeof(mLightFactorUniforms),
-                                           wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
-    mWorldBuffer =
-        mContextDawn->createBufferFromData(&mWorldUniformPer, sizeof(mWorldUniformPer),
-                                           wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
+    mLightFactorBuffer = mContextDawn->createBufferFromData(
+        &mLightFactorUniforms, sizeof(mLightFactorUniforms), sizeof(mLightFactorUniforms),
+        wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
+    mWorldBuffer = mContextDawn->createBufferFromData(
+        &mWorldUniformPer, sizeof(mWorldUniformPer), sizeof(mWorldUniformPer),
+        wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
 
     // Generic models use reflection, normal or diffuse shaders, of which grouplayouts are
     // diiferent in texture binding. MODELGLOBEBASE use diffuse shader though it contains
@@ -216,13 +216,14 @@ void GenericModelDawn::init()
                                                     {0, mWorldBuffer, 0, sizeof(WorldUniformPer)},
                                                 });
 
-    mContextDawn->setBufferData(mLightFactorBuffer, 0, sizeof(LightFactorUniforms),
-                                &mLightFactorUniforms);
+    mContextDawn->setBufferData(mLightFactorBuffer, sizeof(LightFactorUniforms),
+                                &mLightFactorUniforms, sizeof(LightFactorUniforms));
 }
 
 void GenericModelDawn::prepareForDraw()
 {
-    mContextDawn->updateBufferData(mWorldBuffer, &mWorldUniformPer, sizeof(WorldUniformPer));
+    mContextDawn->updateBufferData(mWorldBuffer, sizeof(WorldUniformPer), &mWorldUniformPer,
+                                   sizeof(WorldUniformPer));
 }
 
 void GenericModelDawn::draw()

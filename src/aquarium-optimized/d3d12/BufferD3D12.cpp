@@ -15,7 +15,7 @@ BufferD3D12::BufferD3D12(ContextD3D12 *context,
     : mIsIndex(isIndex), mTotoalComponents(totalCmoponents), mStride(0), mOffset(nullptr)
 {
     mSize   = totalCmoponents * sizeof(float);
-    mBuffer = context->createDefaultBuffer(buffer.data(), mSize, mUploadBuffer);
+    mBuffer = context->createDefaultBuffer(buffer.data(), mSize, mSize, mUploadBuffer);
 
     // Initialize the vertex buffer view.
     mVertexBufferView.BufferLocation = mBuffer->GetGPUVirtualAddress();
@@ -31,7 +31,7 @@ BufferD3D12::BufferD3D12(ContextD3D12 *context,
     : mIsIndex(isIndex), mTotoalComponents(totalCmoponents), mStride(0), mOffset(nullptr)
 {
     mSize   = totalCmoponents * sizeof(unsigned short);
-    mBuffer = context->createDefaultBuffer(buffer.data(), mSize, mUploadBuffer);
+    mBuffer = context->createDefaultBuffer(buffer.data(), mSize, mSize, mUploadBuffer);
 
     // Initialize the vertex buffer view.
     mIndexBufferView.BufferLocation = mBuffer->GetGPUVirtualAddress();

@@ -56,15 +56,15 @@ void InnerModelD3D12::init()
 
     // create constant buffer, desc.
     mInnerBuffer = mContextD3D12->createDefaultBuffer(
-        &mInnerUniforms, mContextD3D12->CalcConstantBufferByteSize(sizeof(InnerUniforms)),
-        mInnerUploadBuffer);
+        &mInnerUniforms, sizeof(InnerUniforms),
+        mContextD3D12->CalcConstantBufferByteSize(sizeof(InnerUniforms)), mInnerUploadBuffer);
     mInnerView.BufferLocation = mInnerBuffer->GetGPUVirtualAddress();
     mInnerView.SizeInBytes    = mContextD3D12->CalcConstantBufferByteSize(
         sizeof(InnerUniforms));  // CB size is required to be 256-byte aligned.
     mContextD3D12->buildCbvDescriptor(mInnerView, &mInnerGPUHandle);
     mWorldBuffer = mContextD3D12->createDefaultBuffer(
-        &mWorldUniformPer, mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniforms)),
-        mWorldUploadBuffer);
+        &mWorldUniformPer, sizeof(WorldUniforms),
+        mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniforms)), mWorldUploadBuffer);
     mWorldBufferView.BufferLocation = mWorldBuffer->GetGPUVirtualAddress();
     mWorldBufferView.SizeInBytes = mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniforms));
 
@@ -104,9 +104,8 @@ void InnerModelD3D12::init()
 
 void InnerModelD3D12::prepareForDraw()
 {
-    mContextD3D12->updateConstantBufferSync(
-        mWorldBuffer, mWorldUploadBuffer, &mWorldUniformPer,
-        mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniforms)));
+    mContextD3D12->updateConstantBufferSync(mWorldBuffer, mWorldUploadBuffer, &mWorldUniformPer,
+                                            sizeof(WorldUniforms));
 }
 
 void InnerModelD3D12::draw()

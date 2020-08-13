@@ -123,12 +123,12 @@ void FishModelDawn::init()
     mPipeline = mContextDawn->createRenderPipeline(mPipelineLayout, mProgramDawn,
                                                    mVertexStateDescriptor, mBlend);
 
-    mFishVertexBuffer =
-        mContextDawn->createBufferFromData(&mFishVertexUniforms, sizeof(FishVertexUniforms),
-                                           wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
-    mLightFactorBuffer =
-        mContextDawn->createBufferFromData(&mLightFactorUniforms, sizeof(LightFactorUniforms),
-                                           wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
+    mFishVertexBuffer = mContextDawn->createBufferFromData(
+        &mFishVertexUniforms, sizeof(FishVertexUniforms), sizeof(FishVertexUniforms),
+        wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
+    mLightFactorBuffer = mContextDawn->createBufferFromData(
+        &mLightFactorUniforms, sizeof(LightFactorUniforms), sizeof(LightFactorUniforms),
+        wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
 
     // Fish models includes small, medium and big. Some of them contains reflection and skybox
     // texture, but some doesn't.
@@ -154,10 +154,10 @@ void FishModelDawn::init()
                                 {4, mNormalTexture->getTextureView()}});
     }
 
-    mContextDawn->setBufferData(mLightFactorBuffer, 0, sizeof(LightFactorUniforms),
-                                &mLightFactorUniforms);
-    mContextDawn->setBufferData(mFishVertexBuffer, 0, sizeof(FishVertexUniforms),
-                                &mFishVertexUniforms);
+    mContextDawn->setBufferData(mLightFactorBuffer, sizeof(LightFactorUniforms),
+                                &mLightFactorUniforms, sizeof(LightFactorUniforms));
+    mContextDawn->setBufferData(mFishVertexBuffer, sizeof(FishVertexUniforms), &mFishVertexUniforms,
+                                sizeof(LightFactorUniforms));
 }
 
 void FishModelDawn::draw()

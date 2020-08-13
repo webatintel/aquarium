@@ -56,8 +56,8 @@ static void ImGui_ImplDawn_SetupRenderState(ImDrawData *draw_data,
         };
         memcpy(&vertex_constant_buffer.mvp, mvp, sizeof(mvp));
     }
-    mContextDawn->setBufferData(
-        mConstantBuffer, 0, sizeof(VERTEX_CONSTANT_BUFFER), &vertex_constant_buffer.mvp);
+    mContextDawn->setBufferData(mConstantBuffer, sizeof(VERTEX_CONSTANT_BUFFER),
+                                &vertex_constant_buffer.mvp, sizeof(VERTEX_CONSTANT_BUFFER));
 
     // TODO(yizhou): setting viewport isn't supported in dawn yet.
     // Setup viewport
@@ -127,8 +127,10 @@ void ImGui_ImplDawn_RenderDrawData(ImDrawData *draw_data)
 
     if (vtx_dst != 0 && idx_dst != 0)
     {
-        mContextDawn->setBufferData(mVertexBuffer, 0, vtx_dst, mVertexData);
-        mContextDawn->setBufferData(mIndexBuffer, 0, idx_dst, mIndexData);
+        mContextDawn->setBufferData(mVertexBuffer, vtx_dst, mVertexData,
+                                    (pVertex - mVertexData) * sizeof(ImDrawVert));
+        mContextDawn->setBufferData(mIndexBuffer, idx_dst, mIndexData,
+                                    (pIndex - mIndexData) * sizeof(ImDrawIdx));
     }
 }
 

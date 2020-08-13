@@ -101,11 +101,12 @@ void OutsideModelDawn::init()
     mPipeline = mContextDawn->createRenderPipeline(mPipelineLayout, mProgramDawn,
                                                    mVertexStateDescriptor, mBlend);
 
-    mLightFactorBuffer =
-        mContextDawn->createBufferFromData(&mLightFactorUniforms, sizeof(mLightFactorUniforms),
-                                           wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
+    mLightFactorBuffer = mContextDawn->createBufferFromData(
+        &mLightFactorUniforms, sizeof(mLightFactorUniforms), sizeof(mLightFactorUniforms),
+        wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
     mViewBuffer = mContextDawn->createBufferFromData(
-        &mWorldUniformPer, mContextDawn->CalcConstantBufferByteSize(sizeof(WorldUniforms)) * 20,
+        &mWorldUniformPer, sizeof(WorldUniforms) * 20,
+        mContextDawn->CalcConstantBufferByteSize(sizeof(WorldUniforms) * 20),
         wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
 
     mBindGroupModel = mContextDawn->makeBindGroup(
@@ -120,8 +121,8 @@ void OutsideModelDawn::init()
                                                          {0, mViewBuffer, 0, sizeof(WorldUniforms)},
                                                      });
 
-    mContextDawn->setBufferData(mLightFactorBuffer, 0, sizeof(LightFactorUniforms),
-                                &mLightFactorUniforms);
+    mContextDawn->setBufferData(mLightFactorBuffer, sizeof(LightFactorUniforms),
+                                &mLightFactorUniforms, sizeof(LightFactorUniforms));
 }
 
 void OutsideModelDawn::prepareForDraw() {}
@@ -151,6 +152,7 @@ void OutsideModelDawn::updatePerInstanceUniforms(const WorldUniforms &worldUnifo
 {
     memcpy(&mWorldUniformPer, &worldUniforms, sizeof(WorldUniforms));
 
-    mContextDawn->updateBufferData(mViewBuffer, &mWorldUniformPer,
-                                   mContextDawn->CalcConstantBufferByteSize(sizeof(WorldUniforms)));
+    mContextDawn->updateBufferData(
+        mViewBuffer, mContextDawn->CalcConstantBufferByteSize(sizeof(WorldUniforms) * 20),
+        &mWorldUniformPer, sizeof(WorldUniforms));
 }

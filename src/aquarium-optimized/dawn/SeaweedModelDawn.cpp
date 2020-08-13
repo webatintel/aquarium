@@ -91,14 +91,16 @@ void SeaweedModelDawn::init()
     mPipeline = mContextDawn->createRenderPipeline(mPipelineLayout, mProgramDawn,
                                                    mVertexStateDescriptor, mBlend);
 
-    mLightFactorBuffer =
-        mContextDawn->createBufferFromData(&mLightFactorUniforms, sizeof(mLightFactorUniforms),
-                                           wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
+    mLightFactorBuffer = mContextDawn->createBufferFromData(
+        &mLightFactorUniforms, sizeof(mLightFactorUniforms), sizeof(mLightFactorUniforms),
+        wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
     mTimeBuffer = mContextDawn->createBufferFromData(
-        &mSeaweedPer, mContextDawn->CalcConstantBufferByteSize(sizeof(mSeaweedPer)) * 4,
+        &mSeaweedPer, sizeof(mSeaweedPer),
+        mContextDawn->CalcConstantBufferByteSize(sizeof(mSeaweedPer) * 4),
         wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
     mViewBuffer = mContextDawn->createBufferFromData(
-        &mWorldUniformPer, mContextDawn->CalcConstantBufferByteSize(sizeof(WorldUniformPer)),
+        &mWorldUniformPer, sizeof(WorldUniformPer),
+        mContextDawn->CalcConstantBufferByteSize(sizeof(WorldUniformPer)),
         wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
 
     mBindGroupModel = mContextDawn->makeBindGroup(
@@ -115,17 +117,18 @@ void SeaweedModelDawn::init()
             {1, mTimeBuffer, 0, mContextDawn->CalcConstantBufferByteSize(sizeof(SeaweedPer))},
         });
 
-    mContextDawn->setBufferData(mLightFactorBuffer, 0, sizeof(mLightFactorUniforms),
-                                &mLightFactorUniforms);
+    mContextDawn->setBufferData(mLightFactorBuffer, sizeof(mLightFactorUniforms),
+                                &mLightFactorUniforms, sizeof(mLightFactorUniforms));
 }
 
 void SeaweedModelDawn::prepareForDraw()
 {
     mContextDawn->updateBufferData(
-        mViewBuffer, &mWorldUniformPer,
-        mContextDawn->CalcConstantBufferByteSize(sizeof(WorldUniformPer)));
-    mContextDawn->updateBufferData(mTimeBuffer, &mSeaweedPer,
-                                   mContextDawn->CalcConstantBufferByteSize(sizeof(SeaweedPer)));
+        mViewBuffer, mContextDawn->CalcConstantBufferByteSize(sizeof(WorldUniformPer)),
+        &mWorldUniformPer, sizeof(WorldUniformPer));
+    mContextDawn->updateBufferData(mTimeBuffer,
+                                   mContextDawn->CalcConstantBufferByteSize(sizeof(SeaweedPer) * 4),
+                                   &mSeaweedPer, sizeof(SeaweedPer));
 }
 
 void SeaweedModelDawn::draw()

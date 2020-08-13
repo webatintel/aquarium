@@ -74,7 +74,7 @@ void GenericModelD3D12::init()
 
     // create constant buffer, desc.
     mLightFactorBuffer = mContextD3D12->createDefaultBuffer(
-        &mLightFactorUniforms,
+        &mLightFactorUniforms, sizeof(LightFactorUniforms),
         mContextD3D12->CalcConstantBufferByteSize(sizeof(LightFactorUniforms)),
         mLightFactorUploadBuffer);
     mLightFactorView.BufferLocation = mLightFactorBuffer->GetGPUVirtualAddress();
@@ -82,8 +82,8 @@ void GenericModelD3D12::init()
         sizeof(LightFactorUniforms));  // CB size is required to be 256-byte aligned.
     mContextD3D12->buildCbvDescriptor(mLightFactorView, &mLightFactorGPUHandle);
     mWorldBuffer = mContextD3D12->createDefaultBuffer(
-        &mWorldUniformPer, mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniformPer)),
-        mWorldUploadBuffer);
+        &mWorldUniformPer, sizeof(WorldUniformPer),
+        mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniformPer)), mWorldUploadBuffer);
     mWorldBufferView.BufferLocation = mWorldBuffer->GetGPUVirtualAddress();
     mWorldBufferView.SizeInBytes =
         mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniformPer));
@@ -151,9 +151,8 @@ void GenericModelD3D12::init()
 // Update constant buffer per frame
 void GenericModelD3D12::prepareForDraw()
 {
-    mContextD3D12->updateConstantBufferSync(
-        mWorldBuffer, mWorldUploadBuffer, &mWorldUniformPer,
-        mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniformPer)));
+    mContextD3D12->updateConstantBufferSync(mWorldBuffer, mWorldUploadBuffer, &mWorldUniformPer,
+                                            sizeof(WorldUniformPer));
 }
 
 void GenericModelD3D12::draw()

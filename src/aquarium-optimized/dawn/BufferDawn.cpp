@@ -24,7 +24,7 @@ BufferDawn::BufferDawn(ContextDawn *context,
     int bufferSize = sizeof(float) * static_cast<int>(buffer->size());
     mBuf           = context->createBuffer(bufferSize, mUsage | wgpu::BufferUsage::CopyDst);
 
-    context->setBufferData(mBuf, 0, bufferSize, buffer->data());
+    context->setBufferData(mBuf, bufferSize, buffer->data(), bufferSize);
 }
 
 BufferDawn::BufferDawn(ContextDawn *context,
@@ -48,7 +48,7 @@ BufferDawn::BufferDawn(ContextDawn *context,
     int bufferSize = sizeof(unsigned short) * static_cast<int>(buffer->size());
     mBuf           = context->createBuffer(bufferSize, mUsage | wgpu::BufferUsage::CopyDst);
 
-    context->setBufferData(mBuf, 0, bufferSize, buffer->data());
+    context->setBufferData(mBuf, bufferSize, buffer->data(), bufferSize);
 }
 
 BufferDawn::~BufferDawn()

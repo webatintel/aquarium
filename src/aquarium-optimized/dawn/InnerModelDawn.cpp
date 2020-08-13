@@ -110,11 +110,12 @@ void InnerModelDawn::init()
     mPipeline = mContextDawn->createRenderPipeline(mPipelineLayout, mProgramDawn,
                                                    mVertexStateDescriptor, mBlend);
 
-    mInnerBuffer =
-        mContextDawn->createBufferFromData(&mInnerUniforms, sizeof(mInnerUniforms),
-                                           wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
+    mInnerBuffer = mContextDawn->createBufferFromData(
+        &mInnerUniforms, sizeof(mInnerUniforms), sizeof(mInnerUniforms),
+        wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
     mViewBuffer = mContextDawn->createBufferFromData(
-        &mWorldUniformPer, mContextDawn->CalcConstantBufferByteSize(sizeof(WorldUniforms)),
+        &mWorldUniformPer, sizeof(WorldUniforms),
+        mContextDawn->CalcConstantBufferByteSize(sizeof(WorldUniforms)),
         wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
 
     mBindGroupModel =
@@ -132,7 +133,8 @@ void InnerModelDawn::init()
             {0, mViewBuffer, 0, mContextDawn->CalcConstantBufferByteSize(sizeof(WorldUniforms))},
         });
 
-    mContextDawn->setBufferData(mInnerBuffer, 0, sizeof(InnerUniforms), &mInnerUniforms);
+    mContextDawn->setBufferData(mInnerBuffer, sizeof(InnerUniforms), &mInnerUniforms,
+                                sizeof(InnerUniforms));
 }
 
 void InnerModelDawn::prepareForDraw() {}
@@ -158,6 +160,7 @@ void InnerModelDawn::updatePerInstanceUniforms(const WorldUniforms &worldUniform
 {
     std::memcpy(&mWorldUniformPer, &worldUniforms, sizeof(WorldUniforms));
 
-    mContextDawn->updateBufferData(mViewBuffer, &mWorldUniformPer,
-                                   mContextDawn->CalcConstantBufferByteSize(sizeof(WorldUniforms)));
+    mContextDawn->updateBufferData(mViewBuffer,
+                                   mContextDawn->CalcConstantBufferByteSize(sizeof(WorldUniforms)),
+                                   &mWorldUniformPer, sizeof(WorldUniforms));
 }

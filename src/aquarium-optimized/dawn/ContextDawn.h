@@ -61,7 +61,10 @@ class ContextDawn : public Context
     Texture *createTexture(const std::string &name, const std::vector<std::string> &urls) override;
     wgpu::Texture createTexture(const wgpu::TextureDescriptor &descriptor) const;
     wgpu::Sampler createSampler(const wgpu::SamplerDescriptor &descriptor) const;
-    wgpu::Buffer createBufferFromData(const void *pixels, int size, wgpu::BufferUsage usage);
+    wgpu::Buffer createBufferFromData(const void *data,
+                                      uint32_t size,
+                                      uint32_t maxSize,
+                                      wgpu::BufferUsage usage);
     wgpu::BufferCopyView createBufferCopyView(const wgpu::Buffer &buffer,
                                               uint32_t offset,
                                               uint32_t bytesPerRow,
@@ -93,9 +96,9 @@ class ContextDawn : public Context
     wgpu::TextureView createDepthStencilView() const;
     wgpu::Buffer createBuffer(uint32_t size, wgpu::BufferUsage bit) const;
     void setBufferData(const wgpu::Buffer &buffer,
-                       uint32_t start,
-                       uint32_t size,
-                       const void *pixels);
+                       uint32_t bufferSize,
+                       const void *data,
+                       uint32_t dataSize);
     wgpu::BindGroup makeBindGroup(
         const wgpu::BindGroupLayout &layout,
         std::initializer_list<utils::BindingInitializationHelper> bindingsInitializer) const;
@@ -111,15 +114,12 @@ class ContextDawn : public Context
     void updateAllFishData() override;
     void updateBufferData(
         const wgpu::Buffer &buffer,
-        void *pixel,
-        size_t size) const;
+        size_t bufferSize,
+        void *data,
+        size_t dataSize) const;
     wgpu::CreateBufferMappedResult CreateBufferMapped(wgpu::BufferUsage usage, uint64_t size) const;
     void WaitABit();
     wgpu::CommandEncoder createCommandEncoder() const;
-    void setBufferData(const wgpu::Buffer &buffer,
-                       uint32_t start,
-                       uint32_t size,
-                       const void *pixels) const;
     size_t CalcConstantBufferByteSize(size_t byteSize) const;
 
     std::vector<wgpu::CommandBuffer> mCommandBuffers;
