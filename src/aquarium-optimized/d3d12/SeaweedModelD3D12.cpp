@@ -51,7 +51,7 @@ void SeaweedModelD3D12::init()
 
     // create constant buffer, desc.
     mLightFactorBuffer = mContextD3D12->createDefaultBuffer(
-        &mLightFactorUniforms,
+        &mLightFactorUniforms, sizeof(LightFactorUniforms),
         mContextD3D12->CalcConstantBufferByteSize(sizeof(LightFactorUniforms)),
         mLightFactorUploadBuffer);
     mLightFactorView.BufferLocation = mLightFactorBuffer->GetGPUVirtualAddress();
@@ -59,14 +59,14 @@ void SeaweedModelD3D12::init()
         sizeof(LightFactorUniforms));  // CB size is required to be 256-byte aligned.
     mContextD3D12->buildCbvDescriptor(mLightFactorView, &mLightFactorGPUHandle);
     mWorldBuffer = mContextD3D12->createDefaultBuffer(
-        &mWorldUniformPer, mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniformPer)),
-        mWorldUploadBuffer);
+        &mWorldUniformPer, sizeof(WorldUniformPer),
+        mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniformPer)), mWorldUploadBuffer);
     mWorldBufferView.BufferLocation = mWorldBuffer->GetGPUVirtualAddress();
     mWorldBufferView.SizeInBytes =
         mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniformPer));
     mSeaweedBuffer = mContextD3D12->createDefaultBuffer(
-        &mSeaweedPer, mContextD3D12->CalcConstantBufferByteSize(sizeof(SeaweedPer)),
-        mSeaweedUploadBuffer);
+        &mSeaweedPer, sizeof(SeaweedPer),
+        mContextD3D12->CalcConstantBufferByteSize(sizeof(SeaweedPer)), mSeaweedUploadBuffer);
     mSeaweedBufferView.BufferLocation = mSeaweedBuffer->GetGPUVirtualAddress();
     mSeaweedBufferView.SizeInBytes = mContextD3D12->CalcConstantBufferByteSize(sizeof(SeaweedPer));
 
@@ -106,13 +106,11 @@ void SeaweedModelD3D12::init()
 
 void SeaweedModelD3D12::prepareForDraw()
 {
-    mContextD3D12->updateConstantBufferSync(
-        mWorldBuffer, mWorldUploadBuffer, &mWorldUniformPer,
-        mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniformPer)));
+    mContextD3D12->updateConstantBufferSync(mWorldBuffer, mWorldUploadBuffer, &mWorldUniformPer,
+                                            sizeof(WorldUniformPer));
 
-    mContextD3D12->updateConstantBufferSync(
-        mSeaweedBuffer, mSeaweedUploadBuffer, &mSeaweedPer,
-        mContextD3D12->CalcConstantBufferByteSize(sizeof(SeaweedPer)));
+    mContextD3D12->updateConstantBufferSync(mSeaweedBuffer, mSeaweedUploadBuffer, &mSeaweedPer,
+                                            sizeof(SeaweedPer));
 }
 
 void SeaweedModelD3D12::draw()

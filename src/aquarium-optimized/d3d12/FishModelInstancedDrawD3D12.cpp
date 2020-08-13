@@ -60,7 +60,8 @@ void FishModelInstancedDrawD3D12::init()
     mVertexBufferView[4] = mBiNormalBuffer->mVertexBufferView;
 
     mFishPersBuffer = mContextD3D12->createDefaultBuffer(
-        mFishPers, mContextD3D12->CalcConstantBufferByteSize(sizeof(FishPer) * instance),
+        mFishPers, sizeof(FishPer) * instance,
+        mContextD3D12->CalcConstantBufferByteSize(sizeof(FishPer) * instance),
         mFishPersUploadBuffer);
     mFishPersBufferView.BufferLocation = mFishPersBuffer->GetGPUVirtualAddress();
     mFishPersBufferView.SizeInBytes =
@@ -92,14 +93,15 @@ void FishModelInstancedDrawD3D12::init()
 
     // create constant buffer, desc.
     mFishVertexBuffer = mContextD3D12->createDefaultBuffer(
-        &mFishVertexUniforms, mContextD3D12->CalcConstantBufferByteSize(sizeof(FishVertexUniforms)),
+        &mFishVertexUniforms, sizeof(FishVertexUniforms),
+        mContextD3D12->CalcConstantBufferByteSize(sizeof(FishVertexUniforms)),
         mFishVertexUploadBuffer);
     mFishVertexView.BufferLocation = mFishVertexBuffer->GetGPUVirtualAddress();
     mFishVertexView.SizeInBytes    = mContextD3D12->CalcConstantBufferByteSize(
         sizeof(mFishVertexUniforms));  // CB size is required to be 256-byte aligned.
     mContextD3D12->buildCbvDescriptor(mFishVertexView, &mFishVertexGPUHandle);
     mLightFactorBuffer = mContextD3D12->createDefaultBuffer(
-        &mLightFactorUniforms,
+        &mLightFactorUniforms, sizeof(LightFactorUniforms),
         mContextD3D12->CalcConstantBufferByteSize(sizeof(LightFactorUniforms)),
         mLightFactorUploadBuffer);
     mLightFactorView.BufferLocation = mLightFactorBuffer->GetGPUVirtualAddress();

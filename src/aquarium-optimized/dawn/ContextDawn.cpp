@@ -357,13 +357,14 @@ wgpu::Sampler ContextDawn::createSampler(const wgpu::SamplerDescriptor &descript
     return mDevice.CreateSampler(&descriptor);
 }
 
-wgpu::Buffer ContextDawn::createBufferFromData(const void *pixels,
-                                               int size,
+wgpu::Buffer ContextDawn::createBufferFromData(const void *data,
+                                               uint32_t size,
+                                               uint32_t maxSize,
                                                wgpu::BufferUsage usage)
 {
-    wgpu::Buffer buffer = createBuffer(size, usage | wgpu::BufferUsage::CopyDst);
+    wgpu::Buffer buffer = createBuffer(maxSize, usage | wgpu::BufferUsage::CopyDst);
 
-    setBufferData(buffer, 0, size, pixels);
+    setBufferData(buffer, maxSize, data, size);
     return buffer;
 }
 
@@ -529,16 +530,16 @@ wgpu::Buffer ContextDawn::createBuffer(uint32_t size, wgpu::BufferUsage bit) con
 }
 
 void ContextDawn::setBufferData(const wgpu::Buffer &buffer,
-                                uint32_t start,
-                                uint32_t size,
-                                const void *pixels)
+                                uint32_t bufferSize,
+                                const void *data,
+                                uint32_t dataSize)
 {
     wgpu::CreateBufferMappedResult result =
-        CreateBufferMapped(wgpu::BufferUsage::MapWrite | wgpu::BufferUsage::CopySrc, size);
-    memcpy(result.data, pixels, size);
+        CreateBufferMapped(wgpu::BufferUsage::MapWrite | wgpu::BufferUsage::CopySrc, bufferSize);
+    memcpy(result.data, data, dataSize);
     result.buffer.Unmap();
 
-    wgpu::CommandBuffer command = copyBufferToBuffer(result.buffer, 0, buffer, 0, size);
+    wgpu::CommandBuffer command = copyBufferToBuffer(result.buffer, 0, buffer, 0, bufferSize);
     mCommandBuffers.emplace_back(command);
 }
 
@@ -558,16 +559,19 @@ void ContextDawn::initGeneralResources(Aquarium* aquarium)
     });
 
     mLightBuffer = createBufferFromData(&aquarium->lightUniforms, sizeof(aquarium->lightUniforms),
+                                        sizeof(aquarium->lightUniforms),
                                         wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
     mFogBuffer   = createBufferFromData(&aquarium->fogUniforms, sizeof(aquarium->fogUniforms),
-                                      wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
+                                        sizeof(aquarium->fogUniforms),
+                                        wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
 
     bindGroupGeneral =
         makeBindGroup(groupLayoutGeneral, {{0, mLightBuffer, 0, sizeof(aquarium->lightUniforms)},
                                            {1, mFogBuffer, 0, sizeof(aquarium->fogUniforms)}});
 
-    setBufferData(mLightBuffer, 0, sizeof(LightUniforms), &aquarium->lightUniforms);
-    setBufferData(mFogBuffer, 0, sizeof(FogUniforms), &aquarium->fogUniforms);
+    setBufferData(mLightBuffer, sizeof(LightUniforms), &aquarium->lightUniforms,
+                  sizeof(LightUniforms));
+    setBufferData(mFogBuffer, sizeof(FogUniforms), &aquarium->fogUniforms, sizeof(FogUniforms));
 
     // initilize world uniform buffers
     groupLayoutWorld = MakeBindGroupLayout({
@@ -575,7 +579,7 @@ void ContextDawn::initGeneralResources(Aquarium* aquarium)
     });
 
     mLightWorldPositionBuffer = createBufferFromData(
-        &aquarium->lightWorldPositionUniform,
+        &aquarium->lightWorldPositionUniform, sizeof(aquarium->lightWorldPositionUniform),
         CalcConstantBufferByteSize(sizeof(aquarium->lightWorldPositionUniform)),
         wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
 
@@ -606,8 +610,9 @@ void ContextDawn::initGeneralResources(Aquarium* aquarium)
 
 void ContextDawn::updateWorldlUniforms(Aquarium* aquarium)
 {
-    updateBufferData(mLightWorldPositionBuffer, &aquarium->lightWorldPositionUniform,
-                     CalcConstantBufferByteSize(sizeof(LightWorldPositionUniform)));
+    updateBufferData(mLightWorldPositionBuffer,
+                     CalcConstantBufferByteSize(sizeof(LightWorldPositionUniform)),
+                     &aquarium->lightWorldPositionUniform, sizeof(LightWorldPositionUniform));
 }
 
 Buffer *ContextDawn::createBuffer(int numComponents, std::vector<float> *buf, bool isIndex)
@@ -864,13 +869,16 @@ wgpu::CommandEncoder ContextDawn::createCommandEncoder() const
 void ContextDawn::updateAllFishData()
 {
     size_t size = CalcConstantBufferByteSize(sizeof(FishPer) * mCurTotalInstance);
-    updateBufferData(fishPersBuffer, fishPers, size);
+    updateBufferData(fishPersBuffer, size, fishPers, sizeof(FishPer) * mCurTotalInstance);
 }
 
-void ContextDawn::updateBufferData(const wgpu::Buffer& buffer, void* pixel, size_t size) const
+void ContextDawn::updateBufferData(const wgpu::Buffer& buffer,
+                                   size_t bufferSize,
+                                   void* data,
+                                   size_t dataSize) const
 {
     size_t offset              = 0;
-    RingBufferDawn *ringBuffer = bufferManager->allocate(size, &offset);
+    RingBufferDawn *ringBuffer = bufferManager->allocate(bufferSize, &offset);
 
     if (ringBuffer == nullptr)
     {
@@ -878,7 +886,7 @@ void ContextDawn::updateBufferData(const wgpu::Buffer& buffer, void* pixel, size
         return;
     }
 
-    ringBuffer->push(bufferManager->mEncoder, buffer, offset, 0, pixel, size);
+    ringBuffer->push(bufferManager->mEncoder, buffer, offset, 0, data, dataSize);
 }
 
 void ContextDawn::destoryFishResource()
