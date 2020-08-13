@@ -19,7 +19,7 @@ class RingBufferDawn : public RingBuffer
 {
   public:
     RingBufferDawn(BufferManagerDawn *bufferManager, size_t size);
-    ~RingBufferDawn() {}
+    ~RingBufferDawn() override {}
 
     bool push(const wgpu::CommandEncoder &encoder,
               const wgpu::Buffer &destBuffer,
