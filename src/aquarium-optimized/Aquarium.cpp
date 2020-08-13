@@ -39,7 +39,7 @@ Aquarium::Aquarium()
       mAquariumModels(),
       mContext(nullptr),
       mFpsTimer(),
-      mCurFishCount(1),
+      mCurFishCount(500),
       mPreFishCount(0),
       mTestTime(INT_MAX),
       mBackendType(BACKENDTYPE::BACKENDTYPELAST),
