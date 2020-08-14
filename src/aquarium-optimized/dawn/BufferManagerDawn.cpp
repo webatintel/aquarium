@@ -210,8 +210,7 @@ void BufferManagerDawn::flush()
         // All buffers are used once in buffer sync mode.
         for (size_t index = 0; index < mEnqueuedBufferList.size(); index++)
         {
-            RingBufferDawn *ringBuffer = static_cast<RingBufferDawn *>(mEnqueuedBufferList[index]);
-            delete ringBuffer;
+            delete mEnqueuedBufferList[index];
         }
         mUsedSize = 0;
     }

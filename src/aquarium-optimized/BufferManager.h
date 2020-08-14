@@ -19,7 +19,7 @@ class RingBuffer
 {
   public:
     RingBuffer(size_t size) : mHead(0), mTail(size), mSize(size) {}
-    ~RingBuffer() {}
+    virtual ~RingBuffer() {}
 
     size_t getSize() const { return mSize; }
     size_t getAvailableSize() const { return mSize - mTail; }
