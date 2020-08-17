@@ -161,25 +161,26 @@ bool Aquarium::init(int argc, char **argv)
     int windowHeight = 0;
 
     cxxopts::Options options(argv[0], "A native implementation of WebGL Aquarium");
-    options.allow_unrecognised_options().add_options()
-        ("backend", "Specify a backend, like 'dawn_d3d12' and 'd3d12'", cxxopts::value<std::string>())
-        ("alpha-blending", "Format is <0-1|false>. Specify alpha blending", cxxopts::value<std::string>())
-        ("buffer-mapping-async", "Upload uniforms by buffer mapping async for Dawn backend")
-        ("disable-control-panel", "Turn off control panel")
-        ("disable-d3d12-render-pass", "Turn off render pass for dawn_d3d12 and d3d12 backend")
-        ("disable-dawn-validation", "Turn off dawn validation")
-        ("disable-dynamic-buffer-offset", "Test individual draw by creating many binding groups. Dawn only")
-        ("discrete-gpu", "Choose discrete gpu to render the application. Dawn and D3D12 only.")
-        ("integrated-gpu", "Choose integrated gpu to render the application. Dawn and D3D12 only.")
-        ("enable-full-screen-mode", "Render aquarium in full screen mode instead of window mode")
-        ("msaa-sample-count", "Specify sample count of MSAA, while 1 for non-MSAA", cxxopts::value<int>())
-        ("num-fish", "Specify how many fishes will be rendered.", cxxopts::value<int>(mCurFishCount))
-        ("print-log", "Print logs including avarage fps when exit the application.")
-        ("simulating-fish-come-and-go", "Load fish behavior from FishBehavior.json. Dawn only.")
-        ("test-time", "Render for some seconds then exit.", cxxopts::value<int>(mTestTime))
-        ("turn-off-vsync", "Unlimit 60 fps")
-        ("window-size", "Format is <width,height>. Input window size", cxxopts::value<std::string>())
-        ("help", "Print help");
+    cxxopts::OptionAdder oa = options.allow_unrecognised_options().add_options();
+    oa("backend", "Set a backend, like 'dawn_d3d12' or 'd3d12'", cxxopts::value<std::string>());
+    oa("alpha-blending", "Format is <0-1|false>. Set alpha blending",
+       cxxopts::value<std::string>());
+    oa("buffer-mapping-async", "Upload uniforms by buffer mapping async for Dawn backend");
+    oa("disable-control-panel", "Turn off control panel");
+    oa("disable-d3d12-render-pass", "Turn off render pass for dawn_d3d12 and d3d12 backend");
+    oa("disable-dawn-validation", "Turn off dawn validation");
+    oa("disable-dynamic-buffer-offset", "Create many binding groups for a single draw. Dawn only");
+    oa("discrete-gpu", "Choose discrete gpu to render the application. Dawn and D3D12 only.");
+    oa("integrated-gpu", "Choose integrated gpu to render the application. Dawn and D3D12 only.");
+    oa("enable-full-screen-mode", "Render aquarium in full screen mode instead of window mode");
+    oa("msaa-sample-count", "Set MSAA sample count. 1 for non-MSAA", cxxopts::value<int>());
+    oa("num-fish", "Set how many fishes will be rendered.", cxxopts::value<int>(mCurFishCount));
+    oa("print-log", "Print logs including avarage fps when exit the application.");
+    oa("simulating-fish-come-and-go", "Load fish behavior from FishBehavior.json. Dawn only.");
+    oa("test-time", "Render for some seconds then exit.", cxxopts::value<int>(mTestTime));
+    oa("turn-off-vsync", "Unlimit 60 fps");
+    oa("window-size", "Format is <width,height>. Set window size", cxxopts::value<std::string>());
+    oa("help", "Print help");
     auto result = options.parse(argc, argv);
 
     if (result.count("help"))
