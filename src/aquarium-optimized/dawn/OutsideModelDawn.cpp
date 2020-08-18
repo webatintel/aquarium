@@ -116,10 +116,11 @@ void OutsideModelDawn::init()
                                {2, mDiffuseTexture->getTextureView()},
                            });
 
-    mBindGroupPer =
-        mContextDawn->makeBindGroup(mGroupLayoutPer, {
-                                                         {0, mViewBuffer, 0, sizeof(WorldUniforms)},
-                                                     });
+    mBindGroupPer = mContextDawn->makeBindGroup(
+        mGroupLayoutPer, {
+                             {0, mViewBuffer, 0,
+                              mContextDawn->CalcConstantBufferByteSize(sizeof(WorldUniforms) * 20)},
+                         });
 
     mContextDawn->setBufferData(mLightFactorBuffer, sizeof(LightFactorUniforms),
                                 &mLightFactorUniforms, sizeof(LightFactorUniforms));

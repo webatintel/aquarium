@@ -114,7 +114,7 @@ void SeaweedModelDawn::init()
         mGroupLayoutPer,
         {
             {0, mViewBuffer, 0, mContextDawn->CalcConstantBufferByteSize(sizeof(WorldUniformPer))},
-            {1, mTimeBuffer, 0, mContextDawn->CalcConstantBufferByteSize(sizeof(SeaweedPer))},
+            {1, mTimeBuffer, 0, mContextDawn->CalcConstantBufferByteSize(sizeof(SeaweedPer) * 4)},
         });
 
     mContextDawn->setBufferData(mLightFactorBuffer, sizeof(mLightFactorUniforms),

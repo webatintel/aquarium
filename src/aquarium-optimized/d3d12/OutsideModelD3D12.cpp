@@ -58,10 +58,11 @@ void OutsideModelD3D12::init()
         sizeof(LightFactorUniforms));  // CB size is required to be 256-byte aligned.
     mContextD3D12->buildCbvDescriptor(mLightFactorView, &mLightFactorGPUHandle);
     mWorldBuffer = mContextD3D12->createDefaultBuffer(
-        &mWorldUniformPer, sizeof(WorldUniforms),
-        mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniforms)), mWorldUploadBuffer);
+        &mWorldUniformPer, sizeof(WorldUniforms) * 20,
+        mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniforms) * 20), mWorldUploadBuffer);
     mWorldBufferView.BufferLocation = mWorldBuffer->GetGPUVirtualAddress();
-    mWorldBufferView.SizeInBytes = mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniforms));
+    mWorldBufferView.SizeInBytes =
+        mContextD3D12->CalcConstantBufferByteSize(sizeof(WorldUniforms) * 20);
 
     // Create root signature to bind resources.
     // Bind textures, samplers and immutable constant buffers in a descriptor table.
@@ -98,7 +99,7 @@ void OutsideModelD3D12::init()
 void OutsideModelD3D12::prepareForDraw()
 {
     mContextD3D12->updateConstantBufferSync(mWorldBuffer, mWorldUploadBuffer, &mWorldUniformPer,
-                                            sizeof(WorldUniforms));
+                                            sizeof(WorldUniforms) * 20);
 }
 
 void OutsideModelD3D12::draw()
