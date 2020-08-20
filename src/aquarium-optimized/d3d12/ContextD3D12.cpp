@@ -101,9 +101,9 @@ bool ContextD3D12::initialize(
     }
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
     // set full screen
-    // glfwWindowHint(GLFW_DECORATED, GL_FALSE);
+    // glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 
     GLFWmonitor *pMonitor   = glfwGetPrimaryMonitor();
     const GLFWvidmode *mode = glfwGetVideoMode(pMonitor);
@@ -371,7 +371,7 @@ bool ContextD3D12::ShouldQuit()
 void ContextD3D12::KeyBoardQuit()
 {
     if (glfwGetKey(mWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(mWindow, GL_TRUE);
+        glfwSetWindowShouldClose(mWindow, GLFW_TRUE);
 }
 
 void ContextD3D12::stateTransition(ComPtr<ID3D12Resource> resource,
