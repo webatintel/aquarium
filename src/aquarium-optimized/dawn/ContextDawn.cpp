@@ -148,7 +148,7 @@ bool ContextDawn::initialize(
 
     utils::SetupGLFWWindowHintsForBackend(backendType);
     // set full screen
-    glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
     GLFWmonitor *pMonitor   = glfwGetPrimaryMonitor();
     const GLFWvidmode *mode = glfwGetVideoMode(pMonitor);
@@ -648,7 +648,7 @@ bool ContextDawn::ShouldQuit()
 void ContextDawn::KeyBoardQuit()
 {
     if (glfwGetKey(mWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(mWindow, GL_TRUE);
+        glfwSetWindowShouldClose(mWindow, GLFW_TRUE);
 }
 
 // Submit commands of the frame

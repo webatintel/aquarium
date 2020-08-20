@@ -80,7 +80,7 @@ bool ContextGL::initialize(BACKENDTYPE backend,
     mGLSLVersion = "#version 450";
 #endif
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 #endif
 
     GLFWmonitor *pMonitor   = glfwGetPrimaryMonitor();
@@ -90,7 +90,7 @@ bool ContextGL::initialize(BACKENDTYPE backend,
 
     setWindowSize(windowWidth, windowHeight);
 
-    glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
     if (toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEFULLSCREENMODE)))
     {
         mWindow = glfwCreateWindow(mClientWidth, mClientHeight, "Aquarium", pMonitor, nullptr);
@@ -112,7 +112,7 @@ bool ContextGL::initialize(BACKENDTYPE backend,
     glfwSetWindowUserPointer(mWindow, this);
 
 #ifndef GL_GLES_PROTOTYPES
-    glfwWindowHint(GLFW_DECORATED, GL_FALSE);
+    glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
     glfwMakeContextCurrent(mWindow);
 #else
     mGLSLVersion = "#version 300 es";
@@ -443,7 +443,7 @@ bool ContextGL::ShouldQuit()
 void ContextGL::KeyBoardQuit()
 {
     if (glfwGetKey(mWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(mWindow, GL_TRUE);
+        glfwSetWindowShouldClose(mWindow, GLFW_TRUE);
 }
 
 void ContextGL::DoFlush(const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset)
