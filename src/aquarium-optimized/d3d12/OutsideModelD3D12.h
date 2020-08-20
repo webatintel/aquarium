@@ -52,7 +52,7 @@ class OutsideModelD3D12 : public Model
         float specularFactor;
     } mLightFactorUniforms;
 
-    WorldUniforms mWorldUniformPer;
+    WorldUniforms mWorldUniformPer[20];
 
   private:
     D3D12_CONSTANT_BUFFER_VIEW_DESC mWorldBufferView;
