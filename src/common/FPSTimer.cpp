@@ -34,7 +34,7 @@ void FPSTimer::update(double elapsedTime, double renderingTime, int testTime)
 
     mAverageFPS = floor((1.0f / (mTotalTime / static_cast<double>(NUM_FRAMES_TO_AVERAGE))) + 0.5);
 
-    for (int i = 0; i < NUM_HISTORY_DATA; i++)
+    for (int i = 0; i < NUM_HISTORY_DATA - 1; i++)
     {
         mHistoryFPS[i]       = mHistoryFPS[i + 1];
         mHistoryFrameTime[i] = mHistoryFrameTime[i + 1];
