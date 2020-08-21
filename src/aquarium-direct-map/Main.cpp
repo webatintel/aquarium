@@ -13,8 +13,10 @@
 #include <direct.h>
 #include "Windows.h"
 #elif __APPLE__
+#include <ctime>
 #include <mach-o/dyld.h>
 #else
+#include <ctime>
 #include <unistd.h>
 #endif
 

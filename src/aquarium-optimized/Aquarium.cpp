@@ -13,6 +13,11 @@
 #include <cmath>
 #include <fstream>
 #include <iostream>
+#ifdef _WIN32
+#include "Windows.h"
+#else
+#include <ctime>
+#endif
 
 #include "Aquarium.h"
 #include "ContextFactory.h"
