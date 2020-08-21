@@ -4,9 +4,8 @@
 // found in the LICENSE file.
 //
 
-#pragma once
 #ifndef AQUARIUM_ASSERT_H
-#define AQUARIUM_ASSERT_H 1
+#define AQUARIUM_ASSERT_H
 
 #include <cstdio>
 
@@ -34,4 +33,4 @@
 #define SWALLOW_ERROR(expression) expression
 #endif
 
-#endif // !common/AQUARIUM_ASSERT.h
+#endif  // AQUARIUM_ASSERT_H

@@ -6,9 +6,8 @@
 // ProgramDawn.h: Defines Program wrapper of Dawn.
 // Load shaders from folder shaders/dawn.
 
-#pragma once
 #ifndef PROGRAMDAWN_H
-#define PROGRAMDAWN_H 1
+#define PROGRAMDAWN_H
 
 #include "../Program.h"
 
@@ -40,4 +39,4 @@ public:
     ContextDawn *context;
 };
 
-#endif
+#endif  // PROGRAMDAWN_H

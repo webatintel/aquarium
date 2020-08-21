@@ -5,9 +5,8 @@
 //
 // Texture.h: Define abstract Texture for Aquarium.
 
-#pragma once
 #ifndef TEXTURE_H
-#define TEXTURE_H 1
+#define TEXTURE_H
 
 #include <string>
 #include <vector>
@@ -50,4 +49,4 @@ class Texture
     std::string mName;
 };
 
-#endif // !TEXTURE_H
+#endif  // TEXTURE_H

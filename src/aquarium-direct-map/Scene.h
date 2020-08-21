@@ -38,4 +38,4 @@ private:
   std::unordered_map<std::string, const AttribBuffer *> arrayMap;
 };
 
-#endif // !SCENE_H
+#endif  // SCENE_H

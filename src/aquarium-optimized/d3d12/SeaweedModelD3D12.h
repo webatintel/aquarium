@@ -5,9 +5,8 @@
 //
 // SeaweedModelD3D12.h: Defines seaweed model of D3D12.
 
-#pragma once
 #ifndef SEAWEEDMODELD3D12_H
-#define SEAWEEDMODELD3D12_H 1
+#define SEAWEEDMODELD3D12_H
 
 #include "BufferD3D12.h"
 #include "ContextD3D12.h"
@@ -91,4 +90,4 @@ class SeaweedModelD3D12 : public SeaweedModel
     int instance;
 };
 
-#endif  // !SEAWEEDMODEL_H
+#endif  // SEAWEEDMODELD3D12_H

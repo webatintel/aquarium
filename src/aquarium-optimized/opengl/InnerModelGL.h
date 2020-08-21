@@ -5,9 +5,8 @@
 //
 // Defines inner model of OpenGL.
 
-#pragma once
 #ifndef INNERMODELGL_H
-#define INNERMODELGL_H 1
+#define INNERMODELGL_H
 
 #include "ContextGL.h"
 #include "ProgramGL.h"
@@ -58,4 +57,4 @@ class InnerModelGL : public Model
     const ContextGL *mContextGL;
 };
 
-#endif // !INNERMODELGL_H
+#endif  // INNERMODELGL_H

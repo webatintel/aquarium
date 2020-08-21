@@ -5,9 +5,8 @@
 //
 // SeaweedModel.h: Define seaweed model.
 
-#pragma once
 #ifndef SEAWEEDMODEL_H
-#define SEAWEEDMODEL_H 1
+#define SEAWEEDMODEL_H
 
 #include "Model.h"
 
@@ -19,4 +18,4 @@ class SeaweedModel : public Model
     virtual void updateSeaweedModelTime(float time) = 0;
 };
 
-#endif // !SEAWEEDMODEL_H
+#endif  // SEAWEEDMODEL_H

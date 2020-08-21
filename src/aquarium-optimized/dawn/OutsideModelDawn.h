@@ -5,9 +5,8 @@
 //
 // OutsideModelDawn.h: Defnes outside model of Dawn
 
-#pragma once
 #ifndef OUTSIDEMODELDAWN_H
-#define OUTSIDEMODELDAWN_H 1
+#define OUTSIDEMODELDAWN_H
 
 #include "ContextDawn.h"
 #include "ProgramDawn.h"
@@ -71,4 +70,4 @@ public:
     ProgramDawn *mProgramDawn;
 };
 
-#endif
+#endif  // OUTSIDEMODELDAWN_H

@@ -9,7 +9,7 @@
 // and buffers for each frame.
 
 #ifndef MODEL_H
-#define MODEL_H 1
+#define MODEL_H
 
 #include <string>
 #include <vector>
@@ -50,4 +50,4 @@ class Model
 
 };
 
-#endif
+#endif  // MODEL_H

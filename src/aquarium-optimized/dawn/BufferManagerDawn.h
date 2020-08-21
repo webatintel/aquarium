@@ -5,7 +5,9 @@
 //
 // BufferManager.h: Implements buffer pool to manage buffer allocation and
 // recycle.
-#pragma once
+
+#ifndef BUFFERMANAGERDAWN_H
+#define BUFFERMANAGERDAWN_H
 
 #include <dawn/webgpu_cpp.h>
 #include <vector>
@@ -60,3 +62,5 @@ class BufferManagerDawn: public BufferManager
     ContextDawn *mContext;
     bool mSync;
 };
+
+#endif  // BUFFERMANAGERDAWN_H

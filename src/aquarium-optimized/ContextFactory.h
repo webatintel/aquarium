@@ -4,10 +4,8 @@
 // found in the LICENSE file.
 //
 
-#pragma once
-
-#ifndef CONTEXTFACTORY
-#define CONTEXTFACTORY 1
+#ifndef CONTEXTFACTORY_H
+#define CONTEXTFACTORY_H
 
 class Context;
 enum BACKENDTYPE : short;
@@ -23,4 +21,4 @@ class ContextFactory
     Context *mContext;
 };
 
-#endif
+#endif  // CONTEXTFACTORY_H

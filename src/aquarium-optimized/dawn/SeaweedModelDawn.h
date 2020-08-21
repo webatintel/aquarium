@@ -5,9 +5,8 @@
 //
 // SeaweedModelDawn.h: Defines seaweed model of Dawn.
 
-#pragma once
 #ifndef SEAWEEDMODELDAWN_H
-#define SEAWEEDMODELDAWN_H 1
+#define SEAWEEDMODELDAWN_H
 
 #include "ContextDawn.h"
 #include "ProgramDawn.h"
@@ -83,4 +82,4 @@ class SeaweedModelDawn : public SeaweedModel
     int instance;
 };
 
-#endif // !SEAWEEDMODEL_H
+#endif  // SEAWEEDMODELDAWN_H

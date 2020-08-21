@@ -5,8 +5,8 @@
 //
 // ContextGL.h: Defines the accessing to graphics API of OpenGL.
 
-#ifndef ContextGL_H
-#define ContextGL_H 1
+#ifndef CONTEXTGL_H
+#define CONTEXTGL_H
 
 #ifdef EGL_EGL_PROTOTYPES
 #include <angle_gl.h>
@@ -116,4 +116,4 @@ class ContextGL : public Context
 #endif
 };
 
-#endif  // !ContextGL_H
+#endif  // CONTEXTGL_H

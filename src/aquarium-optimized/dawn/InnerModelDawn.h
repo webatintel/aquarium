@@ -5,9 +5,8 @@
 //
 // InnerModelDawn.h: Defines inner model of Dawn.
 
-#pragma once
 #ifndef INNERMODELDAWN_H
-#define INNERMODELDAWN_H 1
+#define INNERMODELDAWN_H
 
 #include "ContextDawn.h"
 #include "ProgramDawn.h"
@@ -72,4 +71,4 @@ class InnerModelDawn : public Model
     ProgramDawn *mProgramDawn;
 };
 
-#endif // !INNERMODELDAWN_H
+#endif  // INNERMODELDAWN_H

@@ -4,7 +4,9 @@
 // found in the LICENSE file.
 //
 
-#pragma once
+#ifndef RESOURCEHELPER_H
+#define RESOURCEHELPER_H
+
 #include <string>
 #include <vector>
 
@@ -46,3 +48,5 @@ class ResourceHelper
     std::string mRenderer;
     std::string mRendererInfo;
 };
+
+#endif  // RESOURCEHELPER_H

@@ -5,9 +5,8 @@
 //
 // GenericModelDawn.h: Defnes generic model of Dawn
 
-#pragma once
 #ifndef GENERICMODELDAWN_H
-#define GENERICMODELDAWN_H 1
+#define GENERICMODELDAWN_H
 
 #include "ContextDawn.h"
 #include "ProgramDawn.h"
@@ -77,4 +76,4 @@ class GenericModelDawn : public Model
     int instance;
 };
 
-#endif
+#endif  // GENERICMODELDAWN_H

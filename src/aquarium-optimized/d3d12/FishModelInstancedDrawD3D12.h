@@ -5,9 +5,8 @@
 //
 // FishModelD3D12InstancedDraw.h: Defnes fish model of D3D12
 
-#pragma once
 #ifndef FISHMODELD3D12INSTANCEDDRAW_H
-#define FISHMODELD3D12INSTANCEDDRAW_H 1
+#define FISHMODELD3D12INSTANCEDDRAW_H
 
 #include <string>
 
@@ -105,4 +104,4 @@ class FishModelInstancedDrawD3D12 : public FishModel
     ContextD3D12 *mContextD3D12;
 };
 
-#endif
+#endif  // FISHMODELINSTANCEDDRAWD3D12_H

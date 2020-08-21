@@ -5,9 +5,8 @@
 //
 // BufferGL.h: Defines the buffer wrapper of OpenGL.
 
-#pragma once
 #ifndef BUFFERGL_H
-#define BUFFERGL_H 1
+#define BUFFERGL_H
 
 #ifdef EGL_EGL_PROTOTYPES
 #include <angle_gl.h>
@@ -65,4 +64,4 @@ class BufferGL : public Buffer
     void *mOffset;
 };
 
-#endif
+#endif  // BUFFERGL_H

@@ -36,4 +36,4 @@ private:
   int numElements;
 };
 
-#endif // ATTRIBBUFFER_H
+#endif  // ATTRIBBUFFER_H

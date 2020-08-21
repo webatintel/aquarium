@@ -5,9 +5,8 @@
 //
 // FPSTimer.h: Define fps timer.
 
-#pragma once
-#ifndef FPS_TIMER
-#define FPS_TIMER 1
+#ifndef FPSTIMER_H
+#define FPSTIMER_H
 
 #include <vector>
 
@@ -38,4 +37,4 @@ private:
   double mAverageFPS;
 };
 
-#endif
+#endif  // FPSTIMER_H

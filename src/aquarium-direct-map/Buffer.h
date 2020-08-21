@@ -40,4 +40,4 @@ private:
   void *mOffset;
 };
 
-#endif // !BUFFER_H
+#endif  // BUFFER_H

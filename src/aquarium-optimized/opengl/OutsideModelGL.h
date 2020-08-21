@@ -5,9 +5,8 @@
 //
 // OutsideModelGL.h: Define the outside model of OpenGL.
 
-#pragma once
-#ifndef OutsideModelGL_H
-#define OutsideModelGL_H 1
+#ifndef OUTSIDEMODELGL_H
+#define OUTSIDEMODELGL_H
 
 #include "ContextGL.h"
 #include "ProgramGL.h"
@@ -57,4 +56,4 @@ class OutsideModelGL : public Model
     const ContextGL *mContextGL;
 };
 
-#endif
+#endif  // OUTSIDEMODELGL_H

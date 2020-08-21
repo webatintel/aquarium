@@ -5,9 +5,8 @@
 //
 // FishModel.h: Define fish model. Update fish specific uniforms.
 
-#pragma once
 #ifndef FISHMODEL_H
-#define FISHMODEL_H 1
+#define FISHMODEL_H
 
 #include "Model.h"
 
@@ -42,4 +41,4 @@ class FishModel : public Model
     Aquarium *mAquarium;
 };
 
-#endif
+#endif  // FISHMODEL_H

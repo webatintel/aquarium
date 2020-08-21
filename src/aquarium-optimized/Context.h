@@ -5,9 +5,8 @@
 //
 // Context.h: Defines the accessing to graphics API of a graphics backend.
 
-#pragma once
-#ifndef Context_H
-#define Context_H 1
+#ifndef CONTEXT_H
+#define CONTEXT_H
 
 #include <bitset>
 #include <string>
@@ -110,4 +109,4 @@ class Context
     bool show_option_window;
 };
 
-#endif
+#endif  // CONTEXT_H

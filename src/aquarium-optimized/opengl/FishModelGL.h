@@ -5,8 +5,8 @@
 //
 // FishModelGL.h: Defines fish model of OpenGL.
 
-#ifndef FishModelGL_H
-#define FishModelGL_H 1
+#ifndef FISHMODELGL_H
+#define FISHMODELGL_H
 
 #include <string>
 
@@ -77,4 +77,4 @@ class FishModelGL : public FishModel
     const ContextGL *mContextGL;
 };
 
-#endif
+#endif  // FISHMODELGL_H

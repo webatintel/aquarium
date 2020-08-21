@@ -5,7 +5,6 @@
 //
 // TextureDawn.h: Wrap textures of Dawn.
 
-#pragma once
 #ifndef TEXTUREDAWN_H
 #define TEXTUREDAWN_H
 
@@ -44,4 +43,4 @@ class TextureDawn : public Texture
     ContextDawn *mContext;
 };
 
-#endif // !TEXTUREDAWN_H
+#endif  // TEXTUREDAWN_H

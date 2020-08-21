@@ -31,4 +31,4 @@ private:
   GLint index;
 };
 
-#endif // UNIFORM_H
+#endif  // UNIFORM_H
