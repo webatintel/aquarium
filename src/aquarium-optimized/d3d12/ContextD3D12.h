@@ -5,7 +5,6 @@
 //
 // ContextD3D12.h : Defines the accessing to graphics API of D3D12.
 
-#pragma once
 #ifndef CONTEXTD3D12_H
 #define CONTEXTD3D12_H
 
@@ -198,4 +197,4 @@ class ContextD3D12 : public Context
     bool mDisableD3D12RenderPass;
 };
 
-#endif
+#endif  // CONTEXTD3D12_H

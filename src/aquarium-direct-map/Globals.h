@@ -6,7 +6,6 @@
 // Globals.h: Define global variables, constant variables, global texture map, program map and
 // scene map.
 
-#pragma once
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
@@ -226,4 +225,4 @@ const std::string shaderFolder   = "shaders";
 const std::string shaderVersion  = "opengl/450";
 const std::string resourceFolder = "assets";
 
-#endif
+#endif  // GLOBALS_H

@@ -6,7 +6,7 @@
 // Behavior.h: Define base class for Behavior of Dawn backend.
 
 #ifndef BEHAVIOR_H
-#define BEHAVIOR_H 1
+#define BEHAVIOR_H
 
 #include <string>
 
@@ -29,4 +29,4 @@ class Behavior
     int mCount;
 };
 
-#endif  // !BEHAVIOR_H
+#endif  // BEHAVIOR_H

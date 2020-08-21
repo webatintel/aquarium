@@ -5,7 +5,6 @@
 //
 // TextureD3D12.h: Wrap textures of D3D12.
 
-#pragma once
 #ifndef TEXTURED3D12_H
 #define TEXTURED3D12_H
 
@@ -48,4 +47,4 @@ class TextureD3D12 : public Texture
     ContextD3D12 *mContext;
 };
 
-#endif  // !TEXTURED3D12_H
+#endif  // TEXTURED3D12_H

@@ -5,9 +5,8 @@
 //
 // FishModelDawn.h: Defnes fish model of Dawn
 
-#pragma once
 #ifndef FISHMODELDAWN_H
-#define FISHMODELDAWN_H 1
+#define FISHMODELDAWN_H
 
 #include "ContextDawn.h"
 #include "ProgramDawn.h"
@@ -86,4 +85,4 @@ class FishModelDawn : public FishModel
     bool mEnableDynamicBufferOffset;
 };
 
-#endif
+#endif  // FISHMODELDAWN_H

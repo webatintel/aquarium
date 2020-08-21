@@ -5,9 +5,8 @@
 //
 // FishModelDawn.h: Defnes fish model of Dawn
 
-#pragma once
 #ifndef FISHMODELINSTANCEDDRAWDAWN_H
-#define FISHMODELINSTANCEDDRAWDAWN_H 1
+#define FISHMODELINSTANCEDDRAWDAWN_H
 
 #include "ContextDawn.h"
 #include "ProgramDawn.h"
@@ -98,4 +97,4 @@ class FishModelInstancedDrawDawn : public FishModel
     ContextDawn *mContextDawn;
 };
 
-#endif
+#endif  // FISHMODELINSTANCEDDRAWDAWN_H

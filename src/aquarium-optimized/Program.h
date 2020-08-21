@@ -6,7 +6,7 @@
 // Program.h: Define base class for Programs of specific backends.
 
 #ifndef PROGRAM_H
-#define PROGRAM_H 1
+#define PROGRAM_H
 
 #include <string>
 
@@ -34,4 +34,4 @@ class Program
     std::string FragmentShaderCode;
 };
 
-#endif // !PROGRAM_H
+#endif  // PROGRAM_H

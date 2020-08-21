@@ -6,9 +6,8 @@
 // BufferD3D12.h: Defines the buffer wrapper of D3D12, abstracting the vetex and index buffer
 // binding.
 
-#pragma once
 #ifndef BUFFERD3D12_H
-#define BUFFERD3D12_H 1
+#define BUFFERD3D12_H
 
 #include <vector>
 
@@ -56,4 +55,4 @@ class BufferD3D12 : public Buffer
     int mSize;
 };
 
-#endif
+#endif  // BUFFERD3D12_H

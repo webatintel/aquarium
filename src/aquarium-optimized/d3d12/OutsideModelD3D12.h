@@ -5,9 +5,8 @@
 //
 // OutsideModelD3D12.h: Defnes outside model of D3D12
 
-#pragma once
 #ifndef OUTSIDEMODELD3D12_H
-#define OUTSIDEMODELD3D12_H 1
+#define OUTSIDEMODELD3D12_H
 
 #include <string>
 
@@ -74,4 +73,4 @@ class OutsideModelD3D12 : public Model
     ProgramD3D12 *mProgramD3D12;
 };
 
-#endif
+#endif  // OUTSIDEMODELD3D12_H

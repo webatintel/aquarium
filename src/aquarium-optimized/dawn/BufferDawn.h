@@ -5,9 +5,8 @@
 //
 // BufferDawn.h: Defines the buffer wrapper of dawn, abstracting the vetex and index buffer binding.
 
-#pragma once
 #ifndef BUFFERDAWN_H
-#define BUFFERDAWN_H 1
+#define BUFFERDAWN_H
 
 #include <dawn/webgpu_cpp.h>
 #include <vector>
@@ -48,4 +47,4 @@ class BufferDawn : public Buffer
     int mSize;
 };
 
-#endif
+#endif  // BUFFERDAWN_H

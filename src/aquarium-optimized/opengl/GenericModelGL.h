@@ -5,9 +5,8 @@
 //
 // GenericModel.h: Defines generic model of OpenGL.
 
-#pragma once
 #ifndef GENERICMODELGL_H
-#define GENERICMODELGL_H 1
+#define GENERICMODELGL_H
 
 #include "ContextGL.h"
 #include "ProgramGL.h"
@@ -61,4 +60,4 @@ class GenericModelGL : public Model
     const ContextGL *mContextGL;
 };
 
-#endif
+#endif  // GENERICMODELGL_H

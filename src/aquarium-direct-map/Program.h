@@ -47,4 +47,4 @@ private:
   std::unordered_map<std::string, int> textureUnits;
 };
 
-#endif
+#endif  // PROGRAM_H

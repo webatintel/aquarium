@@ -5,9 +5,8 @@
 //
 // SeaweedModelGL.h: Define seaweed model of OpeGL.
 
-#pragma once
 #ifndef SEAWEEDMODELGL_H
-#define SEAWEEDMODELGL_H 1
+#define SEAWEEDMODELGL_H
 
 #include "ContextGL.h"
 #include "ProgramGL.h"
@@ -60,4 +59,4 @@ class SeaweedModelGL : public SeaweedModel
     const ContextGL *mContextGL;
 };
 
-#endif // !SEAWEEDMODELGL_H
+#endif  // SEAWEEDMODELGL_H

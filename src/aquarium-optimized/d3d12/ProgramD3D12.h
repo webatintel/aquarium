@@ -6,9 +6,8 @@
 // ProgramD3D.h: Defines Program wrapper of D3D.
 // Load shaders from folder shaders/d3d12.
 
-#pragma once
 #ifndef PROGRAMD3D12_H
-#define PROGRAMD3D12_H 1
+#define PROGRAMD3D12_H
 
 #include <string>
 #include <unordered_map>
@@ -40,4 +39,4 @@ class ProgramD3D12 : public Program
     ContextD3D12 *context;
 };
 
-#endif
+#endif  // PROGRAMD3D12_H

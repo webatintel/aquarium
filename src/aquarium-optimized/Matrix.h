@@ -6,9 +6,8 @@
 // Matrix.h: Do matrix calculations including multiply, addition, substraction,
 // transpose, inverse, translation, etc.
 
-#pragma once
 #ifndef MATRIX_H
-#define MATIRX_H 1
+#define MATRIX_H
 
 #include <cmath>
 
@@ -380,4 +379,5 @@ float degToRad(float degrees)
     return static_cast<float>(degrees * M_PI / 180.0);
 }
 }
-#endif
+
+#endif  // MATRIX_H

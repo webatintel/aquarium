@@ -8,9 +8,8 @@
 // Compiles OpenGL shaders and check if compiled success.
 // Apply Buffers, Textures and Uniforms to program.
 
-#pragma once
 #ifndef PROGRAMGL_H
-#define PROGRAMGL_H 1
+#define PROGRAMGL_H
 
 #include <string>
 #include <unordered_map>
@@ -41,4 +40,4 @@ public:
     ContextGL *mContext;
 };
 
-#endif
+#endif  // PROGRAMGL_H

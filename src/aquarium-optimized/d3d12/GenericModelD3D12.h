@@ -5,9 +5,8 @@
 //
 // GenericModelD3D12.h: Defnes generic model of D3D12
 
-#pragma once
 #ifndef GENERICMODELD3D12_H
-#define GENERICMODELD3D12_H 1
+#define GENERICMODELD3D12_H
 
 #include <string>
 #include <vector>
@@ -81,4 +80,4 @@ class GenericModelD3D12 : public Model
     int mInstance;
 };
 
-#endif
+#endif  // GENERICMODELD3D12_H

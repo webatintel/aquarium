@@ -5,9 +5,8 @@
 //
 // InnerModelD3D12.h: Defines inner model of D3D12.
 
-#pragma once
 #ifndef INNERMODELD3D12_H
-#define INNERMODELD3D12_H 1
+#define INNERMODELD3D12_H
 
 #include "BufferD3D12.h"
 #include "ContextD3D12.h"
@@ -73,5 +72,4 @@ class InnerModelD3D12 : public Model
     ProgramD3D12 *mProgramD3D12;
 };
 
-#endif  // !INNERMODELD3D12_H
-#pragma once
+#endif  // INNERMODELD3D12_H

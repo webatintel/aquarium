@@ -5,9 +5,8 @@
 //
 // TextureGL.h: Define Texture  wrapper class of OpenGL.
 
-#pragma once
 #ifndef TEXTUREGL_H
-#define TEXTUREGL_H 1
+#define TEXTUREGL_H
 
 #include <string>
 #include <unordered_map>
@@ -52,4 +51,4 @@ class TextureGL : public Texture
     ContextGL *mContext;
 };
 
-#endif // !TEXTUREGL_H
+#endif  // TEXTUREGL_H
