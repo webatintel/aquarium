@@ -12,8 +12,9 @@
 
 #include "../FishModel.h"
 
-class TextureGL;
 class BufferGL;
+class ContextGL;
+class TextureGL;
 
 class FishModelGL : public FishModel
 {
