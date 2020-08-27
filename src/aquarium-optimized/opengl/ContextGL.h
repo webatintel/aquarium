@@ -8,21 +8,23 @@
 #ifndef CONTEXTGL_H
 #define CONTEXTGL_H
 
+#include <vector>
+
+#define GLFW_INCLUDE_NONE
+#include "GLFW/glfw3.h"
+
 #ifdef EGL_EGL_PROTOTYPES
-#include <angle_gl.h>
+#include <memory>
+
 #include "EGL/egl.h"
 #include "EGL/eglext.h"
-#include "EGL/eglplatform.h"
 #include "EGL/eglext_angle.h"
-#include <memory>
+#include "EGL/eglplatform.h"
 #include "EGLWindow.h"
+#include "angle_gl.h"
 #else
 #include "glad/glad.h"
 #endif
-
-#include <vector>
-
-#include "GLFW/glfw3.h"
 
 #include "../Context.h"
 

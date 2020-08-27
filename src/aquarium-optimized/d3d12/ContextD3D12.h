@@ -8,12 +8,13 @@
 #ifndef CONTEXTD3D12_H
 #define CONTEXTD3D12_H
 
-#include "../Context.h"
-
+#define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
 
 #include "stdafx.h"
 using Microsoft::WRL::ComPtr;
+
+#include "../Context.h"
 
 enum BACKENDTYPE : short;
 

@@ -5,9 +5,9 @@
 //
 // Buffer.cpp: Implement the index or vertex buffer wrappers and resource bindings of OpenGL.
 
-#include <iostream>
-
 #include "Buffer.h"
+
+#include <iostream>
 
 #include "common/AQUARIUM_ASSERT.h"
 

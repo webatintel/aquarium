@@ -5,19 +5,27 @@
 //
 // DeviceDawn.cpp: Implements accessing functions to the graphics API of Dawn.
 
-#include <dawn/dawn_proc.h>
-#include <dawn/dawn_wsi.h>
-#include <dawn/webgpu.h>
-#include <dawn/webgpu_cpp.h>
-#include <dawn_native/DawnNative.h>
+#include "ContextDawn.h"
+
 #include <array>
 #include <iostream>
 #include <string>
 #include <vector>
 
+#include "dawn/dawn_proc.h"
+#include "dawn/dawn_wsi.h"
+#include "dawn/webgpu.h"
+#include "dawn/webgpu_cpp.h"
+#include "dawn_native/DawnNative.h"
+#include "imgui_impl_glfw.h"
+#include "utils/BackendBinding.h"
+#include "utils/ComboRenderPipelineDescriptor.h"
+#include "utils/GLFWUtils.h"
+#include "utils/SystemUtils.h"
+
+#include "../Aquarium.h"
 #include "../FishModel.h"
 #include "BufferDawn.h"
-#include "ContextDawn.h"
 #include "FishModelDawn.h"
 #include "FishModelInstancedDrawDawn.h"
 #include "GenericModelDawn.h"
@@ -26,17 +34,9 @@
 #include "ProgramDawn.h"
 #include "SeaweedModelDawn.h"
 #include "TextureDawn.h"
-
 #include "common/AQUARIUM_ASSERT.h"
 #include "common/Constants.h"
 #include "imgui_impl_dawn.h"
-#include "imgui_impl_glfw.h"
-#include "utils/BackendBinding.h"
-#include "utils/ComboRenderPipelineDescriptor.h"
-#include "utils/GLFWUtils.h"
-#include "utils/SystemUtils.h"
-
-#include "../Aquarium.h"
 
 ContextDawn::ContextDawn(BACKENDTYPE backendType)
     : queue(nullptr),

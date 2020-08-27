@@ -7,8 +7,8 @@
 // Update uniforms, textures and buffers for each frame.
 
 #include "Model.h"
-#include "Globals.h"
 
+#include "Globals.h"
 #include "common/AQUARIUM_ASSERT.h"
 
 Model::Model(Program *program_,

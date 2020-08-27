@@ -11,12 +11,12 @@
 #include <iostream>
 #include <string>
 
-#include "../common/AQUARIUM_ASSERT.h"
-
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
 #include "stb_image.h"
 #include "stb_image_resize.h"
+
+#include "../common/AQUARIUM_ASSERT.h"
 
 Texture::Texture(const std::string &name, const std::string &url, bool flip)
     : mUrls(),

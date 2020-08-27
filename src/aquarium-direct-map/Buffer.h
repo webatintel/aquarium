@@ -10,8 +10,9 @@
 
 #include <vector>
 
-#include "AttribBuffer.h"
 #include "glad/glad.h"
+
+#include "AttribBuffer.h"
 
 class Buffer
 {

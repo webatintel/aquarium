@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "stdafx.h"
-
 using Microsoft::WRL::ComPtr;
 
 #include "../Buffer.h"

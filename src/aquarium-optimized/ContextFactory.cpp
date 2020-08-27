@@ -4,9 +4,9 @@
 // found in the LICENSE file.
 //
 
-#include "Aquarium.h"
 #include "ContextFactory.h"
 
+#include "Aquarium.h"
 #include "opengl/ContextGL.h"
 #ifdef ENABLE_DAWN_BACKEND
 #include "dawn/ContextDawn.h"

@@ -5,8 +5,9 @@
 //
 // FishModelGL.h: Implements fish model of OpenGL.
 
-#include "ContextGL.h"
 #include "FishModelGL.h"
+
+#include "ContextGL.h"
 #include "ProgramGL.h"
 
 FishModelGL::FishModelGL(const ContextGL *mContextGL,

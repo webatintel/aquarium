@@ -14,12 +14,11 @@
 #include <string>
 #include <unordered_map>
 
+#include "../Aquarium.h"
+#include "../Program.h"
 #include "BufferGL.h"
 #include "ContextGL.h"
 #include "TextureGL.h"
-
-#include "../Aquarium.h"
-#include "../Program.h"
 
 class ProgramGL : public Program
 {

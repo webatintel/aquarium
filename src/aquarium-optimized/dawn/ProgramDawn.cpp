@@ -4,12 +4,13 @@
 // found in the LICENSE file.
 //
 
+#include "ProgramDawn.h"
+
 #include <fstream>
 #include <regex>
 #include <string>
 
 #include "ContextDawn.h"
-#include "ProgramDawn.h"
 #include "common/AQUARIUM_ASSERT.h"
 
 ProgramDawn::ProgramDawn(ContextDawn *context, const std::string &mVId, const std::string &mFId)

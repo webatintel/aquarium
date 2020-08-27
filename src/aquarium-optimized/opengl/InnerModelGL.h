@@ -8,10 +8,9 @@
 #ifndef INNERMODELGL_H
 #define INNERMODELGL_H
 
+#include "../Model.h"
 #include "ContextGL.h"
 #include "ProgramGL.h"
-
-#include "../Model.h"
 
 class InnerModelGL : public Model
 {

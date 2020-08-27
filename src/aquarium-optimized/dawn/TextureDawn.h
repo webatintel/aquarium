@@ -8,7 +8,7 @@
 #ifndef TEXTUREDAWN_H
 #define TEXTUREDAWN_H
 
-#include <dawn/webgpu_cpp.h>
+#include "dawn/webgpu_cpp.h"
 
 #include "../Texture.h"
 

@@ -10,12 +10,11 @@
 
 #include <string>
 
+#include "../FishModel.h"
 #include "BufferD3D12.h"
 #include "ContextD3D12.h"
 #include "ProgramD3D12.h"
 #include "TextureD3D12.h"
-
-#include "../FishModel.h"
 
 class FishModelD3D12 : public FishModel
 {

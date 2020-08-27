@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <thread>
+
 #include "common/AQUARIUM_ASSERT.h"
 
 RingBufferDawn::RingBufferDawn(BufferManagerDawn *bufferManager, size_t size)

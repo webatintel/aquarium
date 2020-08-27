@@ -6,9 +6,9 @@
 // Texture.cpp: Load images by stb lib, flip the texture if needed.
 // Create texture2D or textureCubeMap, then upload the texture to gpu.
 
-#include <iostream>
-
 #include "Texture.h"
+
+#include <iostream>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"

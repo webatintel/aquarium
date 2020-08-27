@@ -170,6 +170,9 @@ executable("aquarium") {
       "third_party/dawn/src/utils:dawn_bindings",
       "third_party/dawn/src/utils:dawn_utils",
     ]
+    if (dawn_enable_vulkan) {
+      deps += [ "third_party/dawn/third_party/khronos:vulkan_headers" ]
+    }
   }
 
   if (enable_d3d12) {

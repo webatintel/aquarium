@@ -8,8 +8,9 @@
 #ifndef BUFFERDAWN_H
 #define BUFFERDAWN_H
 
-#include <dawn/webgpu_cpp.h>
 #include <vector>
+
+#include "dawn/webgpu_cpp.h"
 
 #include "../Buffer.h"
 

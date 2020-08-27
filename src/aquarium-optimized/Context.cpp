@@ -6,12 +6,13 @@
 
 #include "Context.h"
 
-#include "Aquarium.h"
+#include <sstream>
+
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_internal.h"
 
-#include <sstream>
+#include "Aquarium.h"
 
 void Context::renderImgui(const FPSTimer &fpsTimer,
                           int *fishCount,

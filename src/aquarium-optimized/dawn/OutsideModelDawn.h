@@ -8,12 +8,12 @@
 #ifndef OUTSIDEMODELDAWN_H
 #define OUTSIDEMODELDAWN_H
 
-#include "ContextDawn.h"
-#include "ProgramDawn.h"
 #include "dawn/webgpu_cpp.h"
 #include "utils/ComboRenderPipelineDescriptor.h"
 
 #include "../Model.h"
+#include "ContextDawn.h"
+#include "ProgramDawn.h"
 
 class OutsideModelDawn : public Model
 {

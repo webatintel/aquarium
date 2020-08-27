@@ -8,12 +8,12 @@
 #ifndef SEAWEEDMODELDAWN_H
 #define SEAWEEDMODELDAWN_H
 
-#include "ContextDawn.h"
-#include "ProgramDawn.h"
 #include "dawn/webgpu_cpp.h"
 #include "utils/ComboRenderPipelineDescriptor.h"
 
 #include "../SeaweedModel.h"
+#include "ContextDawn.h"
+#include "ProgramDawn.h"
 
 class SeaweedModelDawn : public SeaweedModel
 {

@@ -5,9 +5,10 @@
 //
 // Model.cpp: Implement common functions of Model.
 
+#include "Model.h"
+
 #include "Aquarium.h"
 #include "Buffer.h"
-#include "Model.h"
 
 Model::Model()
     : mProgram(nullptr),

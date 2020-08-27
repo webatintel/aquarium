@@ -8,10 +8,9 @@
 #ifndef GENERICMODELGL_H
 #define GENERICMODELGL_H
 
+#include "../Model.h"
 #include "ContextGL.h"
 #include "ProgramGL.h"
-
-#include "../Model.h"
 
 class GenericModelGL : public Model
 {

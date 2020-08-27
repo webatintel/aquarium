@@ -8,10 +8,9 @@
 #ifndef SEAWEEDMODELGL_H
 #define SEAWEEDMODELGL_H
 
+#include "../SeaweedModel.h"
 #include "ContextGL.h"
 #include "ProgramGL.h"
-
-#include "../SeaweedModel.h"
 
 class SeaweedModelGL : public SeaweedModel
 {
