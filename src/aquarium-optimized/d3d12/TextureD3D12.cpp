@@ -4,11 +4,12 @@
 // found in the LICENSE file.
 //
 
+#include "TextureD3D12.h"
+
 #include <algorithm>
 #include <cmath>
 
 #include "ContextD3D12.h"
-#include "TextureD3D12.h"
 
 TextureD3D12::~TextureD3D12() {}
 

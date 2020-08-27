@@ -6,21 +6,22 @@
 // Scene.cpp: Implements Scene.
 // Load resources including images, vertexes and programs, then group them into models.
 
+#include "Scene.h"
+
 #include <cstdio>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 
-#include "Globals.h"
-#include "Model.h"
-#include "Program.h"
-#include "Scene.h"
-#include "common/AQUARIUM_ASSERT.h"
-
 #include "rapidjson/document.h"
 #include "rapidjson/filereadstream.h"
 #include "rapidjson/istreamwrapper.h"
 #include "rapidjson/stringbuffer.h"
+
+#include "Globals.h"
+#include "Model.h"
+#include "Program.h"
+#include "common/AQUARIUM_ASSERT.h"
 
 std::vector<std::string> g_skyBoxUrls = {
     "GlobeOuter_EM_positive_x.jpg", "GlobeOuter_EM_negative_x.jpg", "GlobeOuter_EM_positive_y.jpg",

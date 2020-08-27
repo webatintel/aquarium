@@ -8,10 +8,9 @@
 #ifndef OUTSIDEMODELGL_H
 #define OUTSIDEMODELGL_H
 
+#include "../Model.h"
 #include "ContextGL.h"
 #include "ProgramGL.h"
-
-#include "../Model.h"
 
 class OutsideModelGL : public Model
 {

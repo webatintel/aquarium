@@ -14,7 +14,6 @@
 
 #include "Aquarium.h"
 #include "ResourceHelper.h"
-
 #include "common/FPSTimer.h"
 
 class Aquarium;

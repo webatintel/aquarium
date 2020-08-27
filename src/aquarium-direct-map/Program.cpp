@@ -8,12 +8,12 @@
 // Compiles OpenGL shaders and check if compiled success.
 // Apply Buffers, Textures and Uniforms to program.
 
+#include "Program.h"
+
 #include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <regex>
-
-#include "Program.h"
 
 #include "common/AQUARIUM_ASSERT.h"
 

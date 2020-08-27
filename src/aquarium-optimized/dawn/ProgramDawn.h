@@ -9,15 +9,13 @@
 #ifndef PROGRAMDAWN_H
 #define PROGRAMDAWN_H
 
-#include "../Program.h"
-
 #include <string>
 #include <unordered_map>
 
+#include "../Aquarium.h"
+#include "../Program.h"
 #include "BufferDawn.h"
 #include "TextureDawn.h"
-
-#include "../Aquarium.h"
 
 class ContextDawn;
 

@@ -8,12 +8,12 @@
 #ifndef FISHMODELINSTANCEDDRAWDAWN_H
 #define FISHMODELINSTANCEDDRAWDAWN_H
 
-#include "ContextDawn.h"
-#include "ProgramDawn.h"
 #include "dawn/webgpu_cpp.h"
 #include "utils/ComboRenderPipelineDescriptor.h"
 
 #include "../FishModel.h"
+#include "ContextDawn.h"
+#include "ProgramDawn.h"
 
 class FishModelInstancedDrawDawn : public FishModel
 {

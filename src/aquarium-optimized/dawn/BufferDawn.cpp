@@ -6,6 +6,7 @@
 // BufferDawn.cpp: Implements the index or vertex buffers wrappers and resource bindings of dawn.
 
 #include "BufferDawn.h"
+
 #include "ContextDawn.h"
 
 // Copy size must be a multiple of 4 bytes on dawn mac backend.

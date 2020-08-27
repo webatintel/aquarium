@@ -9,9 +9,15 @@
 // other models. Calculate fish count for each type of fish.
 // Update uniforms for each frame. Show fps for each frame.
 
+#include <cmath>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
 #ifdef _WIN32
+#include <Windows.h>
 #include <direct.h>
-#include "Windows.h"
 #elif __APPLE__
 #include <ctime>
 #include <mach-o/dyld.h>
@@ -20,25 +26,20 @@
 #include <unistd.h>
 #endif
 
-#include <cmath>
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <vector>
+#define GLFW_INCLUDE_NONE
+#include "GLFW/glfw3.h"
+
+#include "rapidjson/document.h"
+#include "rapidjson/istreamwrapper.h"
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/writer.h"
 
 #include "Globals.h"
 #include "Matrix.h"
 #include "Model.h"
 #include "Program.h"
-
-#include "GLFW/glfw3.h"
 #include "common/AQUARIUM_ASSERT.h"
 #include "include/CmdArgsHelper.h"
-#include "rapidjson/document.h"
-#include "rapidjson/istreamwrapper.h"
-#include "rapidjson/stringbuffer.h"
-#include "rapidjson/writer.h"
 
 #define min(a,b) ((a)<(b)?(a):(b))
 

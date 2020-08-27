@@ -5,14 +5,21 @@
 //
 // ContextGL.cpp: Implements accessing functions to the graphics API of OpenGL.
 
-#include "common/AQUARIUM_ASSERT.h"
+#include "ContextGL.h"
 
 #include <algorithm>
 #include <iostream>
 #include <sstream>
 
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+
+#ifdef EGL_EGL_PROTOTYPES
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include "GLFW/glfw3native.h"
+#endif
+
 #include "BufferGL.h"
-#include "ContextGL.h"
 #include "FishModelGL.h"
 #include "GenericModelGL.h"
 #include "InnerModelGL.h"
@@ -20,15 +27,8 @@
 #include "ProgramGL.h"
 #include "SeaweedModelGL.h"
 #include "TextureGL.h"
-
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
+#include "common/AQUARIUM_ASSERT.h"
 #include "imgui_impl_opengl3.h"
-
-#ifdef EGL_EGL_PROTOTYPES
-#define GLFW_EXPOSE_NATIVE_WIN32
-#include <GLFW/glfw3native.h>
-#endif
 
 ContextGL::ContextGL(BACKENDTYPE backendType) : mWindow(nullptr)
 {

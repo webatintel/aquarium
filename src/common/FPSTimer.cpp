@@ -7,10 +7,10 @@
 
 #include "FPSTimer.h"
 
-#include "AQUARIUM_ASSERT.h"
-
 #include <cmath>
 #include <iostream>
+
+#include "AQUARIUM_ASSERT.h"
 
 FPSTimer::FPSTimer()
     : mTotalTime(static_cast<double>(NUM_FRAMES_TO_AVERAGE)),

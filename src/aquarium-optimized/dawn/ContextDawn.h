@@ -8,14 +8,20 @@
 #ifndef CONTEXTDAWN_H
 #define CONTEXTDAWN_H
 
-#include "../Context.h"
-
-#include <dawn/webgpu_cpp.h>
-#include <dawn_native/DawnNative.h>
-
-#include "BufferManagerDawn.h"
+#ifdef DAWN_ENABLE_VULKAN_BACKEND
+// The Vulkan header is included by VulkanBackend.h, so this should be placed before the GLFW
+// header.
+#include "dawn_native/VulkanBackend.h"
+#endif
+#define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
+
+#include "dawn/webgpu_cpp.h"
+#include "dawn_native/DawnNative.h"
 #include "utils/WGPUHelpers.h"
+
+#include "../Context.h"
+#include "BufferManagerDawn.h"
 
 class TextureDawn;
 class BufferDawn;

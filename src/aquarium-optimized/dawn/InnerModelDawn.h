@@ -8,12 +8,12 @@
 #ifndef INNERMODELDAWN_H
 #define INNERMODELDAWN_H
 
-#include "ContextDawn.h"
-#include "ProgramDawn.h"
 #include "dawn/webgpu_cpp.h"
 #include "utils/ComboRenderPipelineDescriptor.h"
 
 #include "../Model.h"
+#include "ContextDawn.h"
+#include "ProgramDawn.h"
 
 class InnerModelDawn : public Model
 {

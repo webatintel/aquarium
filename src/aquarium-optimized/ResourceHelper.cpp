@@ -10,8 +10,8 @@
 #include <sstream>
 
 #ifdef _WIN32
+#include <Windows.h>
 #include <direct.h>
-#include "Windows.h"
 const std::string slash = "\\";
 #elif __APPLE__
 #include <mach-o/dyld.h>

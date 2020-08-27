@@ -8,12 +8,12 @@
 #ifndef FISHMODELDAWN_H
 #define FISHMODELDAWN_H
 
-#include "ContextDawn.h"
-#include "ProgramDawn.h"
 #include "dawn/webgpu_cpp.h"
 #include "utils/ComboRenderPipelineDescriptor.h"
 
 #include "../FishModel.h"
+#include "ContextDawn.h"
+#include "ProgramDawn.h"
 
 struct FishPer;
 

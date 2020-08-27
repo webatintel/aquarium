@@ -16,7 +16,6 @@
 #include <vector>
 
 #include "Scene.h"
-
 #include "common/FPSTimer.h"
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
