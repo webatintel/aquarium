@@ -17,37 +17,37 @@
 
 class OutsideModelDawn : public Model
 {
-public:
-  OutsideModelDawn(Context *context,
-                   Aquarium *aquarium,
-                   MODELGROUP type,
-                   MODELNAME name,
-                   bool blend);
-  ~OutsideModelDawn();
+  public:
+    OutsideModelDawn(Context *context,
+                     Aquarium *aquarium,
+                     MODELGROUP type,
+                     MODELNAME name,
+                     bool blend);
+    ~OutsideModelDawn();
 
-  void init() override;
-  void prepareForDraw() override;
-  void draw() override;
+    void init() override;
+    void prepareForDraw() override;
+    void draw() override;
 
-  void updatePerInstanceUniforms(const WorldUniforms &worldUniforms) override;
+    void updatePerInstanceUniforms(const WorldUniforms &worldUniforms) override;
 
-  TextureDawn *mDiffuseTexture;
-  TextureDawn *mNormalTexture;
-  TextureDawn *mReflectionTexture;
-  TextureDawn *mSkyboxTexture;
+    TextureDawn *mDiffuseTexture;
+    TextureDawn *mNormalTexture;
+    TextureDawn *mReflectionTexture;
+    TextureDawn *mSkyboxTexture;
 
-  BufferDawn *mPositionBuffer;
-  BufferDawn *mNormalBuffer;
-  BufferDawn *mTexCoordBuffer;
-  BufferDawn *mTangentBuffer;
-  BufferDawn *mBiNormalBuffer;
+    BufferDawn *mPositionBuffer;
+    BufferDawn *mNormalBuffer;
+    BufferDawn *mTexCoordBuffer;
+    BufferDawn *mTangentBuffer;
+    BufferDawn *mBiNormalBuffer;
 
-  BufferDawn *mIndicesBuffer;
+    BufferDawn *mIndicesBuffer;
 
-  struct LightFactorUniforms
-  {
-      float shininess;
-      float specularFactor;
+    struct LightFactorUniforms
+    {
+        float shininess;
+        float specularFactor;
     } mLightFactorUniforms;
 
     WorldUniforms mWorldUniformPer[20];

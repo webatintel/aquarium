@@ -18,7 +18,7 @@ FishModelD3D12::FishModelD3D12(Context *context,
 {
     mContextD3D12 = static_cast<ContextD3D12 *>(context);
 
-    const Fish &fishInfo              = fishTable[name - MODELNAME::MODELSMALLFISHA];
+    const Fish &fishInfo               = fishTable[name - MODELNAME::MODELSMALLFISHA];
     mFishVertexUniforms.fishLength     = fishInfo.fishLength;
     mFishVertexUniforms.fishBendAmount = fishInfo.fishBendAmount;
     mFishVertexUniforms.fishWaveLength = fishInfo.fishWaveLength;
@@ -30,9 +30,7 @@ FishModelD3D12::FishModelD3D12(Context *context,
     mPreInstance = mCurInstance;
 }
 
-FishModelD3D12::~FishModelD3D12()
-{
-}
+FishModelD3D12::~FishModelD3D12() {}
 
 void FishModelD3D12::init()
 {

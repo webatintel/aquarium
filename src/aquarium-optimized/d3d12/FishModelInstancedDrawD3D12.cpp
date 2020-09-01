@@ -18,7 +18,7 @@ FishModelInstancedDrawD3D12::FishModelInstancedDrawD3D12(Context *context,
 {
     mContextD3D12 = static_cast<ContextD3D12 *>(context);
 
-    const Fish &fishInfo              = fishTable[name - MODELNAME::MODELSMALLFISHAINSTANCEDDRAWS];
+    const Fish &fishInfo               = fishTable[name - MODELNAME::MODELSMALLFISHAINSTANCEDDRAWS];
     mFishVertexUniforms.fishLength     = fishInfo.fishLength;
     mFishVertexUniforms.fishBendAmount = fishInfo.fishBendAmount;
     mFishVertexUniforms.fishWaveLength = fishInfo.fishWaveLength;
@@ -26,7 +26,7 @@ FishModelInstancedDrawD3D12::FishModelInstancedDrawD3D12(Context *context,
     mLightFactorUniforms.shininess      = 5.0f;
     mLightFactorUniforms.specularFactor = 0.3f;
 
-    instance = aquarium->fishCount[fishInfo.modelName - MODELNAME::MODELSMALLFISHA];
+    instance  = aquarium->fishCount[fishInfo.modelName - MODELNAME::MODELSMALLFISHA];
     mFishPers = new FishPer[instance];
 }
 

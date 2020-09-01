@@ -19,7 +19,8 @@ FPSTimer::FPSTimer()
       mHistoryFPS(NUM_HISTORY_DATA, 1.0f),
       mHistoryFrameTime(NUM_HISTORY_DATA, 100.0f),
       mAverageFPS(0.0)
-{}
+{
+}
 
 void FPSTimer::update(double elapsedTime, double renderingTime, int testTime)
 {

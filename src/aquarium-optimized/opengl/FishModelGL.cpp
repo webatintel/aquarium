@@ -32,10 +32,10 @@ FishModelGL::FishModelGL(const ContextGL *mContextGL,
     mViewProjectionUniform.first = aquarium->lightWorldPositionUniform.viewProjection;
     mScaleUniform.first          = 1;
 
-    const Fish &fishInfo              = fishTable[name - MODELNAME::MODELSMALLFISHA];
-    mFishLengthUniform.first          = fishInfo.fishLength;
-    mFishBendAmountUniform.first      = fishInfo.fishBendAmount;
-    mFishWaveLengthUniform.first      = fishInfo.fishWaveLength;
+    const Fish &fishInfo         = fishTable[name - MODELNAME::MODELSMALLFISHA];
+    mFishLengthUniform.first     = fishInfo.fishLength;
+    mFishBendAmountUniform.first = fishInfo.fishBendAmount;
+    mFishWaveLengthUniform.first = fishInfo.fishWaveLength;
 }
 
 void FishModelGL::init()

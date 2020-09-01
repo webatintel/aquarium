@@ -21,12 +21,12 @@ FishModelInstancedDrawDawn::FishModelInstancedDrawDawn(Context *context,
     mLightFactorUniforms.shininess      = 5.0f;
     mLightFactorUniforms.specularFactor = 0.3f;
 
-    const Fish &fishInfo              = fishTable[name - MODELNAME::MODELSMALLFISHAINSTANCEDDRAWS];
+    const Fish &fishInfo               = fishTable[name - MODELNAME::MODELSMALLFISHAINSTANCEDDRAWS];
     mFishVertexUniforms.fishLength     = fishInfo.fishLength;
     mFishVertexUniforms.fishBendAmount = fishInfo.fishBendAmount;
     mFishVertexUniforms.fishWaveLength = fishInfo.fishWaveLength;
 
-    instance = aquarium->fishCount[fishInfo.modelName - MODELNAME::MODELSMALLFISHA];
+    instance  = aquarium->fishCount[fishInfo.modelName - MODELNAME::MODELSMALLFISHA];
     mFishPers = new FishPer[instance];
 }
 

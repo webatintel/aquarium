@@ -86,7 +86,8 @@ size_t RingBufferDawn::allocate(size_t size)
     return mTail - size;
 }
 
-BufferManagerDawn::BufferManagerDawn(ContextDawn *context, bool sync) : mContext(context), mSync(sync)
+BufferManagerDawn::BufferManagerDawn(ContextDawn *context, bool sync)
+    : mContext(context), mSync(sync)
 {
     mEncoder = context->createCommandEncoder();
 }
@@ -174,7 +175,7 @@ RingBufferDawn *BufferManagerDawn::allocate(size_t size, size_t *offset)
 
         // allocate size in the ring buffer
         cur_offset = ringBuffer->allocate(size);
-        *offset = cur_offset;
+        *offset    = cur_offset;
     }
 
     return ringBuffer;

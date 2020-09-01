@@ -15,7 +15,7 @@ enum UNIFORMNAME : short;
 class Program
 {
   public:
-    Program(){}
+    Program() {}
     Program(const std::string &mVertexShader, const std::string &fragmentShader)
         : mVId(mVertexShader), mFId(fragmentShader)
     {

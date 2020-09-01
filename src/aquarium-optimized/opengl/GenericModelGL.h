@@ -16,7 +16,7 @@ class GenericModelGL : public Model
 {
   public:
     GenericModelGL(const ContextGL *context,
-                   Aquarium* aquarium,
+                   Aquarium *aquarium,
                    MODELGROUP type,
                    MODELNAME name,
                    bool blend);

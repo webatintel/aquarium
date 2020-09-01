@@ -74,30 +74,30 @@ ContextDawn::~ContextDawn()
         destoryImgUI();
     }
 
-    mSceneRenderTargetView   = nullptr;
-    mSceneDepthStencilView   = nullptr;
+    mSceneRenderTargetView    = nullptr;
+    mSceneDepthStencilView    = nullptr;
     mBackbufferView           = nullptr;
-    mPipeline                = nullptr;
-    mBindGroup               = nullptr;
+    mPipeline                 = nullptr;
+    mBindGroup                = nullptr;
     mLightWorldPositionBuffer = nullptr;
     mLightBuffer              = nullptr;
     mFogBuffer                = nullptr;
-    mCommandEncoder          = nullptr;
+    mCommandEncoder           = nullptr;
     mCommandBuffers.clear();
-    mRenderPass              = nullptr;
-    mRenderPassDescriptor    = {};
-    groupLayoutGeneral       = nullptr;
-    bindGroupGeneral         = nullptr;
-    groupLayoutWorld         = nullptr;
-    bindGroupWorld           = nullptr;
+    mRenderPass           = nullptr;
+    mRenderPassDescriptor = {};
+    groupLayoutGeneral    = nullptr;
+    bindGroupGeneral      = nullptr;
+    groupLayoutWorld      = nullptr;
+    bindGroupWorld        = nullptr;
 
     groupLayoutFishPer = nullptr;
     destoryFishResource();
     delete bufferManager;
 
-    mSwapchain               = nullptr;
-    queue                    = nullptr;
-    mDevice                  = nullptr;
+    mSwapchain = nullptr;
+    queue      = nullptr;
+    mDevice    = nullptr;
 }
 
 bool ContextDawn::initialize(
@@ -269,12 +269,14 @@ bool ContextDawn::initialize(
         ImGui_ImplGlfw_InitForOpenGL(mWindow, true);
         ImGui_ImplDawn_Init(this, mPreferredSwapChainFormat);
     }
-    bufferManager = new BufferManagerDawn(this, !toggleBitset.test(static_cast<TOGGLE>(TOGGLE::BUFFERMAPPINGASYNC)));
+    bufferManager = new BufferManagerDawn(
+        this, !toggleBitset.test(static_cast<TOGGLE>(TOGGLE::BUFFERMAPPINGASYNC)));
 
     return true;
 }
 
-void ContextDawn::framebufferResizeCallback(GLFWwindow *window, int width, int height) {
+void ContextDawn::framebufferResizeCallback(GLFWwindow *window, int width, int height)
+{
     ContextDawn *contextDawn = reinterpret_cast<ContextDawn *>(glfwGetWindowUserPointer(window));
     contextDawn->mIsSwapchainOutOfDate = true;
 }
@@ -288,7 +290,7 @@ bool ContextDawn::GetHardwareAdapter(
     bool enableIntegratedGpu = toggleBitset.test(static_cast<size_t>(TOGGLE::INTEGRATEDGPU));
     bool enableDiscreteGpu   = toggleBitset.test(static_cast<size_t>(TOGGLE::DISCRETEGPU));
     bool useDefaultGpu       = (enableDiscreteGpu | enableIntegratedGpu) == false ? true : false;
-    bool result             = false;
+    bool result              = false;
 
     // Get an adapter for the backend to use, and create the Device.
     for (auto &adapter : instance->GetAdapters())
@@ -427,7 +429,7 @@ wgpu::PipelineLayout ContextDawn::MakeBasicPipelineLayout(
     wgpu::PipelineLayoutDescriptor descriptor;
 
     descriptor.bindGroupLayoutCount = static_cast<uint32_t>(bindingsInitializer.size());
-    descriptor.bindGroupLayouts = bindingsInitializer.data();
+    descriptor.bindGroupLayouts     = bindingsInitializer.data();
 
     return mDevice.CreatePipelineLayout(&descriptor);
 }
@@ -455,9 +457,9 @@ wgpu::RenderPipeline ContextDawn::createRenderPipeline(
     }
 
     wgpu::ColorStateDescriptor ColorStateDescriptor;
-    ColorStateDescriptor.colorBlend     = blendDescriptor;
-    ColorStateDescriptor.alphaBlend     = blendDescriptor;
-    ColorStateDescriptor.writeMask      = wgpu::ColorWriteMask::All;
+    ColorStateDescriptor.colorBlend = blendDescriptor;
+    ColorStateDescriptor.alphaBlend = blendDescriptor;
+    ColorStateDescriptor.writeMask  = wgpu::ColorWriteMask::All;
 
     wgpu::RasterizationStateDescriptor rasterizationState;
     rasterizationState.nextInChain         = nullptr;
@@ -522,7 +524,7 @@ wgpu::TextureView ContextDawn::createDepthStencilView() const
 wgpu::Buffer ContextDawn::createBuffer(uint32_t size, wgpu::BufferUsage bit) const
 {
     wgpu::BufferDescriptor descriptor;
-    descriptor.size = size;
+    descriptor.size  = size;
     descriptor.usage = bit;
 
     wgpu::Buffer buffer = mDevice.CreateBuffer(&descriptor);
@@ -550,7 +552,7 @@ wgpu::BindGroup ContextDawn::makeBindGroup(
     return utils::MakeBindGroup(mDevice, layout, bindingsInitializer);
 }
 
-void ContextDawn::initGeneralResources(Aquarium* aquarium)
+void ContextDawn::initGeneralResources(Aquarium *aquarium)
 {
     // initilize general uniform buffers
     groupLayoutGeneral = MakeBindGroupLayout({
@@ -562,8 +564,8 @@ void ContextDawn::initGeneralResources(Aquarium* aquarium)
                                         sizeof(aquarium->lightUniforms),
                                         wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
     mFogBuffer   = createBufferFromData(&aquarium->fogUniforms, sizeof(aquarium->fogUniforms),
-                                        sizeof(aquarium->fogUniforms),
-                                        wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
+                                      sizeof(aquarium->fogUniforms),
+                                      wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
 
     bindGroupGeneral =
         makeBindGroup(groupLayoutGeneral, {{0, mLightBuffer, 0, sizeof(aquarium->lightUniforms)},
@@ -605,10 +607,11 @@ void ContextDawn::initGeneralResources(Aquarium* aquarium)
         });
     }
 
-    reallocResource(aquarium->getPreFishCount(), aquarium->getCurFishCount(), enableDynamicBufferOffset);
+    reallocResource(aquarium->getPreFishCount(), aquarium->getCurFishCount(),
+                    enableDynamicBufferOffset);
 }
 
-void ContextDawn::updateWorldlUniforms(Aquarium* aquarium)
+void ContextDawn::updateWorldlUniforms(Aquarium *aquarium)
 {
     updateBufferData(mLightWorldPositionBuffer,
                      CalcConstantBufferByteSize(sizeof(LightWorldPositionUniform)),
@@ -617,7 +620,8 @@ void ContextDawn::updateWorldlUniforms(Aquarium* aquarium)
 
 Buffer *ContextDawn::createBuffer(int numComponents, std::vector<float> *buf, bool isIndex)
 {
-    Buffer *buffer = new BufferDawn(this, static_cast<int>(buf->size()), numComponents, buf, isIndex);
+    Buffer *buffer =
+        new BufferDawn(this, static_cast<int>(buf->size()), numComponents, buf, isIndex);
     return buffer;
 }
 
@@ -719,9 +723,11 @@ void ContextDawn::destoryImgUI()
 
 void ContextDawn::preFrame()
 {
-    if (mIsSwapchainOutOfDate) {
+    if (mIsSwapchainOutOfDate)
+    {
         glfwGetFramebufferSize(mWindow, &mClientWidth, &mClientHeight);
-        if (mMSAASampleCount > 1) {
+        if (mMSAASampleCount > 1)
+        {
             mSceneRenderTargetView = createMultisampledRenderTargetView();
         }
         mSceneDepthStencilView = createDepthStencilView();
@@ -736,9 +742,10 @@ void ContextDawn::preFrame()
 
     if (mMSAASampleCount > 1)
     {
-        // If MSAA is enabled, we render to a multisampled texture and then resolve to the backbuffer
-        mRenderPassDescriptor = utils::ComboRenderPassDescriptor({mSceneRenderTargetView},
-                                                                 mSceneDepthStencilView);
+        // If MSAA is enabled, we render to a multisampled texture and then resolve to the
+        // backbuffer
+        mRenderPassDescriptor =
+            utils::ComboRenderPassDescriptor({mSceneRenderTargetView}, mSceneDepthStencilView);
         mRenderPassDescriptor.cColorAttachments[0].resolveTarget = mBackbufferView;
         mRenderPassDescriptor.cColorAttachments[0].loadOp        = wgpu::LoadOp::Clear;
         mRenderPassDescriptor.cColorAttachments[0].storeOp       = wgpu::StoreOp::Clear;
@@ -757,32 +764,32 @@ void ContextDawn::preFrame()
     mRenderPass = mCommandEncoder.BeginRenderPass(&mRenderPassDescriptor);
 }
 
-Model * ContextDawn::createModel(Aquarium* aquarium, MODELGROUP type, MODELNAME name, bool blend)
+Model *ContextDawn::createModel(Aquarium *aquarium, MODELGROUP type, MODELNAME name, bool blend)
 {
     Model *model;
     switch (type)
     {
-    case MODELGROUP::FISH:
-        model = new FishModelDawn(this, aquarium, type, name, blend);
-        break;
-    case MODELGROUP::FISHINSTANCEDDRAW:
-        model = new FishModelInstancedDrawDawn(this, aquarium, type, name, blend);
-        break;
-    case MODELGROUP::GENERIC:
-        model = new GenericModelDawn(this, aquarium, type, name, blend);
-        break;
-    case MODELGROUP::INNER:
-        model = new InnerModelDawn(this, aquarium, type, name, blend);
-        break;
-    case MODELGROUP::SEAWEED:
-        model = new SeaweedModelDawn(this, aquarium, type, name, blend);
-        break;
-    case MODELGROUP::OUTSIDE:
-        model = new OutsideModelDawn(this, aquarium, type, name, blend);
-        break;
-    default:
-        model = nullptr;
-        std::cout << "can not create model type" << std::endl;
+        case MODELGROUP::FISH:
+            model = new FishModelDawn(this, aquarium, type, name, blend);
+            break;
+        case MODELGROUP::FISHINSTANCEDDRAW:
+            model = new FishModelInstancedDrawDawn(this, aquarium, type, name, blend);
+            break;
+        case MODELGROUP::GENERIC:
+            model = new GenericModelDawn(this, aquarium, type, name, blend);
+            break;
+        case MODELGROUP::INNER:
+            model = new InnerModelDawn(this, aquarium, type, name, blend);
+            break;
+        case MODELGROUP::SEAWEED:
+            model = new SeaweedModelDawn(this, aquarium, type, name, blend);
+            break;
+        case MODELGROUP::OUTSIDE:
+            model = new OutsideModelDawn(this, aquarium, type, name, blend);
+            break;
+        default:
+            model = nullptr;
+            std::cout << "can not create model type" << std::endl;
     }
 
     return model;
@@ -872,9 +879,9 @@ void ContextDawn::updateAllFishData()
     updateBufferData(fishPersBuffer, size, fishPers, sizeof(FishPer) * mCurTotalInstance);
 }
 
-void ContextDawn::updateBufferData(const wgpu::Buffer& buffer,
+void ContextDawn::updateBufferData(const wgpu::Buffer &buffer,
                                    size_t bufferSize,
-                                   void* data,
+                                   void *data,
                                    size_t dataSize) const
 {
     size_t offset              = 0;

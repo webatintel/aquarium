@@ -7,7 +7,8 @@
 
 #include "Aquarium.h"
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     Aquarium aquarium;
     if (!aquarium.init(argc, argv))
     {

@@ -22,7 +22,7 @@
 
 class ProgramGL : public Program
 {
-public:
+  public:
     ProgramGL() {}
     ProgramGL(ContextGL *, std::string mVId, std::string mFId);
     ~ProgramGL() override;
@@ -30,7 +30,7 @@ public:
     void setProgram() override;
     GLuint getProgramId() const { return mProgramId; }
     GLuint getVAOId() { return mVAO; }
-    void compileProgram(bool enableAlphaBlending, const std::string& alpha) override;
+    void compileProgram(bool enableAlphaBlending, const std::string &alpha) override;
 
   private:
     GLuint mProgramId;

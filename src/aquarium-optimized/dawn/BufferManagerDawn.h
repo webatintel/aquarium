@@ -50,7 +50,7 @@ class RingBufferDawn : public RingBuffer
     void *mPixels;
 };
 
-class BufferManagerDawn: public BufferManager
+class BufferManagerDawn : public BufferManager
 {
   public:
     BufferManagerDawn(ContextDawn *context, bool sync);

@@ -17,13 +17,7 @@
 
 // initializs texture 2d
 Texture::Texture(const std::string &url, bool flip)
-    : urls(),
-    target(GL_TEXTURE_2D),
-    texture(0u),
-    params(),
-    width(0),
-    height(0),
-    flip(flip)
+    : urls(), target(GL_TEXTURE_2D), texture(0u), params(), width(0), height(0), flip(flip)
 {
     std::string urlpath = url;
     urls.push_back(urlpath);
@@ -114,7 +108,8 @@ void Texture::uploadTextures()
         for (unsigned int i = 0; i < 6; i++)
         {
             loadImageBySTB(urls[i], &pixels);
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, width, height, 0, GL_RGBA,
+                         GL_UNSIGNED_BYTE, pixels);
             DestroyImageData(pixels);
         }
         ASSERT(glGetError() == GL_NO_ERROR);

@@ -62,7 +62,7 @@ class ContextD3D12 : public Context
     void createCommittedResource(const D3D12_HEAP_PROPERTIES &properties,
                                  const D3D12_RESOURCE_DESC &desc,
                                  D3D12_RESOURCE_STATES state,
-                                 ComPtr<ID3D12Resource>& resource);
+                                 ComPtr<ID3D12Resource> &resource);
     void updateSubresources(ID3D12GraphicsCommandList *pCmdList,
                             ID3D12Resource *pDestinationResource,
                             ID3D12Resource *pIntermediate,
@@ -73,20 +73,20 @@ class ContextD3D12 : public Context
     void executeCommandLists(UINT NumCommandLists, ID3D12CommandList *const *ppCommandLists);
 
     void createCommandList(ID3D12PipelineState *pInitialState,
-                           ComPtr<ID3D12GraphicsCommandList4>& commandList);
+                           ComPtr<ID3D12GraphicsCommandList4> &commandList);
 
     ComPtr<ID3D12Resource> createDefaultBuffer(const void *initData,
                                                UINT64 initDataSize,
                                                UINT64 bufferSize,
-                                               ComPtr<ID3D12Resource>& uploadBuffer) const;
+                                               ComPtr<ID3D12Resource> &uploadBuffer) const;
     void createRootSignature(const D3D12_VERSIONED_ROOT_SIGNATURE_DESC &pRootSignatureDesc,
-                             ComPtr<ID3D12RootSignature>& rootSignature) const;
+                             ComPtr<ID3D12RootSignature> &rootSignature) const;
     void createGraphicsPipelineState(
         const std::vector<D3D12_INPUT_ELEMENT_DESC> &mInputElementDescs,
-        const ComPtr<ID3D12RootSignature>& rootSignature,
-        const ComPtr<ID3DBlob>& mVertexShader,
-        const ComPtr<ID3DBlob>& mPixelShader,
-        ComPtr<ID3D12PipelineState>& mPipelineState,
+        const ComPtr<ID3D12RootSignature> &rootSignature,
+        const ComPtr<ID3DBlob> &mVertexShader,
+        const ComPtr<ID3DBlob> &mPixelShader,
+        ComPtr<ID3D12PipelineState> &mPipelineState,
         bool enableBlend) const;
     void buildSrvDescriptor(const ComPtr<ID3D12Resource> resource,
                             const D3D12_SHADER_RESOURCE_VIEW_DESC &mSrvDesc,
@@ -96,8 +96,8 @@ class ContextD3D12 : public Context
     UINT CalcConstantBufferByteSize(UINT byteSize);
     void createTexture(const D3D12_RESOURCE_DESC &textureDesc,
                        const std::vector<UINT8 *> &texture,
-                       ComPtr<ID3D12Resource>& m_texture,
-                       ComPtr<ID3D12Resource>& textureUploadHeap,
+                       ComPtr<ID3D12Resource> &m_texture,
+                       ComPtr<ID3D12Resource> &textureUploadHeap,
                        int TextureWidth,
                        int TextureHeight,
                        int TexturePixelSize,
