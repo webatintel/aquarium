@@ -26,7 +26,7 @@ FishModelDawn::FishModelDawn(Context *context,
     mLightFactorUniforms.shininess      = 5.0f;
     mLightFactorUniforms.specularFactor = 0.3f;
 
-    const Fish &fishInfo              = fishTable[name - MODELNAME::MODELSMALLFISHA];
+    const Fish &fishInfo               = fishTable[name - MODELNAME::MODELSMALLFISHA];
     mFishVertexUniforms.fishLength     = fishInfo.fishLength;
     mFishVertexUniforms.fishBendAmount = fishInfo.fishBendAmount;
     mFishVertexUniforms.fishWaveLength = fishInfo.fishWaveLength;

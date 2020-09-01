@@ -16,30 +16,30 @@
 
 class Texture
 {
-public:
-  Texture() {}
-  ~Texture();
-  Texture(const std::string &url, bool flip);
-  Texture(const std::vector<std::string> &urls);
+  public:
+    Texture() {}
+    ~Texture();
+    Texture(const std::string &url, bool flip);
+    Texture(const std::vector<std::string> &urls);
 
-  GLuint getTexture() const { return texture; }
-  GLenum getTarget() const { return target; }
-  void setTexture(GLuint texId) { texture = texId; }
-  bool loadImageBySTB(const std::string &filename, uint8_t **pixels);
-  void DestroyImageData(uint8_t *pixels);
+    GLuint getTexture() const { return texture; }
+    GLenum getTarget() const { return target; }
+    void setTexture(GLuint texId) { texture = texId; }
+    bool loadImageBySTB(const std::string &filename, uint8_t **pixels);
+    void DestroyImageData(uint8_t *pixels);
 
-private:
-  void setParameter(GLenum, GLint);
-  void uploadTextures();
-  bool isPowerOf2(int value);
+  private:
+    void setParameter(GLenum, GLint);
+    void uploadTextures();
+    bool isPowerOf2(int value);
 
-  std::vector<std::string> urls;
-  GLenum target;
-  GLuint texture;
-  std::unordered_map<GLenum, GLint> params;
-  int width;
-  int height;
-  bool flip;
+    std::vector<std::string> urls;
+    GLenum target;
+    GLuint texture;
+    std::unordered_map<GLenum, GLint> params;
+    int width;
+    int height;
+    bool flip;
 };
 
 #endif  // TEXTURE_H

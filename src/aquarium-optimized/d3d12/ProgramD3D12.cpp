@@ -18,7 +18,7 @@ ProgramD3D12::ProgramD3D12(ContextD3D12 *context, const std::string &mVId, const
 
 ProgramD3D12::~ProgramD3D12() {}
 
-void ProgramD3D12::compileProgram(bool enableBlending, const std::string& alpha)
+void ProgramD3D12::compileProgram(bool enableBlending, const std::string &alpha)
 {
     loadProgram();
 

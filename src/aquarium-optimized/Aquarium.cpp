@@ -50,10 +50,10 @@ Aquarium::Aquarium()
       mBackendType(BACKENDTYPE::BACKENDTYPELAST),
       mFactory(nullptr)
 {
-    g.then          = 0.0;
-    g.mclock        = 0.0;
-    g.eyeClock      = 0.0;
-    g.alpha         = "1";
+    g.then     = 0.0;
+    g.mclock   = 0.0;
+    g.eyeClock = 0.0;
+    g.alpha    = "1";
 
     lightUniforms.lightColor[0] = 1.0f;
     lightUniforms.lightColor[1] = 1.0f;
@@ -162,7 +162,7 @@ BACKENDTYPE Aquarium::getBackendType(const std::string &backendPath)
 
 bool Aquarium::init(int argc, char **argv)
 {
-    int windowWidth = 0;
+    int windowWidth  = 0;
     int windowHeight = 0;
 
     cxxopts::Options options(argv[0], "A native implementation of WebGL Aquarium");
@@ -200,7 +200,7 @@ bool Aquarium::init(int argc, char **argv)
         return false;
     }
     std::string backend = result["backend"].as<std::string>();
-    mBackendType = getBackendType(backend);
+    mBackendType        = getBackendType(backend);
     if (mBackendType == BACKENDTYPE::BACKENDTYPELAST)
     {
         std::cout << "Can not create " << backend << " backend" << std::endl;
@@ -429,7 +429,7 @@ void Aquarium::resetFpsTime()
 #else
     g.start    = clock() / 1000000.0;
 #endif
-    g.then          = g.start;
+    g.then = g.start;
 }
 
 void Aquarium::display()

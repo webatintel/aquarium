@@ -15,7 +15,7 @@ SeaweedModelDawn::SeaweedModelDawn(Context *context,
     : SeaweedModel(type, name, blend), instance(0)
 {
     mContextDawn = static_cast<ContextDawn *>(context);
-    mAquarium   = aquarium;
+    mAquarium    = aquarium;
 
     mLightFactorUniforms.shininess      = 50.0f;
     mLightFactorUniforms.specularFactor = 1.0f;
@@ -155,6 +155,4 @@ void SeaweedModelDawn::updatePerInstanceUniforms(const WorldUniforms &worldUnifo
     instance++;
 }
 
-void SeaweedModelDawn::updateSeaweedModelTime(float time)
-{
-}
+void SeaweedModelDawn::updateSeaweedModelTime(float time) {}

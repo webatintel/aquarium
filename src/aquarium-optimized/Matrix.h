@@ -11,7 +11,8 @@
 
 #include <cmath>
 
-namespace matrix {
+namespace matrix
+{
 static long long RANDOM_RANGE_ = 4294967296;
 
 template <typename T>
@@ -378,6 +379,6 @@ float degToRad(float degrees)
 {
     return static_cast<float>(degrees * M_PI / 180.0);
 }
-}
+}  // namespace matrix
 
 #endif  // MATRIX_H

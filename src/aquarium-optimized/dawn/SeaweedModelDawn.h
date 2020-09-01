@@ -77,7 +77,7 @@ class SeaweedModelDawn : public SeaweedModel
 
     ContextDawn *mContextDawn;
     ProgramDawn *mProgramDawn;
-    Aquarium * mAquarium;
+    Aquarium *mAquarium;
 
     int instance;
 };

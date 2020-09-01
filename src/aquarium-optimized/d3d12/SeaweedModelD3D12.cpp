@@ -15,7 +15,7 @@ SeaweedModelD3D12::SeaweedModelD3D12(Context *context,
     : SeaweedModel(type, name, blend), instance(0)
 {
     mContextD3D12 = static_cast<ContextD3D12 *>(context);
-    mAquarium    = aquarium;
+    mAquarium     = aquarium;
 
     mLightFactorUniforms.shininess      = 50.0f;
     mLightFactorUniforms.specularFactor = 1.0f;

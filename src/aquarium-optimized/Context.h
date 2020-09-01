@@ -55,8 +55,8 @@ class Context
     virtual void Terminate()                                                     = 0;
     virtual void Flush() {}
 
-    virtual void preFrame()   = 0;
-    virtual void showWindow() = 0;
+    virtual void preFrame()                                                                   = 0;
+    virtual void showWindow()                                                                 = 0;
     virtual void updateFPS(const FPSTimer &fpsTimer,
                            int *fishCount,
                            std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> *toggleBitset) = 0;

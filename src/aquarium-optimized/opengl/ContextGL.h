@@ -30,7 +30,7 @@
 
 class BufferGL;
 class TextureGL;
-enum BACKENDTYPE: short;
+enum BACKENDTYPE : short;
 
 class ContextGL : public Context
 {
@@ -57,7 +57,7 @@ class ContextGL : public Context
 
     Model *createModel(Aquarium *aquarium, MODELGROUP type, MODELNAME name, bool blend) override;
     int getUniformLocation(unsigned int programId, const std::string &name) const;
-    int getAttribLocation(unsigned int programId, const std::string & name) const;
+    int getAttribLocation(unsigned int programId, const std::string &name) const;
     void setUniform(int index, const float *v, int type) const;
     void setTexture(const TextureGL &texture, int index, int unit) const;
     void setAttribs(const BufferGL &bufferGL, int index) const;

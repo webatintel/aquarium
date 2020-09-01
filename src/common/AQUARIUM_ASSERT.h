@@ -9,25 +9,29 @@
 
 #include <cstdio>
 
-//TODO(yizhou) : replace this ASSERT by the code template of ANGLE or Chromium
+// TODO(yizhou) : replace this ASSERT by the code template of ANGLE or Chromium
 #ifndef NDEBUG
-#define ASSERT(expression)                { \
-        if (!(expression))                { \
-            printf("Assertion(%s) failed: file \"%s\", line %d\n", \
-                #expression, __FILE__, __LINE__); \
-            abort();                        \
-        }                                   \
+#define ASSERT(expression)                                                                \
+    {                                                                                     \
+        if (!(expression))                                                                \
+        {                                                                                 \
+            printf("Assertion(%s) failed: file \"%s\", line %d\n", #expression, __FILE__, \
+                   __LINE__);                                                             \
+            abort();                                                                      \
+        }                                                                                 \
     }
 #else
 #define ASSERT(expression) NULL;
 #endif
 
 #ifndef NDEBUG
-#define SWALLOW_ERROR(expression)                { \
-        if (!(expression))                { \
-            printf("Assertion(%s) failed: file \"%s\", line %d\n", \
-                #expression, __FILE__, __LINE__); \
-        }                                         \
+#define SWALLOW_ERROR(expression)                                                         \
+    {                                                                                     \
+        if (!(expression))                                                                \
+        {                                                                                 \
+            printf("Assertion(%s) failed: file \"%s\", line %d\n", #expression, __FILE__, \
+                   __LINE__);                                                             \
+        }                                                                                 \
     }
 #else
 #define SWALLOW_ERROR(expression) expression

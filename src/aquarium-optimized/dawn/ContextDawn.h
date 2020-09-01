@@ -117,11 +117,10 @@ class ContextDawn : public Context
                          int curTotalInstance,
                          bool enableDynamicBufferOffset) override;
     void updateAllFishData() override;
-    void updateBufferData(
-        const wgpu::Buffer &buffer,
-        size_t bufferSize,
-        void *data,
-        size_t dataSize) const;
+    void updateBufferData(const wgpu::Buffer &buffer,
+                          size_t bufferSize,
+                          void *data,
+                          size_t dataSize) const;
     wgpu::CreateBufferMappedResult CreateBufferMapped(wgpu::BufferUsage usage, uint64_t size) const;
     void WaitABit();
     wgpu::CommandEncoder createCommandEncoder() const;

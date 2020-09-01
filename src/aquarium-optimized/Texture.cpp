@@ -19,11 +19,7 @@
 #include "../common/AQUARIUM_ASSERT.h"
 
 Texture::Texture(const std::string &name, const std::string &url, bool flip)
-    : mUrls(),
-    mWidth(0),
-    mHeight(0),
-    mFlip(flip),
-    mName(name)
+    : mUrls(), mWidth(0), mHeight(0), mFlip(flip), mName(name)
 {
     std::string urlpath = url;
     mUrls.push_back(urlpath);
@@ -32,10 +28,11 @@ Texture::Texture(const std::string &name, const std::string &url, bool flip)
 // Force loading 3 channel images to 4 channel by stb becasue Dawn doesn't support 3 channel
 // formats currently. The group is discussing on whether webgpu shoud support 3 channel format.
 // https://github.com/gpuweb/gpuweb/issues/66#issuecomment-410021505
-bool Texture::loadImage(const std::vector<std::string> &urls, std::vector<uint8_t *>* pixels)
+bool Texture::loadImage(const std::vector<std::string> &urls, std::vector<uint8_t *> *pixels)
 {
     stbi_set_flip_vertically_on_load(mFlip);
-    for (auto filename : urls) {
+    for (auto filename : urls)
+    {
         uint8_t *pixel = stbi_load(filename.c_str(), &mWidth, &mHeight, 0, 4);
         if (pixel == 0)
         {
@@ -53,20 +50,24 @@ bool Texture::isPowerOf2(int value)
 }
 
 // Free image data after upload to gpu
-void Texture::DestoryImageData(std::vector<uint8_t*>& pixelVec)
+void Texture::DestoryImageData(std::vector<uint8_t *> &pixelVec)
 {
-    for (auto& pixels : pixelVec)
+    for (auto &pixels : pixelVec)
     {
         free(pixels);
         pixels = nullptr;
     }
 }
 
-void Texture::copyPaddingBuffer(unsigned char *dst, unsigned char *src, int width, int height, int kPadding)
+void Texture::copyPaddingBuffer(unsigned char *dst,
+                                unsigned char *src,
+                                int width,
+                                int height,
+                                int kPadding)
 {
     unsigned char *s = src;
     unsigned char *d = dst;
-    for(int i = 0; i < height; ++i)
+    for (int i = 0; i < height; ++i)
     {
         memcpy(d, s, width * 4);
         s += width * 4;
@@ -85,10 +86,9 @@ void Texture::generateMipmap(uint8_t *input_pixels,
                              int num_channels,
                              bool is256padding)
 {
-    int mipmapLevel =
-        static_cast<uint32_t>(floor(log2(std::max(output_w, output_h)))) + 1;
+    int mipmapLevel = static_cast<uint32_t>(floor(log2(std::max(output_w, output_h)))) + 1;
     output_pixels.resize(mipmapLevel);
-    int height      = output_h;
+    int height = output_h;
     int width  = output_w;
 
     if (!is256padding)

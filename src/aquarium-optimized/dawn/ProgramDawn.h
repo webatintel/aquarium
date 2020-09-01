@@ -21,12 +21,12 @@ class ContextDawn;
 
 class ProgramDawn : public Program
 {
-public:
+  public:
     ProgramDawn() {}
     ProgramDawn(ContextDawn *context, const std::string &mVId, const std::string &mFId);
     ~ProgramDawn() override;
 
-    void compileProgram(bool enableAlphaBlending, const std::string& alpha) override;
+    void compileProgram(bool enableAlphaBlending, const std::string &alpha) override;
     wgpu::ShaderModule getVSModule() { return mVsModule; }
     wgpu::ShaderModule getFSModule() { return mFsModule; }
 
