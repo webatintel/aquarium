@@ -34,7 +34,7 @@ public:
   virtual void prepareForDraw() = 0;
   virtual void updatePerInstanceUniforms(
       const WorldUniforms &worldUniforms) = 0;
-  virtual void draw()                     = 0;
+  virtual void draw() = 0;
 
   void setProgram(Program *program);
   virtual void init() = 0;

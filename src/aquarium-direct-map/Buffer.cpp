@@ -29,11 +29,11 @@ Buffer::Buffer(const AttribBuffer &attribBuffer, GLenum target)
 
   mTotalComponents = mNumComponents * mNumElements;
 
-  auto bufferFloat  = attribBuffer.getBufferFloat();
+  auto bufferFloat = attribBuffer.getBufferFloat();
   auto bufferUShort = attribBuffer.getBufferUShort();
 
   if (attribBuffer.getType() == "Float32Array") {
-    mType      = GL_FLOAT;
+    mType = GL_FLOAT;
     mNormalize = false;
     glBufferData(target, sizeof(GLfloat) * bufferFloat.size(),
                  bufferFloat.data(), GL_STATIC_DRAW);

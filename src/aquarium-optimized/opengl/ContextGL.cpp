@@ -79,10 +79,10 @@ bool ContextGL::initialize(
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 #endif
 
-  GLFWmonitor *pMonitor   = glfwGetPrimaryMonitor();
+  GLFWmonitor *pMonitor = glfwGetPrimaryMonitor();
   const GLFWvidmode *mode = glfwGetVideoMode(pMonitor);
-  mClientWidth            = mode->width;
-  mClientHeight           = mode->height;
+  mClientWidth = mode->width;
+  mClientHeight = mode->height;
 
   setWindowSize(windowWidth, windowHeight);
 
@@ -125,7 +125,7 @@ bool ContextGL::initialize(
   display_attribs.push_back(EGL_NONE);
 
   HWND hwnd = glfwGetWin32Window(mWindow);
-  mDisplay  = eglGetPlatformDisplay(EGL_PLATFORM_ANGLE_ANGLE,
+  mDisplay = eglGetPlatformDisplay(EGL_PLATFORM_ANGLE_ANGLE,
                                    reinterpret_cast<void *>(GetDC(hwnd)),
                                    &display_attribs[0]);
   if (mDisplay == EGL_NO_DISPLAY) {
@@ -229,7 +229,7 @@ bool ContextGL::initialize(
 
   std::string renderer((const char *)glGetString(GL_RENDERER));
   size_t index = renderer.find("/");
-  renderer     = renderer.substr(0, index);
+  renderer = renderer.substr(0, index);
   std::cout << renderer << std::endl;
   mResourceHelper->setRenderer(renderer);
 
@@ -314,7 +314,7 @@ void ContextGL::framebufferResizeCallback(GLFWwindow *window,
                                           int height) {
   ContextGL *contextGL =
       reinterpret_cast<ContextGL *>(glfwGetWindowUserPointer(window));
-  contextGL->mClientWidth  = width;
+  contextGL->mClientWidth = width;
   contextGL->mClientHeight = height;
   glViewport(0, 0, width, height);
 }
@@ -492,7 +492,7 @@ void ContextGL::enableBlend(bool flag) const {
 
 void ContextGL::drawElements(const BufferGL &buffer) const {
   GLint totalComponents = buffer.getTotalComponents();
-  GLenum type           = buffer.getType();
+  GLenum type = buffer.getType();
   glDrawElements(GL_TRIANGLES, totalComponents, type, 0);
 
   ASSERT(glGetError() == GL_NO_ERROR);
@@ -653,7 +653,7 @@ bool ContextGL::compileProgram(unsigned int programId,
                                const std::string &VertexShaderCode,
                                const std::string &FragmentShaderCode) {
   // Create the shaders
-  GLuint VertexShaderID   = glCreateShader(GL_VERTEX_SHADER);
+  GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
   GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
   GLint Result = GL_FALSE;

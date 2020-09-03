@@ -34,10 +34,10 @@ void FPSTimer::update(double elapsedTime, double renderingTime, int testTime) {
       (1.0f / (mTotalTime / static_cast<double>(NUM_FRAMES_TO_AVERAGE))) + 0.5);
 
   for (int i = 0; i < NUM_HISTORY_DATA - 1; i++) {
-    mHistoryFPS[i]       = mHistoryFPS[i + 1];
+    mHistoryFPS[i] = mHistoryFPS[i + 1];
     mHistoryFrameTime[i] = mHistoryFrameTime[i + 1];
   }
-  mHistoryFPS[NUM_HISTORY_DATA - 1]       = mAverageFPS;
+  mHistoryFPS[NUM_HISTORY_DATA - 1] = mAverageFPS;
   mHistoryFrameTime[NUM_HISTORY_DATA - 1] = 1000.0 / mAverageFPS;
 
   if (testTime - renderingTime > 5 && testTime - renderingTime < 25) {

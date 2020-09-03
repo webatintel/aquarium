@@ -41,15 +41,15 @@ void TextureD3D12::loadTexture() {
 
   if (mTextureViewDimension == D3D12_SRV_DIMENSION_TEXTURECUBE) {
     D3D12_RESOURCE_DESC textureDesc = {};
-    textureDesc.MipLevels           = 1;
-    textureDesc.Format              = mFormat;
-    textureDesc.Width               = mWidth;
-    textureDesc.Height              = mHeight;
-    textureDesc.Flags               = D3D12_RESOURCE_FLAG_NONE;
-    textureDesc.DepthOrArraySize    = 6;
-    textureDesc.SampleDesc.Count    = 1;
-    textureDesc.SampleDesc.Quality  = 0;
-    textureDesc.Dimension           = mTextureDimension;
+    textureDesc.MipLevels = 1;
+    textureDesc.Format = mFormat;
+    textureDesc.Width = mWidth;
+    textureDesc.Height = mHeight;
+    textureDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
+    textureDesc.DepthOrArraySize = 6;
+    textureDesc.SampleDesc.Count = 1;
+    textureDesc.SampleDesc.Quality = 0;
+    textureDesc.Dimension = mTextureDimension;
 
     mContext->createTexture(
         textureDesc, mPixelVec, mTexture, mTextureUploadHeap, mWidth, mHeight,
@@ -59,17 +59,17 @@ void TextureD3D12::loadTexture() {
                    mHeight, 0, 4, false);
 
     D3D12_RESOURCE_DESC textureDesc = {};
-    textureDesc.MipLevels           = static_cast<uint16_t>(std::floor(
+    textureDesc.MipLevels = static_cast<uint16_t>(std::floor(
                                 std::log2(std::max(mWidth, mHeight)))) +
                             1;
-    textureDesc.Format             = mFormat;
-    textureDesc.Width              = mWidth;
-    textureDesc.Height             = mHeight;
-    textureDesc.Flags              = D3D12_RESOURCE_FLAG_NONE;
-    textureDesc.DepthOrArraySize   = 1;
-    textureDesc.SampleDesc.Count   = 1;
+    textureDesc.Format = mFormat;
+    textureDesc.Width = mWidth;
+    textureDesc.Height = mHeight;
+    textureDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
+    textureDesc.DepthOrArraySize = 1;
+    textureDesc.SampleDesc.Count = 1;
     textureDesc.SampleDesc.Quality = 0;
-    textureDesc.Dimension          = mTextureDimension;
+    textureDesc.Dimension = mTextureDimension;
 
     mContext->createTexture(
         textureDesc, mResizedVec, mTexture, mTextureUploadHeap, mWidth, mHeight,
@@ -81,8 +81,8 @@ void TextureD3D12::loadTexture() {
 // create srv before binding resources.
 void TextureD3D12::createSrvDescriptor() {
   mSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-  mSrvDesc.Format                  = mFormat;
-  mSrvDesc.ViewDimension           = mTextureViewDimension;
+  mSrvDesc.Format = mFormat;
+  mSrvDesc.ViewDimension = mTextureViewDimension;
   if (mTextureViewDimension == D3D12_SRV_DIMENSION_TEXTURECUBE) {
     mSrvDesc.Texture2D.MipLevels = 1;
   } else {

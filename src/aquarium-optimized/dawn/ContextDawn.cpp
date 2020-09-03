@@ -71,30 +71,30 @@ ContextDawn::~ContextDawn() {
     destoryImgUI();
   }
 
-  mSceneRenderTargetView    = nullptr;
-  mSceneDepthStencilView    = nullptr;
-  mBackbufferView           = nullptr;
-  mPipeline                 = nullptr;
-  mBindGroup                = nullptr;
+  mSceneRenderTargetView = nullptr;
+  mSceneDepthStencilView = nullptr;
+  mBackbufferView = nullptr;
+  mPipeline = nullptr;
+  mBindGroup = nullptr;
   mLightWorldPositionBuffer = nullptr;
-  mLightBuffer              = nullptr;
-  mFogBuffer                = nullptr;
-  mCommandEncoder           = nullptr;
+  mLightBuffer = nullptr;
+  mFogBuffer = nullptr;
+  mCommandEncoder = nullptr;
   mCommandBuffers.clear();
-  mRenderPass           = nullptr;
+  mRenderPass = nullptr;
   mRenderPassDescriptor = {};
-  groupLayoutGeneral    = nullptr;
-  bindGroupGeneral      = nullptr;
-  groupLayoutWorld      = nullptr;
-  bindGroupWorld        = nullptr;
+  groupLayoutGeneral = nullptr;
+  bindGroupGeneral = nullptr;
+  groupLayoutWorld = nullptr;
+  bindGroupWorld = nullptr;
 
   groupLayoutFishPer = nullptr;
   destoryFishResource();
   delete bufferManager;
 
   mSwapchain = nullptr;
-  queue      = nullptr;
-  mDevice    = nullptr;
+  queue = nullptr;
+  mDevice = nullptr;
 }
 
 bool ContextDawn::initialize(
@@ -140,10 +140,10 @@ bool ContextDawn::initialize(
   // set full screen
   glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
-  GLFWmonitor *pMonitor   = glfwGetPrimaryMonitor();
+  GLFWmonitor *pMonitor = glfwGetPrimaryMonitor();
   const GLFWvidmode *mode = glfwGetVideoMode(pMonitor);
-  mClientWidth            = mode->width;
-  mClientHeight           = mode->height;
+  mClientWidth = mode->width;
+  mClientHeight = mode->height;
 
   setWindowSize(windowWidth, windowHeight);
 
@@ -218,7 +218,7 @@ bool ContextDawn::initialize(
                        mClientWidth, mClientHeight);
 
   dawn_native::PCIInfo info = backendAdapter.GetPCIInfo();
-  std::string renderer      = info.name;
+  std::string renderer = info.name;
   std::cout << renderer << std::endl;
   mResourceHelper->setRenderer(renderer);
 
@@ -291,7 +291,7 @@ bool ContextDawn::GetHardwareAdapter(
           (enableIntegratedGpu &&
            adapter.GetDeviceType() == dawn_native::DeviceType::IntegratedGPU)) {
         *backendAdapter = adapter;
-        result          = true;
+        result = true;
         break;
       }
     }
@@ -443,32 +443,32 @@ wgpu::RenderPipeline ContextDawn::createRenderPipeline(
   wgpu::ColorStateDescriptor ColorStateDescriptor;
   ColorStateDescriptor.colorBlend = blendDescriptor;
   ColorStateDescriptor.alphaBlend = blendDescriptor;
-  ColorStateDescriptor.writeMask  = wgpu::ColorWriteMask::All;
+  ColorStateDescriptor.writeMask = wgpu::ColorWriteMask::All;
 
   wgpu::RasterizationStateDescriptor rasterizationState;
-  rasterizationState.nextInChain         = nullptr;
-  rasterizationState.frontFace           = wgpu::FrontFace::CCW;
-  rasterizationState.cullMode            = wgpu::CullMode::Back;
-  rasterizationState.depthBias           = 0;
+  rasterizationState.nextInChain = nullptr;
+  rasterizationState.frontFace = wgpu::FrontFace::CCW;
+  rasterizationState.cullMode = wgpu::CullMode::Back;
+  rasterizationState.depthBias = 0;
   rasterizationState.depthBiasSlopeScale = 0.0;
-  rasterizationState.depthBiasClamp      = 0.0;
+  rasterizationState.depthBiasClamp = 0.0;
 
   // test
   utils::ComboRenderPipelineDescriptor descriptor(mDevice);
-  descriptor.layout                = mPipelineLayout;
-  descriptor.vertexStage.module    = mVsModule;
+  descriptor.layout = mPipelineLayout;
+  descriptor.vertexStage.module = mVsModule;
   descriptor.cFragmentStage.module = mFsModule;
-  descriptor.vertexState           = &mVertexStateDescriptor;
-  descriptor.depthStencilState     = &descriptor.cDepthStencilState;
+  descriptor.vertexState = &mVertexStateDescriptor;
+  descriptor.depthStencilState = &descriptor.cDepthStencilState;
   descriptor.cDepthStencilState.format =
       wgpu::TextureFormat::Depth24PlusStencil8;
-  descriptor.colorStateCount                      = 1;
-  descriptor.cColorStates[0]                      = ColorStateDescriptor;
-  descriptor.cColorStates[0].format               = mPreferredSwapChainFormat;
+  descriptor.colorStateCount = 1;
+  descriptor.cColorStates[0] = ColorStateDescriptor;
+  descriptor.cColorStates[0].format = mPreferredSwapChainFormat;
   descriptor.cDepthStencilState.depthWriteEnabled = true;
-  descriptor.cDepthStencilState.depthCompare      = wgpu::CompareFunction::Less;
-  descriptor.primitiveTopology  = wgpu::PrimitiveTopology::TriangleList;
-  descriptor.sampleCount        = mMSAASampleCount;
+  descriptor.cDepthStencilState.depthCompare = wgpu::CompareFunction::Less;
+  descriptor.primitiveTopology = wgpu::PrimitiveTopology::TriangleList;
+  descriptor.sampleCount = mMSAASampleCount;
   descriptor.rasterizationState = &rasterizationState;
 
   wgpu::RenderPipeline mPipeline = mDevice.CreateRenderPipeline(&descriptor);
@@ -478,28 +478,28 @@ wgpu::RenderPipeline ContextDawn::createRenderPipeline(
 
 wgpu::TextureView ContextDawn::createMultisampledRenderTargetView() const {
   wgpu::TextureDescriptor descriptor;
-  descriptor.dimension     = wgpu::TextureDimension::e2D;
-  descriptor.size.width    = mClientWidth;
-  descriptor.size.height   = mClientHeight;
-  descriptor.size.depth    = 1;
-  descriptor.sampleCount   = mMSAASampleCount;
-  descriptor.format        = mPreferredSwapChainFormat;
+  descriptor.dimension = wgpu::TextureDimension::e2D;
+  descriptor.size.width = mClientWidth;
+  descriptor.size.height = mClientHeight;
+  descriptor.size.depth = 1;
+  descriptor.sampleCount = mMSAASampleCount;
+  descriptor.format = mPreferredSwapChainFormat;
   descriptor.mipLevelCount = 1;
-  descriptor.usage         = wgpu::TextureUsage::OutputAttachment;
+  descriptor.usage = wgpu::TextureUsage::OutputAttachment;
 
   return mDevice.CreateTexture(&descriptor).CreateView();
 }
 
 wgpu::TextureView ContextDawn::createDepthStencilView() const {
   wgpu::TextureDescriptor descriptor;
-  descriptor.dimension     = wgpu::TextureDimension::e2D;
-  descriptor.size.width    = mClientWidth;
-  descriptor.size.height   = mClientHeight;
-  descriptor.size.depth    = 1;
-  descriptor.sampleCount   = mMSAASampleCount;
-  descriptor.format        = wgpu::TextureFormat::Depth24PlusStencil8;
+  descriptor.dimension = wgpu::TextureDimension::e2D;
+  descriptor.size.width = mClientWidth;
+  descriptor.size.height = mClientHeight;
+  descriptor.size.depth = 1;
+  descriptor.sampleCount = mMSAASampleCount;
+  descriptor.format = wgpu::TextureFormat::Depth24PlusStencil8;
   descriptor.mipLevelCount = 1;
-  descriptor.usage         = wgpu::TextureUsage::OutputAttachment;
+  descriptor.usage = wgpu::TextureUsage::OutputAttachment;
   auto depthStencilTexture = mDevice.CreateTexture(&descriptor);
   return depthStencilTexture.CreateView();
 }
@@ -507,7 +507,7 @@ wgpu::TextureView ContextDawn::createDepthStencilView() const {
 wgpu::Buffer ContextDawn::createBuffer(uint32_t size,
                                        wgpu::BufferUsage bit) const {
   wgpu::BufferDescriptor descriptor;
-  descriptor.size  = size;
+  descriptor.size = size;
   descriptor.usage = bit;
 
   wgpu::Buffer buffer = mDevice.CreateBuffer(&descriptor);
@@ -720,7 +720,7 @@ void ContextDawn::preFrame() {
     mRenderPassDescriptor = utils::ComboRenderPassDescriptor(
         {mSceneRenderTargetView}, mSceneDepthStencilView);
     mRenderPassDescriptor.cColorAttachments[0].resolveTarget = mBackbufferView;
-    mRenderPassDescriptor.cColorAttachments[0].loadOp  = wgpu::LoadOp::Clear;
+    mRenderPassDescriptor.cColorAttachments[0].loadOp = wgpu::LoadOp::Clear;
     mRenderPassDescriptor.cColorAttachments[0].storeOp = wgpu::StoreOp::Clear;
     mRenderPassDescriptor.cColorAttachments[0].clearColor = {0.f, 0.8f, 1.f,
                                                              0.f};
@@ -728,7 +728,7 @@ void ContextDawn::preFrame() {
     // When MSAA is off, we render directly to the backbuffer
     mRenderPassDescriptor = utils::ComboRenderPassDescriptor(
         {mBackbufferView}, mSceneDepthStencilView);
-    mRenderPassDescriptor.cColorAttachments[0].loadOp  = wgpu::LoadOp::Clear;
+    mRenderPassDescriptor.cColorAttachments[0].loadOp = wgpu::LoadOp::Clear;
     mRenderPassDescriptor.cColorAttachments[0].storeOp = wgpu::StoreOp::Store;
     mRenderPassDescriptor.cColorAttachments[0].clearColor = {0.f, 0.8f, 1.f,
                                                              0.f};
@@ -772,8 +772,8 @@ Model *ContextDawn::createModel(Aquarium *aquarium,
 void ContextDawn::reallocResource(int preTotalInstance,
                                   int curTotalInstance,
                                   bool enableDynamicBufferOffset) {
-  mPreTotalInstance          = preTotalInstance;
-  mCurTotalInstance          = curTotalInstance;
+  mPreTotalInstance = preTotalInstance;
+  mCurTotalInstance = curTotalInstance;
   mEnableDynamicBufferOffset = enableDynamicBufferOffset;
 
   if (curTotalInstance == 0)
@@ -819,8 +819,8 @@ wgpu::CreateBufferMappedResult ContextDawn::CreateBufferMapped(
     uint64_t size) const {
   wgpu::BufferDescriptor descriptor;
   descriptor.nextInChain = nullptr;
-  descriptor.size        = size;
-  descriptor.usage       = usage;
+  descriptor.size = size;
+  descriptor.usage = usage;
 
   wgpu::CreateBufferMappedResult result =
       mDevice.CreateBufferMapped(&descriptor);
@@ -848,7 +848,7 @@ void ContextDawn::updateBufferData(const wgpu::Buffer &buffer,
                                    size_t bufferSize,
                                    void *data,
                                    size_t dataSize) const {
-  size_t offset              = 0;
+  size_t offset = 0;
   RingBufferDawn *ringBuffer = bufferManager->allocate(bufferSize, &offset);
 
   if (ringBuffer == nullptr) {

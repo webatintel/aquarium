@@ -17,12 +17,12 @@ FishModelD3D12::FishModelD3D12(Context *context,
     : FishModel(type, name, blend, aquarium) {
   mContextD3D12 = static_cast<ContextD3D12 *>(context);
 
-  const Fish &fishInfo           = fishTable[name - MODELNAME::MODELSMALLFISHA];
+  const Fish &fishInfo = fishTable[name - MODELNAME::MODELSMALLFISHA];
   mFishVertexUniforms.fishLength = fishInfo.fishLength;
   mFishVertexUniforms.fishBendAmount = fishInfo.fishBendAmount;
   mFishVertexUniforms.fishWaveLength = fishInfo.fishWaveLength;
 
-  mLightFactorUniforms.shininess      = 5.0f;
+  mLightFactorUniforms.shininess = 5.0f;
   mLightFactorUniforms.specularFactor = 0.3f;
 
   mCurInstance =
@@ -36,17 +36,17 @@ FishModelD3D12::~FishModelD3D12() {
 void FishModelD3D12::init() {
   mProgramD3D12 = static_cast<ProgramD3D12 *>(mProgram);
 
-  mDiffuseTexture    = static_cast<TextureD3D12 *>(textureMap["diffuse"]);
-  mNormalTexture     = static_cast<TextureD3D12 *>(textureMap["normalMap"]);
+  mDiffuseTexture = static_cast<TextureD3D12 *>(textureMap["diffuse"]);
+  mNormalTexture = static_cast<TextureD3D12 *>(textureMap["normalMap"]);
   mReflectionTexture = static_cast<TextureD3D12 *>(textureMap["reflectionMap"]);
-  mSkyboxTexture     = static_cast<TextureD3D12 *>(textureMap["skybox"]);
+  mSkyboxTexture = static_cast<TextureD3D12 *>(textureMap["skybox"]);
 
   mPositionBuffer = static_cast<BufferD3D12 *>(bufferMap["position"]);
-  mNormalBuffer   = static_cast<BufferD3D12 *>(bufferMap["normal"]);
+  mNormalBuffer = static_cast<BufferD3D12 *>(bufferMap["normal"]);
   mTexCoordBuffer = static_cast<BufferD3D12 *>(bufferMap["texCoord"]);
-  mTangentBuffer  = static_cast<BufferD3D12 *>(bufferMap["tangent"]);
+  mTangentBuffer = static_cast<BufferD3D12 *>(bufferMap["tangent"]);
   mBiNormalBuffer = static_cast<BufferD3D12 *>(bufferMap["binormal"]);
-  mIndicesBuffer  = static_cast<BufferD3D12 *>(bufferMap["indices"]);
+  mIndicesBuffer = static_cast<BufferD3D12 *>(bufferMap["indices"]);
 
   mVertexBufferView[0] = mPositionBuffer->mVertexBufferView;
   mVertexBufferView[1] = mNormalBuffer->mVertexBufferView;
@@ -188,9 +188,9 @@ void FishModelD3D12::updateFishPerUniforms(float x,
   mContextD3D12->fishPers[index].worldPosition[0] = x;
   mContextD3D12->fishPers[index].worldPosition[1] = y;
   mContextD3D12->fishPers[index].worldPosition[2] = z;
-  mContextD3D12->fishPers[index].nextPosition[0]  = nextX;
-  mContextD3D12->fishPers[index].nextPosition[1]  = nextY;
-  mContextD3D12->fishPers[index].nextPosition[2]  = nextZ;
-  mContextD3D12->fishPers[index].scale            = scale;
-  mContextD3D12->fishPers[index].time             = time;
+  mContextD3D12->fishPers[index].nextPosition[0] = nextX;
+  mContextD3D12->fishPers[index].nextPosition[1] = nextY;
+  mContextD3D12->fishPers[index].nextPosition[2] = nextZ;
+  mContextD3D12->fishPers[index].scale = scale;
+  mContextD3D12->fishPers[index].time = time;
 }

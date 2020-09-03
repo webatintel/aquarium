@@ -23,8 +23,8 @@ BufferD3D12::BufferD3D12(ContextD3D12 *context,
 
   // Initialize the vertex buffer view.
   mVertexBufferView.BufferLocation = mBuffer->GetGPUVirtualAddress();
-  mVertexBufferView.StrideInBytes  = numComponents * sizeof(float);
-  mVertexBufferView.SizeInBytes    = mSize;
+  mVertexBufferView.StrideInBytes = numComponents * sizeof(float);
+  mVertexBufferView.SizeInBytes = mSize;
 }
 
 BufferD3D12::BufferD3D12(ContextD3D12 *context,
@@ -42,6 +42,6 @@ BufferD3D12::BufferD3D12(ContextD3D12 *context,
 
   // Initialize the vertex buffer view.
   mIndexBufferView.BufferLocation = mBuffer->GetGPUVirtualAddress();
-  mIndexBufferView.SizeInBytes    = mSize;
-  mIndexBufferView.Format         = DXGI_FORMAT_R16_UINT;
+  mIndexBufferView.SizeInBytes = mSize;
+  mIndexBufferView.Format = DXGI_FORMAT_R16_UINT;
 }

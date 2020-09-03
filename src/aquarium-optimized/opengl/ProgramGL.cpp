@@ -36,7 +36,7 @@
 ProgramGL::ProgramGL(ContextGL *context, std::string mVId, std::string mFId)
     : Program(mVId, mFId), mProgramId(0u), mContext(context) {
   mProgramId = context->generateProgram();
-  mVAO       = context->generateVAO();
+  mVAO = context->generateVAO();
 }
 
 ProgramGL::~ProgramGL() {

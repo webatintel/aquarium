@@ -16,35 +16,35 @@ GenericModelDawn::GenericModelDawn(Context *context,
     : Model(type, name, blend), instance(0) {
   mContextDawn = static_cast<ContextDawn *>(context);
 
-  mLightFactorUniforms.shininess      = 50.0f;
+  mLightFactorUniforms.shininess = 50.0f;
   mLightFactorUniforms.specularFactor = 1.0f;
 }
 
 GenericModelDawn::~GenericModelDawn() {
-  mPipeline          = nullptr;
-  mGroupLayoutModel  = nullptr;
-  mGroupLayoutPer    = nullptr;
-  mPipelineLayout    = nullptr;
-  mBindGroupModel    = nullptr;
-  mBindGroupPer      = nullptr;
+  mPipeline = nullptr;
+  mGroupLayoutModel = nullptr;
+  mGroupLayoutPer = nullptr;
+  mPipelineLayout = nullptr;
+  mBindGroupModel = nullptr;
+  mBindGroupPer = nullptr;
   mLightFactorBuffer = nullptr;
-  mWorldBuffer       = nullptr;
+  mWorldBuffer = nullptr;
 }
 
 void GenericModelDawn::init() {
   mProgramDawn = static_cast<ProgramDawn *>(mProgram);
 
-  mDiffuseTexture    = static_cast<TextureDawn *>(textureMap["diffuse"]);
-  mNormalTexture     = static_cast<TextureDawn *>(textureMap["normalMap"]);
+  mDiffuseTexture = static_cast<TextureDawn *>(textureMap["diffuse"]);
+  mNormalTexture = static_cast<TextureDawn *>(textureMap["normalMap"]);
   mReflectionTexture = static_cast<TextureDawn *>(textureMap["reflectionMap"]);
-  mSkyboxTexture     = static_cast<TextureDawn *>(textureMap["skybox"]);
+  mSkyboxTexture = static_cast<TextureDawn *>(textureMap["skybox"]);
 
   mPositionBuffer = static_cast<BufferDawn *>(bufferMap["position"]);
-  mNormalBuffer   = static_cast<BufferDawn *>(bufferMap["normal"]);
+  mNormalBuffer = static_cast<BufferDawn *>(bufferMap["normal"]);
   mTexCoordBuffer = static_cast<BufferDawn *>(bufferMap["texCoord"]);
-  mTangentBuffer  = static_cast<BufferDawn *>(bufferMap["tangent"]);
+  mTangentBuffer = static_cast<BufferDawn *>(bufferMap["tangent"]);
   mBiNormalBuffer = static_cast<BufferDawn *>(bufferMap["binormal"]);
-  mIndicesBuffer  = static_cast<BufferDawn *>(bufferMap["indices"]);
+  mIndicesBuffer = static_cast<BufferDawn *>(bufferMap["indices"]);
 
   // Generic models use reflection, normal or diffuse shaders, of which
   // groupLayouts are diiferent in texture binding.  MODELGLOBEBASE use diffuse
@@ -55,7 +55,7 @@ void GenericModelDawn::init() {
         mPositionBuffer->getDataSize();
     mVertexStateDescriptor.cAttributes[0].format = wgpu::VertexFormat::Float3;
     mVertexStateDescriptor.cAttributes[0].shaderLocation = 0;
-    mVertexStateDescriptor.cAttributes[0].offset         = 0;
+    mVertexStateDescriptor.cAttributes[0].offset = 0;
     mVertexStateDescriptor.cVertexBuffers[0].attributes =
         &mVertexStateDescriptor.cAttributes[0];
     mVertexStateDescriptor.cVertexBuffers[1].attributeCount = 1;
@@ -63,7 +63,7 @@ void GenericModelDawn::init() {
         mNormalBuffer->getDataSize();
     mVertexStateDescriptor.cAttributes[1].format = wgpu::VertexFormat::Float3;
     mVertexStateDescriptor.cAttributes[1].shaderLocation = 1;
-    mVertexStateDescriptor.cAttributes[1].offset         = 0;
+    mVertexStateDescriptor.cAttributes[1].offset = 0;
     mVertexStateDescriptor.cVertexBuffers[1].attributes =
         &mVertexStateDescriptor.cAttributes[1];
     mVertexStateDescriptor.cVertexBuffers[2].attributeCount = 1;
@@ -71,7 +71,7 @@ void GenericModelDawn::init() {
         mTexCoordBuffer->getDataSize();
     mVertexStateDescriptor.cAttributes[2].format = wgpu::VertexFormat::Float2;
     mVertexStateDescriptor.cAttributes[2].shaderLocation = 2;
-    mVertexStateDescriptor.cAttributes[2].offset         = 0;
+    mVertexStateDescriptor.cAttributes[2].offset = 0;
     mVertexStateDescriptor.cVertexBuffers[2].attributes =
         &mVertexStateDescriptor.cAttributes[2];
     mVertexStateDescriptor.cVertexBuffers[3].attributeCount = 1;
@@ -79,7 +79,7 @@ void GenericModelDawn::init() {
         mTangentBuffer->getDataSize();
     mVertexStateDescriptor.cAttributes[3].format = wgpu::VertexFormat::Float3;
     mVertexStateDescriptor.cAttributes[3].shaderLocation = 3;
-    mVertexStateDescriptor.cAttributes[3].offset         = 0;
+    mVertexStateDescriptor.cAttributes[3].offset = 0;
     mVertexStateDescriptor.cVertexBuffers[3].attributes =
         &mVertexStateDescriptor.cAttributes[3];
     mVertexStateDescriptor.cVertexBuffers[4].attributeCount = 1;
@@ -87,18 +87,18 @@ void GenericModelDawn::init() {
         mBiNormalBuffer->getDataSize();
     mVertexStateDescriptor.cAttributes[4].format = wgpu::VertexFormat::Float3;
     mVertexStateDescriptor.cAttributes[4].shaderLocation = 4;
-    mVertexStateDescriptor.cAttributes[4].offset         = 0;
+    mVertexStateDescriptor.cAttributes[4].offset = 0;
     mVertexStateDescriptor.cVertexBuffers[4].attributes =
         &mVertexStateDescriptor.cAttributes[4];
     mVertexStateDescriptor.vertexBufferCount = 5;
-    mVertexStateDescriptor.indexFormat       = wgpu::IndexFormat::Uint16;
+    mVertexStateDescriptor.indexFormat = wgpu::IndexFormat::Uint16;
   } else {
     mVertexStateDescriptor.cVertexBuffers[0].attributeCount = 1;
     mVertexStateDescriptor.cVertexBuffers[0].arrayStride =
         mPositionBuffer->getDataSize();
     mVertexStateDescriptor.cAttributes[0].format = wgpu::VertexFormat::Float3;
     mVertexStateDescriptor.cAttributes[0].shaderLocation = 0;
-    mVertexStateDescriptor.cAttributes[0].offset         = 0;
+    mVertexStateDescriptor.cAttributes[0].offset = 0;
     mVertexStateDescriptor.cVertexBuffers[0].attributes =
         &mVertexStateDescriptor.cAttributes[0];
     mVertexStateDescriptor.cVertexBuffers[1].attributeCount = 1;
@@ -106,7 +106,7 @@ void GenericModelDawn::init() {
         mNormalBuffer->getDataSize();
     mVertexStateDescriptor.cAttributes[1].format = wgpu::VertexFormat::Float3;
     mVertexStateDescriptor.cAttributes[1].shaderLocation = 1;
-    mVertexStateDescriptor.cAttributes[1].offset         = 0;
+    mVertexStateDescriptor.cAttributes[1].offset = 0;
     mVertexStateDescriptor.cVertexBuffers[1].attributes =
         &mVertexStateDescriptor.cAttributes[1];
     mVertexStateDescriptor.cVertexBuffers[2].attributeCount = 1;
@@ -114,11 +114,11 @@ void GenericModelDawn::init() {
         mTexCoordBuffer->getDataSize();
     mVertexStateDescriptor.cAttributes[2].format = wgpu::VertexFormat::Float2;
     mVertexStateDescriptor.cAttributes[2].shaderLocation = 2;
-    mVertexStateDescriptor.cAttributes[2].offset         = 0;
+    mVertexStateDescriptor.cAttributes[2].offset = 0;
     mVertexStateDescriptor.cVertexBuffers[2].attributes =
         &mVertexStateDescriptor.cAttributes[2];
     mVertexStateDescriptor.vertexBufferCount = 3;
-    mVertexStateDescriptor.indexFormat       = wgpu::IndexFormat::Uint16;
+    mVertexStateDescriptor.indexFormat = wgpu::IndexFormat::Uint16;
   }
 
   if (mSkyboxTexture && mReflectionTexture &&

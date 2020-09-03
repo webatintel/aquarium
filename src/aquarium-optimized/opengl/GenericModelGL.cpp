@@ -16,24 +16,24 @@ GenericModelGL::GenericModelGL(const ContextGL *context,
   mViewInverseUniform.first = aquarium->lightWorldPositionUniform.viewInverse;
   mLightWorldPosUniform.first =
       aquarium->lightWorldPositionUniform.lightWorldPos;
-  mLightColorUniform.first     = aquarium->lightUniforms.lightColor;
-  mSpecularUniform.first       = aquarium->lightUniforms.specular;
-  mShininessUniform.first      = 50.0f;
+  mLightColorUniform.first = aquarium->lightUniforms.lightColor;
+  mSpecularUniform.first = aquarium->lightUniforms.specular;
+  mShininessUniform.first = 50.0f;
   mSpecularFactorUniform.first = 1.0f;
-  mAmbientUniform.first        = aquarium->lightUniforms.ambient;
-  mWorldUniform.first          = aquarium->worldUniforms.world;
+  mAmbientUniform.first = aquarium->lightUniforms.ambient;
+  mWorldUniform.first = aquarium->worldUniforms.world;
   mWorldViewProjectionUniform.first =
       aquarium->worldUniforms.worldViewProjection;
   mWorldInverseTransposeUniform.first =
       aquarium->worldUniforms.worldInverseTranspose;
-  mFogPowerUniform.first  = g_fogPower;
-  mFogMultUniform.first   = g_fogMult;
+  mFogPowerUniform.first = g_fogPower;
+  mFogMultUniform.first = g_fogMult;
   mFogOffsetUniform.first = g_fogOffset;
-  mFogColorUniform.first  = aquarium->fogUniforms.fogColor;
+  mFogColorUniform.first = aquarium->fogUniforms.fogColor;
 }
 
 void GenericModelGL::init() {
-  ProgramGL *programGL               = static_cast<ProgramGL *>(mProgram);
+  ProgramGL *programGL = static_cast<ProgramGL *>(mProgram);
   mWorldViewProjectionUniform.second = mContextGL->getUniformLocation(
       programGL->getProgramId(), "worldViewProjection");
   mWorldUniform.second =

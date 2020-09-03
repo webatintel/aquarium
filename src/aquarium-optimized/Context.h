@@ -41,28 +41,28 @@ public:
       BACKENDTYPE backend,
       const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset,
       int windowWidth,
-      int windowHeight)                                                = 0;
+      int windowHeight) = 0;
   virtual Texture *createTexture(const std::string &name,
-                                 const std::string &url)               = 0;
+                                 const std::string &url) = 0;
   virtual Texture *createTexture(const std::string &name,
                                  const std::vector<std::string> &urls) = 0;
   virtual Buffer *createBuffer(int numComponents,
                                std::vector<float> *buffer,
-                               bool isIndex)                           = 0;
+                               bool isIndex) = 0;
   virtual Buffer *createBuffer(int numComponents,
                                std::vector<unsigned short> *buffer,
-                               bool isIndex)                           = 0;
+                               bool isIndex) = 0;
   virtual Program *createProgram(const std::string &mVId,
-                                 const std::string &mFId)              = 0;
-  virtual void setWindowTitle(const std::string &text)                 = 0;
-  virtual bool ShouldQuit()                                            = 0;
-  virtual void KeyBoardQuit()                                          = 0;
+                                 const std::string &mFId) = 0;
+  virtual void setWindowTitle(const std::string &text) = 0;
+  virtual bool ShouldQuit() = 0;
+  virtual void KeyBoardQuit() = 0;
   virtual void DoFlush(const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)>
-                           &toggleBitset)                              = 0;
-  virtual void Terminate()                                             = 0;
+                           &toggleBitset) = 0;
+  virtual void Terminate() = 0;
   virtual void Flush() {}
 
-  virtual void preFrame()   = 0;
+  virtual void preFrame() = 0;
   virtual void showWindow() = 0;
   virtual void updateFPS(
       const FPSTimer &fpsTimer,

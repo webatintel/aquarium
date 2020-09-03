@@ -21,7 +21,7 @@ const std::string slash = "/";
 const std::string slash = "/";
 #endif
 
-static const char *shaderFolder   = "shaders";
+static const char *shaderFolder = "shaders";
 static const char *resourceFolder = "assets";
 
 const std::vector<std::string> skyBoxUrls = {

@@ -98,10 +98,10 @@ bool ContextD3D12::initialize(
   // set full screen
   // glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 
-  GLFWmonitor *pMonitor   = glfwGetPrimaryMonitor();
+  GLFWmonitor *pMonitor = glfwGetPrimaryMonitor();
   const GLFWvidmode *mode = glfwGetVideoMode(pMonitor);
-  mClientWidth            = mode->width;
-  mClientHeight           = mode->height;
+  mClientWidth = mode->width;
+  mClientHeight = mode->height;
 
   setWindowSize(windowWidth, windowHeight);
 
@@ -154,25 +154,25 @@ bool ContextD3D12::initialize(
                                   IID_PPV_ARGS(&mDevice)));
   // Describe and create the command queue.
   D3D12_COMMAND_QUEUE_DESC queueDesc = {};
-  queueDesc.Flags                    = D3D12_COMMAND_QUEUE_FLAG_NONE;
-  queueDesc.Type                     = D3D12_COMMAND_LIST_TYPE_DIRECT;
+  queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+  queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 
   ThrowIfFailed(
       mDevice->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&mCommandQueue)));
 
   // Describe and create the swap chain.
   DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
-  swapChainDesc.BufferCount           = mFrameCount;
-  swapChainDesc.Width                 = mClientWidth;
-  swapChainDesc.Height                = mClientHeight;
-  swapChainDesc.Format                = mPreferredSwapChainFormat;
-  swapChainDesc.BufferUsage           = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-  swapChainDesc.SwapEffect            = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-  swapChainDesc.SampleDesc.Count      = 1;
+  swapChainDesc.BufferCount = mFrameCount;
+  swapChainDesc.Width = mClientWidth;
+  swapChainDesc.Height = mClientHeight;
+  swapChainDesc.Format = mPreferredSwapChainFormat;
+  swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+  swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+  swapChainDesc.SampleDesc.Count = 1;
 
-  mViewport.Width     = static_cast<float>(mClientWidth);
-  mViewport.Height    = static_cast<float>(mClientHeight);
-  mScissorRect.right  = static_cast<LONG>(mClientWidth);
+  mViewport.Width = static_cast<float>(mClientWidth);
+  mViewport.Height = static_cast<float>(mClientHeight);
+  mScissorRect.right = static_cast<LONG>(mClientWidth);
   mScissorRect.bottom = static_cast<LONG>(mClientHeight);
 
   ComPtr<IDXGISwapChain1> swapChain;
@@ -192,7 +192,7 @@ bool ContextD3D12::initialize(
   D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
   rtvHeapDesc.NumDescriptors =
       mMSAASampleCount > 1 ? mFrameCount + 1 : mFrameCount;
-  rtvHeapDesc.Type  = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+  rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
   rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
   ThrowIfFailed(
       mDevice->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&mRtvHeap)));
@@ -216,9 +216,9 @@ bool ContextD3D12::initialize(
 
   // Describe and create a depth stencil view (DSV) descriptor heap.
   D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
-  dsvHeapDesc.NumDescriptors             = 1;
-  dsvHeapDesc.Type                       = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-  dsvHeapDesc.Flags                      = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+  dsvHeapDesc.NumDescriptors = 1;
+  dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+  dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
   ThrowIfFailed(
       mDevice->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&mDsvHeap)));
 
@@ -226,8 +226,8 @@ bool ContextD3D12::initialize(
   // Create a shader resource view (SRV) and constant
   // buffer view (CBV) descriptor heap.
   D3D12_DESCRIPTOR_HEAP_DESC cbvSrvHeapDesc = {};
-  cbvSrvHeapDesc.NumDescriptors             = cbvsrvCount;
-  cbvSrvHeapDesc.Type  = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+  cbvSrvHeapDesc.NumDescriptors = cbvsrvCount;
+  cbvSrvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
   cbvSrvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
   ThrowIfFailed(mDevice->CreateDescriptorHeap(&cbvSrvHeapDesc,
                                               IID_PPV_ARGS(&mCbvsrvHeap)));
@@ -256,23 +256,23 @@ bool ContextD3D12::initialize(
 
   if (mMSAASampleCount > 1) {
     D3D12_RESOURCE_DESC textureDesc = {};
-    textureDesc.MipLevels           = 1;
-    textureDesc.Format              = mPreferredSwapChainFormat;
-    textureDesc.Width               = mClientWidth;
-    textureDesc.Height              = mClientHeight;
-    textureDesc.Flags               = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
-    textureDesc.DepthOrArraySize    = 1;
-    textureDesc.SampleDesc.Count    = mMSAASampleCount;
-    textureDesc.SampleDesc.Quality  = 0;
-    textureDesc.Dimension           = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+    textureDesc.MipLevels = 1;
+    textureDesc.Format = mPreferredSwapChainFormat;
+    textureDesc.Width = mClientWidth;
+    textureDesc.Height = mClientHeight;
+    textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+    textureDesc.DepthOrArraySize = 1;
+    textureDesc.SampleDesc.Count = mMSAASampleCount;
+    textureDesc.SampleDesc.Quality = 0;
+    textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 
     ThrowIfFailed(mDevice->CreateCommittedResource(
         &defaultheapProperties, D3D12_HEAP_FLAG_NONE, &textureDesc,
         D3D12_RESOURCE_STATE_RENDER_TARGET, nullptr,
         IID_PPV_ARGS(&mSceneRenderTargetTexture)));
 
-    mSceneRenderTargetView.Format             = mPreferredSwapChainFormat;
-    mSceneRenderTargetView.ViewDimension      = D3D12_RTV_DIMENSION_TEXTURE2DMS;
+    mSceneRenderTargetView.Format = mPreferredSwapChainFormat;
+    mSceneRenderTargetView.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2DMS;
     mSceneRenderTargetView.Texture2D.MipSlice = 1;
 
     mDevice->CreateRenderTargetView(mSceneRenderTargetTexture.Get(),
@@ -337,7 +337,7 @@ bool ContextD3D12::GetHardwareAdapter(
 
       if (SUCCEEDED(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0,
                                       _uuidof(ID3D12Device), nullptr))) {
-        std::wstring str     = desc.Description;
+        std::wstring str = desc.Description;
         std::string renderer = std::string(str.begin(), str.end());
         std::cout << renderer << std::endl;
         mResourceHelper->setRenderer(renderer);
@@ -646,14 +646,14 @@ void ContextD3D12::initGeneralResources(Aquarium *aquarium) {
       &aquarium->lightUniforms, sizeof(LightUniforms),
       CalcConstantBufferByteSize(sizeof(LightUniforms)), mLightUploadBuffer);
   mLightView.BufferLocation = mLightBuffer->GetGPUVirtualAddress();
-  mLightView.SizeInBytes    = CalcConstantBufferByteSize(sizeof(LightUniforms));
+  mLightView.SizeInBytes = CalcConstantBufferByteSize(sizeof(LightUniforms));
   buildCbvDescriptor(mLightView, &lightGPUHandle);
 
   mFogBuffer = createDefaultBuffer(
       &aquarium->fogUniforms, sizeof(FogUniforms),
       CalcConstantBufferByteSize(sizeof(FogUniforms)), mFogUploadBuffer);
   mFogView.BufferLocation = mFogBuffer->GetGPUVirtualAddress();
-  mFogView.SizeInBytes    = CalcConstantBufferByteSize(
+  mFogView.SizeInBytes = CalcConstantBufferByteSize(
       sizeof(FogUniforms));  // CB size is required to be 256-byte aligned.
   buildCbvDescriptor(mFogView, &fogGPUHandle);
 
@@ -721,9 +721,9 @@ void ContextD3D12::updateConstantBufferSync(
     UINT64 byteSize) {
   // Describe the data we want to copy into the default buffer.
   D3D12_SUBRESOURCE_DATA subResourceData = {};
-  subResourceData.pData                  = initData;
-  subResourceData.RowPitch               = byteSize;
-  subResourceData.SlicePitch             = subResourceData.RowPitch;
+  subResourceData.pData = initData;
+  subResourceData.RowPitch = byteSize;
+  subResourceData.SlicePitch = subResourceData.RowPitch;
 
   // Schedule to copy the data to the default buffer resource.
   stateTransition(defaultBuffer,
@@ -810,7 +810,7 @@ void ContextD3D12::WaitForPreviousFrame() {
 
   // Aquarium uses 3 back buffers for better performance.
   // Wait until the previous before previous frame is finished.
-  int prepreIndex   = (m_frameIndex + 1) % 3;
+  int prepreIndex = (m_frameIndex + 1) % 3;
   UINT prepreSerias = mBufferSerias[prepreIndex];
   if (mFence->GetCompletedValue() < prepreSerias) {
     ThrowIfFailed(mFence->SetEventOnCompletion(fence, mFenceEvent));
@@ -914,7 +914,7 @@ void ContextD3D12::beginRenderPass() {
         D3D12_RENDER_PASS_ENDING_ACCESS_TYPE_PRESERVE, {}};
 
     D3D12_RENDER_PASS_RENDER_TARGET_DESC renderPassRenderTargetDesc;
-    renderPassRenderTargetDesc.cpuDescriptor   = rtvHandle;
+    renderPassRenderTargetDesc.cpuDescriptor = rtvHandle;
     renderPassRenderTargetDesc.BeginningAccess = renderPassBeginningAccessClear;
 
     if (mMSAASampleCount > 1) {
@@ -923,20 +923,20 @@ void ContextD3D12::beginRenderPass() {
           D3D12_RESOURCE_STATE_COMMON,  // D3D12_RESOURCE_STATE_RENDER_TARGET
           D3D12_RESOURCE_STATE_RESOLVE_DEST);
 
-      subresourceParameters.DstX           = 0;
-      subresourceParameters.DstY           = 0;
+      subresourceParameters.DstX = 0;
+      subresourceParameters.DstY = 0;
       subresourceParameters.SrcSubresource = 0;
       subresourceParameters.DstSubresource = 0;
-      subresourceParameters.SrcRect        = {0, 0, 0, 0};
+      subresourceParameters.SrcRect = {0, 0, 0, 0};
 
       D3D12_RENDER_PASS_ENDING_ACCESS_RESOLVE_PARAMETERS resolveParameters;
-      resolveParameters.Format       = mPreferredSwapChainFormat;
+      resolveParameters.Format = mPreferredSwapChainFormat;
       resolveParameters.pSrcResource = mSceneRenderTargetTexture.Get();
       resolveParameters.pDstResource = mRenderTargets[m_frameIndex].Get();
       // resolveParameters.PreserveResolveSource  = false;
-      resolveParameters.PreserveResolveSource  = true;
-      resolveParameters.ResolveMode            = D3D12_RESOLVE_MODE_AVERAGE;
-      resolveParameters.SubresourceCount       = 1;
+      resolveParameters.PreserveResolveSource = true;
+      resolveParameters.ResolveMode = D3D12_RESOLVE_MODE_AVERAGE;
+      resolveParameters.SubresourceCount = 1;
       resolveParameters.pSubresourceParameters = &subresourceParameters;
 
       renderPassRenderTargetDesc.EndingAccess.Type =
@@ -978,29 +978,29 @@ void ContextD3D12::beginRenderPass() {
 
 void ContextD3D12::createDepthStencilView() {
   D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
-  depthStencilViewDesc.Format        = DXGI_FORMAT_D24_UNORM_S8_UINT;
+  depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
   depthStencilViewDesc.ViewDimension = mMSAASampleCount > 1
                                            ? D3D12_DSV_DIMENSION_TEXTURE2DMS
                                            : D3D12_DSV_DIMENSION_TEXTURE2D;
   depthStencilViewDesc.Flags = D3D12_DSV_FLAG_NONE;
 
-  D3D12_CLEAR_VALUE depthOptimizedClearValue    = {};
-  depthOptimizedClearValue.Format               = DXGI_FORMAT_D24_UNORM_S8_UINT;
-  depthOptimizedClearValue.DepthStencil.Depth   = 1.0f;
+  D3D12_CLEAR_VALUE depthOptimizedClearValue = {};
+  depthOptimizedClearValue.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+  depthOptimizedClearValue.DepthStencil.Depth = 1.0f;
   depthOptimizedClearValue.DepthStencil.Stencil = 0;
 
   D3D12_RESOURCE_DESC depthStencilDesc;
-  depthStencilDesc.Dimension          = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-  depthStencilDesc.Alignment          = 0;
-  depthStencilDesc.Width              = mClientWidth;
-  depthStencilDesc.Height             = mClientHeight;
-  depthStencilDesc.DepthOrArraySize   = 1;
-  depthStencilDesc.MipLevels          = 1;
-  depthStencilDesc.Format             = DXGI_FORMAT_D24_UNORM_S8_UINT;
-  depthStencilDesc.SampleDesc.Count   = mMSAASampleCount;
+  depthStencilDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+  depthStencilDesc.Alignment = 0;
+  depthStencilDesc.Width = mClientWidth;
+  depthStencilDesc.Height = mClientHeight;
+  depthStencilDesc.DepthOrArraySize = 1;
+  depthStencilDesc.MipLevels = 1;
+  depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+  depthStencilDesc.SampleDesc.Count = mMSAASampleCount;
   depthStencilDesc.SampleDesc.Quality = 0;
-  depthStencilDesc.Layout             = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-  depthStencilDesc.Flags              = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+  depthStencilDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+  depthStencilDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 
   ThrowIfFailed(mDevice->CreateCommittedResource(
       &defaultheapProperties, D3D12_HEAP_FLAG_NONE, &depthStencilDesc,
@@ -1045,9 +1045,9 @@ ComPtr<ID3D12Resource> ContextD3D12::createDefaultBuffer(
 
   // Describe the data we want to copy into the default buffer.
   D3D12_SUBRESOURCE_DATA subResourceData = {};
-  subResourceData.pData                  = initData;
-  subResourceData.RowPitch               = initDataSize;
-  subResourceData.SlicePitch             = subResourceData.RowPitch;
+  subResourceData.pData = initData;
+  subResourceData.RowPitch = initDataSize;
+  subResourceData.SlicePitch = subResourceData.RowPitch;
 
   // Schedule to copy the data to the default buffer resource.
   stateTransition(defaultBuffer, D3D12_RESOURCE_STATE_COMMON,
@@ -1066,7 +1066,7 @@ void ContextD3D12::createRootSignature(
     const D3D12_VERSIONED_ROOT_SIGNATURE_DESC &pRootSignatureDesc,
     ComPtr<ID3D12RootSignature> &rootSignature) const {
   ComPtr<ID3DBlob> signature = nullptr;
-  ComPtr<ID3DBlob> error     = nullptr;
+  ComPtr<ID3DBlob> error = nullptr;
   ThrowIfFailed(D3DX12SerializeVersionedRootSignature(
       &pRootSignatureDesc, mRootSignature.HighestVersion,
       signature.GetAddressOf(), error.GetAddressOf()));
@@ -1107,8 +1107,8 @@ void ContextD3D12::createTexture(const D3D12_RESOURCE_DESC &textureDesc,
   D3D12_SUBRESOURCE_DATA textureData[11];
 
   for (int i = 0; i < num2DSubresources; i++) {
-    textureData[i].pData      = texture[i];
-    textureData[i].RowPitch   = TextureWidth * 4;
+    textureData[i].pData = texture[i];
+    textureData[i].RowPitch = TextureWidth * 4;
     textureData[i].SlicePitch = textureData[i].RowPitch * TextureHeight;
 
     // Width and height of cubemap are the same.
@@ -1140,63 +1140,63 @@ void ContextD3D12::createGraphicsPipelineState(
     bool enableBlend) const {
   // Describe and create the graphics mPipeline state object (PSO).
   D3D12_DEPTH_STENCILOP_DESC stencilDesc = {};
-  stencilDesc.StencilFailOp              = D3D12_STENCIL_OP_KEEP;
-  stencilDesc.StencilDepthFailOp         = D3D12_STENCIL_OP_KEEP;
-  stencilDesc.StencilPassOp              = D3D12_STENCIL_OP_KEEP;
-  stencilDesc.StencilFunc                = D3D12_COMPARISON_FUNC_ALWAYS;
+  stencilDesc.StencilFailOp = D3D12_STENCIL_OP_KEEP;
+  stencilDesc.StencilDepthFailOp = D3D12_STENCIL_OP_KEEP;
+  stencilDesc.StencilPassOp = D3D12_STENCIL_OP_KEEP;
+  stencilDesc.StencilFunc = D3D12_COMPARISON_FUNC_ALWAYS;
 
   D3D12_RENDER_TARGET_BLEND_DESC renderTargetBlendDesc = {};
-  renderTargetBlendDesc.BlendEnable                    = enableBlend;
-  renderTargetBlendDesc.LogicOpEnable                  = false;
-  renderTargetBlendDesc.SrcBlend                       = D3D12_BLEND_SRC_ALPHA;
-  renderTargetBlendDesc.DestBlend             = D3D12_BLEND_INV_SRC_ALPHA;
-  renderTargetBlendDesc.BlendOp               = D3D12_BLEND_OP_ADD;
-  renderTargetBlendDesc.SrcBlendAlpha         = D3D12_BLEND_SRC_ALPHA;
-  renderTargetBlendDesc.DestBlendAlpha        = D3D12_BLEND_INV_SRC_ALPHA;
-  renderTargetBlendDesc.BlendOpAlpha          = D3D12_BLEND_OP_ADD;
-  renderTargetBlendDesc.LogicOp               = D3D12_LOGIC_OP_NOOP;
+  renderTargetBlendDesc.BlendEnable = enableBlend;
+  renderTargetBlendDesc.LogicOpEnable = false;
+  renderTargetBlendDesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;
+  renderTargetBlendDesc.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+  renderTargetBlendDesc.BlendOp = D3D12_BLEND_OP_ADD;
+  renderTargetBlendDesc.SrcBlendAlpha = D3D12_BLEND_SRC_ALPHA;
+  renderTargetBlendDesc.DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;
+  renderTargetBlendDesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;
+  renderTargetBlendDesc.LogicOp = D3D12_LOGIC_OP_NOOP;
   renderTargetBlendDesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 
-  D3D12_BLEND_DESC blendDesc       = {};
-  blendDesc.AlphaToCoverageEnable  = false;
+  D3D12_BLEND_DESC blendDesc = {};
+  blendDesc.AlphaToCoverageEnable = false;
   blendDesc.IndependentBlendEnable = false;
-  blendDesc.RenderTarget[0]        = renderTargetBlendDesc;
+  blendDesc.RenderTarget[0] = renderTargetBlendDesc;
 
   D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
-  psoDesc.InputLayout                        = {mInputElementDescs.data(),
+  psoDesc.InputLayout = {mInputElementDescs.data(),
                          static_cast<unsigned int>(mInputElementDescs.size())};
-  psoDesc.pRootSignature                     = rootSignature.Get();
+  psoDesc.pRootSignature = rootSignature.Get();
   psoDesc.VS = CD3DX12_SHADER_BYTECODE(mVertexShader.Get());
   psoDesc.PS = CD3DX12_SHADER_BYTECODE(mPixelShader.Get());
-  psoDesc.RasterizerState.FillMode              = D3D12_FILL_MODE_SOLID;
-  psoDesc.RasterizerState.CullMode              = D3D12_CULL_MODE_BACK;
+  psoDesc.RasterizerState.FillMode = D3D12_FILL_MODE_SOLID;
+  psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
   psoDesc.RasterizerState.FrontCounterClockwise = TRUE;  // oppose to opengl
-  psoDesc.RasterizerState.DepthBias             = D3D12_DEFAULT_DEPTH_BIAS;
+  psoDesc.RasterizerState.DepthBias = D3D12_DEFAULT_DEPTH_BIAS;
   psoDesc.RasterizerState.DepthBiasClamp = D3D12_DEFAULT_DEPTH_BIAS_CLAMP;
   psoDesc.RasterizerState.SlopeScaledDepthBias =
       D3D12_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;
-  psoDesc.RasterizerState.DepthClipEnable       = TRUE;
-  psoDesc.RasterizerState.MultisampleEnable     = mMSAASampleCount > 1;
+  psoDesc.RasterizerState.DepthClipEnable = TRUE;
+  psoDesc.RasterizerState.MultisampleEnable = mMSAASampleCount > 1;
   psoDesc.RasterizerState.AntialiasedLineEnable = FALSE;
-  psoDesc.RasterizerState.ForcedSampleCount     = 0;
+  psoDesc.RasterizerState.ForcedSampleCount = 0;
   psoDesc.RasterizerState.ConservativeRaster =
       D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
-  psoDesc.BlendState                         = blendDesc;
-  psoDesc.DepthStencilState.DepthEnable      = true;
-  psoDesc.DepthStencilState.DepthFunc        = D3D12_COMPARISON_FUNC_LESS;
-  psoDesc.DepthStencilState.DepthWriteMask   = D3D12_DEPTH_WRITE_MASK_ALL;
-  psoDesc.DepthStencilState.BackFace         = stencilDesc;
-  psoDesc.DepthStencilState.FrontFace        = stencilDesc;
-  psoDesc.DepthStencilState.StencilEnable    = true;
-  psoDesc.DepthStencilState.StencilReadMask  = 0xff;
+  psoDesc.BlendState = blendDesc;
+  psoDesc.DepthStencilState.DepthEnable = true;
+  psoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
+  psoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+  psoDesc.DepthStencilState.BackFace = stencilDesc;
+  psoDesc.DepthStencilState.FrontFace = stencilDesc;
+  psoDesc.DepthStencilState.StencilEnable = true;
+  psoDesc.DepthStencilState.StencilReadMask = 0xff;
   psoDesc.DepthStencilState.StencilWriteMask = 0xff;
-  psoDesc.DSVFormat                          = DXGI_FORMAT_D24_UNORM_S8_UINT;
-  psoDesc.SampleMask                         = UINT_MAX;
+  psoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+  psoDesc.SampleMask = UINT_MAX;
   psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-  psoDesc.NumRenderTargets      = 1u;
-  psoDesc.RTVFormats[0]         = mPreferredSwapChainFormat;
-  psoDesc.SampleDesc.Count      = mMSAASampleCount;
-  psoDesc.SampleDesc.Quality    = 0;
+  psoDesc.NumRenderTargets = 1u;
+  psoDesc.RTVFormats[0] = mPreferredSwapChainFormat;
+  psoDesc.SampleDesc.Count = mMSAASampleCount;
+  psoDesc.SampleDesc.Quality = 0;
 
   ThrowIfFailed(mDevice->CreateGraphicsPipelineState(
       &psoDesc, IID_PPV_ARGS(&mPipelineState)));

@@ -83,7 +83,7 @@ void Texture::generateMipmap(uint8_t *input_pixels,
       static_cast<uint32_t>(floor(log2(std::max(output_w, output_h)))) + 1;
   output_pixels.resize(mipmapLevel);
   int height = output_h;
-  int width  = output_w;
+  int width = output_w;
 
   if (!is256padding) {
     for (int i = 0; i < mipmapLevel; ++i) {

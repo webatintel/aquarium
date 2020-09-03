@@ -15,7 +15,7 @@
 #include "Context.h"
 
 constexpr size_t BUFFER_POOL_MAX_SIZE = 409600000;
-constexpr size_t BUFFER_MAX_COUNT     = 10;
+constexpr size_t BUFFER_MAX_COUNT = 10;
 constexpr size_t BUFFER_PER_ALLOCATE_SIZE =
     BUFFER_POOL_MAX_SIZE / BUFFER_MAX_COUNT;
 

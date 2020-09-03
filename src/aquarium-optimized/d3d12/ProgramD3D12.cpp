@@ -33,5 +33,5 @@ void ProgramD3D12::compileProgram(bool enableBlending,
   }
 
   mVertexShader = context->createShaderModule("VS", VertexShaderCode);
-  mPixelShader  = context->createShaderModule("PS", FragmentShaderCode);
+  mPixelShader = context->createShaderModule("PS", FragmentShaderCode);
 }
