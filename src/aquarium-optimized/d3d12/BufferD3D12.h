@@ -18,8 +18,7 @@ using Microsoft::WRL::ComPtr;
 
 class ContextD3D12;
 
-class BufferD3D12 : public Buffer
-{
+class BufferD3D12 : public Buffer {
 public:
   BufferD3D12(ContextD3D12 *context,
               int totalCmoponents,

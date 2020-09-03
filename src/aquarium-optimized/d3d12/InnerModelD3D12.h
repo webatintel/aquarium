@@ -14,8 +14,7 @@
 #include "ProgramD3D12.h"
 #include "TextureD3D12.h"
 
-class InnerModelD3D12 : public Model
-{
+class InnerModelD3D12 : public Model {
 public:
   InnerModelD3D12(Context *context,
                   Aquarium *aquarium,
@@ -28,8 +27,7 @@ public:
   void draw() override;
   void updatePerInstanceUniforms(const WorldUniforms &worldUniforms) override;
 
-  struct InnerUniforms
-  {
+  struct InnerUniforms {
     float eta;
     float tankColorFudge;
     float refractionFudge;

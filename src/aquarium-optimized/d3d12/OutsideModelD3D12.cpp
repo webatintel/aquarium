@@ -11,16 +11,14 @@ OutsideModelD3D12::OutsideModelD3D12(Context *context,
                                      MODELGROUP type,
                                      MODELNAME name,
                                      bool blend)
-    : Model(type, name, blend)
-{
+    : Model(type, name, blend) {
   mContextD3D12 = static_cast<ContextD3D12 *>(context);
 
   mLightFactorUniforms.shininess      = 50.0f;
   mLightFactorUniforms.specularFactor = 0.0f;
 }
 
-void OutsideModelD3D12::init()
-{
+void OutsideModelD3D12::init() {
   mProgramD3D12 = static_cast<ProgramD3D12 *>(mProgram);
 
   mDiffuseTexture    = static_cast<TextureD3D12 *>(textureMap["diffuse"]);
@@ -102,15 +100,13 @@ void OutsideModelD3D12::init()
       mProgramD3D12->getFSModule(), mPipelineState, mBlend);
 }
 
-void OutsideModelD3D12::prepareForDraw()
-{
+void OutsideModelD3D12::prepareForDraw() {
   mContextD3D12->updateConstantBufferSync(mWorldBuffer, mWorldUploadBuffer,
                                           &mWorldUniformPer,
                                           sizeof(WorldUniforms) * 20);
 }
 
-void OutsideModelD3D12::draw()
-{
+void OutsideModelD3D12::draw() {
   auto &commandList = mContextD3D12->mCommandList;
 
   commandList->SetPipelineState(mPipelineState.Get());
@@ -135,7 +131,6 @@ void OutsideModelD3D12::draw()
 }
 
 void OutsideModelD3D12::updatePerInstanceUniforms(
-    const WorldUniforms &worldUniforms)
-{
+    const WorldUniforms &worldUniforms) {
   memcpy(&mWorldUniformPer, &worldUniforms, sizeof(WorldUniforms));
 }

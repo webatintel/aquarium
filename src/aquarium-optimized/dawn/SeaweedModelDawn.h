@@ -15,8 +15,7 @@
 #include "ContextDawn.h"
 #include "ProgramDawn.h"
 
-class SeaweedModelDawn : public SeaweedModel
-{
+class SeaweedModelDawn : public SeaweedModel {
 public:
   SeaweedModelDawn(Context *context,
                    Aquarium *aquarium,
@@ -43,19 +42,16 @@ public:
   BufferDawn *mIndicesBuffer;
   void updateSeaweedModelTime(float time) override;
 
-  struct LightFactorUniforms
-  {
+  struct LightFactorUniforms {
     float shininess;
     float specularFactor;
   } mLightFactorUniforms;
 
-  struct SeaweedPer
-  {
+  struct SeaweedPer {
     float time[20];
   } mSeaweedPer;
 
-  struct WorldUniformPer
-  {
+  struct WorldUniformPer {
     WorldUniforms worldUniforms[20];
   };
   WorldUniformPer mWorldUniformPer;

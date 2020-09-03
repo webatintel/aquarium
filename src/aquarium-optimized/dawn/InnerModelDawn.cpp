@@ -12,8 +12,7 @@ InnerModelDawn::InnerModelDawn(Context *context,
                                MODELGROUP type,
                                MODELNAME name,
                                bool blend)
-    : Model(type, name, blend)
-{
+    : Model(type, name, blend) {
   mContextDawn = static_cast<ContextDawn *>(context);
 
   mInnerUniforms.eta             = 1.0f;
@@ -21,8 +20,7 @@ InnerModelDawn::InnerModelDawn(Context *context,
   mInnerUniforms.refractionFudge = 3.0f;
 }
 
-InnerModelDawn::~InnerModelDawn()
-{
+InnerModelDawn::~InnerModelDawn() {
   mPipeline         = nullptr;
   mGroupLayoutModel = nullptr;
   mGroupLayoutPer   = nullptr;
@@ -33,8 +31,7 @@ InnerModelDawn::~InnerModelDawn()
   mViewBuffer       = nullptr;
 }
 
-void InnerModelDawn::init()
-{
+void InnerModelDawn::init() {
   mProgramDawn = static_cast<ProgramDawn *>(mProgram);
 
   mDiffuseTexture    = static_cast<TextureDawn *>(textureMap["diffuse"]);
@@ -152,10 +149,10 @@ void InnerModelDawn::init()
                               &mInnerUniforms, sizeof(InnerUniforms));
 }
 
-void InnerModelDawn::prepareForDraw() {}
+void InnerModelDawn::prepareForDraw() {
+}
 
-void InnerModelDawn::draw()
-{
+void InnerModelDawn::draw() {
   wgpu::RenderPassEncoder pass = mContextDawn->getRenderPass();
   pass.SetPipeline(mPipeline);
   pass.SetBindGroup(0, mContextDawn->bindGroupGeneral, 0, nullptr);
@@ -172,8 +169,7 @@ void InnerModelDawn::draw()
 }
 
 void InnerModelDawn::updatePerInstanceUniforms(
-    const WorldUniforms &worldUniforms)
-{
+    const WorldUniforms &worldUniforms) {
   std::memcpy(&mWorldUniformPer, &worldUniforms, sizeof(WorldUniforms));
 
   mContextDawn->updateBufferData(

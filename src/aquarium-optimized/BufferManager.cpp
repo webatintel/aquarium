@@ -9,21 +9,17 @@
 #include "common/AQUARIUM_ASSERT.h"
 
 BufferManager::BufferManager()
-    : mBufferPoolSize(BUFFER_POOL_MAX_SIZE), mUsedSize(0), mCount(0)
-{
+    : mBufferPoolSize(BUFFER_POOL_MAX_SIZE), mUsedSize(0), mCount(0) {
 }
 
-BufferManager::~BufferManager()
-{
+BufferManager::~BufferManager() {
   destroyBufferPool();
 }
 
-bool BufferManager::resetBuffer(RingBuffer *ringBuffer, size_t size)
-{
+bool BufferManager::resetBuffer(RingBuffer *ringBuffer, size_t size) {
   size_t index = find(ringBuffer);
 
-  if (index >= mEnqueuedBufferList.size())
-  {
+  if (index >= mEnqueuedBufferList.size()) {
     return false;
   }
 
@@ -34,24 +30,19 @@ bool BufferManager::resetBuffer(RingBuffer *ringBuffer, size_t size)
   // buffer retains.
   // If the size is equal or smaller than the ring buffer size, reset success
   // and the used size need to be updated.
-  if (!result)
-  {
+  if (!result) {
     return false;
-  }
-  else
-  {
+  } else {
     mUsedSize = mUsedSize - oldSize + size;
   }
 
   return true;
 }
 
-bool BufferManager::destoryBuffer(RingBuffer *ringBuffer)
-{
+bool BufferManager::destoryBuffer(RingBuffer *ringBuffer) {
   size_t index = find(ringBuffer);
 
-  if (index >= mEnqueuedBufferList.size())
-  {
+  if (index >= mEnqueuedBufferList.size()) {
     return false;
   }
 
@@ -62,13 +53,10 @@ bool BufferManager::destoryBuffer(RingBuffer *ringBuffer)
   return true;
 }
 
-size_t BufferManager::find(RingBuffer *ringBuffer)
-{
+size_t BufferManager::find(RingBuffer *ringBuffer) {
   size_t index = 0;
-  for (auto buffer : mEnqueuedBufferList)
-  {
-    if (buffer == ringBuffer)
-    {
+  for (auto buffer : mEnqueuedBufferList) {
+    if (buffer == ringBuffer) {
       break;
     }
     index++;
@@ -77,10 +65,8 @@ size_t BufferManager::find(RingBuffer *ringBuffer)
 }
 
 // Flush copy commands in buffer pool
-void BufferManager::flush()
-{
-  for (auto buffer : mEnqueuedBufferList)
-  {
+void BufferManager::flush() {
+  for (auto buffer : mEnqueuedBufferList) {
     buffer->flush();
   }
 }

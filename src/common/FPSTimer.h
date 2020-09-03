@@ -14,8 +14,7 @@ constexpr int NUM_HISTORY_DATA      = 100;
 constexpr int NUM_FRAMES_TO_AVERAGE = 128;
 constexpr int FPS_VALID_THRESHOLD   = 5;
 
-class FPSTimer
-{
+class FPSTimer {
 public:
   FPSTimer();
 

@@ -12,15 +12,13 @@
 #include <cmath>
 #include <vector>
 
-namespace matrix
-{
+namespace matrix {
 static long long RANDOM_RANGE_ = 4294967296;
 
 template <typename T>
 void mulMatrixMatrix4(std::vector<T> &dst,
                       const std::vector<T> &a,
-                      const std::vector<T> &b)
-{
+                      const std::vector<T> &b) {
   T a00   = a[0];
   T a01   = a[1];
   T a02   = a[2];
@@ -72,8 +70,7 @@ void mulMatrixMatrix4(std::vector<T> &dst,
 }
 
 template <typename T>
-void inverse4(std::vector<T> &dst, const std::vector<T> &m)
-{
+void inverse4(std::vector<T> &dst, const std::vector<T> &m) {
   T m00    = m[0 * 4 + 0];
   T m01    = m[0 * 4 + 1];
   T m02    = m[0 * 4 + 2];
@@ -157,10 +154,8 @@ void inverse4(std::vector<T> &dst, const std::vector<T> &m)
 }
 
 template <typename T>
-void transpose4(std::vector<T> &dst, std::vector<T> &m)
-{
-  if (dst == m)
-  {
+void transpose4(std::vector<T> &dst, std::vector<T> &m) {
+  if (dst == m) {
     T t;
 
     t    = m[1];
@@ -230,8 +225,7 @@ void frustum(std::vector<T> &dst,
              T bottom,
              T top,
              T near_,
-             T far_)
-{
+             T far_) {
   T dx = right - left;
   T dy = top - bottom;
   T dz = near_ - far_;
@@ -255,8 +249,7 @@ void frustum(std::vector<T> &dst,
 }
 
 template <typename T>
-void getAxis(std::vector<T> &dst, const std::vector<T> &m, int axis)
-{
+void getAxis(std::vector<T> &dst, const std::vector<T> &m, int axis) {
   int off = axis * 4;
   dst[0]  = m[off + 0];
   dst[1]  = m[off + 1];
@@ -264,10 +257,8 @@ void getAxis(std::vector<T> &dst, const std::vector<T> &m, int axis)
 }
 
 template <typename T>
-void mulScalarVector(T k, std::vector<T> &v)
-{
-  for (auto &value : v)
-  {
+void mulScalarVector(T k, std::vector<T> &v) {
+  for (auto &value : v) {
     value = value * k;
   }
 }
@@ -275,30 +266,24 @@ void mulScalarVector(T k, std::vector<T> &v)
 template <typename T>
 void addVector(std::vector<T> &dst,
                const std::vector<T> &a,
-               const std::vector<T> &b)
-{
+               const std::vector<T> &b) {
   int aLength = static_cast<int>(a.size());
-  for (int i = 0; i < aLength; ++i)
-  {
+  for (int i = 0; i < aLength; ++i) {
     dst[i] = a[i] + b[i];
   }
 }
 
 template <typename T>
-void normalize(std::vector<T> &dst, const std::vector<T> &a)
-{
+void normalize(std::vector<T> &dst, const std::vector<T> &a) {
   T n            = 0.0;
   size_t aLength = a.size();
   for (size_t i = 0; i < aLength; ++i)
     n += a[i] * a[i];
   n = sqrt(n);
-  if (n > 0.00001)
-  {
+  if (n > 0.00001) {
     for (size_t i = 0; i < aLength; ++i)
       dst[i] = a[i] / n;
-  }
-  else
-  {
+  } else {
     for (size_t i = 0; i < aLength; ++i)
       dst[i] = 0;
   }
@@ -307,11 +292,9 @@ void normalize(std::vector<T> &dst, const std::vector<T> &a)
 template <typename T>
 void subVector(std::vector<T> &dst,
                const std::vector<T> &a,
-               const std::vector<T> &b)
-{
+               const std::vector<T> &b) {
   size_t aLength = a.size();
-  for (size_t i = 0; i < aLength; ++i)
-  {
+  for (size_t i = 0; i < aLength; ++i) {
     dst[i] = a[i] - b[i];
   }
 }
@@ -319,16 +302,14 @@ void subVector(std::vector<T> &dst,
 template <typename T>
 void cross(std::vector<T> &dst,
            const std::vector<T> &a,
-           const std::vector<T> &b)
-{
+           const std::vector<T> &b) {
   dst[0] = a[1] * b[2] - a[2] * b[1];
   dst[1] = a[2] * b[0] - a[0] * b[2];
   dst[2] = a[0] * b[1] - a[1] * b[0];
 }
 
 template <typename T>
-T dot(std::vector<T> &a, std::vector<T> &b)
-{
+T dot(std::vector<T> &a, std::vector<T> &b) {
   return (a[0] * b[0]) + (a[1] * b[1]) + (a[2] * b[2]);
 }
 
@@ -336,8 +317,7 @@ template <typename T>
 void cameraLookAt(std::vector<T> &dst,
                   const std::vector<T> &eye,
                   const std::vector<T> &target,
-                  const std::vector<T> &up)
-{
+                  const std::vector<T> &up) {
   std::vector<T> t0(3), t1(3), t2(3);
   subVector(t0, eye, target);
   normalize(t0, t0);
@@ -364,20 +344,17 @@ void cameraLookAt(std::vector<T> &dst,
 }
 
 static long long randomSeed_;
-static void resetPseudoRandom()
-{
+static void resetPseudoRandom() {
   randomSeed_ = 0;
 }
 
-static double pseudoRandom()
-{
+static double pseudoRandom() {
   randomSeed_ = (134775813 * randomSeed_ + 1) % RANDOM_RANGE_;
   return static_cast<double>(randomSeed_) / static_cast<double>(RANDOM_RANGE_);
 }
 
 template <typename T>
-void translation(std::vector<T> &dst, const std::vector<T> &v)
-{
+void translation(std::vector<T> &dst, const std::vector<T> &v) {
   dst[0]  = 1;
   dst[1]  = 0;
   dst[2]  = 0;
@@ -397,8 +374,7 @@ void translation(std::vector<T> &dst, const std::vector<T> &v)
 }
 
 template <typename T>
-void translate(std::vector<T> &m, const std::vector<T> &v)
-{
+void translate(std::vector<T> &m, const std::vector<T> &v) {
   T v0  = v[0];
   T v1  = v[1];
   T v2  = v[2];
@@ -425,8 +401,7 @@ void translate(std::vector<T> &m, const std::vector<T> &v)
   m[15] = m03 * v0 + m13 * v1 + m23 * v2 + m33;
 }
 
-float degToRad(float degrees)
-{
+float degToRad(float degrees) {
   return static_cast<float>(degrees * M_PI / 180.0);
 }
 }  // namespace matrix

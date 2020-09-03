@@ -12,8 +12,7 @@
 #include "ContextGL.h"
 #include "ProgramGL.h"
 
-class InnerModelGL : public Model
-{
+class InnerModelGL : public Model {
 public:
   InnerModelGL(const ContextGL *context,
                Aquarium *aquarium,

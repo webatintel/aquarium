@@ -20,8 +20,7 @@ enum BACKENDTYPE : short;
 
 constexpr int cbvsrvCount = 88;
 
-class ContextD3D12 : public Context
-{
+class ContextD3D12 : public Context {
 public:
   ContextD3D12(BACKENDTYPE backendType);
   ~ContextD3D12();

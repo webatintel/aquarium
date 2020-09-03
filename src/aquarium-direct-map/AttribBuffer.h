@@ -12,8 +12,7 @@
 #include <string>
 #include <vector>
 
-class AttribBuffer
-{
+class AttribBuffer {
 public:
   AttribBuffer() {}
   AttribBuffer(int numComponents,
@@ -29,8 +28,7 @@ public:
   int getNumElements() const { return numElements; }
 
   const std::vector<float> &getBufferFloat() const { return bufferFloat; }
-  const std::vector<unsigned short> &getBufferUShort() const
-  {
+  const std::vector<unsigned short> &getBufferUShort() const {
     return bufferUShort;
   }
   const std::string &getType() const { return type; }

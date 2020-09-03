@@ -18,20 +18,16 @@
 #include "common/AQUARIUM_ASSERT.h"
 
 Program::Program(const std::string &vId, const std::string &fId)
-    : program(0u), attribLocs(), uniforms(), textureUnits()
-{
+    : program(0u), attribLocs(), uniforms(), textureUnits() {
   createProgramFromTags(vId, fId);
   createSetters();
 }
 
-Program::~Program()
-{
+Program::~Program() {
   glDeleteProgram(program);
 
-  for (auto &uniform : uniforms)
-  {
-    if (uniform.second != nullptr)
-    {
+  for (auto &uniform : uniforms) {
+    if (uniform.second != nullptr) {
       delete uniform.second;
       uniform.second = nullptr;
     }
@@ -39,8 +35,7 @@ Program::~Program()
 }
 
 void Program::createProgramFromTags(const std::string &vId,
-                                    const std::string &fId)
-{
+                                    const std::string &fId) {
   std::ifstream VertexShaderStream(vId, std::ios::in);
   std::string VertexShaderCode(
       (std::istreambuf_iterator<char>(VertexShaderStream)),
@@ -85,8 +80,7 @@ void Program::createProgramFromTags(const std::string &vId,
   program = LoadProgram(VertexShaderCode, FragmentShaderCode);
 }
 
-void Program::createSetters()
-{
+void Program::createSetters() {
   int params;
   GLsizei length, size;
   GLenum type;
@@ -96,8 +90,7 @@ void Program::createSetters()
 
   // Look up attributes
   glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, &params);
-  for (int i = 0; i < params; ++i)
-  {
+  for (int i = 0; i < params; ++i) {
     glGetActiveAttrib(program, i, 1024, &length, &size, &type, name);
     GLint index = glGetAttribLocation(program, name);
     ASSERT(index != -1);
@@ -108,8 +101,7 @@ void Program::createSetters()
 
   // Look up uniforms
   glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &params);
-  for (int i = 0; i < params; ++i)
-  {
+  for (int i = 0; i < params; ++i) {
     glGetActiveUniform(program, i, 1024, &length, &size, &type, name);
     std::string namestr(name);
     GLint index = glGetUniformLocation(program, name);
@@ -118,8 +110,7 @@ void Program::createSetters()
   }
 }
 
-void Program::setAttrib(const Buffer &buf, const std::string &name)
-{
+void Program::setAttrib(const Buffer &buf, const std::string &name) {
   glBindBuffer(GL_ARRAY_BUFFER, buf.getBuffer());
   GLuint index = attribLocs[name];
   glEnableVertexAttribArray(index);
@@ -131,8 +122,7 @@ void Program::setAttrib(const Buffer &buf, const std::string &name)
 }
 
 GLuint Program::LoadProgram(const std::string &VertexShaderCode,
-                            const std::string &FragmentShaderCode)
-{
+                            const std::string &FragmentShaderCode) {
 
   // Create the shaders
   GLuint VertexShaderID   = glCreateShader(GL_VERTEX_SHADER);
@@ -148,8 +138,7 @@ GLuint Program::LoadProgram(const std::string &VertexShaderCode,
 
   // Check Vertex Shader
   glGetShaderiv(VertexShaderID, GL_COMPILE_STATUS, &Result);
-  if (!Result)
-  {
+  if (!Result) {
     glGetShaderiv(VertexShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
     std::vector<char> VertexShaderErrorMessage(InfoLogLength);
     glGetShaderInfoLog(VertexShaderID, InfoLogLength, NULL,
@@ -164,8 +153,7 @@ GLuint Program::LoadProgram(const std::string &VertexShaderCode,
 
   // Check Fragment Shader
   glGetShaderiv(FragmentShaderID, GL_COMPILE_STATUS, &Result);
-  if (!Result)
-  {
+  if (!Result) {
     glGetShaderiv(FragmentShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
     std::vector<char> FragmentShaderErrorMessage(InfoLogLength);
     glGetShaderInfoLog(FragmentShaderID, InfoLogLength, NULL,
@@ -181,8 +169,7 @@ GLuint Program::LoadProgram(const std::string &VertexShaderCode,
 
   // Check the program
   glGetProgramiv(ProgramID, GL_LINK_STATUS, &Result);
-  if (!Result)
-  {
+  if (!Result) {
     glGetProgramiv(ProgramID, GL_INFO_LOG_LENGTH, &InfoLogLength);
     std::vector<char> ProgramErrorMessage(std::max(InfoLogLength, int(1)));
     glGetProgramInfoLog(ProgramID, InfoLogLength, NULL,
@@ -195,15 +182,12 @@ GLuint Program::LoadProgram(const std::string &VertexShaderCode,
   return ProgramID;
 }
 
-void Program::use()
-{
+void Program::use() {
   glUseProgram(program);
 }
 
-void Program::setUniform(const std::string &name, float v)
-{
-  if (uniforms.find(name) == uniforms.end())
-  {
+void Program::setUniform(const std::string &name, float v) {
+  if (uniforms.find(name) == uniforms.end()) {
     return;
   }
   Uniform *uniform = uniforms[name];
@@ -214,10 +198,8 @@ void Program::setUniform(const std::string &name, float v)
   ASSERT(glGetError() == GL_NO_ERROR);
 }
 
-void Program::setUniform(const std::string &name, const std::vector<float> &v)
-{
-  if (uniforms.find(name) == uniforms.end())
-  {
+void Program::setUniform(const std::string &name, const std::vector<float> &v) {
+  if (uniforms.find(name) == uniforms.end()) {
     return;
   }
 
@@ -225,30 +207,24 @@ void Program::setUniform(const std::string &name, const std::vector<float> &v)
   GLenum type      = uniform->getType();
   GLint loc        = uniform->getIndex();
 
-  switch (type)
-  {
-  case GL_FLOAT_VEC4:
-  {
+  switch (type) {
+  case GL_FLOAT_VEC4: {
     glUniform4fv(loc, 1, v.data());
     break;
   }
-  case GL_FLOAT_VEC3:
-  {
+  case GL_FLOAT_VEC3: {
     glUniform3fv(loc, 1, v.data());
     break;
   }
-  case GL_FLOAT_VEC2:
-  {
+  case GL_FLOAT_VEC2: {
     glUniform2fv(loc, 1, v.data());
     break;
   }
-  case GL_FLOAT_MAT4:
-  {
+  case GL_FLOAT_MAT4: {
     glUniformMatrix4fv(loc, 1, false, v.data());
     break;
   }
-  default:
-  {
+  default: {
     std::cout << "set uniform error" << std::endl;
   }
   }
@@ -256,10 +232,8 @@ void Program::setUniform(const std::string &name, const std::vector<float> &v)
   ASSERT(glGetError() == GL_NO_ERROR);
 }
 
-void Program::setUniform(const std::string &name, const Texture &texture)
-{
-  if (uniforms.find(name) == uniforms.end())
-  {
+void Program::setUniform(const std::string &name, const Texture &texture) {
+  if (uniforms.find(name) == uniforms.end()) {
     return;
   }
 
@@ -277,11 +251,9 @@ void Program::setUniform(const std::string &name, const Texture &texture)
 }
 
 void Program::setTextureUnits(
-    const std::unordered_map<std::string, Texture *> &textureMap)
-{
+    const std::unordered_map<std::string, Texture *> &textureMap) {
   int unit = 0;
-  for (auto &texture : textureMap)
-  {
+  for (auto &texture : textureMap) {
     textureUnits[texture.first] = unit++;
   }
 }

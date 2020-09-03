@@ -15,8 +15,7 @@
 #include "ContextDawn.h"
 #include "ProgramDawn.h"
 
-class FishModelInstancedDrawDawn : public FishModel
-{
+class FishModelInstancedDrawDawn : public FishModel {
 public:
   FishModelInstancedDrawDawn(Context *context,
                              Aquarium *aquarium,
@@ -40,21 +39,18 @@ public:
                              float time,
                              int index) override;
 
-  struct FishVertexUniforms
-  {
+  struct FishVertexUniforms {
     float fishLength;
     float fishWaveLength;
     float fishBendAmount;
   } mFishVertexUniforms;
 
-  struct LightFactorUniforms
-  {
+  struct LightFactorUniforms {
     float shininess;
     float specularFactor;
   } mLightFactorUniforms;
 
-  struct FishPer
-  {
+  struct FishPer {
     float worldPosition[3];
     float scale;
     float nextPosition[3];

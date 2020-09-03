@@ -14,8 +14,7 @@
 #include "ContextDawn.h"
 #include "common/AQUARIUM_ASSERT.h"
 
-TextureDawn::~TextureDawn()
-{
+TextureDawn::~TextureDawn() {
 
   DestoryImageData(mPixelVec);
   DestoryImageData(mResizedVec);
@@ -34,8 +33,7 @@ TextureDawn::TextureDawn(ContextDawn *context,
       mSampler(nullptr),
       mFormat(wgpu::TextureFormat::RGBA8Unorm),
       mTextureView(nullptr),
-      mContext(context)
-{
+      mContext(context) {
 }
 
 TextureDawn::TextureDawn(ContextDawn *context,
@@ -45,18 +43,15 @@ TextureDawn::TextureDawn(ContextDawn *context,
       mTextureDimension(wgpu::TextureDimension::e2D),
       mTextureViewDimension(wgpu::TextureViewDimension::Cube),
       mFormat(wgpu::TextureFormat::RGBA8Unorm),
-      mContext(context)
-{
+      mContext(context) {
 }
 
-void TextureDawn::loadTexture()
-{
+void TextureDawn::loadTexture() {
   wgpu::SamplerDescriptor samplerDesc = {};
   const int kPadding                  = 256;
   loadImage(mUrls, &mPixelVec);
 
-  if (mTextureViewDimension == wgpu::TextureViewDimension::Cube)
-  {
+  if (mTextureViewDimension == wgpu::TextureViewDimension::Cube) {
     wgpu::TextureDescriptor descriptor;
     descriptor.dimension     = mTextureDimension;
     descriptor.size.width    = mWidth;
@@ -69,8 +64,7 @@ void TextureDawn::loadTexture()
         wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::Sampled;
     mTexture = mContext->createTexture(descriptor);
 
-    for (unsigned int i = 0; i < 6; i++)
-    {
+    for (unsigned int i = 0; i < 6; i++) {
       wgpu::CreateBufferMappedResult result = mContext->CreateBufferMapped(
           wgpu::BufferUsage::CopySrc | wgpu::BufferUsage::MapWrite,
           mWidth * mHeight * 4);
@@ -106,16 +100,12 @@ void TextureDawn::loadTexture()
     samplerDesc.mipmapFilter = wgpu::FilterMode::Nearest;
 
     mSampler = mContext->createSampler(samplerDesc);
-  }
-  else  // wgpu::TextureViewDimension::e2D
+  } else  // wgpu::TextureViewDimension::e2D
   {
     int resizedWidth;
-    if (mWidth % kPadding == 0)
-    {
+    if (mWidth % kPadding == 0) {
       resizedWidth = mWidth;
-    }
-    else
-    {
+    } else {
       resizedWidth = (mWidth / 256 + 1) * 256;
     }
     generateMipmap(mPixelVec[0], mWidth, mHeight, 0, mResizedVec, resizedWidth,
@@ -137,12 +127,10 @@ void TextureDawn::loadTexture()
     mTexture = mContext->createTexture(descriptor);
 
     int count = 0;
-    for (unsigned int i = 0; i < descriptor.mipLevelCount; ++i, ++count)
-    {
+    for (unsigned int i = 0; i < descriptor.mipLevelCount; ++i, ++count) {
       int height = mHeight >> i;
       int width  = resizedWidth >> i;
-      if (height == 0)
-      {
+      if (height == 0) {
         height = 1;
       }
 
@@ -182,12 +170,9 @@ void TextureDawn::loadTexture()
     samplerDesc.minFilter    = wgpu::FilterMode::Linear;
     samplerDesc.magFilter    = wgpu::FilterMode::Linear;
 
-    if (isPowerOf2(mWidth) && isPowerOf2(mHeight))
-    {
+    if (isPowerOf2(mWidth) && isPowerOf2(mHeight)) {
       samplerDesc.mipmapFilter = wgpu::FilterMode::Linear;
-    }
-    else
-    {
+    } else {
       samplerDesc.mipmapFilter = wgpu::FilterMode::Nearest;
     }
 

@@ -17,8 +17,7 @@
 
 class Model;
 
-class Scene
-{
+class Scene {
 public:
   Scene() {}
   ~Scene();

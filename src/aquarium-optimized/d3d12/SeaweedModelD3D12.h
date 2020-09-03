@@ -14,8 +14,7 @@
 #include "ProgramD3D12.h"
 #include "TextureD3D12.h"
 
-class SeaweedModelD3D12 : public SeaweedModel
-{
+class SeaweedModelD3D12 : public SeaweedModel {
 public:
   SeaweedModelD3D12(Context *context,
                     Aquarium *aquarium,
@@ -41,24 +40,20 @@ public:
   BufferD3D12 *mIndicesBuffer;
   void updateSeaweedModelTime(float time) override;
 
-  struct LightFactorUniforms
-  {
+  struct LightFactorUniforms {
     float shininess;
     float specularFactor;
   } mLightFactorUniforms;
 
-  struct Seaweed
-  {
+  struct Seaweed {
     float time;
     float padding[3];
   };
-  struct SeaweedPer
-  {
+  struct SeaweedPer {
     Seaweed seaweed[20];
   } mSeaweedPer;
 
-  struct WorldUniformPer
-  {
+  struct WorldUniformPer {
     WorldUniforms worldUniforms[20];
   };
   WorldUniformPer mWorldUniformPer;

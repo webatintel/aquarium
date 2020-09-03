@@ -30,8 +30,7 @@ class Model;
 #include "math.h"
 #endif
 
-enum BACKENDTYPE : short
-{
+enum BACKENDTYPE : short {
   BACKENDTYPEANGLE,
   BACKENDTYPEDAWND3D12,
   BACKENDTYPEDAWNMETAL,
@@ -41,8 +40,7 @@ enum BACKENDTYPE : short
   BACKENDTYPELAST
 };
 
-enum MODELNAME : short
-{
+enum MODELNAME : short {
   MODELFIRST,
   MODELRUINCOlOMN,
   MODELARCH,
@@ -79,8 +77,7 @@ enum MODELNAME : short
   MODELMAX
 };
 
-enum MODELGROUP : short
-{
+enum MODELGROUP : short {
   FISH,
   FISHINSTANCEDDRAW,
   INNER,
@@ -90,8 +87,7 @@ enum MODELGROUP : short
   GROUPMAX
 };
 
-struct G_sceneInfo
-{
+struct G_sceneInfo {
   const char *namestr;
   MODELNAME name;
   const char *program[2];
@@ -100,16 +96,9 @@ struct G_sceneInfo
   bool blend;
 };
 
-enum FISHENUM : short
-{
-  BIG,
-  MEDIUM,
-  SMALL,
-  MAX
-};
+enum FISHENUM : short { BIG, MEDIUM, SMALL, MAX };
 
-enum TOGGLE : short
-{
+enum TOGGLE : short {
   // Stop rendering after specified time.
   AUTOSTOP,
   // Enable alpha blending.
@@ -280,8 +269,7 @@ const G_sceneInfo g_sceneInfo[] = {
      true,
      MODELGROUP::GENERIC}};
 
-struct Fish
-{
+struct Fish {
   const char *name;
   MODELNAME modelName;
   FISHENUM type;
@@ -422,8 +410,7 @@ constexpr float g_net_offsetMult  = 1.21f;
 constexpr float g_eyeRadius       = 13.2f;
 constexpr float g_fieldOfView     = 82.699f;
 
-struct Global
-{
+struct Global {
   float projection[16];
   float view[16];
   float worldInverse[16];
@@ -448,30 +435,26 @@ struct Global
   std::string alpha;
 };
 
-struct LightWorldPositionUniform
-{
+struct LightWorldPositionUniform {
   float lightWorldPos[3];
   float padding;
   float viewProjection[16];
   float viewInverse[16];
 };
 
-struct WorldUniforms
-{
+struct WorldUniforms {
   float world[16];
   float worldInverseTranspose[16];
   float worldViewProjection[16];
 };
 
-struct LightUniforms
-{
+struct LightUniforms {
   float lightColor[4];
   float specular[4];
   float ambient[4];
 };
 
-struct FogUniforms
-{
+struct FogUniforms {
   float fogPower;
   float fogMult;
   float fogOffset;
@@ -479,8 +462,7 @@ struct FogUniforms
   float fogColor[4];
 };
 
-struct FishPer
-{
+struct FishPer {
   float worldPosition[3];
   float scale;
   float nextPosition[3];
@@ -489,8 +471,7 @@ struct FishPer
                       // offset.
 };
 
-class Aquarium
-{
+class Aquarium {
 public:
   Aquarium();
   ~Aquarium();

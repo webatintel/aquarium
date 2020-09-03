@@ -19,8 +19,7 @@ constexpr size_t BUFFER_MAX_COUNT     = 10;
 constexpr size_t BUFFER_PER_ALLOCATE_SIZE =
     BUFFER_POOL_MAX_SIZE / BUFFER_MAX_COUNT;
 
-class RingBuffer
-{
+class RingBuffer {
 public:
   RingBuffer(size_t size) : mHead(0), mTail(size), mSize(size) {}
   virtual ~RingBuffer() {}
@@ -31,8 +30,7 @@ public:
   virtual bool reset(size_t size) { return false; }
   virtual void flush() {}
   virtual void destory() {}
-  virtual size_t allocate(size_t size)
-  {
+  virtual size_t allocate(size_t size) {
     return 0;
   }  // allocate size in a RingBuffer, return offset of the buffer
 
@@ -42,8 +40,7 @@ protected:
   size_t mSize;
 };
 
-class BufferManager
-{
+class BufferManager {
 public:
   BufferManager();
   virtual ~BufferManager();

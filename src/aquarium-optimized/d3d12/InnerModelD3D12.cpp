@@ -12,8 +12,7 @@ InnerModelD3D12::InnerModelD3D12(Context *context,
                                  MODELGROUP type,
                                  MODELNAME name,
                                  bool blend)
-    : Model(type, name, blend)
-{
+    : Model(type, name, blend) {
   mContextD3D12 = static_cast<ContextD3D12 *>(context);
 
   mInnerUniforms.eta             = 1.0f;
@@ -21,8 +20,7 @@ InnerModelD3D12::InnerModelD3D12(Context *context,
   mInnerUniforms.refractionFudge = 3.0f;
 }
 
-void InnerModelD3D12::init()
-{
+void InnerModelD3D12::init() {
   mProgramD3D12 = static_cast<ProgramD3D12 *>(mProgram);
 
   mDiffuseTexture    = static_cast<TextureD3D12 *>(textureMap["diffuse"]);
@@ -109,15 +107,13 @@ void InnerModelD3D12::init()
       mProgramD3D12->getFSModule(), mPipelineState, mBlend);
 }
 
-void InnerModelD3D12::prepareForDraw()
-{
+void InnerModelD3D12::prepareForDraw() {
   mContextD3D12->updateConstantBufferSync(mWorldBuffer, mWorldUploadBuffer,
                                           &mWorldUniformPer,
                                           sizeof(WorldUniforms));
 }
 
-void InnerModelD3D12::draw()
-{
+void InnerModelD3D12::draw() {
   mContextD3D12->mCommandList->SetPipelineState(mPipelineState.Get());
   mContextD3D12->mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
 
@@ -144,7 +140,6 @@ void InnerModelD3D12::draw()
 }
 
 void InnerModelD3D12::updatePerInstanceUniforms(
-    const WorldUniforms &worldUniforms)
-{
+    const WorldUniforms &worldUniforms) {
   memcpy(&mWorldUniformPer, &worldUniforms, sizeof(WorldUniforms));
 }

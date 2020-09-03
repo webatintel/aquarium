@@ -15,8 +15,7 @@ AttribBuffer::AttribBuffer(int numComponents,
       bufferFloat(buffer),
       bufferUShort(),
       numComponents(numComponents),
-      numElements(size / numComponents)
-{
+      numElements(size / numComponents) {
 }
 
 AttribBuffer::AttribBuffer(int numComponents,
@@ -27,6 +26,5 @@ AttribBuffer::AttribBuffer(int numComponents,
       bufferFloat(),
       bufferUShort(buffer),
       numComponents(numComponents),
-      numElements(size / numComponents)
-{
+      numElements(size / numComponents) {
 }

@@ -15,60 +15,47 @@ Model::Model(
     Program *program_,
     const std::unordered_map<std::string, const AttribBuffer *> &arrays,
     const std::unordered_map<std::string, Texture *> *textures)
-    : buffers(), textures(textures), program(program_), mode(GL_TRIANGLES)
-{
+    : buffers(), textures(textures), program(program_), mode(GL_TRIANGLES) {
   setBuffers(arrays);
 
   program->setTextureUnits(*textures);
 }
 
-Model::~Model()
-{
-  for (auto &buffer : buffers)
-  {
+Model::~Model() {
+  for (auto &buffer : buffers) {
     delete buffer.second;
     buffer.second = nullptr;
   }
 }
 
-void Model::setBuffer(const std::string &name, const AttribBuffer &array)
-{
+void Model::setBuffer(const std::string &name, const AttribBuffer &array) {
   GLenum target = name == "indices" ? GL_ELEMENT_ARRAY_BUFFER : GL_ARRAY_BUFFER;
 
-  if (buffers.find(name) == buffers.end())
-  {
+  if (buffers.find(name) == buffers.end()) {
     buffers[name] = new Buffer(array, target);
   }
 }
 
 void Model::setBuffers(
-    const std::unordered_map<std::string, const AttribBuffer *> &arrays)
-{
-  for (auto iter = arrays.cbegin(); iter != arrays.cend(); ++iter)
-  {
+    const std::unordered_map<std::string, const AttribBuffer *> &arrays) {
+  for (auto iter = arrays.cbegin(); iter != arrays.cend(); ++iter) {
     setBuffer(iter->first, *iter->second);
   }
 }
 
-void Model::applyBuffers() const
-{
+void Model::applyBuffers() const {
   GLuint mVAO;
   glGenVertexArrays(1, &mVAO);
   glBindVertexArray(mVAO);
 
   // Apply array buffer and element buffer
-  for (const auto &buffer : buffers)
-  {
-    if (buffer.first == "indices")
-    {
+  for (const auto &buffer : buffers) {
+    if (buffer.first == "indices") {
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer.second->getBuffer());
-    }
-    else
-    {
+    } else {
       glBindBuffer(GL_ARRAY_BUFFER, buffer.second->getBuffer());
       auto &attribLocs = program->getAttribLocs();
-      if (attribLocs.find(buffer.first) == attribLocs.end())
-      {
+      if (attribLocs.find(buffer.first) == attribLocs.end()) {
         continue;
       }
       program->setAttrib(*buffer.second, buffer.first);
@@ -76,17 +63,14 @@ void Model::applyBuffers() const
   }
 }
 
-void Model::applyTextures() const
-{
+void Model::applyTextures() const {
   // Apply textures
-  for (auto it = textures->cbegin(); it != textures->cend(); ++it)
-  {
+  for (auto it = textures->cbegin(); it != textures->cend(); ++it) {
     program->setUniform(it->first, *it->second);
   }
 }
 
-void Model::prepareForDraw(const GenericConst &constUniforms)
-{
+void Model::prepareForDraw(const GenericConst &constUniforms) {
   program->use();
 
   applyBuffers();
@@ -112,8 +96,7 @@ void Model::prepareForDraw(const GenericConst &constUniforms)
   program->setUniform("tankColorFudge", constUniforms.tankColorFudge);
 }
 
-void Model::prepareForDraw(const FishConst &fishConst)
-{
+void Model::prepareForDraw(const FishConst &fishConst) {
   prepareForDraw(fishConst.genericConst);
 
   program->setUniform("fishBendAmount", fishConst.constUniforms.fishBendAmount);
@@ -121,25 +104,20 @@ void Model::prepareForDraw(const FishConst &fishConst)
   program->setUniform("fishWaveLength", fishConst.constUniforms.fishWaveLength);
 }
 
-void Model::drawFunc()
-{
+void Model::drawFunc() {
   int totalComponents = 0;
 
-  if (buffers.find("indices") != buffers.end())
-  {
+  if (buffers.find("indices") != buffers.end()) {
     totalComponents = buffers["indices"]->getTotalComponents();
     GLenum type     = buffers["indices"]->getType();
     glDrawElements(mode, totalComponents, type, 0);
-  }
-  else
-  {
+  } else {
     totalComponents = buffers["positions"]->getNumElements();
     glDrawArrays(mode, 0, totalComponents);
   }
 }
 
-void Model::draw(const GenericPer &perUniforms)
-{
+void Model::draw(const GenericPer &perUniforms) {
   program->setUniform("world", *perUniforms.world);
   program->setUniform("worldInverse", *perUniforms.worldInverse);
   program->setUniform("worldInverseTranspose",
@@ -150,8 +128,7 @@ void Model::draw(const GenericPer &perUniforms)
   ASSERT(glGetError() == GL_NO_ERROR);
 }
 
-void Model::draw(const FishPer &fishPer)
-{
+void Model::draw(const FishPer &fishPer) {
   program->setUniform("worldPosition", fishPer.worldPosition);
   program->setUniform("nextPosition", fishPer.nextPosition);
   program->setUniform("scale", fishPer.scale);

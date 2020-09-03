@@ -15,8 +15,7 @@
 #include "ContextDawn.h"
 #include "ProgramDawn.h"
 
-class GenericModelDawn : public Model
-{
+class GenericModelDawn : public Model {
 public:
   GenericModelDawn(Context *context,
                    Aquarium *aquarium,
@@ -44,14 +43,12 @@ public:
 
   BufferDawn *mIndicesBuffer;
 
-  struct LightFactorUniforms
-  {
+  struct LightFactorUniforms {
     float shininess;
     float specularFactor;
   } mLightFactorUniforms;
 
-  struct WorldUniformPer
-  {
+  struct WorldUniformPer {
     WorldUniforms WorldUniforms[20];
   };
   WorldUniformPer mWorldUniformPer;

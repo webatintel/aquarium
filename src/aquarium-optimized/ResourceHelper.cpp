@@ -34,8 +34,7 @@ ResourceHelper::ResourceHelper(const std::string &mBackendName,
                                BACKENDTYPE backendType)
     : mBackendName(mBackendName),
       mBackendType(backendType),
-      mShaderVersion(mShaderVersion)
-{
+      mShaderVersion(mShaderVersion) {
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
   TCHAR temp[200];
   GetModuleFileName(nullptr, temp, MAX_PATH);
@@ -75,49 +74,39 @@ ResourceHelper::ResourceHelper(const std::string &mBackendName,
   fishBehaviorStream << mPath << "FishBehavior.json";
   mFishBehaviorPath = fishBehaviorStream.str();
 
-  switch (mBackendType)
-  {
-  case BACKENDTYPE::BACKENDTYPEDAWND3D12:
-  {
+  switch (mBackendType) {
+  case BACKENDTYPE::BACKENDTYPEDAWND3D12: {
     mBackendTypeStr = "Dawn D3D12";
     break;
   }
-  case BACKENDTYPE::BACKENDTYPEDAWNVULKAN:
-  {
+  case BACKENDTYPE::BACKENDTYPEDAWNVULKAN: {
     mBackendTypeStr = "Dawn Vulkan";
     break;
   }
-  case BACKENDTYPE::BACKENDTYPEDAWNMETAL:
-  {
+  case BACKENDTYPE::BACKENDTYPEDAWNMETAL: {
     mBackendTypeStr = "Dawn Metal";
     break;
   }
-  case BACKENDTYPE::BACKENDTYPEANGLE:
-  {
+  case BACKENDTYPE::BACKENDTYPEANGLE: {
     mBackendTypeStr = "ANGLE";
     break;
   }
-  case BACKENDTYPE::BACKENDTYPEOPENGL:
-  {
+  case BACKENDTYPE::BACKENDTYPEOPENGL: {
     mBackendTypeStr = "OPENGL";
     break;
   }
-  case BACKENDTYPE::BACKENDTYPED3D12:
-  {
+  case BACKENDTYPE::BACKENDTYPED3D12: {
     mBackendTypeStr = "D3D12";
     break;
   }
-  default:
-  {
+  default: {
     std::cerr << "Backend type can not reached." << std::endl;
   }
   }
 }
 
-void ResourceHelper::getSkyBoxUrls(std::vector<std::string> *skyUrls) const
-{
-  for (auto &str : skyBoxUrls)
-  {
+void ResourceHelper::getSkyBoxUrls(std::vector<std::string> *skyUrls) const {
+  for (auto &str : skyBoxUrls) {
     std::ostringstream url;
     url << mPath << resourceFolder << slash << str;
 
@@ -125,25 +114,21 @@ void ResourceHelper::getSkyBoxUrls(std::vector<std::string> *skyUrls) const
   }
 }
 
-std::string ResourceHelper::getModelPath(const std::string &modelName) const
-{
+std::string ResourceHelper::getModelPath(const std::string &modelName) const {
   std::ostringstream modelStream;
   modelStream << mImagePath << modelName << ".js";
   return modelStream.str();
 }
 
-const std::string &ResourceHelper::getProgramPath() const
-{
+const std::string &ResourceHelper::getProgramPath() const {
   return mProgramPath;
 }
 
-const std::string &ResourceHelper::getRendererInfo() const
-{
+const std::string &ResourceHelper::getRendererInfo() const {
   return mRendererInfo;
 }
 
-void ResourceHelper::setRenderer(const std::string &renderer)
-{
+void ResourceHelper::setRenderer(const std::string &renderer) {
   mRenderer = renderer;
 
   std::ostringstream rendererInfoStream;

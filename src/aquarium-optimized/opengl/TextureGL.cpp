@@ -15,8 +15,7 @@ TextureGL::TextureGL(ContextGL *context, std::string name, std::string url)
     : Texture(name, url, true),
       mTarget(GL_TEXTURE_2D),
       mFormat(GL_RGBA),
-      mContext(context)
-{
+      mContext(context) {
   mTextureId = context->generateTexture();
 }
 
@@ -27,23 +26,19 @@ TextureGL::TextureGL(ContextGL *context,
     : Texture(name, urls, false),
       mTarget(GL_TEXTURE_CUBE_MAP),
       mFormat(GL_RGBA),
-      mContext(context)
-{
+      mContext(context) {
   ASSERT(urls.size() == 6);
   mTextureId = context->generateTexture();
 }
 
-void TextureGL::loadTexture()
-{
+void TextureGL::loadTexture() {
   mContext->bindTexture(mTarget, mTextureId);
 
   std::vector<unsigned char *> pixelVec;
   loadImage(mUrls, &pixelVec);
 
-  if (mTarget == GL_TEXTURE_CUBE_MAP)
-  {
-    for (unsigned int i = 0; i < 6; i++)
-    {
+  if (mTarget == GL_TEXTURE_CUBE_MAP) {
+    for (unsigned int i = 0; i < 6; i++) {
       mContext->uploadTexture(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, mFormat,
                               mWidth, mHeight, pixelVec[i]);
     }
@@ -52,19 +47,15 @@ void TextureGL::loadTexture()
     mContext->setParameter(mTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     mContext->setParameter(mTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     mContext->setParameter(mTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  }
-  else  // GL_TEXTURE_2D
+  } else  // GL_TEXTURE_2D
   {
     mContext->uploadTexture(mTarget, mFormat, mWidth, mHeight, pixelVec[0]);
 
-    if (isPowerOf2(mWidth) && isPowerOf2(mHeight))
-    {
+    if (isPowerOf2(mWidth) && isPowerOf2(mHeight)) {
       mContext->setParameter(mTarget, GL_TEXTURE_MIN_FILTER,
                              GL_LINEAR_MIPMAP_LINEAR);
       mContext->generateMipmap(mTarget);
-    }
-    else
-    {
+    } else {
       mContext->setParameter(mTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
       mContext->setParameter(mTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
       mContext->setParameter(mTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -75,7 +66,6 @@ void TextureGL::loadTexture()
   DestoryImageData(pixelVec);
 }
 
-TextureGL::~TextureGL()
-{
+TextureGL::~TextureGL() {
   mContext->deleteTexture(mTextureId);
 }

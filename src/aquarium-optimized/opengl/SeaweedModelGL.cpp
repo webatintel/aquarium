@@ -12,8 +12,7 @@ SeaweedModelGL::SeaweedModelGL(const ContextGL *context,
                                MODELGROUP type,
                                MODELNAME name,
                                bool blend)
-    : SeaweedModel(type, name, blend), mContextGL(context)
-{
+    : SeaweedModel(type, name, blend), mContextGL(context) {
   mViewInverseUniform.first = aquarium->lightWorldPositionUniform.viewInverse;
   mLightWorldPosUniform.first =
       aquarium->lightWorldPositionUniform.lightWorldPos;
@@ -31,8 +30,7 @@ SeaweedModelGL::SeaweedModelGL(const ContextGL *context,
       aquarium->lightWorldPositionUniform.viewProjection;
 }
 
-void SeaweedModelGL::init()
-{
+void SeaweedModelGL::init() {
   ProgramGL *programGL = static_cast<ProgramGL *>(mProgram);
   mWorldUniform.second =
       mContextGL->getUniformLocation(programGL->getProgramId(), "world");
@@ -83,13 +81,11 @@ void SeaweedModelGL::init()
   mIndicesBuffer = static_cast<BufferGL *>(bufferMap["indices"]);
 }
 
-void SeaweedModelGL::draw()
-{
+void SeaweedModelGL::draw() {
   mContextGL->drawElements(*mIndicesBuffer);
 }
 
-void SeaweedModelGL::prepareForDraw()
-{
+void SeaweedModelGL::prepareForDraw() {
   mProgram->setProgram();
   mContextGL->enableBlend(mBlend);
 
@@ -131,14 +127,12 @@ void SeaweedModelGL::prepareForDraw()
 }
 
 void SeaweedModelGL::updatePerInstanceUniforms(
-    const WorldUniforms &worldUniforms)
-{
+    const WorldUniforms &worldUniforms) {
   mContextGL->setUniform(mWorldUniform.second, mWorldUniform.first,
                          GL_FLOAT_MAT4);
   mContextGL->setUniform(mTimeUniform.second, &mTimeUniform.first, GL_FLOAT);
 }
 
-void SeaweedModelGL::updateSeaweedModelTime(float time)
-{
+void SeaweedModelGL::updateSeaweedModelTime(float time) {
   mTimeUniform.first = time;
 }

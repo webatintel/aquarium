@@ -14,8 +14,7 @@
 
 class ContextDawn;
 
-class TextureDawn : public Texture
-{
+class TextureDawn : public Texture {
 public:
   ~TextureDawn() override;
   TextureDawn(ContextDawn *context,
@@ -28,8 +27,7 @@ public:
   const wgpu::Texture &getTextureId() const { return mTexture; }
   const wgpu::Sampler &getSampler() const { return mSampler; }
   wgpu::TextureDimension getTextureDimension() { return mTextureDimension; }
-  wgpu::TextureViewDimension getTextureViewDimension()
-  {
+  wgpu::TextureViewDimension getTextureViewDimension() {
     return mTextureViewDimension;
   }
   wgpu::TextureView getTextureView() { return mTextureView; }

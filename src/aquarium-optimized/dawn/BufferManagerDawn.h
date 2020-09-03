@@ -19,8 +19,7 @@
 class BufferManagerDawn;
 class ContextDawn;
 
-class RingBufferDawn : public RingBuffer
-{
+class RingBufferDawn : public RingBuffer {
 public:
   RingBufferDawn(BufferManagerDawn *bufferManager, size_t size);
   ~RingBufferDawn() override {}
@@ -50,8 +49,7 @@ private:
   void *mPixels;
 };
 
-class BufferManagerDawn : public BufferManager
-{
+class BufferManagerDawn : public BufferManager {
 public:
   BufferManagerDawn(ContextDawn *context, bool sync);
   ~BufferManagerDawn();

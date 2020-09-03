@@ -28,8 +28,7 @@
 
 class ContextGL;
 
-class BufferGL : public Buffer
-{
+class BufferGL : public Buffer {
 public:
   BufferGL(ContextGL *context,
            int totalCmoponents,

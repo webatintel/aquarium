@@ -12,8 +12,7 @@
 #include "ContextGL.h"
 #include "ProgramGL.h"
 
-class GenericModelGL : public Model
-{
+class GenericModelGL : public Model {
 public:
   GenericModelGL(const ContextGL *context,
                  Aquarium *aquarium,

@@ -14,8 +14,7 @@
 
 #include "glad/glad.h"
 
-class Texture
-{
+class Texture {
 public:
   Texture() {}
   ~Texture();

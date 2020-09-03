@@ -10,21 +10,18 @@
 #include "Aquarium.h"
 #include "Buffer.h"
 
-Model::Model() : mProgram(nullptr), mBlend(false), mName(MODELMAX) {}
+Model::Model() : mProgram(nullptr), mBlend(false), mName(MODELMAX) {
+}
 
-Model::~Model()
-{
-  for (auto &buf : bufferMap)
-  {
-    if (buf.second != nullptr)
-    {
+Model::~Model() {
+  for (auto &buf : bufferMap) {
+    if (buf.second != nullptr) {
       delete buf.second;
       buf.second = nullptr;
     }
   }
 }
 
-void Model::setProgram(Program *prgm)
-{
+void Model::setProgram(Program *prgm) {
   mProgram = prgm;
 }

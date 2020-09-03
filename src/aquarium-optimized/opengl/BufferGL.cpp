@@ -25,24 +25,20 @@ BufferGL::BufferGL(ContextGL *context,
       mType(type),
       mNormalize(normalize),
       mStride(0),
-      mOffset(nullptr)
-{
+      mOffset(nullptr) {
   mBuf = mContext->generateBuffer();
 }
 
-void BufferGL::loadBuffer(const std::vector<float> &buf)
-{
+void BufferGL::loadBuffer(const std::vector<float> &buf) {
   mContext->bindBuffer(mTarget, mBuf);
   mContext->uploadBuffer(mTarget, buf);
 }
 
-void BufferGL::loadBuffer(const std::vector<unsigned short> &buf)
-{
+void BufferGL::loadBuffer(const std::vector<unsigned short> &buf) {
   mContext->bindBuffer(mTarget, mBuf);
   mContext->uploadBuffer(mTarget, buf);
 }
 
-BufferGL::~BufferGL()
-{
+BufferGL::~BufferGL() {
   mContext->deleteBuffer(mBuf);
 }

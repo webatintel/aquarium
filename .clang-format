@@ -10,8 +10,8 @@ BasedOnStyle: Chromium
 # Allow double brackets such as std::vector<std::vector<int>>.
 Standard: Cpp11
 
-# Always break before braces
-BreakBeforeBraces: Allman
+# Do not merge top level empty functions
+AllowShortFunctionsOnASingleLine: InlineOnly
 
 IndentCaseLabels: false
 

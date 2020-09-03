@@ -19,8 +19,7 @@ BufferDawn::BufferDawn(ContextDawn *context,
     : mUsage(isIndex ? wgpu::BufferUsage::Index : wgpu::BufferUsage::Vertex),
       mTotoalComponents(totalCmoponents),
       mStride(0),
-      mOffset(nullptr)
-{
+      mOffset(nullptr) {
   mSize = numComponents * sizeof(float);
   // Create buffer for vertex buffer. Because float is multiple of 4 bytes,
   // dummy padding isnt' needed.
@@ -38,14 +37,12 @@ BufferDawn::BufferDawn(ContextDawn *context,
     : mUsage(isIndex ? wgpu::BufferUsage::Index : wgpu::BufferUsage::Vertex),
       mTotoalComponents(totalCmoponents),
       mStride(0),
-      mOffset(nullptr)
-{
+      mOffset(nullptr) {
   mSize = numComponents * sizeof(unsigned short);
   // Create buffer for index buffer. Because unsigned short is multiple of 2
   // bytes, in order to align with 4 bytes of dawn metal, dummy padding need to
   // be added.
-  if (mTotoalComponents % 2 != 0)
-  {
+  if (mTotoalComponents % 2 != 0) {
     buffer->push_back(0.0f);
   }
 
@@ -55,7 +52,6 @@ BufferDawn::BufferDawn(ContextDawn *context,
   context->setBufferData(mBuf, bufferSize, buffer->data(), bufferSize);
 }
 
-BufferDawn::~BufferDawn()
-{
+BufferDawn::~BufferDawn() {
   mBuf = nullptr;
 }

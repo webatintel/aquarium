@@ -15,8 +15,7 @@
 #include "ContextDawn.h"
 #include "ProgramDawn.h"
 
-class OutsideModelDawn : public Model
-{
+class OutsideModelDawn : public Model {
 public:
   OutsideModelDawn(Context *context,
                    Aquarium *aquarium,
@@ -44,8 +43,7 @@ public:
 
   BufferDawn *mIndicesBuffer;
 
-  struct LightFactorUniforms
-  {
+  struct LightFactorUniforms {
     float shininess;
     float specularFactor;
   } mLightFactorUniforms;

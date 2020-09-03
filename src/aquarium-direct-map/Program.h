@@ -16,8 +16,7 @@
 #include "Texture.h"
 #include "Uniform.h"
 
-class Program
-{
+class Program {
 public:
   Program() {}
   Program(const std::string &vId, const std::string &fId);
@@ -27,12 +26,10 @@ public:
   void setUniform(const std::string &name, const std::vector<float> &v);
   void setUniform(const std::string &name, const Texture &texture);
 
-  const std::unordered_map<std::string, GLint> &getAttribLocs() const
-  {
+  const std::unordered_map<std::string, GLint> &getAttribLocs() const {
     return attribLocs;
   }
-  const std::unordered_map<std::string, Uniform *> &getUniforms() const
-  {
+  const std::unordered_map<std::string, Uniform *> &getUniforms() const {
     return uniforms;
   }
 

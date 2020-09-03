@@ -12,8 +12,7 @@ InnerModelGL::InnerModelGL(const ContextGL *context,
                            MODELGROUP type,
                            MODELNAME name,
                            bool blend)
-    : Model(type, name, blend), mContextGL(context)
-{
+    : Model(type, name, blend), mContextGL(context) {
   mViewInverseUniform.first = aquarium->lightWorldPositionUniform.viewInverse;
   mLightWorldPosUniform.first =
       aquarium->lightWorldPositionUniform.lightWorldPos;
@@ -34,8 +33,7 @@ InnerModelGL::InnerModelGL(const ContextGL *context,
   mFogColorUniform.first  = aquarium->fogUniforms.fogColor;
 }
 
-void InnerModelGL::init()
-{
+void InnerModelGL::init() {
   ProgramGL *programGL               = static_cast<ProgramGL *>(mProgram);
   mWorldViewProjectionUniform.second = mContextGL->getUniformLocation(
       programGL->getProgramId(), "worldViewProjection");
@@ -98,13 +96,11 @@ void InnerModelGL::init()
   mIndicesBuffer = static_cast<BufferGL *>(bufferMap["indices"]);
 }
 
-void InnerModelGL::draw()
-{
+void InnerModelGL::draw() {
   mContextGL->drawElements(*mIndicesBuffer);
 }
 
-void InnerModelGL::prepareForDraw()
-{
+void InnerModelGL::prepareForDraw() {
   mProgram->setProgram();
   mContextGL->enableBlend(mBlend);
 
@@ -147,8 +143,7 @@ void InnerModelGL::prepareForDraw()
 }
 
 void InnerModelGL::updatePerInstanceUniforms(
-    const WorldUniforms &mWorldUniforms)
-{
+    const WorldUniforms &mWorldUniforms) {
   mContextGL->setUniform(mWorldUniform.second, mWorldUniform.first,
                          GL_FLOAT_MAT4);
   mContextGL->setUniform(mWorldViewProjectionUniform.second,

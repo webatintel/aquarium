@@ -11,17 +11,14 @@
 #include <string>
 #include <vector>
 
-class Texture
-{
+class Texture {
 public:
   virtual ~Texture() {}
   Texture() {}
   Texture(const std::string &name,
           const std::vector<std::string> &urls,
           bool flip)
-      : mUrls(urls), mFlip(flip), mName(name)
-  {
-  }
+      : mUrls(urls), mFlip(flip), mName(name) {}
   Texture(const std::string &name, const std::string &url, bool flip);
   std::string getName() { return mName; }
   virtual void loadTexture() = 0;

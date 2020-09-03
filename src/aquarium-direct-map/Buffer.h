@@ -14,8 +14,7 @@
 
 #include "AttribBuffer.h"
 
-class Buffer
-{
+class Buffer {
 public:
   Buffer() {}
   Buffer(const AttribBuffer &array, GLenum target);

@@ -11,16 +11,14 @@ OutsideModelDawn::OutsideModelDawn(Context *context,
                                    MODELGROUP type,
                                    MODELNAME name,
                                    bool blend)
-    : Model(type, name, blend)
-{
+    : Model(type, name, blend) {
   mContextDawn = static_cast<ContextDawn *>(context);
 
   mLightFactorUniforms.shininess      = 50.0f;
   mLightFactorUniforms.specularFactor = 0.0f;
 }
 
-OutsideModelDawn::~OutsideModelDawn()
-{
+OutsideModelDawn::~OutsideModelDawn() {
   mPipeline          = nullptr;
   mGroupLayoutModel  = nullptr;
   mGroupLayoutPer    = nullptr;
@@ -31,8 +29,7 @@ OutsideModelDawn::~OutsideModelDawn()
   mViewBuffer        = nullptr;
 }
 
-void OutsideModelDawn::init()
-{
+void OutsideModelDawn::init() {
   mProgramDawn = static_cast<ProgramDawn *>(mProgram);
 
   mDiffuseTexture    = static_cast<TextureDawn *>(textureMap["diffuse"]);
@@ -140,10 +137,10 @@ void OutsideModelDawn::init()
                               sizeof(LightFactorUniforms));
 }
 
-void OutsideModelDawn::prepareForDraw() {}
+void OutsideModelDawn::prepareForDraw() {
+}
 
-void OutsideModelDawn::draw()
-{
+void OutsideModelDawn::draw() {
   wgpu::RenderPassEncoder pass = mContextDawn->getRenderPass();
   pass.SetPipeline(mPipeline);
   pass.SetBindGroup(0, mContextDawn->bindGroupGeneral, 0, nullptr);
@@ -154,8 +151,7 @@ void OutsideModelDawn::draw()
   pass.SetVertexBuffer(1, mNormalBuffer->getBuffer());
   pass.SetVertexBuffer(2, mTexCoordBuffer->getBuffer());
   // diffuseShader doesn't have to input tangent buffer or binormal buffer.
-  if (mTangentBuffer && mBiNormalBuffer)
-  {
+  if (mTangentBuffer && mBiNormalBuffer) {
     pass.SetVertexBuffer(3, mTangentBuffer->getBuffer());
     pass.SetVertexBuffer(4, mBiNormalBuffer->getBuffer());
   }
@@ -164,8 +160,7 @@ void OutsideModelDawn::draw()
 }
 
 void OutsideModelDawn::updatePerInstanceUniforms(
-    const WorldUniforms &worldUniforms)
-{
+    const WorldUniforms &worldUniforms) {
   memcpy(&mWorldUniformPer, &worldUniforms, sizeof(WorldUniforms));
 
   mContextDawn->updateBufferData(

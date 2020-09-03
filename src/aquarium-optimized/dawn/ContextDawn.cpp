@@ -60,17 +60,14 @@ ContextDawn::ContextDawn(BACKENDTYPE backendType)
       mPipeline(nullptr),
       mBindGroup(nullptr),
       mPreferredSwapChainFormat(wgpu::TextureFormat::RGBA8Unorm),
-      bufferManager(nullptr)
-{
+      bufferManager(nullptr) {
   mResourceHelper = new ResourceHelper("dawn", "", backendType);
   initAvailableToggleBitset(backendType);
 }
 
-ContextDawn::~ContextDawn()
-{
+ContextDawn::~ContextDawn() {
   delete mResourceHelper;
-  if (mWindow != nullptr && !mDisableControlPanel)
-  {
+  if (mWindow != nullptr && !mDisableControlPanel) {
     destoryImgUI();
   }
 
@@ -104,34 +101,27 @@ bool ContextDawn::initialize(
     BACKENDTYPE backend,
     const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset,
     int windowWidth,
-    int windowHeight)
-{
+    int windowHeight) {
   wgpu::BackendType backendType = wgpu::BackendType::Null;
 
-  switch (backend)
-  {
-  case BACKENDTYPE::BACKENDTYPEDAWND3D12:
-  {
+  switch (backend) {
+  case BACKENDTYPE::BACKENDTYPEDAWND3D12: {
     backendType = wgpu::BackendType::D3D12;
     break;
   }
-  case BACKENDTYPE::BACKENDTYPEDAWNVULKAN:
-  {
+  case BACKENDTYPE::BACKENDTYPEDAWNVULKAN: {
     backendType = wgpu::BackendType::Vulkan;
     break;
   }
-  case BACKENDTYPE::BACKENDTYPEDAWNMETAL:
-  {
+  case BACKENDTYPE::BACKENDTYPEDAWNMETAL: {
     backendType = wgpu::BackendType::Metal;
     break;
   }
-  case BACKENDTYPE::BACKENDTYPEOPENGL:
-  {
+  case BACKENDTYPE::BACKENDTYPEOPENGL: {
     backendType = wgpu::BackendType::OpenGL;
     break;
   }
-  default:
-  {
+  default: {
     std::cerr << "Backend type can not reached." << std::endl;
     return false;
   }
@@ -141,8 +131,7 @@ bool ContextDawn::initialize(
       toggleBitset.test(static_cast<TOGGLE>(TOGGLE::DISABLECONTROLPANEL));
 
   // initialise GLFW
-  if (!glfwInit())
-  {
+  if (!glfwInit()) {
     std::cout << "Failed to initialise GLFW" << std::endl;
     return false;
   }
@@ -158,19 +147,15 @@ bool ContextDawn::initialize(
 
   setWindowSize(windowWidth, windowHeight);
 
-  if (toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEFULLSCREENMODE)))
-  {
+  if (toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEFULLSCREENMODE))) {
     mWindow = glfwCreateWindow(mClientWidth, mClientHeight, "Aquarium",
                                pMonitor, nullptr);
-  }
-  else
-  {
+  } else {
     mWindow = glfwCreateWindow(mClientWidth, mClientHeight, "Aquarium", nullptr,
                                nullptr);
   }
 
-  if (mWindow == nullptr)
-  {
+  if (mWindow == nullptr) {
     std::cout << "Failed to open GLFW window." << std::endl;
     glfwTerminate();
     return false;
@@ -190,25 +175,21 @@ bool ContextDawn::initialize(
 
   dawn_native::Adapter backendAdapter;
   if (!GetHardwareAdapter(mInstance, &backendAdapter, backendType,
-                          toggleBitset))
-  {
+                          toggleBitset)) {
     return false;
   }
 
   WGPUDevice backendDevice;
   dawn_native::DeviceDescriptor descriptor;
-  if (toggleBitset.test(static_cast<size_t>(TOGGLE::TURNOFFVSYNC)))
-  {
+  if (toggleBitset.test(static_cast<size_t>(TOGGLE::TURNOFFVSYNC))) {
     const char *turnOffVsync = "turn_off_vsync";
     descriptor.forceEnabledToggles.push_back(turnOffVsync);
   }
-  if (toggleBitset.test(static_cast<size_t>(TOGGLE::DISABLED3D12RENDERPASS)))
-  {
+  if (toggleBitset.test(static_cast<size_t>(TOGGLE::DISABLED3D12RENDERPASS))) {
     const char *useD3D12RenderPass = "use_d3d12_render_pass";
     descriptor.forceDisabledToggles.push_back(useD3D12RenderPass);
   }
-  if (toggleBitset.test(static_cast<size_t>(TOGGLE::DISABLEDAWNVALIDATION)))
-  {
+  if (toggleBitset.test(static_cast<size_t>(TOGGLE::DISABLEDAWNVALIDATION))) {
     const char *skipValidation = "skip_validation";
     descriptor.forceEnabledToggles.push_back(skipValidation);
   }
@@ -218,8 +199,7 @@ bool ContextDawn::initialize(
 
   utils::BackendBinding *binding =
       utils::CreateBinding(backendType, mWindow, backendDevice);
-  if (binding == nullptr)
-  {
+  if (binding == nullptr) {
     return false;
   }
 
@@ -244,8 +224,7 @@ bool ContextDawn::initialize(
 
   // When MSAA is enabled, we create an intermediate multisampled texture to
   // render the scene to.
-  if (mMSAASampleCount > 1)
-  {
+  if (mMSAASampleCount > 1) {
     mSceneRenderTargetView = createMultisampledRenderTargetView();
   }
 
@@ -253,14 +232,12 @@ bool ContextDawn::initialize(
 
   // TODO(jiawei.shao@intel.com): support recreating swapchain when window is
   // resized on all backends
-  if (backend == BACKENDTYPE::BACKENDTYPEDAWNVULKAN)
-  {
+  if (backend == BACKENDTYPE::BACKENDTYPEDAWNVULKAN) {
     glfwSetFramebufferSizeCallback(mWindow, framebufferResizeCallback);
     glfwSetWindowUserPointer(mWindow, this);
   }
 
-  if (!mDisableControlPanel)
-  {
+  if (!mDisableControlPanel) {
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -284,8 +261,7 @@ bool ContextDawn::initialize(
 
 void ContextDawn::framebufferResizeCallback(GLFWwindow *window,
                                             int width,
-                                            int height)
-{
+                                            int height) {
   ContextDawn *contextDawn =
       reinterpret_cast<ContextDawn *>(glfwGetWindowUserPointer(window));
   contextDawn->mIsSwapchainOutOfDate = true;
@@ -295,8 +271,7 @@ bool ContextDawn::GetHardwareAdapter(
     std::unique_ptr<dawn_native::Instance> &instance,
     dawn_native::Adapter *backendAdapter,
     wgpu::BackendType backendType,
-    const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset)
-{
+    const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset) {
   bool enableIntegratedGpu =
       toggleBitset.test(static_cast<size_t>(TOGGLE::INTEGRATEDGPU));
   bool enableDiscreteGpu =
@@ -306,18 +281,15 @@ bool ContextDawn::GetHardwareAdapter(
   bool result = false;
 
   // Get an adapter for the backend to use, and create the Device.
-  for (auto &adapter : instance->GetAdapters())
-  {
+  for (auto &adapter : instance->GetAdapters()) {
     wgpu::AdapterProperties properties;
     adapter.GetProperties(&properties);
-    if (properties.backendType == backendType)
-    {
+    if (properties.backendType == backendType) {
       if (useDefaultGpu ||
           (enableDiscreteGpu &&
            adapter.GetDeviceType() == dawn_native::DeviceType::DiscreteGPU) ||
           (enableIntegratedGpu &&
-           adapter.GetDeviceType() == dawn_native::DeviceType::IntegratedGPU))
-      {
+           adapter.GetDeviceType() == dawn_native::DeviceType::IntegratedGPU)) {
         *backendAdapter = adapter;
         result          = true;
         break;
@@ -325,8 +297,7 @@ bool ContextDawn::GetHardwareAdapter(
     }
   }
 
-  if (!result)
-  {
+  if (!result) {
     std::cerr << "Failed to create adapter." << std::endl;
     return false;
   }
@@ -334,8 +305,7 @@ bool ContextDawn::GetHardwareAdapter(
   return true;
 }
 
-void ContextDawn::initAvailableToggleBitset(BACKENDTYPE backendType)
-{
+void ContextDawn::initAvailableToggleBitset(BACKENDTYPE backendType) {
   mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEINSTANCEDDRAWS));
   mAvailableToggleBitset.set(
       static_cast<size_t>(TOGGLE::ENABLEDYNAMICBUFFEROFFSET));
@@ -353,38 +323,33 @@ void ContextDawn::initAvailableToggleBitset(BACKENDTYPE backendType)
 }
 
 Texture *ContextDawn::createTexture(const std::string &name,
-                                    const std::string &url)
-{
+                                    const std::string &url) {
   Texture *texture = new TextureDawn(this, name, url);
   texture->loadTexture();
   return texture;
 }
 
 Texture *ContextDawn::createTexture(const std::string &name,
-                                    const std::vector<std::string> &urls)
-{
+                                    const std::vector<std::string> &urls) {
   Texture *texture = new TextureDawn(this, name, urls);
   texture->loadTexture();
   return texture;
 }
 
 wgpu::Texture ContextDawn::createTexture(
-    const wgpu::TextureDescriptor &descriptor) const
-{
+    const wgpu::TextureDescriptor &descriptor) const {
   return mDevice.CreateTexture(&descriptor);
 }
 
 wgpu::Sampler ContextDawn::createSampler(
-    const wgpu::SamplerDescriptor &descriptor) const
-{
+    const wgpu::SamplerDescriptor &descriptor) const {
   return mDevice.CreateSampler(&descriptor);
 }
 
 wgpu::Buffer ContextDawn::createBufferFromData(const void *data,
                                                uint32_t size,
                                                uint32_t maxSize,
-                                               wgpu::BufferUsage usage)
-{
+                                               wgpu::BufferUsage usage) {
   wgpu::Buffer buffer =
       createBuffer(maxSize, usage | wgpu::BufferUsage::CopyDst);
 
@@ -396,16 +361,15 @@ wgpu::BufferCopyView ContextDawn::createBufferCopyView(
     const wgpu::Buffer &buffer,
     uint32_t offset,
     uint32_t bytesPerRow,
-    uint32_t rowsPerImage) const
-{
+    uint32_t rowsPerImage) const {
 
   return utils::CreateBufferCopyView(buffer, offset, bytesPerRow, rowsPerImage);
 }
 
-wgpu::TextureCopyView ContextDawn::createTextureCopyView(wgpu::Texture texture,
-                                                         uint32_t level,
-                                                         wgpu::Origin3D origin)
-{
+wgpu::TextureCopyView ContextDawn::createTextureCopyView(
+    wgpu::Texture texture,
+    uint32_t level,
+    wgpu::Origin3D origin) {
 
   return utils::CreateTextureCopyView(texture, level, origin);
 }
@@ -413,8 +377,7 @@ wgpu::TextureCopyView ContextDawn::createTextureCopyView(wgpu::Texture texture,
 wgpu::CommandBuffer ContextDawn::copyBufferToTexture(
     const wgpu::BufferCopyView &bufferCopyView,
     const wgpu::TextureCopyView &textureCopyView,
-    const wgpu::Extent3D &ext3D) const
-{
+    const wgpu::Extent3D &ext3D) const {
   wgpu::CommandEncoder encoder = mDevice.CreateCommandEncoder();
   encoder.CopyBufferToTexture(&bufferCopyView, &textureCopyView, &ext3D);
   wgpu::CommandBuffer copy = encoder.Finish();
@@ -426,8 +389,7 @@ wgpu::CommandBuffer ContextDawn::copyBufferToBuffer(
     uint64_t srcOffset,
     wgpu::Buffer const &destBuffer,
     uint64_t destOffset,
-    uint64_t size) const
-{
+    uint64_t size) const {
   wgpu::CommandEncoder encoder = mDevice.CreateCommandEncoder();
   encoder.CopyBufferToBuffer(srcBuffer, srcOffset, destBuffer, destOffset,
                              size);
@@ -438,21 +400,19 @@ wgpu::CommandBuffer ContextDawn::copyBufferToBuffer(
 
 wgpu::ShaderModule ContextDawn::createShaderModule(
     utils::SingleShaderStage stage,
-    const std::string &str) const
-{
+    const std::string &str) const {
   return utils::CreateShaderModule(mDevice, stage, str.c_str());
 }
 
 wgpu::BindGroupLayout ContextDawn::MakeBindGroupLayout(
-    std::initializer_list<wgpu::BindGroupLayoutEntry> bindingsInitializer) const
-{
+    std::initializer_list<wgpu::BindGroupLayoutEntry> bindingsInitializer)
+    const {
 
   return utils::MakeBindGroupLayout(mDevice, bindingsInitializer);
 }
 
 wgpu::PipelineLayout ContextDawn::MakeBasicPipelineLayout(
-    std::vector<wgpu::BindGroupLayout> bindingsInitializer) const
-{
+    std::vector<wgpu::BindGroupLayout> bindingsInitializer) const {
   wgpu::PipelineLayoutDescriptor descriptor;
 
   descriptor.bindGroupLayoutCount =
@@ -466,20 +426,16 @@ wgpu::RenderPipeline ContextDawn::createRenderPipeline(
     wgpu::PipelineLayout mPipelineLayout,
     ProgramDawn *mProgramDawn,
     const wgpu::VertexStateDescriptor &mVertexStateDescriptor,
-    bool enableBlend) const
-{
+    bool enableBlend) const {
   const wgpu::ShaderModule &mVsModule = mProgramDawn->getVSModule();
   const wgpu::ShaderModule &mFsModule = mProgramDawn->getFSModule();
 
   wgpu::BlendDescriptor blendDescriptor;
   blendDescriptor.operation = wgpu::BlendOperation::Add;
-  if (enableBlend)
-  {
+  if (enableBlend) {
     blendDescriptor.srcFactor = wgpu::BlendFactor::SrcAlpha;
     blendDescriptor.dstFactor = wgpu::BlendFactor::OneMinusSrcAlpha;
-  }
-  else
-  {
+  } else {
     blendDescriptor.srcFactor = wgpu::BlendFactor::One;
     blendDescriptor.dstFactor = wgpu::BlendFactor::Zero;
   }
@@ -520,8 +476,7 @@ wgpu::RenderPipeline ContextDawn::createRenderPipeline(
   return mPipeline;
 }
 
-wgpu::TextureView ContextDawn::createMultisampledRenderTargetView() const
-{
+wgpu::TextureView ContextDawn::createMultisampledRenderTargetView() const {
   wgpu::TextureDescriptor descriptor;
   descriptor.dimension     = wgpu::TextureDimension::e2D;
   descriptor.size.width    = mClientWidth;
@@ -535,8 +490,7 @@ wgpu::TextureView ContextDawn::createMultisampledRenderTargetView() const
   return mDevice.CreateTexture(&descriptor).CreateView();
 }
 
-wgpu::TextureView ContextDawn::createDepthStencilView() const
-{
+wgpu::TextureView ContextDawn::createDepthStencilView() const {
   wgpu::TextureDescriptor descriptor;
   descriptor.dimension     = wgpu::TextureDimension::e2D;
   descriptor.size.width    = mClientWidth;
@@ -551,8 +505,7 @@ wgpu::TextureView ContextDawn::createDepthStencilView() const
 }
 
 wgpu::Buffer ContextDawn::createBuffer(uint32_t size,
-                                       wgpu::BufferUsage bit) const
-{
+                                       wgpu::BufferUsage bit) const {
   wgpu::BufferDescriptor descriptor;
   descriptor.size  = size;
   descriptor.usage = bit;
@@ -564,8 +517,7 @@ wgpu::Buffer ContextDawn::createBuffer(uint32_t size,
 void ContextDawn::setBufferData(const wgpu::Buffer &buffer,
                                 uint32_t bufferSize,
                                 const void *data,
-                                uint32_t dataSize)
-{
+                                uint32_t dataSize) {
   wgpu::CreateBufferMappedResult result = CreateBufferMapped(
       wgpu::BufferUsage::MapWrite | wgpu::BufferUsage::CopySrc, bufferSize);
   memcpy(result.data, data, dataSize);
@@ -579,13 +531,11 @@ void ContextDawn::setBufferData(const wgpu::Buffer &buffer,
 wgpu::BindGroup ContextDawn::makeBindGroup(
     const wgpu::BindGroupLayout &layout,
     std::initializer_list<utils::BindingInitializationHelper>
-        bindingsInitializer) const
-{
+        bindingsInitializer) const {
   return utils::MakeBindGroup(mDevice, layout, bindingsInitializer);
 }
 
-void ContextDawn::initGeneralResources(Aquarium *aquarium)
-{
+void ContextDawn::initGeneralResources(Aquarium *aquarium) {
   // initilize general uniform buffers
   groupLayoutGeneral = MakeBindGroupLayout({
       {0, wgpu::ShaderStage::Fragment, wgpu::BindingType::UniformBuffer},
@@ -631,14 +581,11 @@ void ContextDawn::initGeneralResources(Aquarium *aquarium)
 
   bool enableDynamicBufferOffset = aquarium->toggleBitset.test(
       static_cast<size_t>(TOGGLE::ENABLEDYNAMICBUFFEROFFSET));
-  if (enableDynamicBufferOffset)
-  {
+  if (enableDynamicBufferOffset) {
     groupLayoutFishPer = MakeBindGroupLayout({
         {0, wgpu::ShaderStage::Vertex, wgpu::BindingType::UniformBuffer, true},
     });
-  }
-  else
-  {
+  } else {
     groupLayoutFishPer = MakeBindGroupLayout({
         {0, wgpu::ShaderStage::Vertex, wgpu::BindingType::UniformBuffer},
     });
@@ -648,8 +595,7 @@ void ContextDawn::initGeneralResources(Aquarium *aquarium)
                   enableDynamicBufferOffset);
 }
 
-void ContextDawn::updateWorldlUniforms(Aquarium *aquarium)
-{
+void ContextDawn::updateWorldlUniforms(Aquarium *aquarium) {
   updateBufferData(
       mLightWorldPositionBuffer,
       CalcConstantBufferByteSize(sizeof(LightWorldPositionUniform)),
@@ -658,8 +604,7 @@ void ContextDawn::updateWorldlUniforms(Aquarium *aquarium)
 
 Buffer *ContextDawn::createBuffer(int numComponents,
                                   std::vector<float> *buf,
-                                  bool isIndex)
-{
+                                  bool isIndex) {
   Buffer *buffer = new BufferDawn(this, static_cast<int>(buf->size()),
                                   numComponents, buf, isIndex);
   return buffer;
@@ -667,41 +612,35 @@ Buffer *ContextDawn::createBuffer(int numComponents,
 
 Buffer *ContextDawn::createBuffer(int numComponents,
                                   std::vector<unsigned short> *buf,
-                                  bool isIndex)
-{
+                                  bool isIndex) {
   Buffer *buffer = new BufferDawn(this, static_cast<int>(buf->size()),
                                   numComponents, buf, isIndex);
   return buffer;
 }
 
 Program *ContextDawn::createProgram(const std::string &mVId,
-                                    const std::string &mFId)
-{
+                                    const std::string &mFId) {
   ProgramDawn *program = new ProgramDawn(this, mVId, mFId);
 
   return program;
 }
 
-void ContextDawn::setWindowTitle(const std::string &text)
-{
+void ContextDawn::setWindowTitle(const std::string &text) {
   glfwSetWindowTitle(mWindow, text.c_str());
 }
 
-bool ContextDawn::ShouldQuit()
-{
+bool ContextDawn::ShouldQuit() {
   return glfwWindowShouldClose(mWindow);
 }
 
-void ContextDawn::KeyBoardQuit()
-{
+void ContextDawn::KeyBoardQuit() {
   if (glfwGetKey(mWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(mWindow, GLFW_TRUE);
 }
 
 // Submit commands of the frame
 void ContextDawn::DoFlush(
-    const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset)
-{
+    const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset) {
   mRenderPass.EndPass();
 
   bufferManager->flush();
@@ -716,29 +655,24 @@ void ContextDawn::DoFlush(
   glfwPollEvents();
 }
 
-void ContextDawn::Flush()
-{
+void ContextDawn::Flush() {
   queue.Submit(mCommandBuffers.size(), mCommandBuffers.data());
   mCommandBuffers.clear();
 }
 
-void ContextDawn::Terminate()
-{
+void ContextDawn::Terminate() {
   glfwTerminate();
 }
 
-void ContextDawn::showWindow()
-{
+void ContextDawn::showWindow() {
   glfwShowWindow(mWindow);
 }
 
 void ContextDawn::updateFPS(
     const FPSTimer &fpsTimer,
     int *fishCount,
-    std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> *toggleBitset)
-{
-  if (mDisableControlPanel)
-  {
+    std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> *toggleBitset) {
+  if (mDisableControlPanel) {
     return;
   }
 
@@ -750,30 +684,24 @@ void ContextDawn::updateFPS(
   ImGui_ImplDawn_RenderDrawData(ImGui::GetDrawData());
 }
 
-void ContextDawn::showFPS()
-{
-  if (mDisableControlPanel)
-  {
+void ContextDawn::showFPS() {
+  if (mDisableControlPanel) {
     return;
   }
 
   ImGui_ImplDawn_Draw(ImGui::GetDrawData());
 }
 
-void ContextDawn::destoryImgUI()
-{
+void ContextDawn::destoryImgUI() {
   ImGui_ImplDawn_Shutdown();
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();
 }
 
-void ContextDawn::preFrame()
-{
-  if (mIsSwapchainOutOfDate)
-  {
+void ContextDawn::preFrame() {
+  if (mIsSwapchainOutOfDate) {
     glfwGetFramebufferSize(mWindow, &mClientWidth, &mClientHeight);
-    if (mMSAASampleCount > 1)
-    {
+    if (mMSAASampleCount > 1) {
       mSceneRenderTargetView = createMultisampledRenderTargetView();
     }
     mSceneDepthStencilView = createDepthStencilView();
@@ -786,8 +714,7 @@ void ContextDawn::preFrame()
   mCommandEncoder = mDevice.CreateCommandEncoder();
   mBackbufferView = mSwapchain.GetCurrentTextureView();
 
-  if (mMSAASampleCount > 1)
-  {
+  if (mMSAASampleCount > 1) {
     // If MSAA is enabled, we render to a multisampled texture and then resolve
     // to the backbuffer
     mRenderPassDescriptor = utils::ComboRenderPassDescriptor(
@@ -797,9 +724,7 @@ void ContextDawn::preFrame()
     mRenderPassDescriptor.cColorAttachments[0].storeOp = wgpu::StoreOp::Clear;
     mRenderPassDescriptor.cColorAttachments[0].clearColor = {0.f, 0.8f, 1.f,
                                                              0.f};
-  }
-  else
-  {
+  } else {
     // When MSAA is off, we render directly to the backbuffer
     mRenderPassDescriptor = utils::ComboRenderPassDescriptor(
         {mBackbufferView}, mSceneDepthStencilView);
@@ -815,11 +740,9 @@ void ContextDawn::preFrame()
 Model *ContextDawn::createModel(Aquarium *aquarium,
                                 MODELGROUP type,
                                 MODELNAME name,
-                                bool blend)
-{
+                                bool blend) {
   Model *model;
-  switch (type)
-  {
+  switch (type) {
   case MODELGROUP::FISH:
     model = new FishModelDawn(this, aquarium, type, name, blend);
     break;
@@ -848,8 +771,7 @@ Model *ContextDawn::createModel(Aquarium *aquarium,
 
 void ContextDawn::reallocResource(int preTotalInstance,
                                   int curTotalInstance,
-                                  bool enableDynamicBufferOffset)
-{
+                                  bool enableDynamicBufferOffset) {
   mPreTotalInstance          = preTotalInstance;
   mCurTotalInstance          = curTotalInstance;
   mEnableDynamicBufferOffset = enableDynamicBufferOffset;
@@ -860,8 +782,7 @@ void ContextDawn::reallocResource(int preTotalInstance,
   // If current fish number > pre fish number, allocate a new bigger buffer.
   // If current fish number <= prefish number, do not allocate a new one.
   // TODO(yizhou) : optimize the buffer allocation strategy.
-  if (preTotalInstance >= curTotalInstance)
-  {
+  if (preTotalInstance >= curTotalInstance) {
     return;
   }
 
@@ -869,12 +790,9 @@ void ContextDawn::reallocResource(int preTotalInstance,
 
   fishPers = new FishPer[curTotalInstance];
 
-  if (enableDynamicBufferOffset)
-  {
+  if (enableDynamicBufferOffset) {
     bindGroupFishPers = new wgpu::BindGroup[1];
-  }
-  else
-  {
+  } else {
     bindGroupFishPers = new wgpu::BindGroup[curTotalInstance];
   }
 
@@ -882,16 +800,12 @@ void ContextDawn::reallocResource(int preTotalInstance,
   fishPersBuffer = createBuffer(
       size, wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
 
-  if (enableDynamicBufferOffset)
-  {
+  if (enableDynamicBufferOffset) {
     bindGroupFishPers[0] = makeBindGroup(
         groupLayoutFishPer,
         {{0, fishPersBuffer, 0, CalcConstantBufferByteSize(sizeof(FishPer))}});
-  }
-  else
-  {
-    for (int i = 0; i < curTotalInstance; i++)
-    {
+  } else {
+    for (int i = 0; i < curTotalInstance; i++) {
       bindGroupFishPers[i] = makeBindGroup(
           groupLayoutFishPer,
           {{0, fishPersBuffer, CalcConstantBufferByteSize(sizeof(FishPer) * i),
@@ -902,8 +816,7 @@ void ContextDawn::reallocResource(int preTotalInstance,
 
 wgpu::CreateBufferMappedResult ContextDawn::CreateBufferMapped(
     wgpu::BufferUsage usage,
-    uint64_t size) const
-{
+    uint64_t size) const {
   wgpu::BufferDescriptor descriptor;
   descriptor.nextInChain = nullptr;
   descriptor.size        = size;
@@ -915,20 +828,17 @@ wgpu::CreateBufferMappedResult ContextDawn::CreateBufferMapped(
   return result;
 }
 
-void ContextDawn::WaitABit()
-{
+void ContextDawn::WaitABit() {
   mDevice.Tick();
 
   utils::USleep(100);
 }
 
-wgpu::CommandEncoder ContextDawn::createCommandEncoder() const
-{
+wgpu::CommandEncoder ContextDawn::createCommandEncoder() const {
   return mDevice.CreateCommandEncoder();
 }
 
-void ContextDawn::updateAllFishData()
-{
+void ContextDawn::updateAllFishData() {
   size_t size = CalcConstantBufferByteSize(sizeof(FishPer) * mCurTotalInstance);
   updateBufferData(fishPersBuffer, size, fishPers,
                    sizeof(FishPer) * mCurTotalInstance);
@@ -937,13 +847,11 @@ void ContextDawn::updateAllFishData()
 void ContextDawn::updateBufferData(const wgpu::Buffer &buffer,
                                    size_t bufferSize,
                                    void *data,
-                                   size_t dataSize) const
-{
+                                   size_t dataSize) const {
   size_t offset              = 0;
   RingBufferDawn *ringBuffer = bufferManager->allocate(bufferSize, &offset);
 
-  if (ringBuffer == nullptr)
-  {
+  if (ringBuffer == nullptr) {
     std::cout << "Memory upper limit." << std::endl;
     return;
   }
@@ -951,33 +859,23 @@ void ContextDawn::updateBufferData(const wgpu::Buffer &buffer,
   ringBuffer->push(bufferManager->mEncoder, buffer, offset, 0, data, dataSize);
 }
 
-void ContextDawn::destoryFishResource()
-{
+void ContextDawn::destoryFishResource() {
   fishPersBuffer = nullptr;
 
-  if (fishPers != nullptr)
-  {
+  if (fishPers != nullptr) {
     delete fishPers;
     fishPers = nullptr;
   }
-  if (mEnableDynamicBufferOffset)
-  {
-    if (bindGroupFishPers != nullptr)
-    {
-      if (bindGroupFishPers[0].Get() != nullptr)
-      {
+  if (mEnableDynamicBufferOffset) {
+    if (bindGroupFishPers != nullptr) {
+      if (bindGroupFishPers[0].Get() != nullptr) {
         bindGroupFishPers[0] = nullptr;
       }
     }
-  }
-  else
-  {
-    if (bindGroupFishPers != nullptr)
-    {
-      for (int i = 0; i < mPreTotalInstance; i++)
-      {
-        if (bindGroupFishPers[i].Get() != nullptr)
-        {
+  } else {
+    if (bindGroupFishPers != nullptr) {
+      for (int i = 0; i < mPreTotalInstance; i++) {
+        if (bindGroupFishPers[i].Get() != nullptr) {
           bindGroupFishPers[i] = nullptr;
         }
       }
@@ -989,7 +887,6 @@ void ContextDawn::destoryFishResource()
   bufferManager->destroyBufferPool();
 }
 
-size_t ContextDawn::CalcConstantBufferByteSize(size_t byteSize) const
-{
+size_t ContextDawn::CalcConstantBufferByteSize(size_t byteSize) const {
   return (byteSize + 255) & ~255;
 }

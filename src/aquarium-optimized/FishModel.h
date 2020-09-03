@@ -10,17 +10,14 @@
 
 #include "Model.h"
 
-class FishModel : public Model
-{
+class FishModel : public Model {
 public:
   FishModel(MODELGROUP type, MODELNAME name, bool blend, Aquarium *aquarium)
       : Model(type, name, blend),
         mPreInstance(0),
         mCurInstance(0),
         mFishPerOffset(0),
-        mAquarium(aquarium)
-  {
-  }
+        mAquarium(aquarium) {}
 
   virtual void updateFishPerUniforms(float x,
                                      float y,

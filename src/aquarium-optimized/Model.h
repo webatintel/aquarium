@@ -25,14 +25,11 @@ enum MODELGROUP : short;
 enum MODELNAME : short;
 struct WorldUniforms;
 
-class Model
-{
+class Model {
 public:
   Model();
   Model(MODELGROUP type, MODELNAME name, bool blend)
-      : mProgram(nullptr), mBlend(blend), mName(name)
-  {
-  }
+      : mProgram(nullptr), mBlend(blend), mName(name) {}
   virtual ~Model();
   virtual void prepareForDraw() = 0;
   virtual void updatePerInstanceUniforms(

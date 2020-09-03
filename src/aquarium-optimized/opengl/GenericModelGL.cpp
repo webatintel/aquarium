@@ -12,8 +12,7 @@ GenericModelGL::GenericModelGL(const ContextGL *context,
                                MODELGROUP type,
                                MODELNAME name,
                                bool blend)
-    : Model(type, name, blend), mContextGL(context)
-{
+    : Model(type, name, blend), mContextGL(context) {
   mViewInverseUniform.first = aquarium->lightWorldPositionUniform.viewInverse;
   mLightWorldPosUniform.first =
       aquarium->lightWorldPositionUniform.lightWorldPos;
@@ -33,8 +32,7 @@ GenericModelGL::GenericModelGL(const ContextGL *context,
   mFogColorUniform.first  = aquarium->fogUniforms.fogColor;
 }
 
-void GenericModelGL::init()
-{
+void GenericModelGL::init() {
   ProgramGL *programGL               = static_cast<ProgramGL *>(mProgram);
   mWorldViewProjectionUniform.second = mContextGL->getUniformLocation(
       programGL->getProgramId(), "worldViewProjection");
@@ -93,13 +91,11 @@ void GenericModelGL::init()
   mIndicesBuffer = static_cast<BufferGL *>(bufferMap["indices"]);
 }
 
-void GenericModelGL::draw()
-{
+void GenericModelGL::draw() {
   mContextGL->drawElements(*mIndicesBuffer);
 }
 
-void GenericModelGL::prepareForDraw()
-{
+void GenericModelGL::prepareForDraw() {
   mProgram->setProgram();
   mContextGL->enableBlend(mBlend);
 
@@ -112,8 +108,7 @@ void GenericModelGL::prepareForDraw()
 
   // diffuseVertexShader doesn't contains tangent and binormal but
   // normalMapVertexShader contains the two buffers.
-  if (mTangentBuffer.second != -1 && mBiNormalBuffer.second != -1)
-  {
+  if (mTangentBuffer.second != -1 && mBiNormalBuffer.second != -1) {
     mContextGL->setAttribs(*mTangentBuffer.first, mTangentBuffer.second);
     mContextGL->setAttribs(*mBiNormalBuffer.first, mBiNormalBuffer.second);
   }
@@ -146,15 +141,13 @@ void GenericModelGL::prepareForDraw()
   mContextGL->setTexture(*mDiffuseTexture.first, mDiffuseTexture.second, 0);
   // Generic models includes Arch, coral, rock, ship, etc. diffuseFragmentShader
   // doesn't contain normalMap texture but normalMapFragmentShader contains.
-  if (mNormalTexture.second != -1)
-  {
+  if (mNormalTexture.second != -1) {
     mContextGL->setTexture(*mNormalTexture.first, mNormalTexture.second, 1);
   }
 }
 
 void GenericModelGL::updatePerInstanceUniforms(
-    const WorldUniforms &mWorldUniforms)
-{
+    const WorldUniforms &mWorldUniforms) {
   mContextGL->setUniform(mWorldUniform.second, mWorldUniform.first,
                          GL_FLOAT_MAT4);
   mContextGL->setUniform(mWorldViewProjectionUniform.second,

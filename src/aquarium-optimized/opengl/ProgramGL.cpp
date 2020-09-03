@@ -34,20 +34,17 @@
 #include "common/AQUARIUM_ASSERT.h"
 
 ProgramGL::ProgramGL(ContextGL *context, std::string mVId, std::string mFId)
-    : Program(mVId, mFId), mProgramId(0u), mContext(context)
-{
+    : Program(mVId, mFId), mProgramId(0u), mContext(context) {
   mProgramId = context->generateProgram();
   mVAO       = context->generateVAO();
 }
 
-ProgramGL::~ProgramGL()
-{
+ProgramGL::~ProgramGL() {
   mContext->deleteVAO(mVAO);
   mContext->deleteProgram(mProgramId);
 }
 
-void ProgramGL::compileProgram(bool enableBlending, const std::string &alpha)
-{
+void ProgramGL::compileProgram(bool enableBlending, const std::string &alpha) {
   loadProgram();
 
   const std::string fogUniforms =
@@ -79,8 +76,7 @@ void ProgramGL::compileProgram(bool enableBlending, const std::string &alpha)
   FragmentShaderCode = std::regex_replace(
       FragmentShaderCode, std::regex(R"(\n.*?// #noNormalMap)"), "");
 
-  if (enableBlending)
-  {
+  if (enableBlending) {
     FragmentShaderCode = std::regex_replace(
         FragmentShaderCode, std::regex(R"(diffuseColor.a)"), alpha);
   }
@@ -88,13 +84,11 @@ void ProgramGL::compileProgram(bool enableBlending, const std::string &alpha)
   bool status = mContext->compileProgram(mProgramId, VertexShaderCode,
                                          FragmentShaderCode);
   ASSERT(status);
-  if (!status)
-  {
+  if (!status) {
     std::cout << "Error occurs in compiling program!" << std::endl;
   }
 }
 
-void ProgramGL::setProgram()
-{
+void ProgramGL::setProgram() {
   mContext->setProgram(mProgramId);
 }

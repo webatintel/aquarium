@@ -18,8 +18,7 @@ using Microsoft::WRL::ComPtr;
 
 class ContextD3D12;
 
-class TextureD3D12 : public Texture
-{
+class TextureD3D12 : public Texture {
 public:
   ~TextureD3D12() override;
   TextureD3D12(ContextD3D12 *context,
@@ -30,12 +29,10 @@ public:
                const std::vector<std::string> &urls);
 
   D3D12_RESOURCE_DIMENSION getTextureDimension() { return mTextureDimension; }
-  D3D12_SRV_DIMENSION getTextureViewDimension()
-  {
+  D3D12_SRV_DIMENSION getTextureViewDimension() {
     return mTextureViewDimension;
   }
-  D3D12_GPU_DESCRIPTOR_HANDLE getTextureGPUHandle()
-  {
+  D3D12_GPU_DESCRIPTOR_HANDLE getTextureGPUHandle() {
     return mTextureGPUHandle;
   }
   void loadTexture() override;

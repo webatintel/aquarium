@@ -15,8 +15,7 @@
 #include "ContextDawn.h"
 #include "ProgramDawn.h"
 
-class InnerModelDawn : public Model
-{
+class InnerModelDawn : public Model {
 public:
   InnerModelDawn(Context *context,
                  Aquarium *aquarium,
@@ -30,8 +29,7 @@ public:
   void draw() override;
   void updatePerInstanceUniforms(const WorldUniforms &WorldUniforms) override;
 
-  struct InnerUniforms
-  {
+  struct InnerUniforms {
     float eta;
     float tankColorFudge;
     float refractionFudge;
