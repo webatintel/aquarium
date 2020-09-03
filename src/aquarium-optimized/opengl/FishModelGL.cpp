@@ -19,22 +19,22 @@ FishModelGL::FishModelGL(const ContextGL *mContextGL,
   mViewInverseUniform.first = aquarium->lightWorldPositionUniform.viewInverse;
   mLightWorldPosUniform.first =
       aquarium->lightWorldPositionUniform.lightWorldPos;
-  mLightColorUniform.first     = aquarium->lightUniforms.lightColor;
-  mSpecularUniform.first       = aquarium->lightUniforms.specular;
-  mShininessUniform.first      = 5.0f;
+  mLightColorUniform.first = aquarium->lightUniforms.lightColor;
+  mSpecularUniform.first = aquarium->lightUniforms.specular;
+  mShininessUniform.first = 5.0f;
   mSpecularFactorUniform.first = 0.3f;
-  mAmbientUniform.first        = aquarium->lightUniforms.ambient;
-  mFogPowerUniform.first       = g_fogPower;
-  mFogMultUniform.first        = g_fogMult;
-  mFogOffsetUniform.first      = g_fogOffset;
-  mFogColorUniform.first       = aquarium->fogUniforms.fogColor;
+  mAmbientUniform.first = aquarium->lightUniforms.ambient;
+  mFogPowerUniform.first = g_fogPower;
+  mFogMultUniform.first = g_fogMult;
+  mFogOffsetUniform.first = g_fogOffset;
+  mFogColorUniform.first = aquarium->fogUniforms.fogColor;
 
   mViewProjectionUniform.first =
       aquarium->lightWorldPositionUniform.viewProjection;
   mScaleUniform.first = 1;
 
-  const Fish &fishInfo         = fishTable[name - MODELNAME::MODELSMALLFISHA];
-  mFishLengthUniform.first     = fishInfo.fishLength;
+  const Fish &fishInfo = fishTable[name - MODELNAME::MODELSMALLFISHA];
+  mFishLengthUniform.first = fishInfo.fishLength;
   mFishBendAmountUniform.first = fishInfo.fishBendAmount;
   mFishWaveLengthUniform.first = fishInfo.fishWaveLength;
 }
@@ -201,9 +201,9 @@ void FishModelGL::updateFishPerUniforms(float x,
   mWorldPositionUniform.first[0] = x;
   mWorldPositionUniform.first[1] = y;
   mWorldPositionUniform.first[2] = z;
-  mNextPositionUniform.first[0]  = nextX;
-  mNextPositionUniform.first[1]  = nextY;
-  mNextPositionUniform.first[2]  = nextZ;
-  mScaleUniform.first            = scale;
-  mTimeUniform.first             = time;
+  mNextPositionUniform.first[0] = nextX;
+  mNextPositionUniform.first[1] = nextY;
+  mNextPositionUniform.first[2] = nextZ;
+  mScaleUniform.first = scale;
+  mTimeUniform.first = time;
 }

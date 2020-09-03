@@ -49,10 +49,10 @@ Aquarium::Aquarium()
       mTestTime(INT_MAX),
       mBackendType(BACKENDTYPE::BACKENDTYPELAST),
       mFactory(nullptr) {
-  g.then     = 0.0;
-  g.mclock   = 0.0;
+  g.then = 0.0;
+  g.mclock = 0.0;
   g.eyeClock = 0.0;
-  g.alpha    = "1";
+  g.alpha = "1";
 
   lightUniforms.lightColor[0] = 1.0f;
   lightUniforms.lightColor[1] = 1.0f;
@@ -69,8 +69,8 @@ Aquarium::Aquarium()
   fogUniforms.fogColor[2] = g_fogBlue;
   fogUniforms.fogColor[3] = 1.0f;
 
-  fogUniforms.fogPower  = g_fogPower;
-  fogUniforms.fogMult   = g_fogMult;
+  fogUniforms.fogPower = g_fogPower;
+  fogUniforms.fogMult = g_fogMult;
   fogUniforms.fogOffset = g_fogOffset;
 
   lightUniforms.ambient[0] = g_ambientRed;
@@ -140,7 +140,7 @@ BACKENDTYPE Aquarium::getBackendType(const std::string &backendPath) {
 }
 
 bool Aquarium::init(int argc, char **argv) {
-  int windowWidth  = 0;
+  int windowWidth = 0;
   int windowHeight = 0;
 
   cxxopts::Options options(argv[0],
@@ -190,7 +190,7 @@ bool Aquarium::init(int argc, char **argv) {
     return false;
   }
   std::string backend = result["backend"].as<std::string>();
-  mBackendType        = getBackendType(backend);
+  mBackendType = getBackendType(backend);
   if (mBackendType == BACKENDTYPE::BACKENDTYPELAST) {
     std::cout << "Can not create " << backend << " backend" << std::endl;
     return false;
@@ -361,9 +361,9 @@ bool Aquarium::init(int argc, char **argv) {
 
   if (result.count("window-size")) {
     std::string windowSize = result["window-size"].as<std::string>();
-    size_t pos             = windowSize.find(",");
-    windowWidth            = stoi(windowSize.substr(0, pos + 1));
-    windowHeight           = stoi(windowSize.substr(pos + 1));
+    size_t pos = windowSize.find(",");
+    windowWidth = stoi(windowSize.substr(0, pos + 1));
+    windowHeight = stoi(windowSize.substr(pos + 1));
     if (windowWidth == 0 || windowHeight == 0) {
       std::cerr << "Please designate window size correctly.";
     }
@@ -406,7 +406,7 @@ void Aquarium::resetFpsTime() {
 #ifdef _WIN32
   g.start = GetTickCount64() / 1000.0;
 #else
-  g.start    = clock() / 1000000.0;
+  g.start = clock() / 1000000.0;
 #endif
   g.then = g.start;
 }
@@ -448,7 +448,7 @@ void Aquarium::setupModelEnumMap() {
 // Load world matrices of models from json file.
 void Aquarium::loadPlacement() {
   const ResourceHelper *resourceHelper = mContext->getResourceHelper();
-  std::string proppath                 = resourceHelper->getPropPlacementPath();
+  std::string proppath = resourceHelper->getPropPlacementPath();
   std::ifstream PlacementStream(proppath, std::ios::in);
   rapidjson::IStreamWrapper isPlacement(PlacementStream);
   rapidjson::Document document;
@@ -461,7 +461,7 @@ void Aquarium::loadPlacement() {
   ASSERT(objects.IsArray());
 
   for (rapidjson::SizeType i = 0; i < objects.Size(); ++i) {
-    const rapidjson::Value &name        = objects[i]["name"];
+    const rapidjson::Value &name = objects[i]["name"];
     const rapidjson::Value &worldMatrix = objects[i]["worldMatrix"];
     ASSERT(worldMatrix.IsArray() && worldMatrix.Size() == 16);
 
@@ -493,7 +493,7 @@ void Aquarium::loadModels() {
 
 void Aquarium::loadFishScenario() {
   const ResourceHelper *resourceHelper = mContext->getResourceHelper();
-  std::string fishBehaviorPath         = resourceHelper->getFishBehaviorPath();
+  std::string fishBehaviorPath = resourceHelper->getFishBehaviorPath();
 
   std::ifstream FishStream(fishBehaviorPath, std::ios::in);
   rapidjson::IStreamWrapper is(FishStream);
@@ -504,9 +504,9 @@ void Aquarium::loadFishScenario() {
   ASSERT(behaviors.IsArray());
 
   for (rapidjson::SizeType i = 0; i < behaviors.Size(); ++i) {
-    int frame      = behaviors[i]["frame"].GetInt();
+    int frame = behaviors[i]["frame"].GetInt();
     std::string op = behaviors[i]["op"].GetString();
-    int count      = behaviors[i]["count"].GetInt();
+    int count = behaviors[i]["count"].GetInt();
 
     Behavior *behave = new Behavior(frame, op, count);
     mFishBehavior.push(behave);
@@ -516,8 +516,8 @@ void Aquarium::loadFishScenario() {
 // Load vertex and index buffers, textures and program for each model.
 void Aquarium::loadModel(const G_sceneInfo &info) {
   const ResourceHelper *resourceHelper = mContext->getResourceHelper();
-  std::string imagePath                = resourceHelper->getImagePath();
-  std::string programPath              = resourceHelper->getProgramPath();
+  std::string imagePath = resourceHelper->getImagePath();
+  std::string programPath = resourceHelper->getProgramPath();
   std::string modelPath =
       resourceHelper->getModelPath(std::string(info.namestr));
 
@@ -544,7 +544,7 @@ void Aquarium::loadModel(const G_sceneInfo &info) {
     const rapidjson::Value &textures = value["textures"];
     for (rapidjson::Value::ConstMemberIterator itr = textures.MemberBegin();
          itr != textures.MemberEnd(); ++itr) {
-      std::string name  = itr->name.GetString();
+      std::string name = itr->name.GetString();
       std::string image = itr->value.GetString();
 
       if (mTextureMap.find(image) == mTextureMap.end()) {
@@ -558,9 +558,9 @@ void Aquarium::loadModel(const G_sceneInfo &info) {
     const rapidjson::Value &arrays = value["fields"];
     for (rapidjson::Value::ConstMemberIterator itr = arrays.MemberBegin();
          itr != arrays.MemberEnd(); ++itr) {
-      std::string name  = itr->name.GetString();
+      std::string name = itr->name.GetString();
       int numComponents = itr->value["numComponents"].GetInt();
-      std::string type  = itr->value["type"].GetString();
+      std::string type = itr->value["type"].GetString();
       Buffer *buffer;
       if (name == "indices") {
         std::vector<unsigned short> vec;
@@ -679,7 +679,7 @@ void Aquarium::printAvgFps() {
 }
 
 void Aquarium::updateGlobalUniforms() {
-  double elapsedTime   = getElapsedTime();
+  double elapsedTime = getElapsedTime();
   double renderingTime = g.then - g.start;
 
   mFpsTimer.update(elapsedTime, renderingTime, mTestTime);
@@ -694,18 +694,18 @@ void Aquarium::updateGlobalUniforms() {
   g.target[2] = static_cast<float>(cos(g.eyeClock + M_PI)) * g_targetRadius;
 
   float nearPlane = 1;
-  float farPlane  = 25000.0f;
-  float aspect    = static_cast<float>(mContext->getClientWidth()) /
+  float farPlane = 25000.0f;
+  float aspect = static_cast<float>(mContext->getClientWidth()) /
                  static_cast<float>(mContext->getclientHeight());
   float top =
       tan(matrix::degToRad(g_fieldOfView * g_fovFudge) * 0.5f) * nearPlane;
   float bottom = -top;
-  float left   = aspect * bottom;
-  float right  = aspect * top;
-  float width  = abs(right - left);
+  float left = aspect * bottom;
+  float right = aspect * top;
+  float width = abs(right - left);
   float height = abs(top - bottom);
-  float xOff   = width * g_net_offset[0] * g_net_offsetMult;
-  float yOff   = height * g_net_offset[1] * g_net_offsetMult;
+  float xOff = width * g_net_offset[0] * g_net_offsetMult;
+  float yOff = height * g_net_offset[1] * g_net_offsetMult;
 
   // set frustm and camera look at
   matrix::frustum(g.projection, left + xOff, right + xOff, bottom + yOff,
@@ -749,7 +749,7 @@ void Aquarium::render() {
   if (toggleBitset.test(static_cast<size_t>(TOGGLE::SIMULATINGFISHCOMEANDGO))) {
     if (!mFishBehavior.empty()) {
       Behavior *behave = mFishBehavior.front();
-      int frame        = behave->getFrame();
+      int frame = behave->getFrame();
       if (frame == 0) {
         mFishBehavior.pop();
         if (behave->getOp() == "+") {
@@ -832,29 +832,29 @@ void Aquarium::updateAndDrawFishes() {
     FishModel *model = static_cast<FishModel *>(mAquariumModels[i]);
 
     const Fish &fishInfo = fishTable[i - begin];
-    int numFish          = fishCount[i - begin];
+    int numFish = fishCount[i - begin];
 
     model->prepareForDraw();
 
-    float fishBaseClock   = g.mclock * g_fishSpeed;
-    float fishRadius      = fishInfo.radius;
+    float fishBaseClock = g.mclock * g_fishSpeed;
+    float fishRadius = fishInfo.radius;
     float fishRadiusRange = fishInfo.radiusRange;
-    float fishSpeed       = fishInfo.speed;
-    float fishSpeedRange  = fishInfo.speedRange;
-    float fishTailSpeed   = fishInfo.tailSpeed * g_fishTailSpeed;
-    float fishOffset      = g_fishOffset;
+    float fishSpeed = fishInfo.speed;
+    float fishSpeedRange = fishInfo.speedRange;
+    float fishTailSpeed = fishInfo.tailSpeed * g_fishTailSpeed;
+    float fishOffset = g_fishOffset;
     // float fishClockSpeed  = g_fishSpeed;
-    float fishHeight      = g_fishHeight + fishInfo.heightOffset;
+    float fishHeight = g_fishHeight + fishInfo.heightOffset;
     float fishHeightRange = g_fishHeightRange * fishInfo.heightRange;
-    float fishXClock      = g_fishXClock;
-    float fishYClock      = g_fishYClock;
-    float fishZClock      = g_fishZClock;
+    float fishXClock = g_fishXClock;
+    float fishYClock = g_fishYClock;
+    float fishZClock = g_fishZClock;
 
     for (int ii = 0; ii < numFish; ++ii) {
       float fishClock = fishBaseClock + ii * fishOffset;
-      float speed     = fishSpeed +
+      float speed = fishSpeed +
                     static_cast<float>(matrix::pseudoRandom()) * fishSpeedRange;
-      float scale   = 1.0f + static_cast<float>(matrix::pseudoRandom()) * 1;
+      float scale = 1.0f + static_cast<float>(matrix::pseudoRandom()) * 1;
       float xRadius = fishRadius + static_cast<float>(matrix::pseudoRandom()) *
                                        fishRadiusRange;
       float yRadius =
@@ -862,9 +862,9 @@ void Aquarium::updateAndDrawFishes() {
       float zRadius = fishRadius + static_cast<float>(matrix::pseudoRandom()) *
                                        fishRadiusRange;
       float fishSpeedClock = fishClock * speed;
-      float xClock         = fishSpeedClock * fishXClock;
-      float yClock         = fishSpeedClock * fishYClock;
-      float zClock         = fishSpeedClock * fishZClock;
+      float xClock = fishSpeedClock * fishXClock;
+      float yClock = fishSpeedClock * fishYClock;
+      float zClock = fishSpeedClock * fishZClock;
 
       model->updateFishPerUniforms(
           sin(xClock) * xRadius, sin(yClock) * yRadius + fishHeight,
@@ -902,29 +902,29 @@ void Aquarium::updateFishes() {
     FishModel *model = static_cast<FishModel *>(mAquariumModels[i]);
 
     const Fish &fishInfo = fishTable[i - begin];
-    int numFish          = fishCount[i - begin];
+    int numFish = fishCount[i - begin];
 
     model->prepareForDraw();
 
-    float fishBaseClock   = g.mclock * g_fishSpeed;
-    float fishRadius      = fishInfo.radius;
+    float fishBaseClock = g.mclock * g_fishSpeed;
+    float fishRadius = fishInfo.radius;
     float fishRadiusRange = fishInfo.radiusRange;
-    float fishSpeed       = fishInfo.speed;
-    float fishSpeedRange  = fishInfo.speedRange;
-    float fishTailSpeed   = fishInfo.tailSpeed * g_fishTailSpeed;
-    float fishOffset      = g_fishOffset;
+    float fishSpeed = fishInfo.speed;
+    float fishSpeedRange = fishInfo.speedRange;
+    float fishTailSpeed = fishInfo.tailSpeed * g_fishTailSpeed;
+    float fishOffset = g_fishOffset;
     // float fishClockSpeed  = g_fishSpeed;
-    float fishHeight      = g_fishHeight + fishInfo.heightOffset;
+    float fishHeight = g_fishHeight + fishInfo.heightOffset;
     float fishHeightRange = g_fishHeightRange * fishInfo.heightRange;
-    float fishXClock      = g_fishXClock;
-    float fishYClock      = g_fishYClock;
-    float fishZClock      = g_fishZClock;
+    float fishXClock = g_fishXClock;
+    float fishYClock = g_fishYClock;
+    float fishZClock = g_fishZClock;
 
     for (int ii = 0; ii < numFish; ++ii) {
       float fishClock = fishBaseClock + ii * fishOffset;
-      float speed     = fishSpeed +
+      float speed = fishSpeed +
                     static_cast<float>(matrix::pseudoRandom()) * fishSpeedRange;
-      float scale   = 1.0f + static_cast<float>(matrix::pseudoRandom()) * 1;
+      float scale = 1.0f + static_cast<float>(matrix::pseudoRandom()) * 1;
       float xRadius = fishRadius + static_cast<float>(matrix::pseudoRandom()) *
                                        fishRadiusRange;
       float yRadius =
@@ -932,9 +932,9 @@ void Aquarium::updateFishes() {
       float zRadius = fishRadius + static_cast<float>(matrix::pseudoRandom()) *
                                        fishRadiusRange;
       float fishSpeedClock = fishClock * speed;
-      float xClock         = fishSpeedClock * fishXClock;
-      float yClock         = fishSpeedClock * fishYClock;
-      float zClock         = fishSpeedClock * fishZClock;
+      float xClock = fishSpeedClock * fishXClock;
+      float yClock = fishSpeedClock * fishYClock;
+      float zClock = fishSpeedClock * fishZClock;
 
       model->updateFishPerUniforms(
           sin(xClock) * xRadius, sin(yClock) * yRadius + fishHeight,

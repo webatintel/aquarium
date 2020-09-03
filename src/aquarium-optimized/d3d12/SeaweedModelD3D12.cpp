@@ -14,24 +14,24 @@ SeaweedModelD3D12::SeaweedModelD3D12(Context *context,
                                      bool blend)
     : SeaweedModel(type, name, blend), instance(0) {
   mContextD3D12 = static_cast<ContextD3D12 *>(context);
-  mAquarium     = aquarium;
+  mAquarium = aquarium;
 
-  mLightFactorUniforms.shininess      = 50.0f;
+  mLightFactorUniforms.shininess = 50.0f;
   mLightFactorUniforms.specularFactor = 1.0f;
 }
 
 void SeaweedModelD3D12::init() {
   mProgramD3D12 = static_cast<ProgramD3D12 *>(mProgram);
 
-  mDiffuseTexture    = static_cast<TextureD3D12 *>(textureMap["diffuse"]);
-  mNormalTexture     = static_cast<TextureD3D12 *>(textureMap["normalMap"]);
+  mDiffuseTexture = static_cast<TextureD3D12 *>(textureMap["diffuse"]);
+  mNormalTexture = static_cast<TextureD3D12 *>(textureMap["normalMap"]);
   mReflectionTexture = static_cast<TextureD3D12 *>(textureMap["reflectionMap"]);
-  mSkyboxTexture     = static_cast<TextureD3D12 *>(textureMap["skybox"]);
+  mSkyboxTexture = static_cast<TextureD3D12 *>(textureMap["skybox"]);
 
   mPositionBuffer = static_cast<BufferD3D12 *>(bufferMap["position"]);
-  mNormalBuffer   = static_cast<BufferD3D12 *>(bufferMap["normal"]);
+  mNormalBuffer = static_cast<BufferD3D12 *>(bufferMap["normal"]);
   mTexCoordBuffer = static_cast<BufferD3D12 *>(bufferMap["texCoord"]);
-  mIndicesBuffer  = static_cast<BufferD3D12 *>(bufferMap["indices"]);
+  mIndicesBuffer = static_cast<BufferD3D12 *>(bufferMap["indices"]);
 
   mVertexBufferView[0] = mPositionBuffer->mVertexBufferView;
   mVertexBufferView[1] = mNormalBuffer->mVertexBufferView;
@@ -153,7 +153,7 @@ void SeaweedModelD3D12::draw() {
 void SeaweedModelD3D12::updatePerInstanceUniforms(
     const WorldUniforms &worldUniforms) {
   mWorldUniformPer.worldUniforms[instance] = worldUniforms;
-  mSeaweedPer.seaweed[instance].time       = mAquarium->g.mclock + instance;
+  mSeaweedPer.seaweed[instance].time = mAquarium->g.mclock + instance;
 
   instance++;
 }

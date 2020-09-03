@@ -18,10 +18,6 @@ IndentCaseLabels: false
 # Right-align pointers and references
 PointerAlignment: Right
 
-# AQUARIUM likes to align things as much as possible.
-AlignOperands: true
-AlignConsecutiveAssignments: true
-
 # Use 2 space negative offset for access modifiers
 AccessModifierOffset: -2
 

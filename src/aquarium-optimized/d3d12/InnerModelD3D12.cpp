@@ -15,25 +15,25 @@ InnerModelD3D12::InnerModelD3D12(Context *context,
     : Model(type, name, blend) {
   mContextD3D12 = static_cast<ContextD3D12 *>(context);
 
-  mInnerUniforms.eta             = 1.0f;
-  mInnerUniforms.tankColorFudge  = 0.796f;
+  mInnerUniforms.eta = 1.0f;
+  mInnerUniforms.tankColorFudge = 0.796f;
   mInnerUniforms.refractionFudge = 3.0f;
 }
 
 void InnerModelD3D12::init() {
   mProgramD3D12 = static_cast<ProgramD3D12 *>(mProgram);
 
-  mDiffuseTexture    = static_cast<TextureD3D12 *>(textureMap["diffuse"]);
-  mNormalTexture     = static_cast<TextureD3D12 *>(textureMap["normalMap"]);
+  mDiffuseTexture = static_cast<TextureD3D12 *>(textureMap["diffuse"]);
+  mNormalTexture = static_cast<TextureD3D12 *>(textureMap["normalMap"]);
   mReflectionTexture = static_cast<TextureD3D12 *>(textureMap["reflectionMap"]);
-  mSkyboxTexture     = static_cast<TextureD3D12 *>(textureMap["skybox"]);
+  mSkyboxTexture = static_cast<TextureD3D12 *>(textureMap["skybox"]);
 
   mPositionBuffer = static_cast<BufferD3D12 *>(bufferMap["position"]);
-  mNormalBuffer   = static_cast<BufferD3D12 *>(bufferMap["normal"]);
+  mNormalBuffer = static_cast<BufferD3D12 *>(bufferMap["normal"]);
   mTexCoordBuffer = static_cast<BufferD3D12 *>(bufferMap["texCoord"]);
-  mTangentBuffer  = static_cast<BufferD3D12 *>(bufferMap["tangent"]);
+  mTangentBuffer = static_cast<BufferD3D12 *>(bufferMap["tangent"]);
   mBiNormalBuffer = static_cast<BufferD3D12 *>(bufferMap["binormal"]);
-  mIndicesBuffer  = static_cast<BufferD3D12 *>(bufferMap["indices"]);
+  mIndicesBuffer = static_cast<BufferD3D12 *>(bufferMap["indices"]);
 
   mVertexBufferView[0] = mPositionBuffer->mVertexBufferView;
   mVertexBufferView[1] = mNormalBuffer->mVertexBufferView;
@@ -58,7 +58,7 @@ void InnerModelD3D12::init() {
       mContextD3D12->CalcConstantBufferByteSize(sizeof(InnerUniforms)),
       mInnerUploadBuffer);
   mInnerView.BufferLocation = mInnerBuffer->GetGPUVirtualAddress();
-  mInnerView.SizeInBytes    = mContextD3D12->CalcConstantBufferByteSize(
+  mInnerView.SizeInBytes = mContextD3D12->CalcConstantBufferByteSize(
       sizeof(InnerUniforms));  // CB size is required to be 256-byte aligned.
   mContextD3D12->buildCbvDescriptor(mInnerView, &mInnerGPUHandle);
   mWorldBuffer = mContextD3D12->createDefaultBuffer(

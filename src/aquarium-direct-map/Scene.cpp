@@ -84,7 +84,7 @@ void Scene::load(const std::string &path, const std::string &name) {
   oss << path << shaderFolder << slash << shaderVersion << slash;
   std::string programPath = oss.str();
 
-  this->url    = modelPath;
+  this->url = modelPath;
   this->loaded = true;
 
   std::ifstream PlacementStream(modelPath, std::ios::in);
@@ -98,7 +98,7 @@ void Scene::load(const std::string &path, const std::string &name) {
     const rapidjson::Value &textures = value["textures"];
     for (rapidjson::Value::ConstMemberIterator itr = textures.MemberBegin();
          itr != textures.MemberEnd(); ++itr) {
-      std::string name  = itr->name.GetString();
+      std::string name = itr->name.GetString();
       std::string image = itr->value.GetString();
 
       if (g_textureMap.find(image) == g_textureMap.end()) {
@@ -112,9 +112,9 @@ void Scene::load(const std::string &path, const std::string &name) {
     const rapidjson::Value &arrays = value["fields"];
     for (rapidjson::Value::ConstMemberIterator itr = arrays.MemberBegin();
          itr != arrays.MemberEnd(); ++itr) {
-      std::string name  = itr->name.GetString();
+      std::string name = itr->name.GetString();
       int numComponents = itr->value["numComponents"].GetInt();
-      std::string type  = itr->value["type"].GetString();
+      std::string type = itr->value["type"].GetString();
 
       if (name == "indices") {
         std::vector<unsigned short> vec;

@@ -17,12 +17,12 @@ FishModelInstancedDrawDawn::FishModelInstancedDrawDawn(Context *context,
     : FishModel(type, name, blend, aquarium), instance(0) {
   mContextDawn = static_cast<ContextDawn *>(context);
 
-  mLightFactorUniforms.shininess      = 5.0f;
+  mLightFactorUniforms.shininess = 5.0f;
   mLightFactorUniforms.specularFactor = 0.3f;
 
   const Fish &fishInfo =
       fishTable[name - MODELNAME::MODELSMALLFISHAINSTANCEDDRAWS];
-  mFishVertexUniforms.fishLength     = fishInfo.fishLength;
+  mFishVertexUniforms.fishLength = fishInfo.fishLength;
   mFishVertexUniforms.fishBendAmount = fishInfo.fishBendAmount;
   mFishVertexUniforms.fishWaveLength = fishInfo.fishWaveLength;
 
@@ -37,17 +37,17 @@ void FishModelInstancedDrawDawn::init() {
 
   mProgramDawn = static_cast<ProgramDawn *>(mProgram);
 
-  mDiffuseTexture    = static_cast<TextureDawn *>(textureMap["diffuse"]);
-  mNormalTexture     = static_cast<TextureDawn *>(textureMap["normalMap"]);
+  mDiffuseTexture = static_cast<TextureDawn *>(textureMap["diffuse"]);
+  mNormalTexture = static_cast<TextureDawn *>(textureMap["normalMap"]);
   mReflectionTexture = static_cast<TextureDawn *>(textureMap["reflectionMap"]);
-  mSkyboxTexture     = static_cast<TextureDawn *>(textureMap["skybox"]);
+  mSkyboxTexture = static_cast<TextureDawn *>(textureMap["skybox"]);
 
   mPositionBuffer = static_cast<BufferDawn *>(bufferMap["position"]);
-  mNormalBuffer   = static_cast<BufferDawn *>(bufferMap["normal"]);
+  mNormalBuffer = static_cast<BufferDawn *>(bufferMap["normal"]);
   mTexCoordBuffer = static_cast<BufferDawn *>(bufferMap["texCoord"]);
-  mTangentBuffer  = static_cast<BufferDawn *>(bufferMap["tangent"]);
+  mTangentBuffer = static_cast<BufferDawn *>(bufferMap["tangent"]);
   mBiNormalBuffer = static_cast<BufferDawn *>(bufferMap["binormal"]);
-  mIndicesBuffer  = static_cast<BufferDawn *>(bufferMap["indices"]);
+  mIndicesBuffer = static_cast<BufferDawn *>(bufferMap["indices"]);
 
   mFishPersBuffer = mContextDawn->createBuffer(
       sizeof(FishPer) * instance,
@@ -58,7 +58,7 @@ void FishModelInstancedDrawDawn::init() {
       mPositionBuffer->getDataSize();
   mVertexStateDescriptor.cAttributes[0].format = wgpu::VertexFormat::Float3;
   mVertexStateDescriptor.cAttributes[0].shaderLocation = 0;
-  mVertexStateDescriptor.cAttributes[0].offset         = 0;
+  mVertexStateDescriptor.cAttributes[0].offset = 0;
   mVertexStateDescriptor.cVertexBuffers[0].attributes =
       &mVertexStateDescriptor.cAttributes[0];
   mVertexStateDescriptor.cVertexBuffers[1].attributeCount = 1;
@@ -66,7 +66,7 @@ void FishModelInstancedDrawDawn::init() {
       mNormalBuffer->getDataSize();
   mVertexStateDescriptor.cAttributes[1].format = wgpu::VertexFormat::Float3;
   mVertexStateDescriptor.cAttributes[1].shaderLocation = 1;
-  mVertexStateDescriptor.cAttributes[1].offset         = 0;
+  mVertexStateDescriptor.cAttributes[1].offset = 0;
   mVertexStateDescriptor.cVertexBuffers[1].attributes =
       &mVertexStateDescriptor.cAttributes[1];
   mVertexStateDescriptor.cVertexBuffers[2].attributeCount = 1;
@@ -74,7 +74,7 @@ void FishModelInstancedDrawDawn::init() {
       mTexCoordBuffer->getDataSize();
   mVertexStateDescriptor.cAttributes[2].format = wgpu::VertexFormat::Float2;
   mVertexStateDescriptor.cAttributes[2].shaderLocation = 2;
-  mVertexStateDescriptor.cAttributes[2].offset         = 0;
+  mVertexStateDescriptor.cAttributes[2].offset = 0;
   mVertexStateDescriptor.cVertexBuffers[2].attributes =
       &mVertexStateDescriptor.cAttributes[2];
   mVertexStateDescriptor.cVertexBuffers[3].attributeCount = 1;
@@ -82,7 +82,7 @@ void FishModelInstancedDrawDawn::init() {
       mTangentBuffer->getDataSize();
   mVertexStateDescriptor.cAttributes[3].format = wgpu::VertexFormat::Float3;
   mVertexStateDescriptor.cAttributes[3].shaderLocation = 3;
-  mVertexStateDescriptor.cAttributes[3].offset         = 0;
+  mVertexStateDescriptor.cAttributes[3].offset = 0;
   mVertexStateDescriptor.cVertexBuffers[3].attributes =
       &mVertexStateDescriptor.cAttributes[3];
   mVertexStateDescriptor.cVertexBuffers[4].attributeCount = 1;
@@ -95,10 +95,10 @@ void FishModelInstancedDrawDawn::init() {
   mVertexStateDescriptor.cVertexBuffers[4].attributes =
       &mVertexStateDescriptor.cAttributes[4];
   mVertexStateDescriptor.cVertexBuffers[5].attributeCount = 4;
-  mVertexStateDescriptor.cVertexBuffers[5].arrayStride    = sizeof(FishPer);
+  mVertexStateDescriptor.cVertexBuffers[5].arrayStride = sizeof(FishPer);
   mVertexStateDescriptor.cAttributes[5].format = wgpu::VertexFormat::Float3;
   mVertexStateDescriptor.cAttributes[5].shaderLocation = 5;
-  mVertexStateDescriptor.cAttributes[5].offset         = 0;
+  mVertexStateDescriptor.cAttributes[5].offset = 0;
   mVertexStateDescriptor.cAttributes[6].format = wgpu::VertexFormat::Float;
   mVertexStateDescriptor.cAttributes[6].shaderLocation = 6;
   mVertexStateDescriptor.cAttributes[6].offset = offsetof(FishPer, scale);
@@ -114,7 +114,7 @@ void FishModelInstancedDrawDawn::init() {
   mVertexStateDescriptor.cVertexBuffers[5].stepMode =
       wgpu::InputStepMode::Instance;
   mVertexStateDescriptor.vertexBufferCount = 6;
-  mVertexStateDescriptor.indexFormat       = wgpu::IndexFormat::Uint16;
+  mVertexStateDescriptor.indexFormat = wgpu::IndexFormat::Uint16;
 
   if (mSkyboxTexture && mReflectionTexture) {
     mGroupLayoutModel = mContextDawn->MakeBindGroupLayout({
@@ -243,22 +243,22 @@ void FishModelInstancedDrawDawn::updateFishPerUniforms(float x,
   mFishPers[index].worldPosition[0] = x;
   mFishPers[index].worldPosition[1] = y;
   mFishPers[index].worldPosition[2] = z;
-  mFishPers[index].nextPosition[0]  = nextX;
-  mFishPers[index].nextPosition[1]  = nextY;
-  mFishPers[index].nextPosition[2]  = nextZ;
-  mFishPers[index].scale            = scale;
-  mFishPers[index].time             = time;
+  mFishPers[index].nextPosition[0] = nextX;
+  mFishPers[index].nextPosition[1] = nextY;
+  mFishPers[index].nextPosition[2] = nextZ;
+  mFishPers[index].scale = scale;
+  mFishPers[index].time = time;
 }
 
 FishModelInstancedDrawDawn::~FishModelInstancedDrawDawn() {
-  mPipeline          = nullptr;
-  mGroupLayoutModel  = nullptr;
-  mGroupLayoutPer    = nullptr;
-  mPipelineLayout    = nullptr;
-  mBindGroupModel    = nullptr;
-  mBindGroupPer      = nullptr;
-  mFishVertexBuffer  = nullptr;
+  mPipeline = nullptr;
+  mGroupLayoutModel = nullptr;
+  mGroupLayoutPer = nullptr;
+  mPipelineLayout = nullptr;
+  mBindGroupModel = nullptr;
+  mBindGroupPer = nullptr;
+  mFishVertexBuffer = nullptr;
   mLightFactorBuffer = nullptr;
-  mFishPersBuffer    = nullptr;
+  mFishPersBuffer = nullptr;
   delete mFishPers;
 }

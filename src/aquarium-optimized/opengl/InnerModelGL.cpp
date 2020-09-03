@@ -23,18 +23,18 @@ InnerModelGL::InnerModelGL(const ContextGL *context,
   mWorldInverseTransposeUniform.first =
       aquarium->worldUniforms.worldInverseTranspose;
 
-  mEtaUniform.first             = 1.0f;
-  mTankColorFudgeUniform.first  = 0.796f;
+  mEtaUniform.first = 1.0f;
+  mTankColorFudgeUniform.first = 0.796f;
   mRefractionFudgeUniform.first = 3.0f;
 
-  mFogPowerUniform.first  = g_fogPower;
-  mFogMultUniform.first   = g_fogMult;
+  mFogPowerUniform.first = g_fogPower;
+  mFogMultUniform.first = g_fogMult;
   mFogOffsetUniform.first = g_fogOffset;
-  mFogColorUniform.first  = aquarium->fogUniforms.fogColor;
+  mFogColorUniform.first = aquarium->fogUniforms.fogColor;
 }
 
 void InnerModelGL::init() {
-  ProgramGL *programGL               = static_cast<ProgramGL *>(mProgram);
+  ProgramGL *programGL = static_cast<ProgramGL *>(mProgram);
   mWorldViewProjectionUniform.second = mContextGL->getUniformLocation(
       programGL->getProgramId(), "worldViewProjection");
   mWorldUniform.second =

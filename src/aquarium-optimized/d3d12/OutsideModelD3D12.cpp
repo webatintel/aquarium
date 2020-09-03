@@ -14,24 +14,24 @@ OutsideModelD3D12::OutsideModelD3D12(Context *context,
     : Model(type, name, blend) {
   mContextD3D12 = static_cast<ContextD3D12 *>(context);
 
-  mLightFactorUniforms.shininess      = 50.0f;
+  mLightFactorUniforms.shininess = 50.0f;
   mLightFactorUniforms.specularFactor = 0.0f;
 }
 
 void OutsideModelD3D12::init() {
   mProgramD3D12 = static_cast<ProgramD3D12 *>(mProgram);
 
-  mDiffuseTexture    = static_cast<TextureD3D12 *>(textureMap["diffuse"]);
-  mNormalTexture     = static_cast<TextureD3D12 *>(textureMap["normalMap"]);
+  mDiffuseTexture = static_cast<TextureD3D12 *>(textureMap["diffuse"]);
+  mNormalTexture = static_cast<TextureD3D12 *>(textureMap["normalMap"]);
   mReflectionTexture = static_cast<TextureD3D12 *>(textureMap["reflectionMap"]);
-  mSkyboxTexture     = static_cast<TextureD3D12 *>(textureMap["skybox"]);
+  mSkyboxTexture = static_cast<TextureD3D12 *>(textureMap["skybox"]);
 
   mPositionBuffer = static_cast<BufferD3D12 *>(bufferMap["position"]);
-  mNormalBuffer   = static_cast<BufferD3D12 *>(bufferMap["normal"]);
+  mNormalBuffer = static_cast<BufferD3D12 *>(bufferMap["normal"]);
   mTexCoordBuffer = static_cast<BufferD3D12 *>(bufferMap["texCoord"]);
-  mTangentBuffer  = static_cast<BufferD3D12 *>(bufferMap["tangent"]);
+  mTangentBuffer = static_cast<BufferD3D12 *>(bufferMap["tangent"]);
   mBiNormalBuffer = static_cast<BufferD3D12 *>(bufferMap["binormal"]);
-  mIndicesBuffer  = static_cast<BufferD3D12 *>(bufferMap["indices"]);
+  mIndicesBuffer = static_cast<BufferD3D12 *>(bufferMap["indices"]);
 
   mVertexBufferView[0] = mPositionBuffer->mVertexBufferView;
   mVertexBufferView[1] = mNormalBuffer->mVertexBufferView;

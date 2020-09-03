@@ -54,7 +54,7 @@ void RingBufferDawn::MapWriteCallback(WGPUBufferMapAsyncStatus status,
   ASSERT(data != nullptr);
 
   RingBufferDawn *ringBuffer = static_cast<RingBufferDawn *>(userdata);
-  ringBuffer->mappedData     = data;
+  ringBuffer->mappedData = data;
 
   ringBuffer->mBufferManager->mMappedBufferList.push(ringBuffer);
 }
@@ -103,7 +103,7 @@ RingBufferDawn *BufferManagerDawn::allocate(size_t size, size_t *offset) {
   // deal with the problem now.
 
   RingBufferDawn *ringBuffer = nullptr;
-  size_t cur_offset          = 0;
+  size_t cur_offset = 0;
   if (mSync) {
     // Upper limit
     if (mUsedSize + size > mBufferPoolSize) {
@@ -155,7 +155,7 @@ RingBufferDawn *BufferManagerDawn::allocate(size_t size, size_t *offset) {
 
     // allocate size in the ring buffer
     cur_offset = ringBuffer->allocate(size);
-    *offset    = cur_offset;
+    *offset = cur_offset;
   }
 
   return ringBuffer;

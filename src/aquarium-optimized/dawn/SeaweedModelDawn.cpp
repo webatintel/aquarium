@@ -14,43 +14,43 @@ SeaweedModelDawn::SeaweedModelDawn(Context *context,
                                    bool blend)
     : SeaweedModel(type, name, blend), instance(0) {
   mContextDawn = static_cast<ContextDawn *>(context);
-  mAquarium    = aquarium;
+  mAquarium = aquarium;
 
-  mLightFactorUniforms.shininess      = 50.0f;
+  mLightFactorUniforms.shininess = 50.0f;
   mLightFactorUniforms.specularFactor = 1.0f;
 }
 
 SeaweedModelDawn::~SeaweedModelDawn() {
-  mPipeline          = nullptr;
-  mGroupLayoutModel  = nullptr;
-  mGroupLayoutPer    = nullptr;
-  mPipelineLayout    = nullptr;
-  mBindGroupModel    = nullptr;
-  mBindGroupPer      = nullptr;
+  mPipeline = nullptr;
+  mGroupLayoutModel = nullptr;
+  mGroupLayoutPer = nullptr;
+  mPipelineLayout = nullptr;
+  mBindGroupModel = nullptr;
+  mBindGroupPer = nullptr;
   mLightFactorBuffer = nullptr;
-  mViewBuffer        = nullptr;
-  mTimeBuffer        = nullptr;
+  mViewBuffer = nullptr;
+  mTimeBuffer = nullptr;
 }
 
 void SeaweedModelDawn::init() {
   mProgramDawn = static_cast<ProgramDawn *>(mProgram);
 
-  mDiffuseTexture    = static_cast<TextureDawn *>(textureMap["diffuse"]);
-  mNormalTexture     = static_cast<TextureDawn *>(textureMap["normalMap"]);
+  mDiffuseTexture = static_cast<TextureDawn *>(textureMap["diffuse"]);
+  mNormalTexture = static_cast<TextureDawn *>(textureMap["normalMap"]);
   mReflectionTexture = static_cast<TextureDawn *>(textureMap["reflectionMap"]);
-  mSkyboxTexture     = static_cast<TextureDawn *>(textureMap["skybox"]);
+  mSkyboxTexture = static_cast<TextureDawn *>(textureMap["skybox"]);
 
   mPositionBuffer = static_cast<BufferDawn *>(bufferMap["position"]);
-  mNormalBuffer   = static_cast<BufferDawn *>(bufferMap["normal"]);
+  mNormalBuffer = static_cast<BufferDawn *>(bufferMap["normal"]);
   mTexCoordBuffer = static_cast<BufferDawn *>(bufferMap["texCoord"]);
-  mIndicesBuffer  = static_cast<BufferDawn *>(bufferMap["indices"]);
+  mIndicesBuffer = static_cast<BufferDawn *>(bufferMap["indices"]);
 
   mVertexStateDescriptor.cVertexBuffers[0].attributeCount = 1;
   mVertexStateDescriptor.cVertexBuffers[0].arrayStride =
       mPositionBuffer->getDataSize();
   mVertexStateDescriptor.cAttributes[0].format = wgpu::VertexFormat::Float3;
   mVertexStateDescriptor.cAttributes[0].shaderLocation = 0;
-  mVertexStateDescriptor.cAttributes[0].offset         = 0;
+  mVertexStateDescriptor.cAttributes[0].offset = 0;
   mVertexStateDescriptor.cVertexBuffers[0].attributes =
       &mVertexStateDescriptor.cAttributes[0];
   mVertexStateDescriptor.cVertexBuffers[1].attributeCount = 1;
@@ -58,7 +58,7 @@ void SeaweedModelDawn::init() {
       mNormalBuffer->getDataSize();
   mVertexStateDescriptor.cAttributes[1].format = wgpu::VertexFormat::Float3;
   mVertexStateDescriptor.cAttributes[1].shaderLocation = 1;
-  mVertexStateDescriptor.cAttributes[1].offset         = 0;
+  mVertexStateDescriptor.cAttributes[1].offset = 0;
   mVertexStateDescriptor.cVertexBuffers[1].attributes =
       &mVertexStateDescriptor.cAttributes[1];
   mVertexStateDescriptor.cVertexBuffers[2].attributeCount = 1;
@@ -66,11 +66,11 @@ void SeaweedModelDawn::init() {
       mTexCoordBuffer->getDataSize();
   mVertexStateDescriptor.cAttributes[2].format = wgpu::VertexFormat::Float2;
   mVertexStateDescriptor.cAttributes[2].shaderLocation = 2;
-  mVertexStateDescriptor.cAttributes[2].offset         = 0;
+  mVertexStateDescriptor.cAttributes[2].offset = 0;
   mVertexStateDescriptor.cVertexBuffers[2].attributes =
       &mVertexStateDescriptor.cAttributes[2];
   mVertexStateDescriptor.vertexBufferCount = 3;
-  mVertexStateDescriptor.indexFormat       = wgpu::IndexFormat::Uint16;
+  mVertexStateDescriptor.indexFormat = wgpu::IndexFormat::Uint16;
 
   mGroupLayoutModel = mContextDawn->MakeBindGroupLayout({
       {0, wgpu::ShaderStage::Fragment, wgpu::BindingType::UniformBuffer},
@@ -159,7 +159,7 @@ void SeaweedModelDawn::draw() {
 void SeaweedModelDawn::updatePerInstanceUniforms(
     const WorldUniforms &worldUniforms) {
   mWorldUniformPer.worldUniforms[instance] = worldUniforms;
-  mSeaweedPer.time[instance]               = mAquarium->g.mclock + instance;
+  mSeaweedPer.time[instance] = mAquarium->g.mclock + instance;
 
   instance++;
 }

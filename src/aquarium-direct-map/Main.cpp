@@ -57,8 +57,8 @@ std::string mPath;
 int g_numFish;
 
 // Variables calculate time
-float then     = 0.0f;
-float mClock   = 0.0f;
+float then = 0.0f;
+float mClock = 0.0f;
 float eyeClock = 0.0f;
 
 const G_ui_per g_ui[] = {{"globals", "speed", 1.0f, 4.0f},
@@ -192,41 +192,41 @@ Fish g_fishTable[] = {{"SmallFishA",
 
 void setGenericConstMatrix(GenericConst *genericConst) {
   genericConst->viewProjection = &viewProjection;
-  genericConst->viewInverse    = &viewInverse;
-  genericConst->lightWorldPos  = &lightWorldPos;
-  genericConst->lightColor     = &lightColor;
-  genericConst->specular       = &specular;
-  genericConst->ambient        = &ambient;
-  genericConst->fogColor       = &fogColor;
+  genericConst->viewInverse = &viewInverse;
+  genericConst->lightWorldPos = &lightWorldPos;
+  genericConst->lightColor = &lightColor;
+  genericConst->specular = &specular;
+  genericConst->ambient = &ambient;
+  genericConst->fogColor = &fogColor;
 }
 
 void setGenericPer(GenericPer *genericPer) {
-  genericPer->world                 = &world;
-  genericPer->worldViewProjection   = &worldViewProjection;
-  genericPer->worldInverse          = &worldInverse;
+  genericPer->world = &world;
+  genericPer->worldViewProjection = &worldViewProjection;
+  genericPer->worldInverse = &worldInverse;
   genericPer->worldInverseTranspose = &worldInverseTraspose;
 }
 
 void initializeUniforms() {
-  sandConst.shininess      = sand_shininess;
+  sandConst.shininess = sand_shininess;
   sandConst.specularFactor = sand_specularFactor;
 
-  genericConst.shininess      = generic_shininess;
+  genericConst.shininess = generic_shininess;
   genericConst.specularFactor = generic_specularFactor;
 
-  outsideConst.shininess      = outside_shininess;
+  outsideConst.shininess = outside_shininess;
   outsideConst.specularFactor = outside_shininess;
 
-  seaweedConst.shininess      = seaweed_shininess;
+  seaweedConst.shininess = seaweed_shininess;
   seaweedConst.specularFactor = seaweed_specularFactor;
 
-  innerConst.shininess       = inner_shininess;
-  innerConst.specularFactor  = inner_specularFactor;
-  innerConst.eta             = g_viewSettings.eta;
+  innerConst.shininess = inner_shininess;
+  innerConst.specularFactor = inner_specularFactor;
+  innerConst.eta = g_viewSettings.eta;
   innerConst.refractionFudge = g_viewSettings.refractionFudge;
-  innerConst.tankColorFudge  = g_viewSettings.tankColorFudge;
+  innerConst.tankColorFudge = g_viewSettings.tankColorFudge;
 
-  fishConst.genericConst.shininess      = fish_shininess;
+  fishConst.genericConst.shininess = fish_shininess;
   fishConst.genericConst.specularFactor = fish_specularFactor;
 
   setGenericConstMatrix(&sandConst);
@@ -275,7 +275,7 @@ void LoadPlacement() {
   }
 
   for (rapidjson::SizeType i = 0; i < objects.Size(); ++i) {
-    const rapidjson::Value &name        = objects[i]["name"];
+    const rapidjson::Value &name = objects[i]["name"];
     const rapidjson::Value &worldMatrix = objects[i]["worldMatrix"];
     ASSERT(worldMatrix.IsArray() && worldMatrix.Size() == 16);
 
@@ -334,22 +334,22 @@ void getCurrentPath() {
   TCHAR temp[200];
   GetModuleFileName(NULL, temp, MAX_PATH);
   std::wstring ws(temp);
-  mPath       = std::string(ws.begin(), ws.end());
+  mPath = std::string(ws.begin(), ws.end());
   size_t nPos = mPath.find_last_of(slash);
-  mPath       = mPath.substr(0, nPos) + slash + ".." + slash + ".." + slash;
+  mPath = mPath.substr(0, nPos) + slash + ".." + slash + ".." + slash;
 #elif __APPLE__
   char temp[200];
   uint32_t size = sizeof(temp);
   _NSGetExecutablePath(temp, &size);
-  mPath    = std::string(temp);
+  mPath = std::string(temp);
   int nPos = mPath.find_last_of(slash);
-  mPath    = mPath.substr(0, nPos) + slash + ".." + slash + ".." + slash;
+  mPath = mPath.substr(0, nPos) + slash + ".." + slash + ".." + slash;
 #else
   char temp[200];
   readlink("/proc/self/exe", temp, sizeof(temp));
-  mPath    = std::string(temp);
+  mPath = std::string(temp);
   int nPos = mPath.find_last_of(slash);
-  mPath    = mPath.substr(0, nPos) + slash + ".." + slash + ".." + slash;
+  mPath = mPath.substr(0, nPos) + slash + ".." + slash + ".." + slash;
 #endif
 }
 
@@ -379,8 +379,8 @@ bool initialize(int argc, char **argv) {
 
   // Calculate fish count for each float of fish
   std::string floats[3] = {"Big", "Medium", "Small"};
-  int totalFish         = g_numFish;
-  int numLeft           = totalFish;
+  int totalFish = g_numFish;
+  int numLeft = totalFish;
   for (auto &type : floats) {
     for (auto &fishInfo : g_fishTable) {
       std::string &fishName = fishInfo.name;
@@ -400,7 +400,7 @@ bool initialize(int argc, char **argv) {
           numfloat = min(numLeft, numFishLeftBig);
         }
       }
-      numLeft      = numLeft - numfloat;
+      numLeft = numLeft - numfloat;
       fishInfo.num = numfloat;
     }
   }
@@ -431,10 +431,10 @@ int main(int argc, char **argv) {
   glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
   glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
-  GLFWmonitor *pMonitor   = glfwGetPrimaryMonitor();
+  GLFWmonitor *pMonitor = glfwGetPrimaryMonitor();
   const GLFWvidmode *mode = glfwGetVideoMode(pMonitor);
-  clientWidth             = mode->width;
-  clientHeight            = mode->height;
+  clientWidth = mode->width;
+  clientHeight = mode->height;
 
   window = glfwCreateWindow(clientWidth, clientHeight, "Aquarium", NULL, NULL);
   if (window == NULL) {
@@ -485,13 +485,13 @@ void DrawGroup(const std::multimap<std::string, std::vector<float>> &group,
                const GenericConst &constUniforms,
                GenericPer *perUniforms) {
   Model *currentModel = nullptr;
-  int ii              = 0;
+  int ii = 0;
   for (auto &object : group) {
     if (g_scenes.find(object.first) == g_scenes.end()) {
       continue;
     }
     auto &scene = g_scenes[object.first];
-    auto &info  = g_sceneInfoByName[object.first];
+    auto &info = g_sceneInfoByName[object.first];
 
     if (info.blend) {
       glEnable(GL_BLEND);
@@ -558,19 +558,19 @@ void render() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
   float nearPlane = 1;
-  float farPlane  = 25000.0f;
+  float farPlane = 25000.0f;
   float aspect =
       static_cast<float>(clientWidth) / static_cast<float>(clientHeight);
   float top =
       tan(matrix::degToRad(g_viewSettings.fieldOfView * g_fovFudge) * 0.5f) *
       nearPlane;
   float bottom = -top;
-  float left   = aspect * bottom;
-  float right  = aspect * top;
-  float width  = abs(right - left);
+  float left = aspect * bottom;
+  float right = aspect * top;
+  float width = abs(right - left);
   float height = abs(top - bottom);
-  float xOff   = width * g_net_offset[0] * g_net_offsetMult;
-  float yOff   = height * g_net_offset[1] * g_net_offsetMult;
+  float xOff = width * g_net_offset[0] * g_net_offsetMult;
+  float yOff = height * g_net_offset[1] * g_net_offsetMult;
 
   matrix::frustum(projection, left + xOff, right + xOff, bottom + yOff,
                   top + yOff, nearPlane, farPlane);
@@ -579,7 +579,7 @@ void render() {
   matrix::mulMatrixMatrix4(viewProjection, view, projection);
   matrix::inverse4(viewProjectionInverse, viewProjection);
 
-  skyView     = view;
+  skyView = view;
   skyView[12] = 0.0;
   skyView[13] = 0.0;
   skyView[14] = 0.0;
@@ -603,21 +603,21 @@ void render() {
   glDepthMask(true);
 
   if (g_fog) {
-    genericConst.fogPower            = g_viewSettings.fogPower;
-    genericConst.fogMult             = g_viewSettings.fogMult;
-    genericConst.fogOffset           = g_viewSettings.fogOffset;
-    fishConst.genericConst.fogPower  = g_viewSettings.fogPower;
-    fishConst.genericConst.fogMult   = g_viewSettings.fogMult;
+    genericConst.fogPower = g_viewSettings.fogPower;
+    genericConst.fogMult = g_viewSettings.fogMult;
+    genericConst.fogOffset = g_viewSettings.fogOffset;
+    fishConst.genericConst.fogPower = g_viewSettings.fogPower;
+    fishConst.genericConst.fogMult = g_viewSettings.fogMult;
     fishConst.genericConst.fogOffset = g_viewSettings.fogOffset;
-    innerConst.fogPower              = g_viewSettings.fogPower;
-    innerConst.fogMult               = g_viewSettings.fogMult;
-    innerConst.fogOffset             = g_viewSettings.fogOffset;
-    seaweedConst.fogPower            = g_viewSettings.fogPower;
-    seaweedConst.fogMult             = g_viewSettings.fogMult;
-    seaweedConst.fogOffset           = g_viewSettings.fogOffset;
-    fogColor[0]                      = g_viewSettings.fogRed;
-    fogColor[1]                      = g_viewSettings.fogGreen;
-    fogColor[2]                      = g_viewSettings.fogBlue;
+    innerConst.fogPower = g_viewSettings.fogPower;
+    innerConst.fogMult = g_viewSettings.fogMult;
+    innerConst.fogOffset = g_viewSettings.fogOffset;
+    seaweedConst.fogPower = g_viewSettings.fogPower;
+    seaweedConst.fogMult = g_viewSettings.fogMult;
+    seaweedConst.fogOffset = g_viewSettings.fogOffset;
+    fogColor[0] = g_viewSettings.fogRed;
+    fogColor[1] = g_viewSettings.fogGreen;
+    fogColor[2] = g_viewSettings.fogBlue;
   }
 
   // Draw Scene
@@ -629,28 +629,28 @@ void render() {
   glEnable(GL_BLEND);
   for (auto &fishInfo : g_fishTable) {
     std::string &fishName = fishInfo.name;
-    int numFish           = fishInfo.num;
+    int numFish = fishInfo.num;
 
     Scene *scene = g_scenes[fishName];
     if (scene->loaded) {
-      Model *fish             = scene->getModels()[0];
-      auto &f                 = g["fish"];
+      Model *fish = scene->getModels()[0];
+      auto &f = g["fish"];
       fishConst.constUniforms = fishInfo.constUniforms;
       fish->prepareForDraw(fishConst);
-      float fishBaseClock   = mClock * f["fishSpeed"];
-      float fishRadius      = fishInfo.radius;
+      float fishBaseClock = mClock * f["fishSpeed"];
+      float fishRadius = fishInfo.radius;
       float fishRadiusRange = fishInfo.radiusRange;
-      float fishSpeed       = fishInfo.speed;
-      float fishSpeedRange  = fishInfo.speedRange;
-      float fishTailSpeed   = fishInfo.tailSpeed * f["fishTailSpeed"];
-      float fishOffset      = f["fishOffset"];
+      float fishSpeed = fishInfo.speed;
+      float fishSpeedRange = fishInfo.speedRange;
+      float fishTailSpeed = fishInfo.tailSpeed * f["fishTailSpeed"];
+      float fishOffset = f["fishOffset"];
       // float fishClockSpeed                 = f["fishSpeed"];
-      float fishHeight      = f["fishHeight"] + fishInfo.heightOffset;
+      float fishHeight = f["fishHeight"] + fishInfo.heightOffset;
       float fishHeightRange = f["fishHeightRange"] * fishInfo.heightRange;
-      float fishXClock      = f["fishXClock"];
-      float fishYClock      = f["fishYClock"];
-      float fishZClock      = f["fishZClock"];
-      std::vector<float> &fishPosition     = fishPer.worldPosition;
+      float fishXClock = f["fishXClock"];
+      float fishYClock = f["fishYClock"];
+      float fishZClock = f["fishZClock"];
+      std::vector<float> &fishPosition = fishPer.worldPosition;
       std::vector<float> &fishNextPosition = fishPer.nextPosition;
       for (int ii = 0; ii < numFish; ++ii) {
         float fishClock = fishBaseClock + ii * fishOffset;
@@ -666,17 +666,17 @@ void render() {
             fishRadius +
             static_cast<float>(matrix::pseudoRandom()) * fishRadiusRange;
         float fishSpeedClock = fishClock * speed;
-        float xClock         = fishSpeedClock * fishXClock;
-        float yClock         = fishSpeedClock * fishYClock;
-        float zClock         = fishSpeedClock * fishZClock;
+        float xClock = fishSpeedClock * fishXClock;
+        float yClock = fishSpeedClock * fishYClock;
+        float zClock = fishSpeedClock * fishZClock;
 
-        fishPosition[0]     = sin(xClock) * xRadius;
-        fishPosition[1]     = sin(yClock) * yRadius + fishHeight;
-        fishPosition[2]     = cos(zClock) * zRadius;
+        fishPosition[0] = sin(xClock) * xRadius;
+        fishPosition[1] = sin(yClock) * yRadius + fishHeight;
+        fishPosition[2] = cos(zClock) * zRadius;
         fishNextPosition[0] = sin(xClock - 0.04f) * xRadius;
         fishNextPosition[1] = sin(yClock - 0.01f) * yRadius + fishHeight;
         fishNextPosition[2] = cos(zClock - 0.04f) * zRadius;
-        fishPer.scale       = scale;
+        fishPer.scale = scale;
 
         fishPer.time =
             fmod((mClock + ii * g_tailOffsetMult) * fishTailSpeed * speed,

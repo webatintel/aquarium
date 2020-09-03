@@ -16,16 +16,16 @@ SeaweedModelGL::SeaweedModelGL(const ContextGL *context,
   mViewInverseUniform.first = aquarium->lightWorldPositionUniform.viewInverse;
   mLightWorldPosUniform.first =
       aquarium->lightWorldPositionUniform.lightWorldPos;
-  mLightColorUniform.first     = aquarium->lightUniforms.lightColor;
-  mSpecularUniform.first       = aquarium->lightUniforms.specular;
-  mShininessUniform.first      = 50.0f;
+  mLightColorUniform.first = aquarium->lightUniforms.lightColor;
+  mSpecularUniform.first = aquarium->lightUniforms.specular;
+  mShininessUniform.first = 50.0f;
   mSpecularFactorUniform.first = 1.0f;
-  mAmbientUniform.first        = aquarium->lightUniforms.ambient;
-  mWorldUniform.first          = aquarium->worldUniforms.world;
-  mFogPowerUniform.first       = g_fogPower;
-  mFogMultUniform.first        = g_fogMult;
-  mFogOffsetUniform.first      = g_fogOffset;
-  mFogColorUniform.first       = aquarium->fogUniforms.fogColor;
+  mAmbientUniform.first = aquarium->lightUniforms.ambient;
+  mWorldUniform.first = aquarium->worldUniforms.world;
+  mFogPowerUniform.first = g_fogPower;
+  mFogMultUniform.first = g_fogMult;
+  mFogOffsetUniform.first = g_fogOffset;
+  mFogColorUniform.first = aquarium->fogUniforms.fogColor;
   mViewProjectionUniform.first =
       aquarium->lightWorldPositionUniform.viewProjection;
 }

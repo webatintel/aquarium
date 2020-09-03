@@ -109,7 +109,7 @@ void Model::drawFunc() {
 
   if (buffers.find("indices") != buffers.end()) {
     totalComponents = buffers["indices"]->getTotalComponents();
-    GLenum type     = buffers["indices"]->getType();
+    GLenum type = buffers["indices"]->getType();
     glDrawElements(mode, totalComponents, type, 0);
   } else {
     totalComponents = buffers["positions"]->getNumElements();

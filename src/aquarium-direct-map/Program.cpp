@@ -125,7 +125,7 @@ GLuint Program::LoadProgram(const std::string &VertexShaderCode,
                             const std::string &FragmentShaderCode) {
 
   // Create the shaders
-  GLuint VertexShaderID   = glCreateShader(GL_VERTEX_SHADER);
+  GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
   GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
   GLint Result = GL_FALSE;
@@ -191,7 +191,7 @@ void Program::setUniform(const std::string &name, float v) {
     return;
   }
   Uniform *uniform = uniforms[name];
-  GLint loc        = uniform->getIndex();
+  GLint loc = uniform->getIndex();
   ASSERT(uniform->getType() == GL_FLOAT);
   glUniform1f(loc, v);
 
@@ -204,8 +204,8 @@ void Program::setUniform(const std::string &name, const std::vector<float> &v) {
   }
 
   Uniform *uniform = uniforms[name];
-  GLenum type      = uniform->getType();
-  GLint loc        = uniform->getIndex();
+  GLenum type = uniform->getType();
+  GLint loc = uniform->getIndex();
 
   switch (type) {
   case GL_FLOAT_VEC4: {

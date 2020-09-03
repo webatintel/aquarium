@@ -29,13 +29,13 @@ void Context::renderImgui(
     ImGui::Begin("Option Window", &show_option_window, window_flags);
 
     ImGui::Text("Number of Fish");
-    static int selected  = -1;
+    static int selected = -1;
     int fishSelection[6] = {1, 10000, 20000, 30000, 50000, 100000};
     char buf[6][32];
     for (int n = 0; n < 6; n++) {
       sprintf(buf[n], "%d", fishSelection[n]);
       if (ImGui::Selectable(buf[n], selected == n)) {
-        selected   = n;
+        selected = n;
         *fishCount = fishSelection[selected];
         memset(fishCountInputBuffer, 0, 64);
       }
