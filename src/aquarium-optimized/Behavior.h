@@ -12,14 +12,11 @@
 
 enum UNIFORMNAME : short;
 
-class Behavior
-{
+class Behavior {
 public:
   Behavior() {}
   Behavior(int frame, std::string &op, int count)
-      : mFrame(frame), mOp(op), mCount(count)
-  {
-  }
+      : mFrame(frame), mOp(op), mCount(count) {}
 
   int getFrame() const { return mFrame; }
   const std::string &getOp() const { return mOp; }

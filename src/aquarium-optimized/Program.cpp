@@ -9,8 +9,7 @@
 
 #include <fstream>
 
-void Program::loadProgram()
-{
+void Program::loadProgram() {
   std::ifstream VertexShaderStream(mVId, std::ios::in);
   VertexShaderCode =
       std::string((std::istreambuf_iterator<char>(VertexShaderStream)),

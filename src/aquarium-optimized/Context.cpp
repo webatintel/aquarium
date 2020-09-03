@@ -17,13 +17,11 @@
 void Context::renderImgui(
     const FPSTimer &fpsTimer,
     int *fishCount,
-    std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> *toggleBitset)
-{
+    std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> *toggleBitset) {
   ImGui_ImplGlfw_NewFrame();
   ImGui::NewFrame();
 
-  if (show_option_window)
-  {
+  if (show_option_window) {
     ImGui::SetNextWindowPos(ImVec2(500, 30), ImGuiCond_Appearing);
     ImGui::SetNextWindowSize(ImVec2(300, 500), ImGuiCond_Appearing);
 
@@ -34,11 +32,9 @@ void Context::renderImgui(
     static int selected  = -1;
     int fishSelection[6] = {1, 10000, 20000, 30000, 50000, 100000};
     char buf[6][32];
-    for (int n = 0; n < 6; n++)
-    {
+    for (int n = 0; n < 6; n++) {
       sprintf(buf[n], "%d", fishSelection[n]);
-      if (ImGui::Selectable(buf[n], selected == n))
-      {
+      if (ImGui::Selectable(buf[n], selected == n)) {
         selected   = n;
         *fishCount = fishSelection[selected];
         memset(fishCountInputBuffer, 0, 64);
@@ -50,8 +46,7 @@ void Context::renderImgui(
                      ImGuiInputTextFlags_CharsDecimal);
     int inputFishCount = strtol(fishCountInputBuffer, &pNext, 10);
 
-    if (inputFishCount != 0)
-    {
+    if (inputFishCount != 0) {
       *fishCount = inputFishCount;
     }
 
@@ -79,54 +74,38 @@ void Context::renderImgui(
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
                 1000.0f / fpsTimer.getAverageFPS(), fpsTimer.getAverageFPS());
 
-    if (mMSAASampleCount > 1)
-    {
+    if (mMSAASampleCount > 1) {
       ImGui::Text("MSAA: ON, Sample Count: %d", mMSAASampleCount);
-    }
-    else
-    {
+    } else {
       ImGui::Text("MSAA: OFF");
     }
 
-    if (toggleBitset->test(static_cast<size_t>(TOGGLE::ENABLEALPHABLENDING)))
-    {
+    if (toggleBitset->test(static_cast<size_t>(TOGGLE::ENABLEALPHABLENDING))) {
       ImGui::Text("ALPHABLENDING: ON");
-    }
-    else
-    {
+    } else {
       ImGui::Text("ALPHABLENDING: OFF");
     }
 
     if (toggleBitset->test(
-            static_cast<size_t>(TOGGLE::ENABLEDYNAMICBUFFEROFFSET)))
-    {
+            static_cast<size_t>(TOGGLE::ENABLEDYNAMICBUFFEROFFSET))) {
       ImGui::Text("DBO: ON");
-    }
-    else
-    {
+    } else {
       ImGui::Text("DBO: OFF");
     }
 
-    if (toggleBitset->test(static_cast<size_t>(TOGGLE::ENABLEINSTANCEDDRAWS)))
-    {
+    if (toggleBitset->test(static_cast<size_t>(TOGGLE::ENABLEINSTANCEDDRAWS))) {
       ImGui::Text("INSTANCEDDRAWS: ON");
-    }
-    else
-    {
+    } else {
       ImGui::Text("INSTANCEDDRAWS: OFF");
     }
 
     if (mResourceHelper->getBackendType() ==
             BACKENDTYPE::BACKENDTYPEDAWND3D12 ||
-        mResourceHelper->getBackendType() == BACKENDTYPE::BACKENDTYPED3D12)
-    {
+        mResourceHelper->getBackendType() == BACKENDTYPE::BACKENDTYPED3D12) {
       if (toggleBitset->test(
-              static_cast<size_t>(TOGGLE::DISABLED3D12RENDERPASS)))
-      {
+              static_cast<size_t>(TOGGLE::DISABLED3D12RENDERPASS))) {
         ImGui::Text("RENDERPASS: OFF");
-      }
-      else
-      {
+      } else {
         ImGui::Text("RENDERPASS: ON");
       }
     }
@@ -135,24 +114,18 @@ void Context::renderImgui(
             BACKENDTYPE::BACKENDTYPEDAWND3D12 ||
         mResourceHelper->getBackendType() ==
             BACKENDTYPE::BACKENDTYPEDAWNVULKAN ||
-        mResourceHelper->getBackendType() == BACKENDTYPE::BACKENDTYPEDAWNMETAL)
-    {
+        mResourceHelper->getBackendType() ==
+            BACKENDTYPE::BACKENDTYPEDAWNMETAL) {
       if (toggleBitset->test(
-              static_cast<size_t>(TOGGLE::DISABLEDAWNVALIDATION)))
-      {
+              static_cast<size_t>(TOGGLE::DISABLEDAWNVALIDATION))) {
         ImGui::Text("VALIDATION: OFF");
-      }
-      else
-      {
+      } else {
         ImGui::Text("VALIDATION: ON");
       }
 
-      if (toggleBitset->test(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC)))
-      {
+      if (toggleBitset->test(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC))) {
         ImGui::Text("BUFFERMAPPINGASNC: ON");
-      }
-      else
-      {
+      } else {
         ImGui::Text("BUFFERMAPPINGASNC: OFF");
       }
     }
@@ -165,14 +138,11 @@ void Context::renderImgui(
   ImGui::Render();
 }
 
-void Context::setWindowSize(int windowWidth, int windowHeight)
-{
-  if (windowWidth != 0)
-  {
+void Context::setWindowSize(int windowWidth, int windowHeight) {
+  if (windowWidth != 0) {
     mClientWidth = windowWidth;
   }
-  if (windowHeight != 0)
-  {
+  if (windowHeight != 0) {
     mClientHeight = windowHeight;
   }
 }

@@ -32,28 +32,22 @@ Buffer::Buffer(const AttribBuffer &attribBuffer, GLenum target)
   auto bufferFloat  = attribBuffer.getBufferFloat();
   auto bufferUShort = attribBuffer.getBufferUShort();
 
-  if (attribBuffer.getType() == "Float32Array")
-  {
+  if (attribBuffer.getType() == "Float32Array") {
     mType      = GL_FLOAT;
     mNormalize = false;
     glBufferData(target, sizeof(GLfloat) * bufferFloat.size(),
                  bufferFloat.data(), GL_STATIC_DRAW);
-  }
-  else if (attribBuffer.getType() == "Uint16Array")
-  {
+  } else if (attribBuffer.getType() == "Uint16Array") {
     mType = GL_UNSIGNED_SHORT;
     glBufferData(target, sizeof(GLushort) * bufferUShort.size(),
                  bufferUShort.data(), GL_STATIC_DRAW);
-  }
-  else
-  {
+  } else {
     std::cout << "bindBufferData undefined type." << std::endl;
   }
 
   ASSERT(glGetError() == GL_NO_ERROR);
 }
 
-Buffer::~Buffer()
-{
+Buffer::~Buffer() {
   glDeleteBuffers(1, &mBuf);
 }

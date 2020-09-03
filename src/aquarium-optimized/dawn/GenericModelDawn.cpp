@@ -13,16 +13,14 @@ GenericModelDawn::GenericModelDawn(Context *context,
                                    MODELGROUP type,
                                    MODELNAME name,
                                    bool blend)
-    : Model(type, name, blend), instance(0)
-{
+    : Model(type, name, blend), instance(0) {
   mContextDawn = static_cast<ContextDawn *>(context);
 
   mLightFactorUniforms.shininess      = 50.0f;
   mLightFactorUniforms.specularFactor = 1.0f;
 }
 
-GenericModelDawn::~GenericModelDawn()
-{
+GenericModelDawn::~GenericModelDawn() {
   mPipeline          = nullptr;
   mGroupLayoutModel  = nullptr;
   mGroupLayoutPer    = nullptr;
@@ -33,8 +31,7 @@ GenericModelDawn::~GenericModelDawn()
   mWorldBuffer       = nullptr;
 }
 
-void GenericModelDawn::init()
-{
+void GenericModelDawn::init() {
   mProgramDawn = static_cast<ProgramDawn *>(mProgram);
 
   mDiffuseTexture    = static_cast<TextureDawn *>(textureMap["diffuse"]);
@@ -52,8 +49,7 @@ void GenericModelDawn::init()
   // Generic models use reflection, normal or diffuse shaders, of which
   // groupLayouts are diiferent in texture binding.  MODELGLOBEBASE use diffuse
   // shader though it contains normal and reflection textures.
-  if (mNormalTexture && mName != MODELNAME::MODELGLOBEBASE)
-  {
+  if (mNormalTexture && mName != MODELNAME::MODELGLOBEBASE) {
     mVertexStateDescriptor.cVertexBuffers[0].attributeCount = 1;
     mVertexStateDescriptor.cVertexBuffers[0].arrayStride =
         mPositionBuffer->getDataSize();
@@ -96,9 +92,7 @@ void GenericModelDawn::init()
         &mVertexStateDescriptor.cAttributes[4];
     mVertexStateDescriptor.vertexBufferCount = 5;
     mVertexStateDescriptor.indexFormat       = wgpu::IndexFormat::Uint16;
-  }
-  else
-  {
+  } else {
     mVertexStateDescriptor.cVertexBuffers[0].attributeCount = 1;
     mVertexStateDescriptor.cVertexBuffers[0].arrayStride =
         mPositionBuffer->getDataSize();
@@ -128,8 +122,7 @@ void GenericModelDawn::init()
   }
 
   if (mSkyboxTexture && mReflectionTexture &&
-      mName != MODELNAME::MODELGLOBEBASE)
-  {
+      mName != MODELNAME::MODELGLOBEBASE) {
     mGroupLayoutModel = mContextDawn->MakeBindGroupLayout({
         {0, wgpu::ShaderStage::Fragment, wgpu::BindingType::UniformBuffer},
         {1, wgpu::ShaderStage::Fragment, wgpu::BindingType::Sampler},
@@ -147,9 +140,7 @@ void GenericModelDawn::init()
          false, false, wgpu::TextureViewDimension::Cube,
          wgpu::TextureComponentType::Float},
     });
-  }
-  else if (mNormalTexture && mName != MODELNAME::MODELGLOBEBASE)
-  {
+  } else if (mNormalTexture && mName != MODELNAME::MODELGLOBEBASE) {
     mGroupLayoutModel = mContextDawn->MakeBindGroupLayout({
         {0, wgpu::ShaderStage::Fragment, wgpu::BindingType::UniformBuffer},
         {1, wgpu::ShaderStage::Fragment, wgpu::BindingType::Sampler},
@@ -160,9 +151,7 @@ void GenericModelDawn::init()
          false, false, wgpu::TextureViewDimension::e2D,
          wgpu::TextureComponentType::Float},
     });
-  }
-  else
-  {
+  } else {
     mGroupLayoutModel = mContextDawn->MakeBindGroupLayout({
         {0, wgpu::ShaderStage::Fragment, wgpu::BindingType::UniformBuffer},
         {1, wgpu::ShaderStage::Fragment, wgpu::BindingType::Sampler},
@@ -198,8 +187,7 @@ void GenericModelDawn::init()
   // grouplayouts are diiferent in texture binding. MODELGLOBEBASE use diffuse
   // shader though it contains normal and reflection textures.
   if (mSkyboxTexture && mReflectionTexture &&
-      mName != MODELNAME::MODELGLOBEBASE)
-  {
+      mName != MODELNAME::MODELGLOBEBASE) {
     mBindGroupModel = mContextDawn->makeBindGroup(
         mGroupLayoutModel,
         {{0, mLightFactorBuffer, 0, sizeof(LightFactorUniforms)},
@@ -209,9 +197,7 @@ void GenericModelDawn::init()
          {4, mNormalTexture->getTextureView()},
          {5, mReflectionTexture->getTextureView()},
          {6, mSkyboxTexture->getTextureView()}});
-  }
-  else if (mNormalTexture && mName != MODELNAME::MODELGLOBEBASE)
-  {
+  } else if (mNormalTexture && mName != MODELNAME::MODELGLOBEBASE) {
     mBindGroupModel = mContextDawn->makeBindGroup(
         mGroupLayoutModel,
         {
@@ -220,9 +206,7 @@ void GenericModelDawn::init()
             {2, mDiffuseTexture->getTextureView()},
             {3, mNormalTexture->getTextureView()},
         });
-  }
-  else
-  {
+  } else {
     mBindGroupModel = mContextDawn->makeBindGroup(
         mGroupLayoutModel,
         {
@@ -242,14 +226,12 @@ void GenericModelDawn::init()
                               sizeof(LightFactorUniforms));
 }
 
-void GenericModelDawn::prepareForDraw()
-{
+void GenericModelDawn::prepareForDraw() {
   mContextDawn->updateBufferData(mWorldBuffer, sizeof(WorldUniformPer),
                                  &mWorldUniformPer, sizeof(WorldUniformPer));
 }
 
-void GenericModelDawn::draw()
-{
+void GenericModelDawn::draw() {
   wgpu::RenderPassEncoder pass = mContextDawn->getRenderPass();
   pass.SetPipeline(mPipeline);
   pass.SetBindGroup(0, mContextDawn->bindGroupGeneral, 0, nullptr);
@@ -260,8 +242,7 @@ void GenericModelDawn::draw()
   pass.SetVertexBuffer(1, mNormalBuffer->getBuffer());
   pass.SetVertexBuffer(2, mTexCoordBuffer->getBuffer());
   // diffuseShader doesn't have to input tangent buffer or binormal buffer.
-  if (mTangentBuffer && mBiNormalBuffer && mName != MODELNAME::MODELGLOBEBASE)
-  {
+  if (mTangentBuffer && mBiNormalBuffer && mName != MODELNAME::MODELGLOBEBASE) {
     pass.SetVertexBuffer(3, mTangentBuffer->getBuffer());
     pass.SetVertexBuffer(4, mBiNormalBuffer->getBuffer());
   }
@@ -271,8 +252,7 @@ void GenericModelDawn::draw()
 }
 
 void GenericModelDawn::updatePerInstanceUniforms(
-    const WorldUniforms &worldUniforms)
-{
+    const WorldUniforms &worldUniforms) {
   mWorldUniformPer.WorldUniforms[instance] = worldUniforms;
 
   instance++;

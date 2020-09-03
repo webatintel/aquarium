@@ -30,55 +30,43 @@ std::vector<std::string> g_skyBoxUrls = {
     "GlobeOuter_EM_positive_z.jpg", "GlobeOuter_EM_negative_z.jpg"};
 
 Scene::Scene(const std::string opt_programIds[2])
-    : url(), models(), textureMap(), arrayMap()
-{
+    : url(), models(), textureMap(), arrayMap() {
   programIds[0] = opt_programIds[0];
   programIds[1] = opt_programIds[1];
 }
 
-Scene::~Scene()
-{
-  for (auto &program : g_programMap)
-  {
-    if (program.second != nullptr)
-    {
+Scene::~Scene() {
+  for (auto &program : g_programMap) {
+    if (program.second != nullptr) {
       delete program.second;
       program.second = nullptr;
     }
   }
 
-  for (auto &texture : g_textureMap)
-  {
-    if (texture.second != nullptr)
-    {
+  for (auto &texture : g_textureMap) {
+    if (texture.second != nullptr) {
       delete texture.second;
       texture.second = nullptr;
     }
   }
 
-  for (auto &arr : arrayMap)
-  {
-    if (arr.second != nullptr)
-    {
+  for (auto &arr : arrayMap) {
+    if (arr.second != nullptr) {
       delete arr.second;
       arr.second = nullptr;
     }
   }
 
-  for (auto &model : models)
-  {
-    if (model != nullptr)
-    {
+  for (auto &model : models) {
+    if (model != nullptr) {
       delete model;
       model = nullptr;
     }
   }
 }
 
-void Scene::setupSkybox(const std::string &path)
-{
-  for (auto &v : g_skyBoxUrls)
-  {
+void Scene::setupSkybox(const std::string &path) {
+  for (auto &v : g_skyBoxUrls) {
     std::ostringstream url;
     url << path << resourceFolder << slash << v;
 
@@ -86,8 +74,7 @@ void Scene::setupSkybox(const std::string &path)
   }
 }
 
-void Scene::load(const std::string &path, const std::string &name)
-{
+void Scene::load(const std::string &path, const std::string &name) {
   std::ostringstream oss;
   oss << path << resourceFolder << slash;
   std::string imagePath = oss.str();
@@ -106,18 +93,15 @@ void Scene::load(const std::string &path, const std::string &name)
   document.ParseStream(is);
   ASSERT(document.IsObject());
 
-  for (auto &value : document["models"].GetArray())
-  {
+  for (auto &value : document["models"].GetArray()) {
     // set up textures
     const rapidjson::Value &textures = value["textures"];
     for (rapidjson::Value::ConstMemberIterator itr = textures.MemberBegin();
-         itr != textures.MemberEnd(); ++itr)
-    {
+         itr != textures.MemberEnd(); ++itr) {
       std::string name  = itr->name.GetString();
       std::string image = itr->value.GetString();
 
-      if (g_textureMap.find(image) == g_textureMap.end())
-      {
+      if (g_textureMap.find(image) == g_textureMap.end()) {
         g_textureMap[image] = new Texture(imagePath + image, true);
       }
 
@@ -127,27 +111,21 @@ void Scene::load(const std::string &path, const std::string &name)
     // set up vertices
     const rapidjson::Value &arrays = value["fields"];
     for (rapidjson::Value::ConstMemberIterator itr = arrays.MemberBegin();
-         itr != arrays.MemberEnd(); ++itr)
-    {
+         itr != arrays.MemberEnd(); ++itr) {
       std::string name  = itr->name.GetString();
       int numComponents = itr->value["numComponents"].GetInt();
       std::string type  = itr->value["type"].GetString();
 
-      if (name == "indices")
-      {
+      if (name == "indices") {
         std::vector<unsigned short> vec;
-        for (auto &data : itr->value["data"].GetArray())
-        {
+        for (auto &data : itr->value["data"].GetArray()) {
           vec.push_back(data.GetInt());
         }
         arrayMap[name] = new AttribBuffer(numComponents, vec,
                                           static_cast<int>(vec.size()), type);
-      }
-      else
-      {
+      } else {
         std::vector<float> vec;
-        for (auto &data : itr->value["data"].GetArray())
-        {
+        for (auto &data : itr->value["data"].GetArray()) {
           vec.push_back(data.GetFloat());
         }
         arrayMap[name] = new AttribBuffer(numComponents, vec,
@@ -164,29 +142,23 @@ void Scene::load(const std::string &path, const std::string &name)
     std::string vsId;
     std::string fsId;
 
-    if (textureMap.find("diffuse") == textureMap.end())
-    {
+    if (textureMap.find("diffuse") == textureMap.end()) {
       std::cout << "missing diffuse texture for" << url.c_str() << std::endl;
     }
 
-    if (g_textureMap.find("skybox") == g_textureMap.end())
-    {
+    if (g_textureMap.find("skybox") == g_textureMap.end()) {
       setupSkybox(path);
       g_textureMap["skybox"] = new Texture(g_skyBoxUrls);
     }
 
-    if (programIds[0] != "" && programIds[1] != "")
-    {
+    if (programIds[0] != "" && programIds[1] != "") {
       type = "custom";
       vsId = programIds[0];
       fsId = programIds[1];
 
       textureMap["skybox"] = g_textureMap["skybox"];
-    }
-    else if (textureMap.find("reflectionMap") != textureMap.end())
-    {
-      if (textureMap.find("normalMap") != textureMap.end())
-      {
+    } else if (textureMap.find("reflectionMap") != textureMap.end()) {
+      if (textureMap.find("normalMap") != textureMap.end()) {
         std::cout << "missing normal Map for" << url.c_str() << std::endl;
       }
 
@@ -195,27 +167,20 @@ void Scene::load(const std::string &path, const std::string &name)
       fsId = "reflectionMapFragmentShader";
 
       textureMap["skybox"] = g_textureMap["skybox"];
-    }
-    else if (textureMap.find("normalMap") != textureMap.end())
-    {
+    } else if (textureMap.find("normalMap") != textureMap.end()) {
       type = "normalMap";
       vsId = "normalMapVertexShader";
       fsId = "normalMapFragmentShader";
-    }
-    else
-    {
+    } else {
       type = "diffuse";
       vsId = "diffuseVertexShader";
       fsId = "diffuseFragmentShader";
     }
 
     Program *program;
-    if (g_programMap.find(vsId + fsId) != g_programMap.end())
-    {
+    if (g_programMap.find(vsId + fsId) != g_programMap.end()) {
       program = g_programMap[vsId + fsId];
-    }
-    else
-    {
+    } else {
       program = new Program(programPath + vsId, programPath + fsId);
       g_programMap[vsId + fsId] = program;
     }

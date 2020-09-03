@@ -190,8 +190,7 @@ Fish g_fishTable[] = {{"SmallFishA",
                        {0.0f, -0.3f, 9.0f},
                        {0.3f, 0.3f, 1000.0f}}};
 
-void setGenericConstMatrix(GenericConst *genericConst)
-{
+void setGenericConstMatrix(GenericConst *genericConst) {
   genericConst->viewProjection = &viewProjection;
   genericConst->viewInverse    = &viewInverse;
   genericConst->lightWorldPos  = &lightWorldPos;
@@ -201,16 +200,14 @@ void setGenericConstMatrix(GenericConst *genericConst)
   genericConst->fogColor       = &fogColor;
 }
 
-void setGenericPer(GenericPer *genericPer)
-{
+void setGenericPer(GenericPer *genericPer) {
   genericPer->world                 = &world;
   genericPer->worldViewProjection   = &worldViewProjection;
   genericPer->worldInverse          = &worldInverse;
   genericPer->worldInverseTranspose = &worldInverseTraspose;
 }
 
-void initializeUniforms()
-{
+void initializeUniforms() {
   sandConst.shininess      = sand_shininess;
   sandConst.specularFactor = sand_specularFactor;
 
@@ -251,17 +248,14 @@ void initializeUniforms()
   fishPer.nextPosition.resize(3);
 }
 
-void initializeGlobalInfo()
-{
-  for (auto &value : g_ui)
-  {
+void initializeGlobalInfo() {
+  for (auto &value : g_ui) {
     g[value.obj][value.name] = value.value;
   }
 }
 
 // Load json file from assets. Initialize g_sceneGroups and classify groups.
-void LoadPlacement()
-{
+void LoadPlacement() {
   std::ostringstream oss;
   oss << mPath << resourceFolder << slash << "PropPlacement.js";
   std::string proppath = oss.str();
@@ -276,20 +270,17 @@ void LoadPlacement()
   const rapidjson::Value &objects = document["objects"];
   ASSERT(objects.IsArray());
 
-  for (auto &info : g_sceneInfo)
-  {
+  for (auto &info : g_sceneInfo) {
     g_sceneInfoByName[info.name] = info;
   }
 
-  for (rapidjson::SizeType i = 0; i < objects.Size(); ++i)
-  {
+  for (rapidjson::SizeType i = 0; i < objects.Size(); ++i) {
     const rapidjson::Value &name        = objects[i]["name"];
     const rapidjson::Value &worldMatrix = objects[i]["worldMatrix"];
     ASSERT(worldMatrix.IsArray() && worldMatrix.Size() == 16);
 
     std::string groupName = g_sceneInfoByName[name.GetString()].group;
-    if (groupName == "")
-    {
+    if (groupName == "") {
       groupName = "base";
     }
 
@@ -297,58 +288,47 @@ void LoadPlacement()
         g_sceneGroups[groupName];
 
     std::vector<float> matrix;
-    for (rapidjson::SizeType j = 0; j < worldMatrix.Size(); ++j)
-    {
+    for (rapidjson::SizeType j = 0; j < worldMatrix.Size(); ++j) {
       matrix.push_back(worldMatrix[j].GetFloat());
     }
     group.insert(make_pair(name.GetString(), matrix));
   }
 }
 
-Scene *loadScene(const std::string &name, const std::string opt_programIds[2])
-{
+Scene *loadScene(const std::string &name, const std::string opt_programIds[2]) {
   Scene *scene = new Scene(opt_programIds);
   scene->load(mPath, name);
   return scene;
 }
 
 // Initialize g_scenes.
-void LoadScenes()
-{
-  for (auto &info : g_sceneInfo)
-  {
+void LoadScenes() {
+  for (auto &info : g_sceneInfo) {
     g_scenes[info.name] = loadScene(info.name, info.program);
   }
 }
 
-void onDestroy()
-{
-  for (auto &program : g_programMap)
-  {
-    if (program.second != nullptr)
-    {
+void onDestroy() {
+  for (auto &program : g_programMap) {
+    if (program.second != nullptr) {
       delete program.second;
       program.second = nullptr;
     }
   }
 
-  for (auto &texture : g_textureMap)
-  {
-    if (texture.second != nullptr)
-    {
+  for (auto &texture : g_textureMap) {
+    if (texture.second != nullptr) {
       delete texture.second;
       texture.second = nullptr;
     }
   }
 
-  for (auto &scene : g_scenes)
-  {
+  for (auto &scene : g_scenes) {
     delete scene.second;
   }
 }
 
-void getCurrentPath()
-{
+void getCurrentPath() {
   // Get path of current build.
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
   TCHAR temp[200];
@@ -373,8 +353,7 @@ void getCurrentPath()
 #endif
 }
 
-bool initialize(int argc, char **argv)
-{
+bool initialize(int argc, char **argv) {
   getCurrentPath();
 
   glEnable(GL_DEPTH_TEST);
@@ -388,16 +367,12 @@ bool initialize(int argc, char **argv)
 
   // "--num-fish" {numfish}: imply rendering fish count.
   char *pNext;
-  for (int i = 1; i < argc; ++i)
-  {
+  for (int i = 1; i < argc; ++i) {
     std::string cmd(argv[i]);
-    if (cmd == "--h" || cmd == "-h")
-    {
+    if (cmd == "--h" || cmd == "-h") {
       std::cout << cmdArgsStrAquariumDirectMap << std::endl;
       return false;
-    }
-    else if (cmd == "--num-fish")
-    {
+    } else if (cmd == "--num-fish") {
       g_numFish = strtol(argv[i++ + 1], &pNext, 10);
     }
   }
@@ -406,33 +381,22 @@ bool initialize(int argc, char **argv)
   std::string floats[3] = {"Big", "Medium", "Small"};
   int totalFish         = g_numFish;
   int numLeft           = totalFish;
-  for (auto &type : floats)
-  {
-    for (auto &fishInfo : g_fishTable)
-    {
+  for (auto &type : floats) {
+    for (auto &fishInfo : g_fishTable) {
       std::string &fishName = fishInfo.name;
-      if (fishName.find(type))
-      {
+      if (fishName.find(type)) {
         continue;
       }
       int numfloat = numLeft;
-      if (type == "Big")
-      {
+      if (type == "Big") {
         int temp = totalFish < numFishSmall ? 1 : 2;
         numfloat = min(numLeft, temp);
-      }
-      else if (type == "Medium")
-      {
-        if (totalFish < numFishMedium)
-        {
+      } else if (type == "Medium") {
+        if (totalFish < numFishMedium) {
           numfloat = min(numLeft, totalFish / 10);
-        }
-        else if (totalFish < numFishBig)
-        {
+        } else if (totalFish < numFishBig) {
           numfloat = min(numLeft, numFishLeftSmall);
-        }
-        else
-        {
+        } else {
           numfloat = min(numLeft, numFishLeftBig);
         }
       }
@@ -444,12 +408,10 @@ bool initialize(int argc, char **argv)
   return true;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
 
   // initialize GLFW
-  if (!glfwInit())
-  {
+  if (!glfwInit()) {
     std::cout << stderr << "Failed to initialize GLFW" << std::endl;
     return -1;
   }
@@ -475,8 +437,7 @@ int main(int argc, char **argv)
   clientHeight            = mode->height;
 
   window = glfwCreateWindow(clientWidth, clientHeight, "Aquarium", NULL, NULL);
-  if (window == NULL)
-  {
+  if (window == NULL) {
     std::cout << "Failed to open GLFW window." << std::endl;
     glfwTerminate();
     return -1;
@@ -484,14 +445,12 @@ int main(int argc, char **argv)
   glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
   glfwMakeContextCurrent(window);
 
-  if (!gladLoadGL())
-  {
+  if (!gladLoadGL()) {
     std::cout << "Something went wrong!" << std::endl;
     exit(-1);
   }
 
-  if (!initialize(argc, argv))
-  {
+  if (!initialize(argc, argv)) {
     return -1;
   }
 
@@ -505,8 +464,7 @@ int main(int argc, char **argv)
 
   glfwShowWindow(window);
 
-  while (!glfwWindowShouldClose(window))
-  {
+  while (!glfwWindowShouldClose(window)) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
       glfwSetWindowShouldClose(window, GLFW_TRUE);
 
@@ -525,33 +483,25 @@ int main(int argc, char **argv)
 
 void DrawGroup(const std::multimap<std::string, std::vector<float>> &group,
                const GenericConst &constUniforms,
-               GenericPer *perUniforms)
-{
+               GenericPer *perUniforms) {
   Model *currentModel = nullptr;
   int ii              = 0;
-  for (auto &object : group)
-  {
-    if (g_scenes.find(object.first) == g_scenes.end())
-    {
+  for (auto &object : group) {
+    if (g_scenes.find(object.first) == g_scenes.end()) {
       continue;
     }
     auto &scene = g_scenes[object.first];
     auto &info  = g_sceneInfoByName[object.first];
 
-    if (info.blend)
-    {
+    if (info.blend) {
       glEnable(GL_BLEND);
-    }
-    else
-    {
+    } else {
       glDisable(GL_BLEND);
     }
 
     auto &models = scene->getModels();
-    for (auto &model : models)
-    {
-      if (model != currentModel)
-      {
+    for (auto &model : models) {
+      if (model != currentModel) {
         currentModel = model;
         model->prepareForDraw(constUniforms);
       }
@@ -566,8 +516,7 @@ void DrawGroup(const std::multimap<std::string, std::vector<float>> &group,
   }
 }
 
-void render()
-{
+void render() {
   // Update our time
 #ifdef _WIN32
   float now = GetTickCount64() / 1000.0f;
@@ -575,12 +524,9 @@ void render()
   float now = clock() / 1000000.0f;
 #endif
   float elapsedTime = 0.0f;
-  if (then == 0.0f)
-  {
+  if (then == 0.0f) {
     elapsedTime = 0.0f;
-  }
-  else
-  {
+  } else {
     elapsedTime = now - then;
   }
   then = now;
@@ -656,8 +602,7 @@ void render()
 
   glDepthMask(true);
 
-  if (g_fog)
-  {
+  if (g_fog) {
     genericConst.fogPower            = g_viewSettings.fogPower;
     genericConst.fogMult             = g_viewSettings.fogMult;
     genericConst.fogOffset           = g_viewSettings.fogOffset;
@@ -676,21 +621,18 @@ void render()
   }
 
   // Draw Scene
-  if (g_sceneGroups.find("base") != g_sceneGroups.end())
-  {
+  if (g_sceneGroups.find("base") != g_sceneGroups.end()) {
     DrawGroup(g_sceneGroups["base"], genericConst, &genericPer);
   }
 
   // Draw Fishes
   glEnable(GL_BLEND);
-  for (auto &fishInfo : g_fishTable)
-  {
+  for (auto &fishInfo : g_fishTable) {
     std::string &fishName = fishInfo.name;
     int numFish           = fishInfo.num;
 
     Scene *scene = g_scenes[fishName];
-    if (scene->loaded)
-    {
+    if (scene->loaded) {
       Model *fish             = scene->getModels()[0];
       auto &f                 = g["fish"];
       fishConst.constUniforms = fishInfo.constUniforms;
@@ -710,8 +652,7 @@ void render()
       float fishZClock      = f["fishZClock"];
       std::vector<float> &fishPosition     = fishPer.worldPosition;
       std::vector<float> &fishNextPosition = fishPer.nextPosition;
-      for (int ii = 0; ii < numFish; ++ii)
-      {
+      for (int ii = 0; ii < numFish; ++ii) {
         float fishClock = fishBaseClock + ii * fishOffset;
         float speed = fishSpeed + static_cast<float>(matrix::pseudoRandom()) *
                                       fishSpeedRange;
@@ -746,20 +687,17 @@ void render()
   }
 
   // Draw tank
-  if (g_sceneGroups.find("inner") != g_sceneGroups.end())
-  {
+  if (g_sceneGroups.find("inner") != g_sceneGroups.end()) {
     DrawGroup(g_sceneGroups["inner"], innerConst, &innerPer);
   }
 
   // Draw seaweed
-  if (g_sceneGroups.find("seaweed") != g_sceneGroups.end())
-  {
+  if (g_sceneGroups.find("seaweed") != g_sceneGroups.end()) {
     DrawGroup(g_sceneGroups["seaweed"], seaweedConst, &seaweedPer);
   }
 
   // Draw outside
-  if (g_sceneGroups.find("outside") != g_sceneGroups.end())
-  {
+  if (g_sceneGroups.find("outside") != g_sceneGroups.end()) {
     DrawGroup(g_sceneGroups["outside"], outsideConst, &outsidePer);
   }
 }

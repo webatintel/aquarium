@@ -15,8 +15,7 @@ FishModelGL::FishModelGL(const ContextGL *mContextGL,
                          MODELGROUP type,
                          MODELNAME name,
                          bool blend)
-    : FishModel(type, name, blend, aquarium), mContextGL(mContextGL)
-{
+    : FishModel(type, name, blend, aquarium), mContextGL(mContextGL) {
   mViewInverseUniform.first = aquarium->lightWorldPositionUniform.viewInverse;
   mLightWorldPosUniform.first =
       aquarium->lightWorldPositionUniform.lightWorldPos;
@@ -40,8 +39,7 @@ FishModelGL::FishModelGL(const ContextGL *mContextGL,
   mFishWaveLengthUniform.first = fishInfo.fishWaveLength;
 }
 
-void FishModelGL::init()
-{
+void FishModelGL::init() {
   ProgramGL *programGL = static_cast<ProgramGL *>(mProgram);
   mViewInverseUniform.second =
       mContextGL->getUniformLocation(programGL->getProgramId(), "viewInverse");
@@ -118,13 +116,11 @@ void FishModelGL::init()
   mIndicesBuffer = static_cast<BufferGL *>(bufferMap["indices"]);
 }
 
-void FishModelGL::draw()
-{
+void FishModelGL::draw() {
   mContextGL->drawElements(*mIndicesBuffer);
 }
 
-void FishModelGL::prepareForDraw()
-{
+void FishModelGL::prepareForDraw() {
   mProgram->setProgram();
   mContextGL->enableBlend(mBlend);
 
@@ -176,16 +172,15 @@ void FishModelGL::prepareForDraw()
   // reflection and skybox texture, but some doesn't.
   mContextGL->setTexture(*mDiffuseTexture.first, mDiffuseTexture.second, 0);
   mContextGL->setTexture(*mNormalTexture.first, mNormalTexture.second, 1);
-  if (mSkyboxTexture.second != -1 && mReflectionTexture.second != -1)
-  {
+  if (mSkyboxTexture.second != -1 && mReflectionTexture.second != -1) {
     mContextGL->setTexture(*mReflectionTexture.first, mReflectionTexture.second,
                            2);
     mContextGL->setTexture(*mSkyboxTexture.first, mSkyboxTexture.second, 3);
   }
 }
 
-void FishModelGL::updatePerInstanceUniforms(const WorldUniforms &WorldUniforms)
-{
+void FishModelGL::updatePerInstanceUniforms(
+    const WorldUniforms &WorldUniforms) {
   mContextGL->setUniform(mScaleUniform.second, &mScaleUniform.first, GL_FLOAT);
   mContextGL->setUniform(mTimeUniform.second, &mTimeUniform.first, GL_FLOAT);
   mContextGL->setUniform(mWorldPositionUniform.second,
@@ -202,8 +197,7 @@ void FishModelGL::updateFishPerUniforms(float x,
                                         float nextZ,
                                         float scale,
                                         float time,
-                                        int index)
-{
+                                        int index) {
   mWorldPositionUniform.first[0] = x;
   mWorldPositionUniform.first[1] = y;
   mWorldPositionUniform.first[2] = z;

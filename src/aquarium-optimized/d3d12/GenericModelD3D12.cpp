@@ -11,16 +11,14 @@ GenericModelD3D12::GenericModelD3D12(Context *context,
                                      MODELGROUP type,
                                      MODELNAME name,
                                      bool blend)
-    : Model(type, name, blend), mInstance(0)
-{
+    : Model(type, name, blend), mInstance(0) {
   mContextD3D12 = static_cast<ContextD3D12 *>(context);
 
   mLightFactorUniforms.shininess      = 50.0f;
   mLightFactorUniforms.specularFactor = 1.0f;
 }
 
-void GenericModelD3D12::init()
-{
+void GenericModelD3D12::init() {
   mProgramD3D12 = static_cast<ProgramD3D12 *>(mProgram);
 
   mDiffuseTexture    = static_cast<TextureD3D12 *>(textureMap["diffuse"]);
@@ -45,8 +43,7 @@ void GenericModelD3D12::init()
   // Generic models use reflection, normal or diffuse shaders, of which
   // groupLayouts are different in texture binding.  MODELGLOBEBASE use diffuse
   // shader though it contains normal and reflection textures.
-  if (mNormalTexture && mName != MODELNAME::MODELGLOBEBASE)
-  {
+  if (mNormalTexture && mName != MODELNAME::MODELGLOBEBASE) {
     mInputElementDescs = {
         {"TEXCOORD", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,
          D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
@@ -59,9 +56,7 @@ void GenericModelD3D12::init()
         {"TEXCOORD", 4, DXGI_FORMAT_R32G32B32_FLOAT, 4, 0,
          D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
     };
-  }
-  else
-  {
+  } else {
     mInputElementDescs = {
         {"TEXCOORD", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,
          D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
@@ -100,8 +95,7 @@ void GenericModelD3D12::init()
   rootParameters[1] = mContextD3D12->rootParameterWorld;
 
   if (mSkyboxTexture && mReflectionTexture &&
-      mName != MODELNAME::MODELGLOBEBASE)
-  {
+      mName != MODELNAME::MODELGLOBEBASE) {
     mDiffuseTexture->createSrvDescriptor();
     mNormalTexture->createSrvDescriptor();
     mReflectionTexture->createSrvDescriptor();
@@ -114,9 +108,7 @@ void GenericModelD3D12::init()
                                             D3D12_SHADER_VISIBILITY_PIXEL);
     rootParameters[3].InitAsDescriptorTable(1, &ranges[1],
                                             D3D12_SHADER_VISIBILITY_PIXEL);
-  }
-  else if (mNormalTexture && mName != MODELNAME::MODELGLOBEBASE)
-  {
+  } else if (mNormalTexture && mName != MODELNAME::MODELGLOBEBASE) {
     mDiffuseTexture->createSrvDescriptor();
     mNormalTexture->createSrvDescriptor();
 
@@ -128,9 +120,7 @@ void GenericModelD3D12::init()
                                             D3D12_SHADER_VISIBILITY_PIXEL);
     rootParameters[3].InitAsDescriptorTable(1, &ranges[1],
                                             D3D12_SHADER_VISIBILITY_PIXEL);
-  }
-  else
-  {
+  } else {
     mDiffuseTexture->createSrvDescriptor();
 
     ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0, 2,
@@ -160,15 +150,13 @@ void GenericModelD3D12::init()
 }
 
 // Update constant buffer per frame
-void GenericModelD3D12::prepareForDraw()
-{
+void GenericModelD3D12::prepareForDraw() {
   mContextD3D12->updateConstantBufferSync(mWorldBuffer, mWorldUploadBuffer,
                                           &mWorldUniformPer,
                                           sizeof(WorldUniformPer));
 }
 
-void GenericModelD3D12::draw()
-{
+void GenericModelD3D12::draw() {
   mContextD3D12->mCommandList->SetPipelineState(mPipelineState.Get());
   mContextD3D12->mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
 
@@ -187,12 +175,9 @@ void GenericModelD3D12::draw()
       D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
   // diffuseShader doesn't have to input tangent buffer or binormal buffer.
-  if (mTangentBuffer && mBiNormalBuffer && mName != MODELNAME::MODELGLOBEBASE)
-  {
+  if (mTangentBuffer && mBiNormalBuffer && mName != MODELNAME::MODELGLOBEBASE) {
     mContextD3D12->mCommandList->IASetVertexBuffers(0, 5, mVertexBufferView);
-  }
-  else
-  {
+  } else {
     mContextD3D12->mCommandList->IASetVertexBuffers(0, 3, mVertexBufferView);
   }
   mContextD3D12->mCommandList->IASetIndexBuffer(
@@ -205,8 +190,7 @@ void GenericModelD3D12::draw()
 }
 
 void GenericModelD3D12::updatePerInstanceUniforms(
-    const WorldUniforms &worldUniforms)
-{
+    const WorldUniforms &worldUniforms) {
   mWorldUniformPer.WorldUniforms[mInstance] = worldUniforms;
 
   mInstance++;

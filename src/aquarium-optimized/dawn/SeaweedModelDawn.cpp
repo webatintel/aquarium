@@ -12,8 +12,7 @@ SeaweedModelDawn::SeaweedModelDawn(Context *context,
                                    MODELGROUP type,
                                    MODELNAME name,
                                    bool blend)
-    : SeaweedModel(type, name, blend), instance(0)
-{
+    : SeaweedModel(type, name, blend), instance(0) {
   mContextDawn = static_cast<ContextDawn *>(context);
   mAquarium    = aquarium;
 
@@ -21,8 +20,7 @@ SeaweedModelDawn::SeaweedModelDawn(Context *context,
   mLightFactorUniforms.specularFactor = 1.0f;
 }
 
-SeaweedModelDawn::~SeaweedModelDawn()
-{
+SeaweedModelDawn::~SeaweedModelDawn() {
   mPipeline          = nullptr;
   mGroupLayoutModel  = nullptr;
   mGroupLayoutPer    = nullptr;
@@ -34,8 +32,7 @@ SeaweedModelDawn::~SeaweedModelDawn()
   mTimeBuffer        = nullptr;
 }
 
-void SeaweedModelDawn::init()
-{
+void SeaweedModelDawn::init() {
   mProgramDawn = static_cast<ProgramDawn *>(mProgram);
 
   mDiffuseTexture    = static_cast<TextureDawn *>(textureMap["diffuse"]);
@@ -133,8 +130,7 @@ void SeaweedModelDawn::init()
                               sizeof(mLightFactorUniforms));
 }
 
-void SeaweedModelDawn::prepareForDraw()
-{
+void SeaweedModelDawn::prepareForDraw() {
   mContextDawn->updateBufferData(
       mViewBuffer,
       mContextDawn->CalcConstantBufferByteSize(sizeof(WorldUniformPer)),
@@ -145,8 +141,7 @@ void SeaweedModelDawn::prepareForDraw()
       &mSeaweedPer, sizeof(SeaweedPer));
 }
 
-void SeaweedModelDawn::draw()
-{
+void SeaweedModelDawn::draw() {
   wgpu::RenderPassEncoder pass = mContextDawn->getRenderPass();
   pass.SetPipeline(mPipeline);
   pass.SetBindGroup(0, mContextDawn->bindGroupGeneral, 0, nullptr);
@@ -162,12 +157,12 @@ void SeaweedModelDawn::draw()
 }
 
 void SeaweedModelDawn::updatePerInstanceUniforms(
-    const WorldUniforms &worldUniforms)
-{
+    const WorldUniforms &worldUniforms) {
   mWorldUniformPer.worldUniforms[instance] = worldUniforms;
   mSeaweedPer.time[instance]               = mAquarium->g.mclock + instance;
 
   instance++;
 }
 
-void SeaweedModelDawn::updateSeaweedModelTime(float time) {}
+void SeaweedModelDawn::updateSeaweedModelTime(float time) {
+}

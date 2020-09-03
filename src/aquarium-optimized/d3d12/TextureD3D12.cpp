@@ -11,7 +11,8 @@
 
 #include "ContextD3D12.h"
 
-TextureD3D12::~TextureD3D12() {}
+TextureD3D12::~TextureD3D12() {
+}
 
 TextureD3D12::TextureD3D12(ContextD3D12 *context,
                            const std::string &name,
@@ -21,8 +22,7 @@ TextureD3D12::TextureD3D12(ContextD3D12 *context,
       mTextureViewDimension(D3D12_SRV_DIMENSION_TEXTURE2D),
       mFormat(DXGI_FORMAT_R8G8B8A8_UNORM),
       mSrvDesc({}),
-      mContext(context)
-{
+      mContext(context) {
 }
 
 TextureD3D12::TextureD3D12(ContextD3D12 *context,
@@ -33,16 +33,13 @@ TextureD3D12::TextureD3D12(ContextD3D12 *context,
       mTextureViewDimension(D3D12_SRV_DIMENSION_TEXTURECUBE),
       mFormat(DXGI_FORMAT_R8G8B8A8_UNORM),
       mSrvDesc({}),
-      mContext(context)
-{
+      mContext(context) {
 }
 
-void TextureD3D12::loadTexture()
-{
+void TextureD3D12::loadTexture() {
   loadImage(mUrls, &mPixelVec);
 
-  if (mTextureViewDimension == D3D12_SRV_DIMENSION_TEXTURECUBE)
-  {
+  if (mTextureViewDimension == D3D12_SRV_DIMENSION_TEXTURECUBE) {
     D3D12_RESOURCE_DESC textureDesc = {};
     textureDesc.MipLevels           = 1;
     textureDesc.Format              = mFormat;
@@ -57,9 +54,7 @@ void TextureD3D12::loadTexture()
     mContext->createTexture(
         textureDesc, mPixelVec, mTexture, mTextureUploadHeap, mWidth, mHeight,
         4u, textureDesc.MipLevels, textureDesc.DepthOrArraySize);
-  }
-  else
-  {
+  } else {
     generateMipmap(mPixelVec[0], mWidth, mHeight, 0, mResizedVec, mWidth,
                    mHeight, 0, 4, false);
 
@@ -84,17 +79,13 @@ void TextureD3D12::loadTexture()
 
 // Allocate descriptors sequentially on deascriptor heap to bind root signature,
 // create srv before binding resources.
-void TextureD3D12::createSrvDescriptor()
-{
+void TextureD3D12::createSrvDescriptor() {
   mSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
   mSrvDesc.Format                  = mFormat;
   mSrvDesc.ViewDimension           = mTextureViewDimension;
-  if (mTextureViewDimension == D3D12_SRV_DIMENSION_TEXTURECUBE)
-  {
+  if (mTextureViewDimension == D3D12_SRV_DIMENSION_TEXTURECUBE) {
     mSrvDesc.Texture2D.MipLevels = 1;
-  }
-  else
-  {
+  } else {
 
     mSrvDesc.Texture2D.MipLevels = static_cast<uint32_t>(std::floor(
                                        std::log2(std::max(mWidth, mHeight)))) +

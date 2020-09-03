@@ -17,8 +17,7 @@
 
 struct FishPer;
 
-class FishModelDawn : public FishModel
-{
+class FishModelDawn : public FishModel {
 public:
   FishModelDawn(Context *context,
                 Aquarium *aquarium,
@@ -41,15 +40,13 @@ public:
                              float time,
                              int index) override;
 
-  struct FishVertexUniforms
-  {
+  struct FishVertexUniforms {
     float fishLength;
     float fishWaveLength;
     float fishBendAmount;
   } mFishVertexUniforms;
 
-  struct LightFactorUniforms
-  {
+  struct LightFactorUniforms {
     float shininess;
     float specularFactor;
   } mLightFactorUniforms;

@@ -12,14 +12,11 @@
 
 enum UNIFORMNAME : short;
 
-class Program
-{
+class Program {
 public:
   Program() {}
   Program(const std::string &mVertexShader, const std::string &fragmentShader)
-      : mVId(mVertexShader), mFId(fragmentShader)
-  {
-  }
+      : mVId(mVertexShader), mFId(fragmentShader) {}
   virtual ~Program() {}
   virtual void setProgram() {}
   virtual void compileProgram(bool enableAlphaBlending,

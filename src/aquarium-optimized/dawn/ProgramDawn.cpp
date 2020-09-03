@@ -19,18 +19,16 @@ ProgramDawn::ProgramDawn(ContextDawn *context,
     : Program(mVId, mFId),
       mVsModule(nullptr),
       mFsModule(nullptr),
-      context(context)
-{
+      context(context) {
 }
 
-ProgramDawn::~ProgramDawn()
-{
+ProgramDawn::~ProgramDawn() {
   mVsModule = nullptr;
   mFsModule = nullptr;
 }
 
-void ProgramDawn::compileProgram(bool enableBlending, const std::string &alpha)
-{
+void ProgramDawn::compileProgram(bool enableBlending,
+                                 const std::string &alpha) {
   loadProgram();
 
   FragmentShaderCode = std::regex_replace(
@@ -38,8 +36,7 @@ void ProgramDawn::compileProgram(bool enableBlending, const std::string &alpha)
   FragmentShaderCode = std::regex_replace(
       FragmentShaderCode, std::regex(R"(\n.*?// #noNormalMap)"), "");
 
-  if (enableBlending)
-  {
+  if (enableBlending) {
     FragmentShaderCode = std::regex_replace(
         FragmentShaderCode, std::regex(R"(diffuseColor.a)"), alpha);
   }

@@ -21,8 +21,7 @@ struct FishPer;
 struct GenericConst;
 struct GenericPer;
 
-class Model
-{
+class Model {
 public:
   Model() {}
   ~Model();

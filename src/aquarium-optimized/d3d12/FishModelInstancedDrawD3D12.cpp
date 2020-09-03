@@ -14,8 +14,7 @@ FishModelInstancedDrawD3D12::FishModelInstancedDrawD3D12(Context *context,
                                                          MODELGROUP type,
                                                          MODELNAME name,
                                                          bool blend)
-    : FishModel(type, name, blend, aquarium), instance(0)
-{
+    : FishModel(type, name, blend, aquarium), instance(0) {
   mContextD3D12 = static_cast<ContextD3D12 *>(context);
 
   const Fish &fishInfo =
@@ -32,13 +31,11 @@ FishModelInstancedDrawD3D12::FishModelInstancedDrawD3D12(Context *context,
   mFishPers = new FishPer[instance];
 }
 
-FishModelInstancedDrawD3D12::~FishModelInstancedDrawD3D12()
-{
+FishModelInstancedDrawD3D12::~FishModelInstancedDrawD3D12() {
   delete mFishPers;
 }
 
-void FishModelInstancedDrawD3D12::init()
-{
+void FishModelInstancedDrawD3D12::init() {
   if (instance == 0)
     return;
 
@@ -123,8 +120,7 @@ void FishModelInstancedDrawD3D12::init()
   rootParameters[0] = mContextD3D12->rootParameterGeneral;
   rootParameters[1] = mContextD3D12->rootParameterWorld;
 
-  if (mSkyboxTexture && mReflectionTexture)
-  {
+  if (mSkyboxTexture && mReflectionTexture) {
     mDiffuseTexture->createSrvDescriptor();
     mNormalTexture->createSrvDescriptor();
     mReflectionTexture->createSrvDescriptor();
@@ -137,9 +133,7 @@ void FishModelInstancedDrawD3D12::init()
                                             D3D12_SHADER_VISIBILITY_ALL);
     rootParameters[3].InitAsDescriptorTable(1, &ranges[1],
                                             D3D12_SHADER_VISIBILITY_PIXEL);
-  }
-  else
-  {
+  } else {
     mDiffuseTexture->createSrvDescriptor();
     mNormalTexture->createSrvDescriptor();
 
@@ -165,15 +159,13 @@ void FishModelInstancedDrawD3D12::init()
       mProgramD3D12->getFSModule(), mPipelineState, mBlend);
 }
 
-void FishModelInstancedDrawD3D12::prepareForDraw()
-{
+void FishModelInstancedDrawD3D12::prepareForDraw() {
   mContextD3D12->updateConstantBufferSync(mFishPersBuffer,
                                           mFishPersUploadBuffer, mFishPers,
                                           sizeof(FishPer) * instance);
 }
 
-void FishModelInstancedDrawD3D12::draw()
-{
+void FishModelInstancedDrawD3D12::draw() {
   if (instance == 0)
     return;
 
@@ -200,8 +192,7 @@ void FishModelInstancedDrawD3D12::draw()
 }
 
 void FishModelInstancedDrawD3D12::updatePerInstanceUniforms(
-    const WorldUniforms &worldUniforms)
-{
+    const WorldUniforms &worldUniforms) {
 }
 
 void FishModelInstancedDrawD3D12::updateFishPerUniforms(float x,
@@ -212,8 +203,7 @@ void FishModelInstancedDrawD3D12::updateFishPerUniforms(float x,
                                                         float nextZ,
                                                         float scale,
                                                         float time,
-                                                        int index)
-{
+                                                        int index) {
   mFishPers[index].worldPosition[0] = x;
   mFishPers[index].worldPosition[1] = y;
   mFishPers[index].worldPosition[2] = z;

@@ -30,8 +30,7 @@
 
 class ContextGL;
 
-class TextureGL : public Texture
-{
+class TextureGL : public Texture {
 public:
   ~TextureGL() override;
   TextureGL(ContextGL *context, std::string name, std::string url);

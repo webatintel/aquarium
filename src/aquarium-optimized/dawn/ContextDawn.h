@@ -30,8 +30,7 @@ class RingBufferDawn;
 class BufferManagerDawn;
 enum BACKENDTYPE : short;
 
-class ContextDawn : public Context
-{
+class ContextDawn : public Context {
 public:
   ContextDawn(BACKENDTYPE backendType);
   ~ContextDawn();

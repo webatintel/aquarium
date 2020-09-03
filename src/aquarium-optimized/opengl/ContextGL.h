@@ -32,8 +32,7 @@ class BufferGL;
 class TextureGL;
 enum BACKENDTYPE : short;
 
-class ContextGL : public Context
-{
+class ContextGL : public Context {
 public:
   ContextGL(BACKENDTYPE backendType);
   ~ContextGL();

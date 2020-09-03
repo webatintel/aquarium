@@ -16,8 +16,7 @@ BufferD3D12::BufferD3D12(ContextD3D12 *context,
     : mIsIndex(isIndex),
       mTotoalComponents(totalCmoponents),
       mStride(0),
-      mOffset(nullptr)
-{
+      mOffset(nullptr) {
   mSize = totalCmoponents * sizeof(float);
   mBuffer =
       context->createDefaultBuffer(buffer.data(), mSize, mSize, mUploadBuffer);
@@ -36,8 +35,7 @@ BufferD3D12::BufferD3D12(ContextD3D12 *context,
     : mIsIndex(isIndex),
       mTotoalComponents(totalCmoponents),
       mStride(0),
-      mOffset(nullptr)
-{
+      mOffset(nullptr) {
   mSize = totalCmoponents * sizeof(unsigned short);
   mBuffer =
       context->createDefaultBuffer(buffer.data(), mSize, mSize, mUploadBuffer);

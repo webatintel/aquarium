@@ -10,15 +10,12 @@
 
 #include <vector>
 
-class Buffer
-{
+class Buffer {
 public:
   Buffer() {}
-  Buffer(int numComponents, int numElements, const std::vector<float> &buffer)
-  {
+  Buffer(int numComponents, int numElements, const std::vector<float> &buffer) {
   }
-  Buffer(int numComponents, int numElements, const std::vector<short> &buffer)
-  {
+  Buffer(int numComponents, int numElements, const std::vector<short> &buffer) {
   }
   virtual ~Buffer() {}
 };

@@ -16,8 +16,7 @@
 #include "ProgramD3D12.h"
 #include "TextureD3D12.h"
 
-class OutsideModelD3D12 : public Model
-{
+class OutsideModelD3D12 : public Model {
 public:
   OutsideModelD3D12(Context *context,
                     Aquarium *aquarium,
@@ -44,8 +43,7 @@ public:
 
   BufferD3D12 *mIndicesBuffer;
 
-  struct LightFactorUniforms
-  {
+  struct LightFactorUniforms {
     float shininess;
     float specularFactor;
   } mLightFactorUniforms;

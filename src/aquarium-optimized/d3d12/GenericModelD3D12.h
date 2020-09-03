@@ -17,8 +17,7 @@
 #include "ProgramD3D12.h"
 #include "TextureD3D12.h"
 
-class GenericModelD3D12 : public Model
-{
+class GenericModelD3D12 : public Model {
 public:
   GenericModelD3D12(Context *context,
                     Aquarium *aquarium,
@@ -45,14 +44,12 @@ public:
 
   BufferD3D12 *mIndicesBuffer;
 
-  struct LightFactorUniforms
-  {
+  struct LightFactorUniforms {
     float shininess;
     float specularFactor;
   } mLightFactorUniforms;
 
-  struct WorldUniformPer
-  {
+  struct WorldUniformPer {
     WorldUniforms WorldUniforms[20];
   };
   WorldUniformPer mWorldUniformPer;

@@ -16,8 +16,7 @@
 #include "ProgramD3D12.h"
 #include "TextureD3D12.h"
 
-class FishModelInstancedDrawD3D12 : public FishModel
-{
+class FishModelInstancedDrawD3D12 : public FishModel {
 public:
   FishModelInstancedDrawD3D12(Context *context,
                               Aquarium *aquarium,
@@ -41,21 +40,18 @@ public:
                              float time,
                              int index) override;
 
-  struct FishVertexUniforms
-  {
+  struct FishVertexUniforms {
     float fishLength;
     float fishWaveLength;
     float fishBendAmount;
   } mFishVertexUniforms;
 
-  struct LightFactorUniforms
-  {
+  struct LightFactorUniforms {
     float shininess;
     float specularFactor;
   } mLightFactorUniforms;
 
-  struct FishPer
-  {
+  struct FishPer {
     float worldPosition[3];
     float scale;
     float nextPosition[3];

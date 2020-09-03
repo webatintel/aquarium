@@ -12,8 +12,7 @@
 
 #include "Aquarium.h"
 
-class ResourceHelper
-{
+class ResourceHelper {
 public:
   ResourceHelper() {}
   ResourceHelper(const std::string &mBackendName,

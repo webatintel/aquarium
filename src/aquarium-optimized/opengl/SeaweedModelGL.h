@@ -12,8 +12,7 @@
 #include "ContextGL.h"
 #include "ProgramGL.h"
 
-class SeaweedModelGL : public SeaweedModel
-{
+class SeaweedModelGL : public SeaweedModel {
 public:
   SeaweedModelGL(const ContextGL *context,
                  Aquarium *aquarium,

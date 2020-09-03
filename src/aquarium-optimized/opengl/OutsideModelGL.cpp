@@ -12,8 +12,7 @@ OutsideModelGL::OutsideModelGL(const ContextGL *context,
                                MODELGROUP type,
                                MODELNAME name,
                                bool blend)
-    : Model(type, name, blend), mContextGL(context)
-{
+    : Model(type, name, blend), mContextGL(context) {
   mViewInverseUniform.first = aquarium->lightWorldPositionUniform.viewInverse;
   mLightWorldPosUniform.first =
       aquarium->lightWorldPositionUniform.lightWorldPos;
@@ -33,8 +32,7 @@ OutsideModelGL::OutsideModelGL(const ContextGL *context,
   mFogColorUniform.first  = aquarium->fogUniforms.fogColor;
 }
 
-void OutsideModelGL::init()
-{
+void OutsideModelGL::init() {
   ProgramGL *programGL               = static_cast<ProgramGL *>(mProgram);
   mWorldViewProjectionUniform.second = mContextGL->getUniformLocation(
       programGL->getProgramId(), "worldViewProjection");
@@ -84,13 +82,11 @@ void OutsideModelGL::init()
   mIndicesBuffer = static_cast<BufferGL *>(bufferMap["indices"]);
 }
 
-void OutsideModelGL::draw()
-{
+void OutsideModelGL::draw() {
   mContextGL->drawElements(*mIndicesBuffer);
 }
 
-void OutsideModelGL::prepareForDraw()
-{
+void OutsideModelGL::prepareForDraw() {
   mProgram->setProgram();
   mContextGL->enableBlend(mBlend);
 
@@ -130,8 +126,7 @@ void OutsideModelGL::prepareForDraw()
 }
 
 void OutsideModelGL::updatePerInstanceUniforms(
-    const WorldUniforms &worldUniforms)
-{
+    const WorldUniforms &worldUniforms) {
   mContextGL->setUniform(mWorldUniform.second, mWorldUniform.first,
                          GL_FLOAT_MAT4);
   mContextGL->setUniform(mWorldViewProjectionUniform.second,

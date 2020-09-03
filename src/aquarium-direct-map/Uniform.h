@@ -12,8 +12,7 @@
 
 #include "glad/glad.h"
 
-class Uniform
-{
+class Uniform {
 public:
   Uniform() {}
   Uniform(const std::string &name,

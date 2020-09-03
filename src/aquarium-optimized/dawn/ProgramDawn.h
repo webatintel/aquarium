@@ -19,8 +19,7 @@
 
 class ContextDawn;
 
-class ProgramDawn : public Program
-{
+class ProgramDawn : public Program {
 public:
   ProgramDawn() {}
   ProgramDawn(ContextDawn *context,

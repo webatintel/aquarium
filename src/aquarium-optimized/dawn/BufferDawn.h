@@ -17,8 +17,7 @@
 
 class ContextDawn;
 
-class BufferDawn : public Buffer
-{
+class BufferDawn : public Buffer {
 public:
   BufferDawn(ContextDawn *context,
              int totalCmoponents,

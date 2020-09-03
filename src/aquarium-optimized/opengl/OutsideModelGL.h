@@ -12,8 +12,7 @@
 #include "ContextGL.h"
 #include "ProgramGL.h"
 
-class OutsideModelGL : public Model
-{
+class OutsideModelGL : public Model {
 public:
   OutsideModelGL(const ContextGL *context,
                  Aquarium *aquarium,

@@ -13,8 +13,7 @@
 #ifndef NDEBUG
 #define ASSERT(expression)                                                \
   {                                                                       \
-    if (!(expression))                                                    \
-    {                                                                     \
+    if (!(expression)) {                                                  \
       printf("Assertion(%s) failed: file \"%s\", line %d\n", #expression, \
              __FILE__, __LINE__);                                         \
       abort();                                                            \
@@ -27,8 +26,7 @@
 #ifndef NDEBUG
 #define SWALLOW_ERROR(expression)                                         \
   {                                                                       \
-    if (!(expression))                                                    \
-    {                                                                     \
+    if (!(expression)) {                                                  \
       printf("Assertion(%s) failed: file \"%s\", line %d\n", #expression, \
              __FILE__, __LINE__);                                         \
     }                                                                     \

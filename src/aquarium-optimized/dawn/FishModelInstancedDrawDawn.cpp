@@ -14,8 +14,7 @@ FishModelInstancedDrawDawn::FishModelInstancedDrawDawn(Context *context,
                                                        MODELGROUP type,
                                                        MODELNAME name,
                                                        bool blend)
-    : FishModel(type, name, blend, aquarium), instance(0)
-{
+    : FishModel(type, name, blend, aquarium), instance(0) {
   mContextDawn = static_cast<ContextDawn *>(context);
 
   mLightFactorUniforms.shininess      = 5.0f;
@@ -32,8 +31,7 @@ FishModelInstancedDrawDawn::FishModelInstancedDrawDawn(Context *context,
   mFishPers = new FishPer[instance];
 }
 
-void FishModelInstancedDrawDawn::init()
-{
+void FishModelInstancedDrawDawn::init() {
   if (instance == 0)
     return;
 
@@ -118,8 +116,7 @@ void FishModelInstancedDrawDawn::init()
   mVertexStateDescriptor.vertexBufferCount = 6;
   mVertexStateDescriptor.indexFormat       = wgpu::IndexFormat::Uint16;
 
-  if (mSkyboxTexture && mReflectionTexture)
-  {
+  if (mSkyboxTexture && mReflectionTexture) {
     mGroupLayoutModel = mContextDawn->MakeBindGroupLayout({
         {0, wgpu::ShaderStage::Vertex, wgpu::BindingType::UniformBuffer},
         {1, wgpu::ShaderStage::Fragment, wgpu::BindingType::UniformBuffer},
@@ -138,9 +135,7 @@ void FishModelInstancedDrawDawn::init()
          false, false, wgpu::TextureViewDimension::Cube,
          wgpu::TextureComponentType::Float},
     });
-  }
-  else
-  {
+  } else {
     mGroupLayoutModel = mContextDawn->MakeBindGroupLayout({
         {0, wgpu::ShaderStage::Vertex, wgpu::BindingType::UniformBuffer},
         {1, wgpu::ShaderStage::Fragment, wgpu::BindingType::UniformBuffer},
@@ -179,8 +174,7 @@ void FishModelInstancedDrawDawn::init()
 
   // Fish models includes small, medium and big. Some of them contains
   // reflection and skybox texture, but some doesn't.
-  if (mSkyboxTexture && mReflectionTexture)
-  {
+  if (mSkyboxTexture && mReflectionTexture) {
     mBindGroupModel = mContextDawn->makeBindGroup(
         mGroupLayoutModel,
         {{0, mFishVertexBuffer, 0, sizeof(FishVertexUniforms)},
@@ -191,9 +185,7 @@ void FishModelInstancedDrawDawn::init()
          {5, mNormalTexture->getTextureView()},
          {6, mReflectionTexture->getTextureView()},
          {7, mSkyboxTexture->getTextureView()}});
-  }
-  else
-  {
+  } else {
     mBindGroupModel = mContextDawn->makeBindGroup(
         mGroupLayoutModel,
         {{0, mFishVertexBuffer, 0, sizeof(FishVertexUniforms)},
@@ -210,10 +202,10 @@ void FishModelInstancedDrawDawn::init()
                               &mFishVertexUniforms, sizeof(FishVertexUniforms));
 }
 
-void FishModelInstancedDrawDawn::prepareForDraw() {}
+void FishModelInstancedDrawDawn::prepareForDraw() {
+}
 
-void FishModelInstancedDrawDawn::draw()
-{
+void FishModelInstancedDrawDawn::draw() {
   if (instance == 0)
     return;
 
@@ -236,8 +228,7 @@ void FishModelInstancedDrawDawn::draw()
 }
 
 void FishModelInstancedDrawDawn::updatePerInstanceUniforms(
-    const WorldUniforms &worldUniforms)
-{
+    const WorldUniforms &worldUniforms) {
 }
 
 void FishModelInstancedDrawDawn::updateFishPerUniforms(float x,
@@ -248,8 +239,7 @@ void FishModelInstancedDrawDawn::updateFishPerUniforms(float x,
                                                        float nextZ,
                                                        float scale,
                                                        float time,
-                                                       int index)
-{
+                                                       int index) {
   mFishPers[index].worldPosition[0] = x;
   mFishPers[index].worldPosition[1] = y;
   mFishPers[index].worldPosition[2] = z;
@@ -260,8 +250,7 @@ void FishModelInstancedDrawDawn::updateFishPerUniforms(float x,
   mFishPers[index].time             = time;
 }
 
-FishModelInstancedDrawDawn::~FishModelInstancedDrawDawn()
-{
+FishModelInstancedDrawDawn::~FishModelInstancedDrawDawn() {
   mPipeline          = nullptr;
   mGroupLayoutModel  = nullptr;
   mGroupLayoutPer    = nullptr;

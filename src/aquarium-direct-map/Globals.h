@@ -62,8 +62,7 @@ constexpr float inner_specularFactor   = 1.0f;
 constexpr float fish_shininess         = 5.0f;
 constexpr float fish_specularFactor    = 0.3f;
 
-struct G_ui_per
-{
+struct G_ui_per {
   const char *obj;
   const char *name;
   float value;
@@ -78,8 +77,7 @@ constexpr float g_fovFudge       = 1.0f;
 constexpr float g_net_offset[3]  = {0.0f, 0.0f, 0.0f};
 constexpr float g_net_offsetMult = 1.21f;
 
-struct G_viewSettings
-{
+struct G_viewSettings {
   float targetHeight    = 63.3f;
   float targetRadius    = 91.6f;
   float eyeHeight       = 7.5f;
@@ -129,8 +127,7 @@ static std::vector<float> ambient(4);
 static std::vector<float> fogColor = {1.0f, 1.0f, 1.0f, 1.0f};
 
 // Generic uniforms
-struct GenericConst
-{
+struct GenericConst {
   std::vector<float> *viewProjection;
   std::vector<float> *viewInverse;
   std::vector<float> *lightWorldPos;
@@ -151,8 +148,7 @@ struct GenericConst
 static GenericConst sandConst, genericConst, seaweedConst, outsideConst,
     innerConst;
 
-struct GenericPer
-{
+struct GenericPer {
   std::vector<float> *world;
   std::vector<float> *worldViewProjection;
   std::vector<float> *worldInverse;
@@ -163,15 +159,13 @@ struct GenericPer
 static GenericPer sandPer, genericPer, seaweedPer, outsidePer, innerPer,
     laserPer, skyPer;
 
-struct SkyConst
-{
+struct SkyConst {
   std::vector<float> *viewProjectionInverse;
 };
 
 static SkyConst skyConst;
 
-struct FishPer
-{
+struct FishPer {
   std::vector<float> worldPosition;
   std::vector<float> nextPosition;
   float scale;
@@ -180,8 +174,7 @@ struct FishPer
 
 static FishPer fishPer;
 
-struct G_sceneInfo
-{
+struct G_sceneInfo {
   std::string name;
   std::string program[2];
   bool fog;
@@ -189,15 +182,13 @@ struct G_sceneInfo
   bool blend;
 };
 
-struct ConstUniforms
-{
+struct ConstUniforms {
   float fishLength;
   float fishWaveLength;
   float fishBendAmount;
 };
 
-struct Fish
-{
+struct Fish {
   std::string name;
   float speed;
   float speedRange;
@@ -216,8 +207,7 @@ struct Fish
   int num;
 };
 
-struct FishConst
-{
+struct FishConst {
   GenericConst genericConst;
   ConstUniforms constUniforms;
 };

@@ -12,8 +12,7 @@ SeaweedModelD3D12::SeaweedModelD3D12(Context *context,
                                      MODELGROUP type,
                                      MODELNAME name,
                                      bool blend)
-    : SeaweedModel(type, name, blend), instance(0)
-{
+    : SeaweedModel(type, name, blend), instance(0) {
   mContextD3D12 = static_cast<ContextD3D12 *>(context);
   mAquarium     = aquarium;
 
@@ -21,8 +20,7 @@ SeaweedModelD3D12::SeaweedModelD3D12(Context *context,
   mLightFactorUniforms.specularFactor = 1.0f;
 }
 
-void SeaweedModelD3D12::init()
-{
+void SeaweedModelD3D12::init() {
   mProgramD3D12 = static_cast<ProgramD3D12 *>(mProgram);
 
   mDiffuseTexture    = static_cast<TextureD3D12 *>(textureMap["diffuse"]);
@@ -113,8 +111,7 @@ void SeaweedModelD3D12::init()
       mProgramD3D12->getFSModule(), mPipelineState, mBlend);
 }
 
-void SeaweedModelD3D12::prepareForDraw()
-{
+void SeaweedModelD3D12::prepareForDraw() {
   mContextD3D12->updateConstantBufferSync(mWorldBuffer, mWorldUploadBuffer,
                                           &mWorldUniformPer,
                                           sizeof(WorldUniformPer));
@@ -123,8 +120,7 @@ void SeaweedModelD3D12::prepareForDraw()
                                           &mSeaweedPer, sizeof(SeaweedPer));
 }
 
-void SeaweedModelD3D12::draw()
-{
+void SeaweedModelD3D12::draw() {
   mContextD3D12->mCommandList->SetPipelineState(mPipelineState.Get());
   mContextD3D12->mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
 
@@ -155,12 +151,12 @@ void SeaweedModelD3D12::draw()
 }
 
 void SeaweedModelD3D12::updatePerInstanceUniforms(
-    const WorldUniforms &worldUniforms)
-{
+    const WorldUniforms &worldUniforms) {
   mWorldUniformPer.worldUniforms[instance] = worldUniforms;
   mSeaweedPer.seaweed[instance].time       = mAquarium->g.mclock + instance;
 
   instance++;
 }
 
-void SeaweedModelD3D12::updateSeaweedModelTime(float time) {}
+void SeaweedModelD3D12::updateSeaweedModelTime(float time) {
+}

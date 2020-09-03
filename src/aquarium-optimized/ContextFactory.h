@@ -10,8 +10,7 @@
 class Context;
 enum BACKENDTYPE : short;
 
-class ContextFactory
-{
+class ContextFactory {
 public:
   ContextFactory();
   ~ContextFactory();

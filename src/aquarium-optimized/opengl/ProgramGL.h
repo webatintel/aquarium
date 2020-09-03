@@ -20,8 +20,7 @@
 #include "ContextGL.h"
 #include "TextureGL.h"
 
-class ProgramGL : public Program
-{
+class ProgramGL : public Program {
 public:
   ProgramGL() {}
   ProgramGL(ContextGL *, std::string mVId, std::string mFId);
