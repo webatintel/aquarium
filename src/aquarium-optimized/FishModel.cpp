@@ -9,13 +9,15 @@
 
 void FishModel::prepareForDraw()
 {
-    mFishPerOffset = 0;
-    for (int i = 0; i < mName - MODELNAME::MODELSMALLFISHA; i++)
-    {
-        const Fish &fishInfo = fishTable[i];
-        mFishPerOffset += mAquarium->fishCount[fishInfo.modelName - MODELNAME::MODELSMALLFISHA];
-    }
+  mFishPerOffset = 0;
+  for (int i = 0; i < mName - MODELNAME::MODELSMALLFISHA; i++)
+  {
+    const Fish &fishInfo = fishTable[i];
+    mFishPerOffset +=
+        mAquarium->fishCount[fishInfo.modelName - MODELNAME::MODELSMALLFISHA];
+  }
 
-    const Fish &fishInfo = fishTable[mName - MODELNAME::MODELSMALLFISHA];
-    mCurInstance         = mAquarium->fishCount[fishInfo.modelName - MODELNAME::MODELSMALLFISHA];
+  const Fish &fishInfo = fishTable[mName - MODELNAME::MODELSMALLFISHA];
+  mCurInstance =
+      mAquarium->fishCount[fishInfo.modelName - MODELNAME::MODELSMALLFISHA];
 }

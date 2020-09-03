@@ -11,14 +11,16 @@
 
 void Program::loadProgram()
 {
-    std::ifstream VertexShaderStream(mVId, std::ios::in);
-    VertexShaderCode = std::string((std::istreambuf_iterator<char>(VertexShaderStream)),
-                                   std::istreambuf_iterator<char>());
-    VertexShaderStream.close();
+  std::ifstream VertexShaderStream(mVId, std::ios::in);
+  VertexShaderCode =
+      std::string((std::istreambuf_iterator<char>(VertexShaderStream)),
+                  std::istreambuf_iterator<char>());
+  VertexShaderStream.close();
 
-    // Read the Fragment Shader code from the file
-    std::ifstream FragmentShaderStream(mFId, std::ios::in);
-    FragmentShaderCode = std::string((std::istreambuf_iterator<char>(FragmentShaderStream)),
-                                     std::istreambuf_iterator<char>());
-    FragmentShaderStream.close();
+  // Read the Fragment Shader code from the file
+  std::ifstream FragmentShaderStream(mFId, std::ios::in);
+  FragmentShaderCode =
+      std::string((std::istreambuf_iterator<char>(FragmentShaderStream)),
+                  std::istreambuf_iterator<char>());
+  FragmentShaderStream.close();
 }

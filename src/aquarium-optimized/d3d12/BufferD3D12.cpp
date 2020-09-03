@@ -13,15 +13,19 @@ BufferD3D12::BufferD3D12(ContextD3D12 *context,
                          int numComponents,
                          const std::vector<float> &buffer,
                          bool isIndex)
-    : mIsIndex(isIndex), mTotoalComponents(totalCmoponents), mStride(0), mOffset(nullptr)
+    : mIsIndex(isIndex),
+      mTotoalComponents(totalCmoponents),
+      mStride(0),
+      mOffset(nullptr)
 {
-    mSize   = totalCmoponents * sizeof(float);
-    mBuffer = context->createDefaultBuffer(buffer.data(), mSize, mSize, mUploadBuffer);
+  mSize = totalCmoponents * sizeof(float);
+  mBuffer =
+      context->createDefaultBuffer(buffer.data(), mSize, mSize, mUploadBuffer);
 
-    // Initialize the vertex buffer view.
-    mVertexBufferView.BufferLocation = mBuffer->GetGPUVirtualAddress();
-    mVertexBufferView.StrideInBytes  = numComponents * sizeof(float);
-    mVertexBufferView.SizeInBytes    = mSize;
+  // Initialize the vertex buffer view.
+  mVertexBufferView.BufferLocation = mBuffer->GetGPUVirtualAddress();
+  mVertexBufferView.StrideInBytes  = numComponents * sizeof(float);
+  mVertexBufferView.SizeInBytes    = mSize;
 }
 
 BufferD3D12::BufferD3D12(ContextD3D12 *context,
@@ -29,13 +33,17 @@ BufferD3D12::BufferD3D12(ContextD3D12 *context,
                          int numComponents,
                          const std::vector<unsigned short> &buffer,
                          bool isIndex)
-    : mIsIndex(isIndex), mTotoalComponents(totalCmoponents), mStride(0), mOffset(nullptr)
+    : mIsIndex(isIndex),
+      mTotoalComponents(totalCmoponents),
+      mStride(0),
+      mOffset(nullptr)
 {
-    mSize   = totalCmoponents * sizeof(unsigned short);
-    mBuffer = context->createDefaultBuffer(buffer.data(), mSize, mSize, mUploadBuffer);
+  mSize = totalCmoponents * sizeof(unsigned short);
+  mBuffer =
+      context->createDefaultBuffer(buffer.data(), mSize, mSize, mUploadBuffer);
 
-    // Initialize the vertex buffer view.
-    mIndexBufferView.BufferLocation = mBuffer->GetGPUVirtualAddress();
-    mIndexBufferView.SizeInBytes    = mSize;
-    mIndexBufferView.Format         = DXGI_FORMAT_R16_UINT;
+  // Initialize the vertex buffer view.
+  mIndexBufferView.BufferLocation = mBuffer->GetGPUVirtualAddress();
+  mIndexBufferView.SizeInBytes    = mSize;
+  mIndexBufferView.Format         = DXGI_FORMAT_R16_UINT;
 }

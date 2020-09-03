@@ -14,19 +14,22 @@ enum UNIFORMNAME : short;
 
 class Behavior
 {
-  public:
-    Behavior() {}
-    Behavior(int frame, std::string &op, int count) : mFrame(frame), mOp(op), mCount(count) {}
+public:
+  Behavior() {}
+  Behavior(int frame, std::string &op, int count)
+      : mFrame(frame), mOp(op), mCount(count)
+  {
+  }
 
-    int getFrame() const { return mFrame; }
-    const std::string &getOp() const { return mOp; }
-    int getCount() const { return mCount; }
-    void setFrame(int frame) { mFrame = frame; }
+  int getFrame() const { return mFrame; }
+  const std::string &getOp() const { return mOp; }
+  int getCount() const { return mCount; }
+  void setFrame(int frame) { mFrame = frame; }
 
-  private:
-    int mFrame;
-    std::string mOp;
-    int mCount;
+private:
+  int mFrame;
+  std::string mOp;
+  int mCount;
 };
 
 #endif  // BEHAVIOR_H

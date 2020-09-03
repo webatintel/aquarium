@@ -24,52 +24,53 @@ FPSTimer::FPSTimer()
 
 void FPSTimer::update(double elapsedTime, double renderingTime, int testTime)
 {
-    mTotalTime += elapsedTime - mTimeTable[mTimeTableCursor];
-    mTimeTable[mTimeTableCursor] = elapsedTime;
+  mTotalTime += elapsedTime - mTimeTable[mTimeTableCursor];
+  mTimeTable[mTimeTableCursor] = elapsedTime;
 
-    ++mTimeTableCursor;
-    if (mTimeTableCursor == NUM_FRAMES_TO_AVERAGE)
-    {
-        mTimeTableCursor = 0;
-    }
+  ++mTimeTableCursor;
+  if (mTimeTableCursor == NUM_FRAMES_TO_AVERAGE)
+  {
+    mTimeTableCursor = 0;
+  }
 
-    mAverageFPS = floor((1.0f / (mTotalTime / static_cast<double>(NUM_FRAMES_TO_AVERAGE))) + 0.5);
+  mAverageFPS = floor(
+      (1.0f / (mTotalTime / static_cast<double>(NUM_FRAMES_TO_AVERAGE))) + 0.5);
 
-    for (int i = 0; i < NUM_HISTORY_DATA - 1; i++)
-    {
-        mHistoryFPS[i]       = mHistoryFPS[i + 1];
-        mHistoryFrameTime[i] = mHistoryFrameTime[i + 1];
-    }
-    mHistoryFPS[NUM_HISTORY_DATA - 1]       = mAverageFPS;
-    mHistoryFrameTime[NUM_HISTORY_DATA - 1] = 1000.0 / mAverageFPS;
+  for (int i = 0; i < NUM_HISTORY_DATA - 1; i++)
+  {
+    mHistoryFPS[i]       = mHistoryFPS[i + 1];
+    mHistoryFrameTime[i] = mHistoryFrameTime[i + 1];
+  }
+  mHistoryFPS[NUM_HISTORY_DATA - 1]       = mAverageFPS;
+  mHistoryFrameTime[NUM_HISTORY_DATA - 1] = 1000.0 / mAverageFPS;
 
-    if (testTime - renderingTime > 5 && testTime - renderingTime < 25)
-    {
-        mLogFPS.push_back(mAverageFPS);
-    }
+  if (testTime - renderingTime > 5 && testTime - renderingTime < 25)
+  {
+    mLogFPS.push_back(mAverageFPS);
+  }
 }
 
 int FPSTimer::variance() const
 {
-    float avg = 0.f;
+  float avg = 0.f;
 
-    for (size_t i = 0; i < mLogFPS.size(); i++)
-    {
-        avg += mLogFPS[i];
-    }
-    avg /= mLogFPS.size();
+  for (size_t i = 0; i < mLogFPS.size(); i++)
+  {
+    avg += mLogFPS[i];
+  }
+  avg /= mLogFPS.size();
 
-    float var = 0.f;
-    for (size_t i = 0; i < mLogFPS.size(); i++)
-    {
-        var += pow(mLogFPS[i] - avg, 2);
-    }
-    var /= mLogFPS.size();
+  float var = 0.f;
+  for (size_t i = 0; i < mLogFPS.size(); i++)
+  {
+    var += pow(mLogFPS[i] - avg, 2);
+  }
+  var /= mLogFPS.size();
 
-    if (var < FPS_VALID_THRESHOLD)
-    {
-        return ceil(avg);
-    }
+  if (var < FPS_VALID_THRESHOLD)
+  {
+    return ceil(avg);
+  }
 
-    return 0;
+  return 0;
 }

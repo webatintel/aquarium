@@ -16,31 +16,36 @@ class ContextDawn;
 
 class TextureDawn : public Texture
 {
-  public:
-    ~TextureDawn() override;
-    TextureDawn(ContextDawn *context, const std::string &name, const std::string &url);
-    TextureDawn(ContextDawn *context,
-                const std::string &name,
-                const std::vector<std::string> &urls);
+public:
+  ~TextureDawn() override;
+  TextureDawn(ContextDawn *context,
+              const std::string &name,
+              const std::string &url);
+  TextureDawn(ContextDawn *context,
+              const std::string &name,
+              const std::vector<std::string> &urls);
 
-    const wgpu::Texture &getTextureId() const { return mTexture; }
-    const wgpu::Sampler &getSampler() const { return mSampler; }
-    wgpu::TextureDimension getTextureDimension() { return mTextureDimension; }
-    wgpu::TextureViewDimension getTextureViewDimension() { return mTextureViewDimension; }
-    wgpu::TextureView getTextureView() { return mTextureView; }
+  const wgpu::Texture &getTextureId() const { return mTexture; }
+  const wgpu::Sampler &getSampler() const { return mSampler; }
+  wgpu::TextureDimension getTextureDimension() { return mTextureDimension; }
+  wgpu::TextureViewDimension getTextureViewDimension()
+  {
+    return mTextureViewDimension;
+  }
+  wgpu::TextureView getTextureView() { return mTextureView; }
 
-    void loadTexture() override;
+  void loadTexture() override;
 
-  private:
-    wgpu::TextureDimension mTextureDimension;  // texture 2D or CubeMap
-    wgpu::TextureViewDimension mTextureViewDimension;
-    wgpu::Texture mTexture;
-    wgpu::Sampler mSampler;
-    wgpu::TextureFormat mFormat;
-    wgpu::TextureView mTextureView;
-    std::vector<unsigned char *> mPixelVec;
-    std::vector<unsigned char *> mResizedVec;
-    ContextDawn *mContext;
+private:
+  wgpu::TextureDimension mTextureDimension;  // texture 2D or CubeMap
+  wgpu::TextureViewDimension mTextureViewDimension;
+  wgpu::Texture mTexture;
+  wgpu::Sampler mSampler;
+  wgpu::TextureFormat mFormat;
+  wgpu::TextureView mTextureView;
+  std::vector<unsigned char *> mPixelVec;
+  std::vector<unsigned char *> mResizedVec;
+  ContextDawn *mContext;
 };
 
 #endif  // TEXTUREDAWN_H

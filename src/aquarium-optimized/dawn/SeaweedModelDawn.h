@@ -17,69 +17,69 @@
 
 class SeaweedModelDawn : public SeaweedModel
 {
-  public:
-    SeaweedModelDawn(Context *context,
-                     Aquarium *aquarium,
-                     MODELGROUP type,
-                     MODELNAME name,
-                     bool blend);
-    ~SeaweedModelDawn();
+public:
+  SeaweedModelDawn(Context *context,
+                   Aquarium *aquarium,
+                   MODELGROUP type,
+                   MODELNAME name,
+                   bool blend);
+  ~SeaweedModelDawn();
 
-    void init() override;
-    void prepareForDraw() override;
-    void draw() override;
+  void init() override;
+  void prepareForDraw() override;
+  void draw() override;
 
-    void updatePerInstanceUniforms(const WorldUniforms &worldUniforms) override;
+  void updatePerInstanceUniforms(const WorldUniforms &worldUniforms) override;
 
-    TextureDawn *mDiffuseTexture;
-    TextureDawn *mNormalTexture;
-    TextureDawn *mReflectionTexture;
-    TextureDawn *mSkyboxTexture;
+  TextureDawn *mDiffuseTexture;
+  TextureDawn *mNormalTexture;
+  TextureDawn *mReflectionTexture;
+  TextureDawn *mSkyboxTexture;
 
-    BufferDawn *mPositionBuffer;
-    BufferDawn *mNormalBuffer;
-    BufferDawn *mTexCoordBuffer;
+  BufferDawn *mPositionBuffer;
+  BufferDawn *mNormalBuffer;
+  BufferDawn *mTexCoordBuffer;
 
-    BufferDawn *mIndicesBuffer;
-    void updateSeaweedModelTime(float time) override;
+  BufferDawn *mIndicesBuffer;
+  void updateSeaweedModelTime(float time) override;
 
-    struct LightFactorUniforms
-    {
-        float shininess;
-        float specularFactor;
-    } mLightFactorUniforms;
+  struct LightFactorUniforms
+  {
+    float shininess;
+    float specularFactor;
+  } mLightFactorUniforms;
 
-    struct SeaweedPer
-    {
-        float time[20];
-    } mSeaweedPer;
+  struct SeaweedPer
+  {
+    float time[20];
+  } mSeaweedPer;
 
-    struct WorldUniformPer
-    {
-        WorldUniforms worldUniforms[20];
-    };
-    WorldUniformPer mWorldUniformPer;
+  struct WorldUniformPer
+  {
+    WorldUniforms worldUniforms[20];
+  };
+  WorldUniformPer mWorldUniformPer;
 
-  private:
-    utils::ComboVertexStateDescriptor mVertexStateDescriptor;
-    wgpu::RenderPipeline mPipeline;
+private:
+  utils::ComboVertexStateDescriptor mVertexStateDescriptor;
+  wgpu::RenderPipeline mPipeline;
 
-    wgpu::BindGroupLayout mGroupLayoutModel;
-    wgpu::BindGroupLayout mGroupLayoutPer;
-    wgpu::PipelineLayout mPipelineLayout;
+  wgpu::BindGroupLayout mGroupLayoutModel;
+  wgpu::BindGroupLayout mGroupLayoutPer;
+  wgpu::PipelineLayout mPipelineLayout;
 
-    wgpu::BindGroup mBindGroupModel;
-    wgpu::BindGroup mBindGroupPer;
+  wgpu::BindGroup mBindGroupModel;
+  wgpu::BindGroup mBindGroupPer;
 
-    wgpu::Buffer mLightFactorBuffer;
-    wgpu::Buffer mTimeBuffer;
-    wgpu::Buffer mViewBuffer;
+  wgpu::Buffer mLightFactorBuffer;
+  wgpu::Buffer mTimeBuffer;
+  wgpu::Buffer mViewBuffer;
 
-    ContextDawn *mContextDawn;
-    ProgramDawn *mProgramDawn;
-    Aquarium *mAquarium;
+  ContextDawn *mContextDawn;
+  ProgramDawn *mProgramDawn;
+  Aquarium *mAquarium;
 
-    int instance;
+  int instance;
 };
 
 #endif  // SEAWEEDMODELDAWN_H

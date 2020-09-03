@@ -21,20 +21,23 @@ class ContextDawn;
 
 class ProgramDawn : public Program
 {
-  public:
-    ProgramDawn() {}
-    ProgramDawn(ContextDawn *context, const std::string &mVId, const std::string &mFId);
-    ~ProgramDawn() override;
+public:
+  ProgramDawn() {}
+  ProgramDawn(ContextDawn *context,
+              const std::string &mVId,
+              const std::string &mFId);
+  ~ProgramDawn() override;
 
-    void compileProgram(bool enableAlphaBlending, const std::string &alpha) override;
-    wgpu::ShaderModule getVSModule() { return mVsModule; }
-    wgpu::ShaderModule getFSModule() { return mFsModule; }
+  void compileProgram(bool enableAlphaBlending,
+                      const std::string &alpha) override;
+  wgpu::ShaderModule getVSModule() { return mVsModule; }
+  wgpu::ShaderModule getFSModule() { return mFsModule; }
 
-  private:
-    wgpu::ShaderModule mVsModule;
-    wgpu::ShaderModule mFsModule;
+private:
+  wgpu::ShaderModule mVsModule;
+  wgpu::ShaderModule mFsModule;
 
-    ContextDawn *context;
+  ContextDawn *context;
 };
 
 #endif  // PROGRAMDAWN_H

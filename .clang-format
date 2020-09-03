@@ -10,17 +10,10 @@ BasedOnStyle: Chromium
 # Allow double brackets such as std::vector<std::vector<int>>.
 Standard: Cpp11
 
-# Indent 4 spaces at a time.
-IndentWidth: 4
-
-# Keep lines under 100 columns long.
-ColumnLimit: 100
-
 # Always break before braces
 BreakBeforeBraces: Allman
 
-# Indent case labels.
-IndentCaseLabels: true
+IndentCaseLabels: false
 
 # Right-align pointers and references
 PointerAlignment: Right

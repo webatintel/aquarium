@@ -17,63 +17,63 @@
 
 class GenericModelDawn : public Model
 {
-  public:
-    GenericModelDawn(Context *context,
-                     Aquarium *aquarium,
-                     MODELGROUP type,
-                     MODELNAME name,
-                     bool blend);
-    ~GenericModelDawn();
+public:
+  GenericModelDawn(Context *context,
+                   Aquarium *aquarium,
+                   MODELGROUP type,
+                   MODELNAME name,
+                   bool blend);
+  ~GenericModelDawn();
 
-    void init() override;
-    void prepareForDraw() override;
-    void draw() override;
+  void init() override;
+  void prepareForDraw() override;
+  void draw() override;
 
-    void updatePerInstanceUniforms(const WorldUniforms &worldUniforms) override;
+  void updatePerInstanceUniforms(const WorldUniforms &worldUniforms) override;
 
-    TextureDawn *mDiffuseTexture;
-    TextureDawn *mNormalTexture;
-    TextureDawn *mReflectionTexture;
-    TextureDawn *mSkyboxTexture;
+  TextureDawn *mDiffuseTexture;
+  TextureDawn *mNormalTexture;
+  TextureDawn *mReflectionTexture;
+  TextureDawn *mSkyboxTexture;
 
-    BufferDawn *mPositionBuffer;
-    BufferDawn *mNormalBuffer;
-    BufferDawn *mTexCoordBuffer;
-    BufferDawn *mTangentBuffer;
-    BufferDawn *mBiNormalBuffer;
+  BufferDawn *mPositionBuffer;
+  BufferDawn *mNormalBuffer;
+  BufferDawn *mTexCoordBuffer;
+  BufferDawn *mTangentBuffer;
+  BufferDawn *mBiNormalBuffer;
 
-    BufferDawn *mIndicesBuffer;
+  BufferDawn *mIndicesBuffer;
 
-    struct LightFactorUniforms
-    {
-        float shininess;
-        float specularFactor;
-    } mLightFactorUniforms;
+  struct LightFactorUniforms
+  {
+    float shininess;
+    float specularFactor;
+  } mLightFactorUniforms;
 
-    struct WorldUniformPer
-    {
-        WorldUniforms WorldUniforms[20];
-    };
-    WorldUniformPer mWorldUniformPer;
+  struct WorldUniformPer
+  {
+    WorldUniforms WorldUniforms[20];
+  };
+  WorldUniformPer mWorldUniformPer;
 
-  private:
-    utils::ComboVertexStateDescriptor mVertexStateDescriptor;
-    wgpu::RenderPipeline mPipeline;
+private:
+  utils::ComboVertexStateDescriptor mVertexStateDescriptor;
+  wgpu::RenderPipeline mPipeline;
 
-    wgpu::BindGroupLayout mGroupLayoutModel;
-    wgpu::BindGroupLayout mGroupLayoutPer;
-    wgpu::PipelineLayout mPipelineLayout;
+  wgpu::BindGroupLayout mGroupLayoutModel;
+  wgpu::BindGroupLayout mGroupLayoutPer;
+  wgpu::PipelineLayout mPipelineLayout;
 
-    wgpu::BindGroup mBindGroupModel;
-    wgpu::BindGroup mBindGroupPer;
+  wgpu::BindGroup mBindGroupModel;
+  wgpu::BindGroup mBindGroupPer;
 
-    wgpu::Buffer mLightFactorBuffer;
-    wgpu::Buffer mWorldBuffer;
+  wgpu::Buffer mLightFactorBuffer;
+  wgpu::Buffer mWorldBuffer;
 
-    ContextDawn *mContextDawn;
-    ProgramDawn *mProgramDawn;
+  ContextDawn *mContextDawn;
+  ProgramDawn *mProgramDawn;
 
-    int instance;
+  int instance;
 };
 
 #endif  // GENERICMODELDAWN_H

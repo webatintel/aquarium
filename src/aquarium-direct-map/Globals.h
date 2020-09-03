@@ -3,8 +3,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Globals.h: Define global variables, constant variables, global texture map, program map and
-// scene map.
+// Globals.h: Define global variables, constant variables, global texture map,
+// program map and scene map.
 
 #ifndef GLOBALS_H
 #define GLOBALS_H
@@ -18,7 +18,8 @@
 #include "Scene.h"
 #include "common/FPSTimer.h"
 
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+#if defined(WIN32) || defined(_WIN32) || \
+    defined(__WIN32) && !defined(__CYGWIN__)
 const std::string slash = "\\";
 #define M_PI 3.141592653589793
 #else
@@ -29,9 +30,10 @@ class Scene;
 class Program;
 class Texture;
 
-static FPSTimer g_fpsTimer;                                // object to measure frames per second;
+static FPSTimer g_fpsTimer;  // object to measure frames per second;
 static std::unordered_map<std::string, Scene *> g_scenes;  // each of the models
-static std::unordered_map<std::string, std::multimap<std::string, std::vector<float>>>
+static std::unordered_map<std::string,
+                          std::multimap<std::string, std::vector<float>>>
     g_sceneGroups;  // the placement of the models
 static std::unordered_map<std::string, Program *>
     g_programMap;  // store all compiled program in this map
@@ -62,11 +64,11 @@ constexpr float fish_specularFactor    = 0.3f;
 
 struct G_ui_per
 {
-    const char *obj;
-    const char *name;
-    float value;
-    float max;
-    float min;
+  const char *obj;
+  const char *name;
+  float value;
+  float max;
+  float min;
 };
 
 static std::unordered_map<std::string, std::unordered_map<std::string, float>>
@@ -78,24 +80,24 @@ constexpr float g_net_offsetMult = 1.21f;
 
 struct G_viewSettings
 {
-    float targetHeight    = 63.3f;
-    float targetRadius    = 91.6f;
-    float eyeHeight       = 7.5f;
-    float eyeRadius       = 13.2f;
-    float eyeSpeed        = 0.0258f;
-    float fieldOfView     = 82.699f;
-    float ambientRed      = 0.218f;
-    float ambientGreen    = 0.502f;
-    float ambientBlue     = 0.706f;
-    float fogPower        = 16.5f;
-    float fogMult         = 1.5f;  // 2.02,
-    float fogOffset       = 0.738f;
-    float fogRed          = 0.338f;
-    float fogGreen        = 0.81f;
-    float fogBlue         = 1.0f;
-    float refractionFudge = 3.0f;
-    float eta             = 1.0f;
-    float tankColorFudge  = 0.796f;
+  float targetHeight    = 63.3f;
+  float targetRadius    = 91.6f;
+  float eyeHeight       = 7.5f;
+  float eyeRadius       = 13.2f;
+  float eyeSpeed        = 0.0258f;
+  float fieldOfView     = 82.699f;
+  float ambientRed      = 0.218f;
+  float ambientGreen    = 0.502f;
+  float ambientBlue     = 0.706f;
+  float fogPower        = 16.5f;
+  float fogMult         = 1.5f;  // 2.02,
+  float fogOffset       = 0.738f;
+  float fogRed          = 0.338f;
+  float fogGreen        = 0.81f;
+  float fogBlue         = 1.0f;
+  float refractionFudge = 3.0f;
+  float eta             = 1.0f;
+  float tankColorFudge  = 0.796f;
 } constexpr g_viewSettings;
 
 static std::vector<float> projection(16);
@@ -129,93 +131,95 @@ static std::vector<float> fogColor = {1.0f, 1.0f, 1.0f, 1.0f};
 // Generic uniforms
 struct GenericConst
 {
-    std::vector<float> *viewProjection;
-    std::vector<float> *viewInverse;
-    std::vector<float> *lightWorldPos;
-    std::vector<float> *lightColor;
-    std::vector<float> *specular;
-    std::vector<float> *ambient;
-    std::vector<float> *fogColor;
-    float shininess;
-    float specularFactor;
-    float fogPower;
-    float fogMult;
-    float fogOffset;
+  std::vector<float> *viewProjection;
+  std::vector<float> *viewInverse;
+  std::vector<float> *lightWorldPos;
+  std::vector<float> *lightColor;
+  std::vector<float> *specular;
+  std::vector<float> *ambient;
+  std::vector<float> *fogColor;
+  float shininess;
+  float specularFactor;
+  float fogPower;
+  float fogMult;
+  float fogOffset;
 
-    float eta;
-    float tankColorFudge;
-    float refractionFudge;
+  float eta;
+  float tankColorFudge;
+  float refractionFudge;
 };
-static GenericConst sandConst, genericConst, seaweedConst, outsideConst, innerConst;
+static GenericConst sandConst, genericConst, seaweedConst, outsideConst,
+    innerConst;
 
 struct GenericPer
 {
-    std::vector<float> *world;
-    std::vector<float> *worldViewProjection;
-    std::vector<float> *worldInverse;
-    std::vector<float> *worldInverseTranspose;
-    float time;
+  std::vector<float> *world;
+  std::vector<float> *worldViewProjection;
+  std::vector<float> *worldInverse;
+  std::vector<float> *worldInverseTranspose;
+  float time;
 };
 
-static GenericPer sandPer, genericPer, seaweedPer, outsidePer, innerPer, laserPer, skyPer;
+static GenericPer sandPer, genericPer, seaweedPer, outsidePer, innerPer,
+    laserPer, skyPer;
 
 struct SkyConst
 {
-    std::vector<float> *viewProjectionInverse;
+  std::vector<float> *viewProjectionInverse;
 };
 
 static SkyConst skyConst;
 
 struct FishPer
 {
-    std::vector<float> worldPosition;
-    std::vector<float> nextPosition;
-    float scale;
-    float time;
+  std::vector<float> worldPosition;
+  std::vector<float> nextPosition;
+  float scale;
+  float time;
 };
 
 static FishPer fishPer;
 
 struct G_sceneInfo
 {
-    std::string name;
-    std::string program[2];
-    bool fog;
-    std::string group;
-    bool blend;
+  std::string name;
+  std::string program[2];
+  bool fog;
+  std::string group;
+  bool blend;
 };
 
 struct ConstUniforms
 {
-    float fishLength;
-    float fishWaveLength;
-    float fishBendAmount;
+  float fishLength;
+  float fishWaveLength;
+  float fishBendAmount;
 };
 
 struct Fish
 {
-    std::string name;
-    float speed;
-    float speedRange;
-    float radius;
-    float radiusRange;
-    float tailSpeed;
-    float heightOffset;
-    float heightRange;
+  std::string name;
+  float speed;
+  float speedRange;
+  float radius;
+  float radiusRange;
+  float tailSpeed;
+  float heightOffset;
+  float heightRange;
 
-    ConstUniforms constUniforms;
+  ConstUniforms constUniforms;
 
-    bool lasers;
-    float laserRot;
-    float laserOff[3];
-    float laserScale[3];
-    int num;
+  bool lasers;
+  float laserRot;
+  float laserOff[3];
+  float laserScale[3];
+  int num;
 };
 
 struct FishConst
 {
-    GenericConst genericConst;
-    ConstUniforms constUniforms;
+  GenericConst genericConst;
+  ConstUniforms constUniforms;
 };
 
 static FishConst fishConst;

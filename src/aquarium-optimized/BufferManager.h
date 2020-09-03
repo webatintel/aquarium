@@ -14,57 +14,58 @@
 
 #include "Context.h"
 
-constexpr size_t BUFFER_POOL_MAX_SIZE     = 409600000;
-constexpr size_t BUFFER_MAX_COUNT         = 10;
-constexpr size_t BUFFER_PER_ALLOCATE_SIZE = BUFFER_POOL_MAX_SIZE / BUFFER_MAX_COUNT;
+constexpr size_t BUFFER_POOL_MAX_SIZE = 409600000;
+constexpr size_t BUFFER_MAX_COUNT     = 10;
+constexpr size_t BUFFER_PER_ALLOCATE_SIZE =
+    BUFFER_POOL_MAX_SIZE / BUFFER_MAX_COUNT;
 
 class RingBuffer
 {
-  public:
-    RingBuffer(size_t size) : mHead(0), mTail(size), mSize(size) {}
-    virtual ~RingBuffer() {}
+public:
+  RingBuffer(size_t size) : mHead(0), mTail(size), mSize(size) {}
+  virtual ~RingBuffer() {}
 
-    size_t getSize() const { return mSize; }
-    size_t getAvailableSize() const { return mSize - mTail; }
+  size_t getSize() const { return mSize; }
+  size_t getAvailableSize() const { return mSize - mTail; }
 
-    virtual bool reset(size_t size) { return false; }
-    virtual void flush() {}
-    virtual void destory() {}
-    virtual size_t allocate(size_t size)
-    {
-        return 0;
-    }  // allocate size in a RingBuffer, return offset of the buffer
+  virtual bool reset(size_t size) { return false; }
+  virtual void flush() {}
+  virtual void destory() {}
+  virtual size_t allocate(size_t size)
+  {
+    return 0;
+  }  // allocate size in a RingBuffer, return offset of the buffer
 
-  protected:
-    size_t mHead;
-    size_t mTail;
-    size_t mSize;
+protected:
+  size_t mHead;
+  size_t mTail;
+  size_t mSize;
 };
 
 class BufferManager
 {
-  public:
-    BufferManager();
-    virtual ~BufferManager();
+public:
+  BufferManager();
+  virtual ~BufferManager();
 
-    size_t GetSize() const { return mBufferPoolSize; }
-    bool resetBuffer(RingBuffer *ringBuffer, size_t size);
-    bool destoryBuffer(RingBuffer *ringBuffer);
-    virtual void destroyBufferPool() {}
-    virtual void flush();
+  size_t GetSize() const { return mBufferPoolSize; }
+  bool resetBuffer(RingBuffer *ringBuffer, size_t size);
+  bool destoryBuffer(RingBuffer *ringBuffer);
+  virtual void destroyBufferPool() {}
+  virtual void flush();
 
-    virtual RingBuffer *allocate(size_t size, size_t *offset) { return nullptr; }
+  virtual RingBuffer *allocate(size_t size, size_t *offset) { return nullptr; }
 
-    std::queue<RingBuffer *> mMappedBufferList;
+  std::queue<RingBuffer *> mMappedBufferList;
 
-  protected:
-    std::vector<RingBuffer *> mEnqueuedBufferList;
-    size_t mBufferPoolSize;
-    size_t mUsedSize;
-    size_t mCount;
+protected:
+  std::vector<RingBuffer *> mEnqueuedBufferList;
+  size_t mBufferPoolSize;
+  size_t mUsedSize;
+  size_t mCount;
 
-  private:
-    size_t find(RingBuffer *ringBuffer);
+private:
+  size_t find(RingBuffer *ringBuffer);
 };
 
 #endif  // BUFFERMANAGER_H

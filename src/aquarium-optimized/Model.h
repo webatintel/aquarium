@@ -27,28 +27,29 @@ struct WorldUniforms;
 
 class Model
 {
-  public:
-    Model();
-    Model(MODELGROUP type, MODELNAME name, bool blend)
-        : mProgram(nullptr), mBlend(blend), mName(name)
-    {
-    }
-    virtual ~Model();
-    virtual void prepareForDraw()                                              = 0;
-    virtual void updatePerInstanceUniforms(const WorldUniforms &worldUniforms) = 0;
-    virtual void draw()                                                        = 0;
+public:
+  Model();
+  Model(MODELGROUP type, MODELNAME name, bool blend)
+      : mProgram(nullptr), mBlend(blend), mName(name)
+  {
+  }
+  virtual ~Model();
+  virtual void prepareForDraw() = 0;
+  virtual void updatePerInstanceUniforms(
+      const WorldUniforms &worldUniforms) = 0;
+  virtual void draw()                     = 0;
 
-    void setProgram(Program *program);
-    virtual void init() = 0;
+  void setProgram(Program *program);
+  virtual void init() = 0;
 
-    std::vector<std::vector<float>> worldmatrices;
-    std::unordered_map<std::string, Texture *> textureMap;
-    std::unordered_map<std::string, Buffer *> bufferMap;
+  std::vector<std::vector<float>> worldmatrices;
+  std::unordered_map<std::string, Texture *> textureMap;
+  std::unordered_map<std::string, Buffer *> bufferMap;
 
-  protected:
-    Program *mProgram;
-    bool mBlend;
-    MODELNAME mName;
+protected:
+  Program *mProgram;
+  bool mBlend;
+  MODELNAME mName;
 };
 
 #endif  // MODEL_H

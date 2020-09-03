@@ -14,24 +14,25 @@ enum UNIFORMNAME : short;
 
 class Program
 {
-  public:
-    Program() {}
-    Program(const std::string &mVertexShader, const std::string &fragmentShader)
-        : mVId(mVertexShader), mFId(fragmentShader)
-    {
-    }
-    virtual ~Program() {}
-    virtual void setProgram() {}
-    virtual void compileProgram(bool enableAlphaBlending, const std::string &alpha) = 0;
+public:
+  Program() {}
+  Program(const std::string &mVertexShader, const std::string &fragmentShader)
+      : mVId(mVertexShader), mFId(fragmentShader)
+  {
+  }
+  virtual ~Program() {}
+  virtual void setProgram() {}
+  virtual void compileProgram(bool enableAlphaBlending,
+                              const std::string &alpha) = 0;
 
-  protected:
-    void loadProgram();
+protected:
+  void loadProgram();
 
-    std::string mVId;
-    std::string mFId;
+  std::string mVId;
+  std::string mFId;
 
-    std::string VertexShaderCode;
-    std::string FragmentShaderCode;
+  std::string VertexShaderCode;
+  std::string FragmentShaderCode;
 };
 
 #endif  // PROGRAM_H

@@ -3,7 +3,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// BufferGL.cpp: Implements the index or vertex buffer wrappers and resource bindings of OpenGL.
+// BufferGL.cpp: Implements the index or vertex buffer wrappers and resource
+// bindings of OpenGL.
 
 #include "BufferGL.h"
 
@@ -26,22 +27,22 @@ BufferGL::BufferGL(ContextGL *context,
       mStride(0),
       mOffset(nullptr)
 {
-    mBuf = mContext->generateBuffer();
+  mBuf = mContext->generateBuffer();
 }
 
 void BufferGL::loadBuffer(const std::vector<float> &buf)
 {
-    mContext->bindBuffer(mTarget, mBuf);
-    mContext->uploadBuffer(mTarget, buf);
+  mContext->bindBuffer(mTarget, mBuf);
+  mContext->uploadBuffer(mTarget, buf);
 }
 
 void BufferGL::loadBuffer(const std::vector<unsigned short> &buf)
 {
-    mContext->bindBuffer(mTarget, mBuf);
-    mContext->uploadBuffer(mTarget, buf);
+  mContext->bindBuffer(mTarget, mBuf);
+  mContext->uploadBuffer(mTarget, buf);
 }
 
 BufferGL::~BufferGL()
 {
-    mContext->deleteBuffer(mBuf);
+  mContext->deleteBuffer(mBuf);
 }
