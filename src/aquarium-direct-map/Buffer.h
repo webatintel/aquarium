@@ -16,29 +16,29 @@
 
 class Buffer
 {
-  public:
-    Buffer() {}
-    Buffer(const AttribBuffer &array, GLenum target);
-    ~Buffer();
+public:
+  Buffer() {}
+  Buffer(const AttribBuffer &array, GLenum target);
+  ~Buffer();
 
-    GLuint getBuffer() const { return mBuf; }
-    int getNumComponents() const { return mNumComponents; }
-    int getNumElements() const { return mNumElements; }
-    int getTotalComponents() const { return mTotalComponents; }
-    GLenum getType() const { return mType; }
-    bool getNormalize() const { return mNormalize; }
-    GLsizei getStride() const { return mStride; }
-    void *getOffset() const { return mOffset; }
+  GLuint getBuffer() const { return mBuf; }
+  int getNumComponents() const { return mNumComponents; }
+  int getNumElements() const { return mNumElements; }
+  int getTotalComponents() const { return mTotalComponents; }
+  GLenum getType() const { return mType; }
+  bool getNormalize() const { return mNormalize; }
+  GLsizei getStride() const { return mStride; }
+  void *getOffset() const { return mOffset; }
 
-  private:
-    GLuint mBuf;
-    int mNumComponents;
-    int mNumElements;
-    int mTotalComponents;
-    GLenum mType;
-    bool mNormalize;
-    GLsizei mStride;
-    void *mOffset;
+private:
+  GLuint mBuf;
+  int mNumComponents;
+  int mNumElements;
+  int mTotalComponents;
+  GLenum mType;
+  bool mNormalize;
+  GLsizei mStride;
+  void *mOffset;
 };
 
 #endif  // BUFFER_H

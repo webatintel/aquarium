@@ -30,38 +30,38 @@ class ContextGL;
 
 class BufferGL : public Buffer
 {
-  public:
-    BufferGL(ContextGL *context,
-             int totalCmoponents,
-             int numComponents,
-             bool isIndex,
-             unsigned int type,
-             bool normalize);
-    ~BufferGL() override;
+public:
+  BufferGL(ContextGL *context,
+           int totalCmoponents,
+           int numComponents,
+           bool isIndex,
+           unsigned int type,
+           bool normalize);
+  ~BufferGL() override;
 
-    unsigned int getBuffer() const { return mBuf; }
-    int getNumComponents() const { return mNumComponents; }
-    int getTotalComponents() const { return mTotoalComponents; }
-    int getNumberElements() const { return mNumElements; }
-    unsigned int getType() const { return mType; }
-    bool getNormalize() const { return mNormalize; }
-    int getStride() const { return mStride; }
-    void *getOffset() const { return mOffset; }
-    unsigned int getTarget() const { return mTarget; }
-    void loadBuffer(const std::vector<float> &buf);
-    void loadBuffer(const std::vector<unsigned short> &buf);
+  unsigned int getBuffer() const { return mBuf; }
+  int getNumComponents() const { return mNumComponents; }
+  int getTotalComponents() const { return mTotoalComponents; }
+  int getNumberElements() const { return mNumElements; }
+  unsigned int getType() const { return mType; }
+  bool getNormalize() const { return mNormalize; }
+  int getStride() const { return mStride; }
+  void *getOffset() const { return mOffset; }
+  unsigned int getTarget() const { return mTarget; }
+  void loadBuffer(const std::vector<float> &buf);
+  void loadBuffer(const std::vector<unsigned short> &buf);
 
-  private:
-    ContextGL *mContext;
-    unsigned int mBuf;
-    unsigned int mTarget;
-    int mNumComponents;
-    int mTotoalComponents;
-    int mNumElements;
-    unsigned int mType;
-    bool mNormalize;
-    int mStride;
-    void *mOffset;
+private:
+  ContextGL *mContext;
+  unsigned int mBuf;
+  unsigned int mTarget;
+  int mNumComponents;
+  int mTotoalComponents;
+  int mNumElements;
+  unsigned int mType;
+  bool mNormalize;
+  int mStride;
+  void *mOffset;
 };
 
 #endif  // BUFFERGL_H

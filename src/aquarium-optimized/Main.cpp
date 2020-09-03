@@ -9,13 +9,13 @@
 
 int main(int argc, char **argv)
 {
-    Aquarium aquarium;
-    if (!aquarium.init(argc, argv))
-    {
-        return -1;
-    }
+  Aquarium aquarium;
+  if (!aquarium.init(argc, argv))
+  {
+    return -1;
+  }
 
-    aquarium.display();
+  aquarium.display();
 
-    return 0;
+  return 0;
 }

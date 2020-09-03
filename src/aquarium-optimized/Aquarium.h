@@ -3,7 +3,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Aquarium.h: Define global variables, enums, constant variables and Class Aquarium.
+// Aquarium.h: Define global variables, enums, constant variables and Class
+// Aquarium.
 
 #ifndef AQUARIUM_H
 #define AQUARIUM_H
@@ -22,7 +23,8 @@ class Texture;
 class Program;
 class Model;
 
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+#if defined(WIN32) || defined(_WIN32) || \
+    defined(__WIN32) && !defined(__CYGWIN__)
 #define M_PI 3.141592653589793
 #else
 #include "math.h"
@@ -30,118 +32,118 @@ class Model;
 
 enum BACKENDTYPE : short
 {
-    BACKENDTYPEANGLE,
-    BACKENDTYPEDAWND3D12,
-    BACKENDTYPEDAWNMETAL,
-    BACKENDTYPEDAWNVULKAN,
-    BACKENDTYPED3D12,
-    BACKENDTYPEOPENGL,
-    BACKENDTYPELAST
+  BACKENDTYPEANGLE,
+  BACKENDTYPEDAWND3D12,
+  BACKENDTYPEDAWNMETAL,
+  BACKENDTYPEDAWNVULKAN,
+  BACKENDTYPED3D12,
+  BACKENDTYPEOPENGL,
+  BACKENDTYPELAST
 };
 
 enum MODELNAME : short
 {
-    MODELFIRST,
-    MODELRUINCOlOMN,
-    MODELARCH,
-    MODELROCKA,
-    MODELROCKB,
-    MODELROCKC,
-    MODELSUNKNSHIPBOXES,
-    MODELSUNKNSHIPDECK,
-    MODELSUNKNSHIPHULL,
-    MODELFLOORBASE_BAKED,
-    MODELSUNKNSUB,
-    MODELCORAL,
-    MODELSTONE,
-    MODELCORALSTONEA,
-    MODELCORALSTONEB,
-    MODELGLOBEBASE,
-    MODELTREASURECHEST,
-    MODELENVIRONMENTBOX,
-    MODELSUPPORTBEAMS,
-    MODELSKYBOX,
-    MODELGLOBEINNER,
-    MODELSEAWEEDA,
-    MODELSEAWEEDB,
-    MODELSMALLFISHA,
-    MODELMEDIUMFISHA,
-    MODELMEDIUMFISHB,
-    MODELBIGFISHA,
-    MODELBIGFISHB,
-    MODELSMALLFISHAINSTANCEDDRAWS,
-    MODELMEDIUMFISHAINSTANCEDDRAWS,
-    MODELMEDIUMFISHBINSTANCEDDRAWS,
-    MODELBIGFISHAINSTANCEDDRAWS,
-    MODELBIGFISHBINSTANCEDDRAWS,
-    MODELMAX
+  MODELFIRST,
+  MODELRUINCOlOMN,
+  MODELARCH,
+  MODELROCKA,
+  MODELROCKB,
+  MODELROCKC,
+  MODELSUNKNSHIPBOXES,
+  MODELSUNKNSHIPDECK,
+  MODELSUNKNSHIPHULL,
+  MODELFLOORBASE_BAKED,
+  MODELSUNKNSUB,
+  MODELCORAL,
+  MODELSTONE,
+  MODELCORALSTONEA,
+  MODELCORALSTONEB,
+  MODELGLOBEBASE,
+  MODELTREASURECHEST,
+  MODELENVIRONMENTBOX,
+  MODELSUPPORTBEAMS,
+  MODELSKYBOX,
+  MODELGLOBEINNER,
+  MODELSEAWEEDA,
+  MODELSEAWEEDB,
+  MODELSMALLFISHA,
+  MODELMEDIUMFISHA,
+  MODELMEDIUMFISHB,
+  MODELBIGFISHA,
+  MODELBIGFISHB,
+  MODELSMALLFISHAINSTANCEDDRAWS,
+  MODELMEDIUMFISHAINSTANCEDDRAWS,
+  MODELMEDIUMFISHBINSTANCEDDRAWS,
+  MODELBIGFISHAINSTANCEDDRAWS,
+  MODELBIGFISHBINSTANCEDDRAWS,
+  MODELMAX
 };
 
 enum MODELGROUP : short
 {
-    FISH,
-    FISHINSTANCEDDRAW,
-    INNER,
-    SEAWEED,
-    GENERIC,
-    OUTSIDE,
-    GROUPMAX
+  FISH,
+  FISHINSTANCEDDRAW,
+  INNER,
+  SEAWEED,
+  GENERIC,
+  OUTSIDE,
+  GROUPMAX
 };
 
 struct G_sceneInfo
 {
-    const char *namestr;
-    MODELNAME name;
-    const char *program[2];
-    bool fog;
-    MODELGROUP type;
-    bool blend;
+  const char *namestr;
+  MODELNAME name;
+  const char *program[2];
+  bool fog;
+  MODELGROUP type;
+  bool blend;
 };
 
 enum FISHENUM : short
 {
-    BIG,
-    MEDIUM,
-    SMALL,
-    MAX
+  BIG,
+  MEDIUM,
+  SMALL,
+  MAX
 };
 
 enum TOGGLE : short
 {
-    // Stop rendering after specified time.
-    AUTOSTOP,
-    // Enable alpha blending.
-    ENABLEALPHABLENDING,
-    // Go through instanced draw.
-    ENABLEINSTANCEDDRAWS,
-    // The toggle is only supported on Dawn backend.
-    // By default, the app will enable dynamic buffer offset.
-    // The toggle is to disable dbo feature.
-    ENABLEDYNAMICBUFFEROFFSET,
-    // Turn off render pass on dawn_d3d12
-    DISABLED3D12RENDERPASS,
-    // Turn off dawn validation,
-    DISABLEDAWNVALIDATION,
-    // Disable control panel,
-    DISABLECONTROLPANEL,
-    // Select integrated gpu if available.
-    INTEGRATEDGPU,
-    // Select discrete gpu if available.
-    DISCRETEGPU,
-    // Update and draw for each model on OpenGL and Angle backend, but draw once per frame on other
-    // backend.
-    UPATEANDDRAWFOREACHMODEL,
-    // Support Full Screen mode
-    ENABLEFULLSCREENMODE,
-    // Print logs such as avg fps
-    PRINTLOG,
-    // Use async buffer mapping to upload data
-    BUFFERMAPPINGASYNC,
-    // Simulate fish come and go for Dawn backend
-    SIMULATINGFISHCOMEANDGO,
-    // Turn off vsync, donot limit fps to 60
-    TURNOFFVSYNC,
-    TOGGLEMAX
+  // Stop rendering after specified time.
+  AUTOSTOP,
+  // Enable alpha blending.
+  ENABLEALPHABLENDING,
+  // Go through instanced draw.
+  ENABLEINSTANCEDDRAWS,
+  // The toggle is only supported on Dawn backend.
+  // By default, the app will enable dynamic buffer offset.
+  // The toggle is to disable dbo feature.
+  ENABLEDYNAMICBUFFEROFFSET,
+  // Turn off render pass on dawn_d3d12
+  DISABLED3D12RENDERPASS,
+  // Turn off dawn validation,
+  DISABLEDAWNVALIDATION,
+  // Disable control panel,
+  DISABLECONTROLPANEL,
+  // Select integrated gpu if available.
+  INTEGRATEDGPU,
+  // Select discrete gpu if available.
+  DISCRETEGPU,
+  // Update and draw for each model on OpenGL and Angle backend, but draw once
+  // per frame on other backend.
+  UPATEANDDRAWFOREACHMODEL,
+  // Support Full Screen mode
+  ENABLEFULLSCREENMODE,
+  // Print logs such as avg fps
+  PRINTLOG,
+  // Use async buffer mapping to upload data
+  BUFFERMAPPINGASYNC,
+  // Simulate fish come and go for Dawn backend
+  SIMULATINGFISHCOMEANDGO,
+  // Turn off vsync, donot limit fps to 60
+  TURNOFFVSYNC,
+  TOGGLEMAX
 };
 
 const G_sceneInfo g_sceneInfo[] = {
@@ -197,14 +199,26 @@ const G_sceneInfo g_sceneInfo[] = {
      MODELGROUP::FISHINSTANCEDDRAW},
     {"Arch", MODELNAME::MODELARCH, {"", ""}, true, MODELGROUP::GENERIC},
     {"Coral", MODELNAME::MODELCORAL, {"", ""}, true, MODELGROUP::GENERIC},
-    {"CoralStoneA", MODELNAME::MODELCORALSTONEA, {"", ""}, true, MODELGROUP::GENERIC},
-    {"CoralStoneB", MODELNAME::MODELCORALSTONEB, {"", ""}, true, MODELGROUP::GENERIC},
+    {"CoralStoneA",
+     MODELNAME::MODELCORALSTONEA,
+     {"", ""},
+     true,
+     MODELGROUP::GENERIC},
+    {"CoralStoneB",
+     MODELNAME::MODELCORALSTONEB,
+     {"", ""},
+     true,
+     MODELGROUP::GENERIC},
     {"EnvironmentBox",
      MODELNAME::MODELENVIRONMENTBOX,
      {"diffuseVertexShader", "diffuseFragmentShader"},
      false,
      MODELGROUP::OUTSIDE},
-    {"FloorBase_Baked", MODELNAME::MODELFLOORBASE_BAKED, {"", ""}, true, MODELGROUP::GENERIC},
+    {"FloorBase_Baked",
+     MODELNAME::MODELFLOORBASE_BAKED,
+     {"", ""},
+     true,
+     MODELGROUP::GENERIC},
     {"GlobeBase",
      MODELNAME::MODELGLOBEBASE,
      {"diffuseVertexShader", "diffuseFragmentShader"},
@@ -218,11 +232,27 @@ const G_sceneInfo g_sceneInfo[] = {
     {"RockA", MODELNAME::MODELROCKA, {"", ""}, true, MODELGROUP::GENERIC},
     {"RockB", MODELNAME::MODELROCKB, {"", ""}, true, MODELGROUP::GENERIC},
     {"RockC", MODELNAME::MODELROCKC, {"", ""}, true, MODELGROUP::GENERIC},
-    {"RuinColumn", MODELNAME::MODELRUINCOlOMN, {"", ""}, true, MODELGROUP::GENERIC},
+    {"RuinColumn",
+     MODELNAME::MODELRUINCOlOMN,
+     {"", ""},
+     true,
+     MODELGROUP::GENERIC},
     {"Stone", MODELNAME::MODELSTONE, {"", ""}, true, MODELGROUP::GENERIC},
-    {"SunknShipBoxes", MODELNAME::MODELSUNKNSHIPBOXES, {"", ""}, true, MODELGROUP::GENERIC},
-    {"SunknShipDeck", MODELNAME::MODELSUNKNSHIPDECK, {"", ""}, true, MODELGROUP::GENERIC},
-    {"SunknShipHull", MODELNAME::MODELSUNKNSHIPHULL, {"", ""}, true, MODELGROUP::GENERIC},
+    {"SunknShipBoxes",
+     MODELNAME::MODELSUNKNSHIPBOXES,
+     {"", ""},
+     true,
+     MODELGROUP::GENERIC},
+    {"SunknShipDeck",
+     MODELNAME::MODELSUNKNSHIPDECK,
+     {"", ""},
+     true,
+     MODELGROUP::GENERIC},
+    {"SunknShipHull",
+     MODELNAME::MODELSUNKNSHIPHULL,
+     {"", ""},
+     true,
+     MODELGROUP::GENERIC},
     {"SunknSub", MODELNAME::MODELSUNKNSUB, {"", ""}, true, MODELGROUP::GENERIC},
     {"SeaweedA",
      MODELNAME::MODELSEAWEEDA,
@@ -239,72 +269,81 @@ const G_sceneInfo g_sceneInfo[] = {
      {"diffuseVertexShader", "diffuseFragmentShader"},
      false,
      MODELGROUP::OUTSIDE},
-    {"SupportBeams", MODELNAME::MODELSUPPORTBEAMS, {"", ""}, false, MODELGROUP::OUTSIDE},
-    {"TreasureChest", MODELNAME::MODELTREASURECHEST, {"", ""}, true, MODELGROUP::GENERIC}};
+    {"SupportBeams",
+     MODELNAME::MODELSUPPORTBEAMS,
+     {"", ""},
+     false,
+     MODELGROUP::OUTSIDE},
+    {"TreasureChest",
+     MODELNAME::MODELTREASURECHEST,
+     {"", ""},
+     true,
+     MODELGROUP::GENERIC}};
 
 struct Fish
 {
-    const char *name;
-    MODELNAME modelName;
-    FISHENUM type;
-    float speed;
-    float speedRange;
-    float radius;
-    float radiusRange;
-    float tailSpeed;
-    float heightOffset;
-    float heightRange;
+  const char *name;
+  MODELNAME modelName;
+  FISHENUM type;
+  float speed;
+  float speedRange;
+  float radius;
+  float radiusRange;
+  float tailSpeed;
+  float heightOffset;
+  float heightRange;
 
-    float fishLength;
-    float fishWaveLength;
-    float fishBendAmount;
+  float fishLength;
+  float fishWaveLength;
+  float fishBendAmount;
 
-    bool lasers;
-    float laserRot;
-    float laserOff[3];
-    float laserScale[3];
+  bool lasers;
+  float laserRot;
+  float laserOff[3];
+  float laserScale[3];
 };
 
-const Fish fishTable[] = {{"SmallFishA", MODELNAME::MODELSMALLFISHA, FISHENUM::SMALL, 1.0f, 1.5f,
-                           30.0f, 25.0f, 10.0f, 0.0f, 16.0f, 10.0f, 1.0f, 2.0f},
-                          {"MediumFishA", MODELNAME::MODELMEDIUMFISHA, FISHENUM::MEDIUM, 1.0f, 2.0f,
-                           10.0f, 20.0f, 1.0f, 0.0f, 16.0f, 10.0f, -2.0f, 2.0f},
-                          {"MediumFishB", MODELNAME::MODELMEDIUMFISHB, FISHENUM::MEDIUM, 0.5f, 4.0f,
-                           10.0f, 20.0f, 3.0f, -8.0f, 5.0f, 10.0f, -2.0f, 2.0f},
-                          {"BigFishA",
-                           MODELNAME::MODELBIGFISHA,
-                           FISHENUM::BIG,
-                           0.5f,
-                           0.5f,
-                           50.0f,
-                           3.0f,
-                           1.5f,
-                           0.0f,
-                           16.0f,
-                           10.0f,
-                           -1.0f,
-                           0.5f,
-                           true,
-                           0.04f,
-                           {0.0f, 0.1f, 9.0f},
-                           {0.3f, 0.3f, 1000.0f}},
-                          {"BigFishB",
-                           MODELNAME::MODELBIGFISHB,
-                           FISHENUM::BIG,
-                           0.5f,
-                           0.5f,
-                           45.0f,
-                           3.0f,
-                           1.0f,
-                           0.0f,
-                           16.0f,
-                           10.0f,
-                           -0.7f,
-                           0.3f,
-                           true,
-                           0.04f,
-                           {0.0f, -0.3f, 9.0f},
-                           {0.3f, 0.3f, 1000.0f}}};
+const Fish fishTable[] = {
+    {"SmallFishA", MODELNAME::MODELSMALLFISHA, FISHENUM::SMALL, 1.0f, 1.5f,
+     30.0f, 25.0f, 10.0f, 0.0f, 16.0f, 10.0f, 1.0f, 2.0f},
+    {"MediumFishA", MODELNAME::MODELMEDIUMFISHA, FISHENUM::MEDIUM, 1.0f, 2.0f,
+     10.0f, 20.0f, 1.0f, 0.0f, 16.0f, 10.0f, -2.0f, 2.0f},
+    {"MediumFishB", MODELNAME::MODELMEDIUMFISHB, FISHENUM::MEDIUM, 0.5f, 4.0f,
+     10.0f, 20.0f, 3.0f, -8.0f, 5.0f, 10.0f, -2.0f, 2.0f},
+    {"BigFishA",
+     MODELNAME::MODELBIGFISHA,
+     FISHENUM::BIG,
+     0.5f,
+     0.5f,
+     50.0f,
+     3.0f,
+     1.5f,
+     0.0f,
+     16.0f,
+     10.0f,
+     -1.0f,
+     0.5f,
+     true,
+     0.04f,
+     {0.0f, 0.1f, 9.0f},
+     {0.3f, 0.3f, 1000.0f}},
+    {"BigFishB",
+     MODELNAME::MODELBIGFISHB,
+     FISHENUM::BIG,
+     0.5f,
+     0.5f,
+     45.0f,
+     3.0f,
+     1.0f,
+     0.0f,
+     16.0f,
+     10.0f,
+     -0.7f,
+     0.3f,
+     true,
+     0.04f,
+     {0.0f, -0.3f, 9.0f},
+     {0.3f, 0.3f, 1000.0f}}};
 
 constexpr float g_tailOffsetMult      = 1.0f;
 constexpr float g_endOfDome           = static_cast<float>(M_PI / 8);
@@ -385,129 +424,130 @@ constexpr float g_fieldOfView     = 82.699f;
 
 struct Global
 {
-    float projection[16];
-    float view[16];
-    float worldInverse[16];
-    float viewProjectionInverse[16];
-    float skyView[16];
-    float skyViewProjection[16];
-    float skyViewProjectionInverse[16];
-    float eyePosition[3];
-    float target[3];
-    float up[3] = {0, 1, 0};
-    float v3t0[3];
-    float v3t1[3];
-    float m4t0[16];
-    float m4t1[16];
-    float m4t2[16];
-    float m4t3[16];
-    float colorMult[4] = {1, 1, 1, 1};
-    double then;
-    double start;
-    float mclock;
-    float eyeClock;
-    std::string alpha;
+  float projection[16];
+  float view[16];
+  float worldInverse[16];
+  float viewProjectionInverse[16];
+  float skyView[16];
+  float skyViewProjection[16];
+  float skyViewProjectionInverse[16];
+  float eyePosition[3];
+  float target[3];
+  float up[3] = {0, 1, 0};
+  float v3t0[3];
+  float v3t1[3];
+  float m4t0[16];
+  float m4t1[16];
+  float m4t2[16];
+  float m4t3[16];
+  float colorMult[4] = {1, 1, 1, 1};
+  double then;
+  double start;
+  float mclock;
+  float eyeClock;
+  std::string alpha;
 };
 
 struct LightWorldPositionUniform
 {
-    float lightWorldPos[3];
-    float padding;
-    float viewProjection[16];
-    float viewInverse[16];
+  float lightWorldPos[3];
+  float padding;
+  float viewProjection[16];
+  float viewInverse[16];
 };
 
 struct WorldUniforms
 {
-    float world[16];
-    float worldInverseTranspose[16];
-    float worldViewProjection[16];
+  float world[16];
+  float worldInverseTranspose[16];
+  float worldViewProjection[16];
 };
 
 struct LightUniforms
 {
-    float lightColor[4];
-    float specular[4];
-    float ambient[4];
+  float lightColor[4];
+  float specular[4];
+  float ambient[4];
 };
 
 struct FogUniforms
 {
-    float fogPower;
-    float fogMult;
-    float fogOffset;
-    float padding;
-    float fogColor[4];
+  float fogPower;
+  float fogMult;
+  float fogOffset;
+  float padding;
+  float fogColor[4];
 };
 
 struct FishPer
 {
-    float worldPosition[3];
-    float scale;
-    float nextPosition[3];
-    float time;
-    float padding[56];  // TODO(yizhou): the padding is to align with 256 byte offset.
+  float worldPosition[3];
+  float scale;
+  float nextPosition[3];
+  float time;
+  float padding[56];  // TODO(yizhou): the padding is to align with 256 byte
+                      // offset.
 };
 
 class Aquarium
 {
-  public:
-    Aquarium();
-    ~Aquarium();
-    bool init(int argc, char **argv);
-    void display();
-    Texture *getSkybox() { return mTextureMap["skybox"]; }
-    int getCurFishCount() const { return mCurFishCount; }
-    int getPreFishCount() const { return mPreFishCount; }
+public:
+  Aquarium();
+  ~Aquarium();
+  bool init(int argc, char **argv);
+  void display();
+  Texture *getSkybox() { return mTextureMap["skybox"]; }
+  int getCurFishCount() const { return mCurFishCount; }
+  int getPreFishCount() const { return mPreFishCount; }
 
-    std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> toggleBitset;
-    LightWorldPositionUniform lightWorldPositionUniform;
-    WorldUniforms worldUniforms;
-    LightUniforms lightUniforms;
-    FogUniforms fogUniforms;
-    Global g;
-    int fishCount[5];
+  std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> toggleBitset;
+  LightWorldPositionUniform lightWorldPositionUniform;
+  WorldUniforms worldUniforms;
+  LightUniforms lightUniforms;
+  FogUniforms fogUniforms;
+  Global g;
+  int fishCount[5];
 
-  private:
-    void render();
-    void loadReource();
-    void loadPlacement();
-    void loadModels();
-    void loadFishScenario();
-    void loadModel(const G_sceneInfo &info);
-    void setupModelEnumMap();
-    void calculateFishCount();
-    void updateWorldMatrixAndDraw(Model *model);
-    void updateGlobalUniforms();
+private:
+  void render();
+  void loadReource();
+  void loadPlacement();
+  void loadModels();
+  void loadFishScenario();
+  void loadModel(const G_sceneInfo &info);
+  void setupModelEnumMap();
+  void calculateFishCount();
+  void updateWorldMatrixAndDraw(Model *model);
+  void updateGlobalUniforms();
 
-    void updateWorldProjections(const std::vector<float> &w);
-    BACKENDTYPE getBackendType(const std::string &backendPath);
-    double getElapsedTime();
-    void printAvgFps();
-    void resetFpsTime();
-    void updateWorldMatrix(Model *model);
+  void updateWorldProjections(const std::vector<float> &w);
+  BACKENDTYPE getBackendType(const std::string &backendPath);
+  double getElapsedTime();
+  void printAvgFps();
+  void resetFpsTime();
+  void updateWorldMatrix(Model *model);
 
-    void updateAndDrawFishes();
-    void updateAndDrawBackground();
+  void updateAndDrawFishes();
+  void updateAndDrawBackground();
 
-    void updateBackground();
-    void drawBackground();
-    void updateFishes();
-    void drawFishes();
+  void updateBackground();
+  void drawBackground();
+  void updateFishes();
+  void drawFishes();
 
-    std::unordered_map<std::string, MODELNAME> mModelEnumMap;
-    std::unordered_map<std::string, Texture *> mTextureMap;
-    std::unordered_map<std::string, Program *> mProgramMap;
-    Model *mAquariumModels[MODELNAME::MODELMAX];
-    Context *mContext;
-    FPSTimer mFpsTimer;  // object to measure frames per second;
-    int mCurFishCount;
-    int mPreFishCount;
-    int mTestTime;
-    BACKENDTYPE mBackendType;
-    ContextFactory *mFactory;
-    std::vector<std::string> mSkyUrls;
-    std::queue<Behavior *> mFishBehavior;
+  std::unordered_map<std::string, MODELNAME> mModelEnumMap;
+  std::unordered_map<std::string, Texture *> mTextureMap;
+  std::unordered_map<std::string, Program *> mProgramMap;
+  Model *mAquariumModels[MODELNAME::MODELMAX];
+  Context *mContext;
+  FPSTimer mFpsTimer;  // object to measure frames per second;
+  int mCurFishCount;
+  int mPreFishCount;
+  int mTestTime;
+  BACKENDTYPE mBackendType;
+  ContextFactory *mFactory;
+  std::vector<std::string> mSkyUrls;
+  std::queue<Behavior *> mFishBehavior;
 };
 
 #endif  // AQUARIUM_H

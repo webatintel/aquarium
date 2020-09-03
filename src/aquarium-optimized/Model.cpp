@@ -14,17 +14,17 @@ Model::Model() : mProgram(nullptr), mBlend(false), mName(MODELMAX) {}
 
 Model::~Model()
 {
-    for (auto &buf : bufferMap)
+  for (auto &buf : bufferMap)
+  {
+    if (buf.second != nullptr)
     {
-        if (buf.second != nullptr)
-        {
-            delete buf.second;
-            buf.second = nullptr;
-        }
+      delete buf.second;
+      buf.second = nullptr;
     }
+  }
 }
 
 void Model::setProgram(Program *prgm)
 {
-    mProgram = prgm;
+  mProgram = prgm;
 }

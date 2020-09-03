@@ -11,8 +11,13 @@
 
 #include "ContextD3D12.h"
 
-ProgramD3D12::ProgramD3D12(ContextD3D12 *context, const std::string &mVId, const std::string &mFId)
-    : Program(mVId, mFId), mVertexShader(nullptr), mPixelShader(nullptr), context(context)
+ProgramD3D12::ProgramD3D12(ContextD3D12 *context,
+                           const std::string &mVId,
+                           const std::string &mFId)
+    : Program(mVId, mFId),
+      mVertexShader(nullptr),
+      mPixelShader(nullptr),
+      context(context)
 {
 }
 
@@ -20,14 +25,14 @@ ProgramD3D12::~ProgramD3D12() {}
 
 void ProgramD3D12::compileProgram(bool enableBlending, const std::string &alpha)
 {
-    loadProgram();
+  loadProgram();
 
-    if (enableBlending)
-    {
-        FragmentShaderCode =
-            std::regex_replace(FragmentShaderCode, std::regex(R"(diffuseColor.w)"), alpha);
-    }
+  if (enableBlending)
+  {
+    FragmentShaderCode = std::regex_replace(
+        FragmentShaderCode, std::regex(R"(diffuseColor.w)"), alpha);
+  }
 
-    mVertexShader = context->createShaderModule("VS", VertexShaderCode);
-    mPixelShader  = context->createShaderModule("PS", FragmentShaderCode);
+  mVertexShader = context->createShaderModule("VS", VertexShaderCode);
+  mPixelShader  = context->createShaderModule("PS", FragmentShaderCode);
 }

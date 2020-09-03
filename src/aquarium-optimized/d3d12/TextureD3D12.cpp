@@ -13,7 +13,9 @@
 
 TextureD3D12::~TextureD3D12() {}
 
-TextureD3D12::TextureD3D12(ContextD3D12 *context, const std::string &name, const std::string &url)
+TextureD3D12::TextureD3D12(ContextD3D12 *context,
+                           const std::string &name,
+                           const std::string &url)
     : Texture(name, url, true),
       mTextureDimension(D3D12_RESOURCE_DIMENSION_TEXTURE2D),
       mTextureViewDimension(D3D12_SRV_DIMENSION_TEXTURE2D),
@@ -37,62 +39,67 @@ TextureD3D12::TextureD3D12(ContextD3D12 *context,
 
 void TextureD3D12::loadTexture()
 {
-    loadImage(mUrls, &mPixelVec);
+  loadImage(mUrls, &mPixelVec);
 
-    if (mTextureViewDimension == D3D12_SRV_DIMENSION_TEXTURECUBE)
-    {
-        D3D12_RESOURCE_DESC textureDesc = {};
-        textureDesc.MipLevels           = 1;
-        textureDesc.Format              = mFormat;
-        textureDesc.Width               = mWidth;
-        textureDesc.Height              = mHeight;
-        textureDesc.Flags               = D3D12_RESOURCE_FLAG_NONE;
-        textureDesc.DepthOrArraySize    = 6;
-        textureDesc.SampleDesc.Count    = 1;
-        textureDesc.SampleDesc.Quality  = 0;
-        textureDesc.Dimension           = mTextureDimension;
+  if (mTextureViewDimension == D3D12_SRV_DIMENSION_TEXTURECUBE)
+  {
+    D3D12_RESOURCE_DESC textureDesc = {};
+    textureDesc.MipLevels           = 1;
+    textureDesc.Format              = mFormat;
+    textureDesc.Width               = mWidth;
+    textureDesc.Height              = mHeight;
+    textureDesc.Flags               = D3D12_RESOURCE_FLAG_NONE;
+    textureDesc.DepthOrArraySize    = 6;
+    textureDesc.SampleDesc.Count    = 1;
+    textureDesc.SampleDesc.Quality  = 0;
+    textureDesc.Dimension           = mTextureDimension;
 
-        mContext->createTexture(textureDesc, mPixelVec, mTexture, mTextureUploadHeap, mWidth,
-                                mHeight, 4u, textureDesc.MipLevels, textureDesc.DepthOrArraySize);
-    }
-    else
-    {
-        generateMipmap(mPixelVec[0], mWidth, mHeight, 0, mResizedVec, mWidth, mHeight, 0, 4, false);
+    mContext->createTexture(
+        textureDesc, mPixelVec, mTexture, mTextureUploadHeap, mWidth, mHeight,
+        4u, textureDesc.MipLevels, textureDesc.DepthOrArraySize);
+  }
+  else
+  {
+    generateMipmap(mPixelVec[0], mWidth, mHeight, 0, mResizedVec, mWidth,
+                   mHeight, 0, 4, false);
 
-        D3D12_RESOURCE_DESC textureDesc = {};
-        textureDesc.MipLevels =
-            static_cast<uint16_t>(std::floor(std::log2(std::max(mWidth, mHeight)))) + 1;
-        textureDesc.Format             = mFormat;
-        textureDesc.Width              = mWidth;
-        textureDesc.Height             = mHeight;
-        textureDesc.Flags              = D3D12_RESOURCE_FLAG_NONE;
-        textureDesc.DepthOrArraySize   = 1;
-        textureDesc.SampleDesc.Count   = 1;
-        textureDesc.SampleDesc.Quality = 0;
-        textureDesc.Dimension          = mTextureDimension;
+    D3D12_RESOURCE_DESC textureDesc = {};
+    textureDesc.MipLevels           = static_cast<uint16_t>(std::floor(
+                                std::log2(std::max(mWidth, mHeight)))) +
+                            1;
+    textureDesc.Format             = mFormat;
+    textureDesc.Width              = mWidth;
+    textureDesc.Height             = mHeight;
+    textureDesc.Flags              = D3D12_RESOURCE_FLAG_NONE;
+    textureDesc.DepthOrArraySize   = 1;
+    textureDesc.SampleDesc.Count   = 1;
+    textureDesc.SampleDesc.Quality = 0;
+    textureDesc.Dimension          = mTextureDimension;
 
-        mContext->createTexture(textureDesc, mResizedVec, mTexture, mTextureUploadHeap, mWidth,
-                                mHeight, 4u, textureDesc.MipLevels, textureDesc.DepthOrArraySize);
-    }
+    mContext->createTexture(
+        textureDesc, mResizedVec, mTexture, mTextureUploadHeap, mWidth, mHeight,
+        4u, textureDesc.MipLevels, textureDesc.DepthOrArraySize);
+  }
 }
 
-// Allocate descriptors sequentially on deascriptor heap to bind root signature, create srv before
-// binding resources.
+// Allocate descriptors sequentially on deascriptor heap to bind root signature,
+// create srv before binding resources.
 void TextureD3D12::createSrvDescriptor()
 {
-    mSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-    mSrvDesc.Format                  = mFormat;
-    mSrvDesc.ViewDimension           = mTextureViewDimension;
-    if (mTextureViewDimension == D3D12_SRV_DIMENSION_TEXTURECUBE)
-    {
-        mSrvDesc.Texture2D.MipLevels = 1;
-    }
-    else
-    {
+  mSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+  mSrvDesc.Format                  = mFormat;
+  mSrvDesc.ViewDimension           = mTextureViewDimension;
+  if (mTextureViewDimension == D3D12_SRV_DIMENSION_TEXTURECUBE)
+  {
+    mSrvDesc.Texture2D.MipLevels = 1;
+  }
+  else
+  {
 
-        mSrvDesc.Texture2D.MipLevels =
-            static_cast<uint32_t>(std::floor(std::log2(std::max(mWidth, mHeight)))) + 1;
-    }
+    mSrvDesc.Texture2D.MipLevels = static_cast<uint32_t>(std::floor(
+                                       std::log2(std::max(mWidth, mHeight)))) +
+                                   1;
+  }
 
-    mContext->buildSrvDescriptor(mTexture.Get(), mSrvDesc, &mTextureGPUHandle);
+  mContext->buildSrvDescriptor(mTexture.Get(), mSrvDesc, &mTextureGPUHandle);
 }

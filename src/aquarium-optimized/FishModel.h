@@ -12,33 +12,33 @@
 
 class FishModel : public Model
 {
-  public:
-    FishModel(MODELGROUP type, MODELNAME name, bool blend, Aquarium *aquarium)
-        : Model(type, name, blend),
-          mPreInstance(0),
-          mCurInstance(0),
-          mFishPerOffset(0),
-          mAquarium(aquarium)
-    {
-    }
+public:
+  FishModel(MODELGROUP type, MODELNAME name, bool blend, Aquarium *aquarium)
+      : Model(type, name, blend),
+        mPreInstance(0),
+        mCurInstance(0),
+        mFishPerOffset(0),
+        mAquarium(aquarium)
+  {
+  }
 
-    virtual void updateFishPerUniforms(float x,
-                                       float y,
-                                       float z,
-                                       float nextX,
-                                       float nextY,
-                                       float nextZ,
-                                       float scale,
-                                       float time,
-                                       int index) = 0;
-    void prepareForDraw();
+  virtual void updateFishPerUniforms(float x,
+                                     float y,
+                                     float z,
+                                     float nextX,
+                                     float nextY,
+                                     float nextZ,
+                                     float scale,
+                                     float time,
+                                     int index) = 0;
+  void prepareForDraw();
 
-  protected:
-    int mPreInstance;
-    int mCurInstance;
-    int mFishPerOffset;
+protected:
+  int mPreInstance;
+  int mCurInstance;
+  int mFishPerOffset;
 
-    Aquarium *mAquarium;
+  Aquarium *mAquarium;
 };
 
 #endif  // FISHMODEL_H

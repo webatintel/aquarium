@@ -21,48 +21,48 @@ class ContextDawn;
 
 class RingBufferDawn : public RingBuffer
 {
-  public:
-    RingBufferDawn(BufferManagerDawn *bufferManager, size_t size);
-    ~RingBufferDawn() override {}
+public:
+  RingBufferDawn(BufferManagerDawn *bufferManager, size_t size);
+  ~RingBufferDawn() override {}
 
-    bool push(const wgpu::CommandEncoder &encoder,
-              const wgpu::Buffer &destBuffer,
-              size_t src_offset,
-              size_t dest_offset,
-              void *pixels,
-              size_t size);
-    bool reset(size_t size) override;
-    void flush() override;
-    void destory() override;
-    void reMap();
-    size_t allocate(size_t size) override;
+  bool push(const wgpu::CommandEncoder &encoder,
+            const wgpu::Buffer &destBuffer,
+            size_t src_offset,
+            size_t dest_offset,
+            void *pixels,
+            size_t size);
+  bool reset(size_t size) override;
+  void flush() override;
+  void destory() override;
+  void reMap();
+  size_t allocate(size_t size) override;
 
-  private:
-    static void MapWriteCallback(WGPUBufferMapAsyncStatus status,
-                                 void *data,
-                                 uint64_t,
-                                 void *userdata);
+private:
+  static void MapWriteCallback(WGPUBufferMapAsyncStatus status,
+                               void *data,
+                               uint64_t,
+                               void *userdata);
 
-    wgpu::CreateBufferMappedResult mBufferMappedResult;
+  wgpu::CreateBufferMappedResult mBufferMappedResult;
 
-    BufferManagerDawn *mBufferManager;
-    void *mappedData;
-    void *mPixels;
+  BufferManagerDawn *mBufferManager;
+  void *mappedData;
+  void *mPixels;
 };
 
 class BufferManagerDawn : public BufferManager
 {
-  public:
-    BufferManagerDawn(ContextDawn *context, bool sync);
-    ~BufferManagerDawn();
+public:
+  BufferManagerDawn(ContextDawn *context, bool sync);
+  ~BufferManagerDawn();
 
-    RingBufferDawn *allocate(size_t size, size_t *offset) override;
-    void flush() override;
-    void destroyBufferPool() override;
+  RingBufferDawn *allocate(size_t size, size_t *offset) override;
+  void flush() override;
+  void destroyBufferPool() override;
 
-    wgpu::CommandEncoder mEncoder;
-    ContextDawn *mContext;
-    bool mSync;
+  wgpu::CommandEncoder mEncoder;
+  ContextDawn *mContext;
+  bool mSync;
 };
 
 #endif  // BUFFERMANAGERDAWN_H

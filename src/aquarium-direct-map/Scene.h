@@ -19,24 +19,24 @@ class Model;
 
 class Scene
 {
-  public:
-    Scene() {}
-    ~Scene();
-    Scene(const std::string opt_programIds[2]);
+public:
+  Scene() {}
+  ~Scene();
+  Scene(const std::string opt_programIds[2]);
 
-    void load(const std::string &path, const std::string &name);
-    const std::vector<Model *> &getModels() const { return models; }
+  void load(const std::string &path, const std::string &name);
+  const std::vector<Model *> &getModels() const { return models; }
 
-    bool loaded;
+  bool loaded;
 
-  private:
-    void setupSkybox(const std::string &path);
+private:
+  void setupSkybox(const std::string &path);
 
-    std::string programIds[2];
-    std::string url;
-    std::vector<Model *> models;
-    std::unordered_map<std::string, Texture *> textureMap;
-    std::unordered_map<std::string, const AttribBuffer *> arrayMap;
+  std::string programIds[2];
+  std::string url;
+  std::vector<Model *> models;
+  std::unordered_map<std::string, Texture *> textureMap;
+  std::unordered_map<std::string, const AttribBuffer *> arrayMap;
 };
 
 #endif  // SCENE_H

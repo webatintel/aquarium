@@ -12,11 +12,15 @@
 
 class Buffer
 {
-  public:
-    Buffer() {}
-    Buffer(int numComponents, int numElements, const std::vector<float> &buffer) {}
-    Buffer(int numComponents, int numElements, const std::vector<short> &buffer) {}
-    virtual ~Buffer() {}
+public:
+  Buffer() {}
+  Buffer(int numComponents, int numElements, const std::vector<float> &buffer)
+  {
+  }
+  Buffer(int numComponents, int numElements, const std::vector<short> &buffer)
+  {
+  }
+  virtual ~Buffer() {}
 };
 
 #endif  // BUFFER_H

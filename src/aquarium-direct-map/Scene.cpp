@@ -4,7 +4,8 @@
 // found in the LICENSE file.
 //
 // Scene.cpp: Implements Scene.
-// Load resources including images, vertexes and programs, then group them into models.
+// Load resources including images, vertexes and programs, then group them into
+// models.
 
 #include "Scene.h"
 
@@ -24,200 +25,202 @@
 #include "common/AQUARIUM_ASSERT.h"
 
 std::vector<std::string> g_skyBoxUrls = {
-    "GlobeOuter_EM_positive_x.jpg", "GlobeOuter_EM_negative_x.jpg", "GlobeOuter_EM_positive_y.jpg",
-    "GlobeOuter_EM_negative_y.jpg", "GlobeOuter_EM_positive_z.jpg", "GlobeOuter_EM_negative_z.jpg"};
+    "GlobeOuter_EM_positive_x.jpg", "GlobeOuter_EM_negative_x.jpg",
+    "GlobeOuter_EM_positive_y.jpg", "GlobeOuter_EM_negative_y.jpg",
+    "GlobeOuter_EM_positive_z.jpg", "GlobeOuter_EM_negative_z.jpg"};
 
-Scene::Scene(const std::string opt_programIds[2]) : url(), models(), textureMap(), arrayMap()
+Scene::Scene(const std::string opt_programIds[2])
+    : url(), models(), textureMap(), arrayMap()
 {
-    programIds[0] = opt_programIds[0];
-    programIds[1] = opt_programIds[1];
+  programIds[0] = opt_programIds[0];
+  programIds[1] = opt_programIds[1];
 }
 
 Scene::~Scene()
 {
-    for (auto &program : g_programMap)
+  for (auto &program : g_programMap)
+  {
+    if (program.second != nullptr)
     {
-        if (program.second != nullptr)
-        {
-            delete program.second;
-            program.second = nullptr;
-        }
+      delete program.second;
+      program.second = nullptr;
     }
+  }
 
-    for (auto &texture : g_textureMap)
+  for (auto &texture : g_textureMap)
+  {
+    if (texture.second != nullptr)
     {
-        if (texture.second != nullptr)
-        {
-            delete texture.second;
-            texture.second = nullptr;
-        }
+      delete texture.second;
+      texture.second = nullptr;
     }
+  }
 
-    for (auto &arr : arrayMap)
+  for (auto &arr : arrayMap)
+  {
+    if (arr.second != nullptr)
     {
-        if (arr.second != nullptr)
-        {
-            delete arr.second;
-            arr.second = nullptr;
-        }
+      delete arr.second;
+      arr.second = nullptr;
     }
+  }
 
-    for (auto &model : models)
+  for (auto &model : models)
+  {
+    if (model != nullptr)
     {
-        if (model != nullptr)
-        {
-            delete model;
-            model = nullptr;
-        }
+      delete model;
+      model = nullptr;
     }
+  }
 }
 
 void Scene::setupSkybox(const std::string &path)
 {
-    for (auto &v : g_skyBoxUrls)
-    {
-        std::ostringstream url;
-        url << path << resourceFolder << slash << v;
+  for (auto &v : g_skyBoxUrls)
+  {
+    std::ostringstream url;
+    url << path << resourceFolder << slash << v;
 
-        v = url.str();
-    }
+    v = url.str();
+  }
 }
 
 void Scene::load(const std::string &path, const std::string &name)
 {
-    std::ostringstream oss;
-    oss << path << resourceFolder << slash;
-    std::string imagePath = oss.str();
-    oss << name << ".js";
-    std::string modelPath = oss.str();
-    oss.str("");
-    oss << path << shaderFolder << slash << shaderVersion << slash;
-    std::string programPath = oss.str();
+  std::ostringstream oss;
+  oss << path << resourceFolder << slash;
+  std::string imagePath = oss.str();
+  oss << name << ".js";
+  std::string modelPath = oss.str();
+  oss.str("");
+  oss << path << shaderFolder << slash << shaderVersion << slash;
+  std::string programPath = oss.str();
 
-    this->url    = modelPath;
-    this->loaded = true;
+  this->url    = modelPath;
+  this->loaded = true;
 
-    std::ifstream PlacementStream(modelPath, std::ios::in);
-    rapidjson::IStreamWrapper is(PlacementStream);
-    rapidjson::Document document;
-    document.ParseStream(is);
-    ASSERT(document.IsObject());
+  std::ifstream PlacementStream(modelPath, std::ios::in);
+  rapidjson::IStreamWrapper is(PlacementStream);
+  rapidjson::Document document;
+  document.ParseStream(is);
+  ASSERT(document.IsObject());
 
-    for (auto &value : document["models"].GetArray())
+  for (auto &value : document["models"].GetArray())
+  {
+    // set up textures
+    const rapidjson::Value &textures = value["textures"];
+    for (rapidjson::Value::ConstMemberIterator itr = textures.MemberBegin();
+         itr != textures.MemberEnd(); ++itr)
     {
-        // set up textures
-        const rapidjson::Value &textures = value["textures"];
-        for (rapidjson::Value::ConstMemberIterator itr = textures.MemberBegin();
-             itr != textures.MemberEnd(); ++itr)
-        {
-            std::string name  = itr->name.GetString();
-            std::string image = itr->value.GetString();
+      std::string name  = itr->name.GetString();
+      std::string image = itr->value.GetString();
 
-            if (g_textureMap.find(image) == g_textureMap.end())
-            {
-                g_textureMap[image] = new Texture(imagePath + image, true);
-            }
+      if (g_textureMap.find(image) == g_textureMap.end())
+      {
+        g_textureMap[image] = new Texture(imagePath + image, true);
+      }
 
-            textureMap[name] = g_textureMap[image];
-        }
-
-        // set up vertices
-        const rapidjson::Value &arrays = value["fields"];
-        for (rapidjson::Value::ConstMemberIterator itr = arrays.MemberBegin();
-             itr != arrays.MemberEnd(); ++itr)
-        {
-            std::string name  = itr->name.GetString();
-            int numComponents = itr->value["numComponents"].GetInt();
-            std::string type  = itr->value["type"].GetString();
-
-            if (name == "indices")
-            {
-                std::vector<unsigned short> vec;
-                for (auto &data : itr->value["data"].GetArray())
-                {
-                    vec.push_back(data.GetInt());
-                }
-                arrayMap[name] =
-                    new AttribBuffer(numComponents, vec, static_cast<int>(vec.size()), type);
-            }
-            else
-            {
-                std::vector<float> vec;
-                for (auto &data : itr->value["data"].GetArray())
-                {
-                    vec.push_back(data.GetFloat());
-                }
-                arrayMap[name] =
-                    new AttribBuffer(numComponents, vec, static_cast<int>(vec.size()), type);
-            }
-        }
-
-        // setup program
-        // There are 3 programs
-        // DM
-        // DM+NM
-        // DM+NM+RM
-        std::string type;
-        std::string vsId;
-        std::string fsId;
-
-        if (textureMap.find("diffuse") == textureMap.end())
-        {
-            std::cout << "missing diffuse texture for" << url.c_str() << std::endl;
-        }
-
-        if (g_textureMap.find("skybox") == g_textureMap.end())
-        {
-            setupSkybox(path);
-            g_textureMap["skybox"] = new Texture(g_skyBoxUrls);
-        }
-
-        if (programIds[0] != "" && programIds[1] != "")
-        {
-            type = "custom";
-            vsId = programIds[0];
-            fsId = programIds[1];
-
-            textureMap["skybox"] = g_textureMap["skybox"];
-        }
-        else if (textureMap.find("reflectionMap") != textureMap.end())
-        {
-            if (textureMap.find("normalMap") != textureMap.end())
-            {
-                std::cout << "missing normal Map for" << url.c_str() << std::endl;
-            }
-
-            type = "reflection";
-            vsId = "reflectionMapVertexShader";
-            fsId = "reflectionMapFragmentShader";
-
-            textureMap["skybox"] = g_textureMap["skybox"];
-        }
-        else if (textureMap.find("normalMap") != textureMap.end())
-        {
-            type = "normalMap";
-            vsId = "normalMapVertexShader";
-            fsId = "normalMapFragmentShader";
-        }
-        else
-        {
-            type = "diffuse";
-            vsId = "diffuseVertexShader";
-            fsId = "diffuseFragmentShader";
-        }
-
-        Program *program;
-        if (g_programMap.find(vsId + fsId) != g_programMap.end())
-        {
-            program = g_programMap[vsId + fsId];
-        }
-        else
-        {
-            program                   = new Program(programPath + vsId, programPath + fsId);
-            g_programMap[vsId + fsId] = program;
-        }
-
-        Model *model = new Model(program, arrayMap, &textureMap);
-        models.push_back(model);
+      textureMap[name] = g_textureMap[image];
     }
+
+    // set up vertices
+    const rapidjson::Value &arrays = value["fields"];
+    for (rapidjson::Value::ConstMemberIterator itr = arrays.MemberBegin();
+         itr != arrays.MemberEnd(); ++itr)
+    {
+      std::string name  = itr->name.GetString();
+      int numComponents = itr->value["numComponents"].GetInt();
+      std::string type  = itr->value["type"].GetString();
+
+      if (name == "indices")
+      {
+        std::vector<unsigned short> vec;
+        for (auto &data : itr->value["data"].GetArray())
+        {
+          vec.push_back(data.GetInt());
+        }
+        arrayMap[name] = new AttribBuffer(numComponents, vec,
+                                          static_cast<int>(vec.size()), type);
+      }
+      else
+      {
+        std::vector<float> vec;
+        for (auto &data : itr->value["data"].GetArray())
+        {
+          vec.push_back(data.GetFloat());
+        }
+        arrayMap[name] = new AttribBuffer(numComponents, vec,
+                                          static_cast<int>(vec.size()), type);
+      }
+    }
+
+    // setup program
+    // There are 3 programs
+    // DM
+    // DM+NM
+    // DM+NM+RM
+    std::string type;
+    std::string vsId;
+    std::string fsId;
+
+    if (textureMap.find("diffuse") == textureMap.end())
+    {
+      std::cout << "missing diffuse texture for" << url.c_str() << std::endl;
+    }
+
+    if (g_textureMap.find("skybox") == g_textureMap.end())
+    {
+      setupSkybox(path);
+      g_textureMap["skybox"] = new Texture(g_skyBoxUrls);
+    }
+
+    if (programIds[0] != "" && programIds[1] != "")
+    {
+      type = "custom";
+      vsId = programIds[0];
+      fsId = programIds[1];
+
+      textureMap["skybox"] = g_textureMap["skybox"];
+    }
+    else if (textureMap.find("reflectionMap") != textureMap.end())
+    {
+      if (textureMap.find("normalMap") != textureMap.end())
+      {
+        std::cout << "missing normal Map for" << url.c_str() << std::endl;
+      }
+
+      type = "reflection";
+      vsId = "reflectionMapVertexShader";
+      fsId = "reflectionMapFragmentShader";
+
+      textureMap["skybox"] = g_textureMap["skybox"];
+    }
+    else if (textureMap.find("normalMap") != textureMap.end())
+    {
+      type = "normalMap";
+      vsId = "normalMapVertexShader";
+      fsId = "normalMapFragmentShader";
+    }
+    else
+    {
+      type = "diffuse";
+      vsId = "diffuseVertexShader";
+      fsId = "diffuseFragmentShader";
+    }
+
+    Program *program;
+    if (g_programMap.find(vsId + fsId) != g_programMap.end())
+    {
+      program = g_programMap[vsId + fsId];
+    }
+    else
+    {
+      program = new Program(programPath + vsId, programPath + fsId);
+      g_programMap[vsId + fsId] = program;
+    }
+
+    Model *model = new Model(program, arrayMap, &textureMap);
+    models.push_back(model);
+  }
 }

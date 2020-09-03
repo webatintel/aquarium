@@ -13,32 +13,39 @@
 #include "ContextDawn.h"
 #include "common/AQUARIUM_ASSERT.h"
 
-ProgramDawn::ProgramDawn(ContextDawn *context, const std::string &mVId, const std::string &mFId)
-    : Program(mVId, mFId), mVsModule(nullptr), mFsModule(nullptr), context(context)
+ProgramDawn::ProgramDawn(ContextDawn *context,
+                         const std::string &mVId,
+                         const std::string &mFId)
+    : Program(mVId, mFId),
+      mVsModule(nullptr),
+      mFsModule(nullptr),
+      context(context)
 {
 }
 
 ProgramDawn::~ProgramDawn()
 {
-    mVsModule = nullptr;
-    mFsModule = nullptr;
+  mVsModule = nullptr;
+  mFsModule = nullptr;
 }
 
 void ProgramDawn::compileProgram(bool enableBlending, const std::string &alpha)
 {
-    loadProgram();
+  loadProgram();
 
-    FragmentShaderCode =
-        std::regex_replace(FragmentShaderCode, std::regex(R"(\n.*?// #noReflection)"), "");
-    FragmentShaderCode =
-        std::regex_replace(FragmentShaderCode, std::regex(R"(\n.*?// #noNormalMap)"), "");
+  FragmentShaderCode = std::regex_replace(
+      FragmentShaderCode, std::regex(R"(\n.*?// #noReflection)"), "");
+  FragmentShaderCode = std::regex_replace(
+      FragmentShaderCode, std::regex(R"(\n.*?// #noNormalMap)"), "");
 
-    if (enableBlending)
-    {
-        FragmentShaderCode =
-            std::regex_replace(FragmentShaderCode, std::regex(R"(diffuseColor.a)"), alpha);
-    }
+  if (enableBlending)
+  {
+    FragmentShaderCode = std::regex_replace(
+        FragmentShaderCode, std::regex(R"(diffuseColor.a)"), alpha);
+  }
 
-    mVsModule = context->createShaderModule(utils::SingleShaderStage::Vertex, VertexShaderCode);
-    mFsModule = context->createShaderModule(utils::SingleShaderStage::Fragment, FragmentShaderCode);
+  mVsModule = context->createShaderModule(utils::SingleShaderStage::Vertex,
+                                          VertexShaderCode);
+  mFsModule = context->createShaderModule(utils::SingleShaderStage::Fragment,
+                                          FragmentShaderCode);
 }

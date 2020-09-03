@@ -17,58 +17,58 @@
 
 class InnerModelDawn : public Model
 {
-  public:
-    InnerModelDawn(Context *context,
-                   Aquarium *aquarium,
-                   MODELGROUP type,
-                   MODELNAME name,
-                   bool blend);
-    ~InnerModelDawn();
+public:
+  InnerModelDawn(Context *context,
+                 Aquarium *aquarium,
+                 MODELGROUP type,
+                 MODELNAME name,
+                 bool blend);
+  ~InnerModelDawn();
 
-    void init() override;
-    void prepareForDraw() override;
-    void draw() override;
-    void updatePerInstanceUniforms(const WorldUniforms &WorldUniforms) override;
+  void init() override;
+  void prepareForDraw() override;
+  void draw() override;
+  void updatePerInstanceUniforms(const WorldUniforms &WorldUniforms) override;
 
-    struct InnerUniforms
-    {
-        float eta;
-        float tankColorFudge;
-        float refractionFudge;
-        float padding;
-    } mInnerUniforms;
+  struct InnerUniforms
+  {
+    float eta;
+    float tankColorFudge;
+    float refractionFudge;
+    float padding;
+  } mInnerUniforms;
 
-    WorldUniforms mWorldUniformPer;
+  WorldUniforms mWorldUniformPer;
 
-    TextureDawn *mDiffuseTexture;
-    TextureDawn *mNormalTexture;
-    TextureDawn *mReflectionTexture;
-    TextureDawn *mSkyboxTexture;
+  TextureDawn *mDiffuseTexture;
+  TextureDawn *mNormalTexture;
+  TextureDawn *mReflectionTexture;
+  TextureDawn *mSkyboxTexture;
 
-    BufferDawn *mPositionBuffer;
-    BufferDawn *mNormalBuffer;
-    BufferDawn *mTexCoordBuffer;
-    BufferDawn *mTangentBuffer;
-    BufferDawn *mBiNormalBuffer;
+  BufferDawn *mPositionBuffer;
+  BufferDawn *mNormalBuffer;
+  BufferDawn *mTexCoordBuffer;
+  BufferDawn *mTangentBuffer;
+  BufferDawn *mBiNormalBuffer;
 
-    BufferDawn *mIndicesBuffer;
+  BufferDawn *mIndicesBuffer;
 
-  private:
-    utils::ComboVertexStateDescriptor mVertexStateDescriptor;
-    wgpu::RenderPipeline mPipeline;
+private:
+  utils::ComboVertexStateDescriptor mVertexStateDescriptor;
+  wgpu::RenderPipeline mPipeline;
 
-    wgpu::BindGroupLayout mGroupLayoutModel;
-    wgpu::BindGroupLayout mGroupLayoutPer;
-    wgpu::PipelineLayout mPipelineLayout;
+  wgpu::BindGroupLayout mGroupLayoutModel;
+  wgpu::BindGroupLayout mGroupLayoutPer;
+  wgpu::PipelineLayout mPipelineLayout;
 
-    wgpu::BindGroup mBindGroupModel;
-    wgpu::BindGroup mBindGroupPer;
+  wgpu::BindGroup mBindGroupModel;
+  wgpu::BindGroup mBindGroupPer;
 
-    wgpu::Buffer mInnerBuffer;
-    wgpu::Buffer mViewBuffer;
+  wgpu::Buffer mInnerBuffer;
+  wgpu::Buffer mViewBuffer;
 
-    ContextDawn *mContextDawn;
-    ProgramDawn *mProgramDawn;
+  ContextDawn *mContextDawn;
+  ProgramDawn *mProgramDawn;
 };
 
 #endif  // INNERMODELDAWN_H

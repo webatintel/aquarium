@@ -17,107 +17,115 @@
 
 // initializs texture 2d
 Texture::Texture(const std::string &url, bool flip)
-    : urls(), target(GL_TEXTURE_2D), texture(0u), params(), width(0), height(0), flip(flip)
+    : urls(),
+      target(GL_TEXTURE_2D),
+      texture(0u),
+      params(),
+      width(0),
+      height(0),
+      flip(flip)
 {
-    std::string urlpath = url;
-    urls.push_back(urlpath);
-    glGenTextures(1, &texture);
+  std::string urlpath = url;
+  urls.push_back(urlpath);
+  glGenTextures(1, &texture);
 
-    uploadTextures();
+  uploadTextures();
 }
 
 // initializs cube map
 Texture::Texture(const std::vector<std::string> &urls) : urls(urls)
 {
-    ASSERT(urls.size() == 6);
-    target = GL_TEXTURE_CUBE_MAP;
-    glGenTextures(1, &texture);
+  ASSERT(urls.size() == 6);
+  target = GL_TEXTURE_CUBE_MAP;
+  glGenTextures(1, &texture);
 
-    uploadTextures();
+  uploadTextures();
 }
 
 Texture::~Texture()
 {
-    glDeleteTextures(1, &texture);
+  glDeleteTextures(1, &texture);
 }
 
 void Texture::setParameter(GLenum pname, GLint param)
 {
-    params[pname] = param;
+  params[pname] = param;
 
-    glTexParameteri(target, pname, param);
+  glTexParameteri(target, pname, param);
 }
 
 bool Texture::isPowerOf2(int value)
 {
-    return (value & (value - 1)) == 0;
+  return (value & (value - 1)) == 0;
 }
 
-// Force loading 3 channel images to 4 channel by stb becasue Dawn doesn't support 3 channel
-// formats currently. The group is discussing on whether webgpu shoud support 3 channel format.
+// Force loading 3 channel images to 4 channel by stb becasue Dawn doesn't
+// support 3 channel formats currently. The group is discussing on whether
+// webgpu shoud support 3 channel format.
 // https://github.com/gpuweb/gpuweb/issues/66#issuecomment-410021505
 bool Texture::loadImageBySTB(const std::string &filename, uint8_t **pixels)
 {
-    stbi_set_flip_vertically_on_load(flip);
-    *pixels = stbi_load(filename.c_str(), &width, &height, 0, 4);
-    if (*pixels == 0)
-    {
-        std::cout << stderr << "Couldn't open input file" << filename << std::endl;
-        return false;
-    }
-    return true;
+  stbi_set_flip_vertically_on_load(flip);
+  *pixels = stbi_load(filename.c_str(), &width, &height, 0, 4);
+  if (*pixels == 0)
+  {
+    std::cout << stderr << "Couldn't open input file" << filename << std::endl;
+    return false;
+  }
+  return true;
 }
 
 // Free image data after upload to gpu
 void Texture::DestroyImageData(uint8_t *pixels)
 {
-    free(pixels);
-    pixels = nullptr;
+  free(pixels);
+  pixels = nullptr;
 }
 
 void Texture::uploadTextures()
 {
-    glBindTexture(target, texture);
-    unsigned char *pixels = nullptr;
+  glBindTexture(target, texture);
+  unsigned char *pixels = nullptr;
 
-    // create Texture2D
-    if (target == GL_TEXTURE_2D)
+  // create Texture2D
+  if (target == GL_TEXTURE_2D)
+  {
+    glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    loadImageBySTB(urls[0], &pixels);
+    glTexImage2D(target, 0, GL_RGBA, width, height, 0, GL_RGBA,
+                 GL_UNSIGNED_BYTE, pixels);
+    DestroyImageData(pixels);
+    ASSERT(glGetError() == GL_NO_ERROR);
+
+    if (isPowerOf2(width) && isPowerOf2(height))
     {
-        glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        loadImageBySTB(urls[0], &pixels);
-        glTexImage2D(target, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-        DestroyImageData(pixels);
-        ASSERT(glGetError() == GL_NO_ERROR);
-
-        if (isPowerOf2(width) && isPowerOf2(height))
-        {
-            setParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-            glGenerateMipmap(target);
-        }
-        else
-        {
-            setParameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            setParameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            setParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        }
+      setParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+      glGenerateMipmap(target);
     }
-    // create TextureCubeMap
-    else if (target == GL_TEXTURE_CUBE_MAP)
+    else
     {
-        for (unsigned int i = 0; i < 6; i++)
-        {
-            loadImageBySTB(urls[i], &pixels);
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, width, height, 0, GL_RGBA,
-                         GL_UNSIGNED_BYTE, pixels);
-            DestroyImageData(pixels);
-        }
-        ASSERT(glGetError() == GL_NO_ERROR);
-
-        setParameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        setParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        setParameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        setParameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      setParameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      setParameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      setParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    }
+  }
+  // create TextureCubeMap
+  else if (target == GL_TEXTURE_CUBE_MAP)
+  {
+    for (unsigned int i = 0; i < 6; i++)
+    {
+      loadImageBySTB(urls[i], &pixels);
+      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, width,
+                   height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+      DestroyImageData(pixels);
     }
     ASSERT(glGetError() == GL_NO_ERROR);
+
+    setParameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    setParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    setParameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    setParameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  }
+  ASSERT(glGetError() == GL_NO_ERROR);
 }

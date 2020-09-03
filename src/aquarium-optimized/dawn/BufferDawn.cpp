@@ -3,7 +3,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// BufferDawn.cpp: Implements the index or vertex buffers wrappers and resource bindings of dawn.
+// BufferDawn.cpp: Implements the index or vertex buffers wrappers and resource
+// bindings of dawn.
 
 #include "BufferDawn.h"
 
@@ -20,13 +21,13 @@ BufferDawn::BufferDawn(ContextDawn *context,
       mStride(0),
       mOffset(nullptr)
 {
-    mSize = numComponents * sizeof(float);
-    // Create buffer for vertex buffer. Because float is multiple of 4 bytes, dummy padding isnt'
-    // needed.
-    int bufferSize = sizeof(float) * static_cast<int>(buffer->size());
-    mBuf           = context->createBuffer(bufferSize, mUsage | wgpu::BufferUsage::CopyDst);
+  mSize = numComponents * sizeof(float);
+  // Create buffer for vertex buffer. Because float is multiple of 4 bytes,
+  // dummy padding isnt' needed.
+  int bufferSize = sizeof(float) * static_cast<int>(buffer->size());
+  mBuf = context->createBuffer(bufferSize, mUsage | wgpu::BufferUsage::CopyDst);
 
-    context->setBufferData(mBuf, bufferSize, buffer->data(), bufferSize);
+  context->setBufferData(mBuf, bufferSize, buffer->data(), bufferSize);
 }
 
 BufferDawn::BufferDawn(ContextDawn *context,
@@ -39,21 +40,22 @@ BufferDawn::BufferDawn(ContextDawn *context,
       mStride(0),
       mOffset(nullptr)
 {
-    mSize = numComponents * sizeof(unsigned short);
-    // Create buffer for index buffer. Because unsigned short is multiple of 2 bytes, in order to
-    // align with 4 bytes of dawn metal, dummy padding need to be added.
-    if (mTotoalComponents % 2 != 0)
-    {
-        buffer->push_back(0.0f);
-    }
+  mSize = numComponents * sizeof(unsigned short);
+  // Create buffer for index buffer. Because unsigned short is multiple of 2
+  // bytes, in order to align with 4 bytes of dawn metal, dummy padding need to
+  // be added.
+  if (mTotoalComponents % 2 != 0)
+  {
+    buffer->push_back(0.0f);
+  }
 
-    int bufferSize = sizeof(unsigned short) * static_cast<int>(buffer->size());
-    mBuf           = context->createBuffer(bufferSize, mUsage | wgpu::BufferUsage::CopyDst);
+  int bufferSize = sizeof(unsigned short) * static_cast<int>(buffer->size());
+  mBuf = context->createBuffer(bufferSize, mUsage | wgpu::BufferUsage::CopyDst);
 
-    context->setBufferData(mBuf, bufferSize, buffer->data(), bufferSize);
+  context->setBufferData(mBuf, bufferSize, buffer->data(), bufferSize);
 }
 
 BufferDawn::~BufferDawn()
 {
-    mBuf = nullptr;
+  mBuf = nullptr;
 }

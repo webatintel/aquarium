@@ -17,84 +17,84 @@
 
 class FishModelInstancedDrawDawn : public FishModel
 {
-  public:
-    FishModelInstancedDrawDawn(Context *context,
-                               Aquarium *aquarium,
-                               MODELGROUP type,
-                               MODELNAME name,
-                               bool blend);
-    ~FishModelInstancedDrawDawn();
+public:
+  FishModelInstancedDrawDawn(Context *context,
+                             Aquarium *aquarium,
+                             MODELGROUP type,
+                             MODELNAME name,
+                             bool blend);
+  ~FishModelInstancedDrawDawn();
 
-    void init() override;
-    void prepareForDraw() override;
-    void draw() override;
+  void init() override;
+  void prepareForDraw() override;
+  void draw() override;
 
-    void updatePerInstanceUniforms(const WorldUniforms &worldUniforms) override;
-    void updateFishPerUniforms(float x,
-                               float y,
-                               float z,
-                               float nextX,
-                               float nextY,
-                               float nextZ,
-                               float scale,
-                               float time,
-                               int index) override;
+  void updatePerInstanceUniforms(const WorldUniforms &worldUniforms) override;
+  void updateFishPerUniforms(float x,
+                             float y,
+                             float z,
+                             float nextX,
+                             float nextY,
+                             float nextZ,
+                             float scale,
+                             float time,
+                             int index) override;
 
-    struct FishVertexUniforms
-    {
-        float fishLength;
-        float fishWaveLength;
-        float fishBendAmount;
-    } mFishVertexUniforms;
+  struct FishVertexUniforms
+  {
+    float fishLength;
+    float fishWaveLength;
+    float fishBendAmount;
+  } mFishVertexUniforms;
 
-    struct LightFactorUniforms
-    {
-        float shininess;
-        float specularFactor;
-    } mLightFactorUniforms;
+  struct LightFactorUniforms
+  {
+    float shininess;
+    float specularFactor;
+  } mLightFactorUniforms;
 
-    struct FishPer
-    {
-        float worldPosition[3];
-        float scale;
-        float nextPosition[3];
-        float time;
-    };
-    FishPer *mFishPers;
+  struct FishPer
+  {
+    float worldPosition[3];
+    float scale;
+    float nextPosition[3];
+    float time;
+  };
+  FishPer *mFishPers;
 
-    TextureDawn *mDiffuseTexture;
-    TextureDawn *mNormalTexture;
-    TextureDawn *mReflectionTexture;
-    TextureDawn *mSkyboxTexture;
+  TextureDawn *mDiffuseTexture;
+  TextureDawn *mNormalTexture;
+  TextureDawn *mReflectionTexture;
+  TextureDawn *mSkyboxTexture;
 
-    BufferDawn *mPositionBuffer;
-    BufferDawn *mNormalBuffer;
-    BufferDawn *mTexCoordBuffer;
-    BufferDawn *mTangentBuffer;
-    BufferDawn *mBiNormalBuffer;
+  BufferDawn *mPositionBuffer;
+  BufferDawn *mNormalBuffer;
+  BufferDawn *mTexCoordBuffer;
+  BufferDawn *mTangentBuffer;
+  BufferDawn *mBiNormalBuffer;
 
-    BufferDawn *mIndicesBuffer;
+  BufferDawn *mIndicesBuffer;
 
-  private:
-    utils::ComboVertexStateDescriptor mVertexStateDescriptor;
-    wgpu::RenderPipeline mPipeline;
+private:
+  utils::ComboVertexStateDescriptor mVertexStateDescriptor;
+  wgpu::RenderPipeline mPipeline;
 
-    wgpu::BindGroupLayout mGroupLayoutModel;
-    wgpu::BindGroupLayout mGroupLayoutPer;
-    wgpu::PipelineLayout mPipelineLayout;
+  wgpu::BindGroupLayout mGroupLayoutModel;
+  wgpu::BindGroupLayout mGroupLayoutPer;
+  wgpu::PipelineLayout mPipelineLayout;
 
-    wgpu::BindGroup mBindGroupModel;
-    wgpu::BindGroup mBindGroupPer;
+  wgpu::BindGroup mBindGroupModel;
+  wgpu::BindGroup mBindGroupPer;
 
-    wgpu::Buffer mFishVertexBuffer;
-    wgpu::Buffer mLightFactorBuffer;
+  wgpu::Buffer mFishVertexBuffer;
+  wgpu::Buffer mLightFactorBuffer;
 
-    wgpu::Buffer mFishPersBuffer;
+  wgpu::Buffer mFishPersBuffer;
 
-    int instance;
+  int instance;
 
-    ProgramDawn *mProgramDawn;
-    ContextDawn *mContextDawn;
+  ProgramDawn *mProgramDawn;
+  ContextDawn *mContextDawn;
 };
 
 #endif  // FISHMODELINSTANCEDDRAWDAWN_H

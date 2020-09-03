@@ -23,20 +23,23 @@ class ContextD3D12;
 
 class ProgramD3D12 : public Program
 {
-  public:
-    ProgramD3D12() {}
-    ProgramD3D12(ContextD3D12 *context, const std::string &mVId, const std::string &mFId);
-    ~ProgramD3D12() override;
+public:
+  ProgramD3D12() {}
+  ProgramD3D12(ContextD3D12 *context,
+               const std::string &mVId,
+               const std::string &mFId);
+  ~ProgramD3D12() override;
 
-    void compileProgram(bool enableAlphaBlending, const std::string &alpha) override;
-    ComPtr<ID3DBlob> getVSModule() { return mVertexShader; }
-    ComPtr<ID3DBlob> getFSModule() { return mPixelShader; }
+  void compileProgram(bool enableAlphaBlending,
+                      const std::string &alpha) override;
+  ComPtr<ID3DBlob> getVSModule() { return mVertexShader; }
+  ComPtr<ID3DBlob> getFSModule() { return mPixelShader; }
 
-  private:
-    ComPtr<ID3DBlob> mVertexShader;
-    ComPtr<ID3DBlob> mPixelShader;
+private:
+  ComPtr<ID3DBlob> mVertexShader;
+  ComPtr<ID3DBlob> mPixelShader;
 
-    ContextD3D12 *context;
+  ContextD3D12 *context;
 };
 
 #endif  // PROGRAMD3D12_H

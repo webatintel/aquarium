@@ -22,21 +22,22 @@
 
 class ProgramGL : public Program
 {
-  public:
-    ProgramGL() {}
-    ProgramGL(ContextGL *, std::string mVId, std::string mFId);
-    ~ProgramGL() override;
+public:
+  ProgramGL() {}
+  ProgramGL(ContextGL *, std::string mVId, std::string mFId);
+  ~ProgramGL() override;
 
-    void setProgram() override;
-    GLuint getProgramId() const { return mProgramId; }
-    GLuint getVAOId() { return mVAO; }
-    void compileProgram(bool enableAlphaBlending, const std::string &alpha) override;
+  void setProgram() override;
+  GLuint getProgramId() const { return mProgramId; }
+  GLuint getVAOId() { return mVAO; }
+  void compileProgram(bool enableAlphaBlending,
+                      const std::string &alpha) override;
 
-  private:
-    GLuint mProgramId;
-    GLuint mVAO;
+private:
+  GLuint mProgramId;
+  GLuint mVAO;
 
-    ContextGL *mContext;
+  ContextGL *mContext;
 };
 
 #endif  // PROGRAMGL_H

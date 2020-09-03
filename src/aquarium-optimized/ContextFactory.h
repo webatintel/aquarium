@@ -12,13 +12,13 @@ enum BACKENDTYPE : short;
 
 class ContextFactory
 {
-  public:
-    ContextFactory();
-    ~ContextFactory();
-    Context *createContext(BACKENDTYPE backendType);
+public:
+  ContextFactory();
+  ~ContextFactory();
+  Context *createContext(BACKENDTYPE backendType);
 
-  private:
-    Context *mContext;
+private:
+  Context *mContext;
 };
 
 #endif  // CONTEXTFACTORY_H
