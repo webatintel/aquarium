@@ -15,14 +15,17 @@
 #include <unordered_map>
 #include <vector>
 
+#include "build/build_config.h"
+
 #include "Scene.h"
 #include "common/FPSTimer.h"
 
-#if defined(WIN32) || defined(_WIN32) || \
-    defined(__WIN32) && !defined(__CYGWIN__)
+#if defined(OS_WIN)
 const std::string slash = "\\";
 #define M_PI 3.141592653589793
-#else
+#endif
+#if (defined(OS_MACOSX) && !defined(OS_IOS)) || \
+    (defined(OS_LINUX) && !defined(OS_CHROMEOS))
 const std::string slash = "/";
 #endif
 

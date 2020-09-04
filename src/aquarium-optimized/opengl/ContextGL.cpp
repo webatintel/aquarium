@@ -11,6 +11,7 @@
 #include <iostream>
 #include <sstream>
 
+#include "build/build_config.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 
@@ -66,14 +67,16 @@ bool ContextGL::initialize(
 
   mResourceHelper = new ResourceHelper("opengl", "450", backend);
 
-#ifdef __APPLE__
+#if defined(OS_MACOSX) && !defined(OS_IOS)
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
   mGLSLVersion = "#version 410";
-#elif _WIN32 || __linux__
+#elif defined(OS_WIN) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
   mGLSLVersion = "#version 450";
+#else
+  ASSERT(false);
 #endif
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
