@@ -75,33 +75,40 @@ ResourceHelper::ResourceHelper(const std::string &mBackendName,
   mFishBehaviorPath = fishBehaviorStream.str();
 
   switch (mBackendType) {
-  case BACKENDTYPE::BACKENDTYPEDAWND3D12: {
-    mBackendTypeStr = "Dawn D3D12";
-    break;
-  }
-  case BACKENDTYPE::BACKENDTYPEDAWNVULKAN: {
-    mBackendTypeStr = "Dawn Vulkan";
-    break;
-  }
-  case BACKENDTYPE::BACKENDTYPEDAWNMETAL: {
-    mBackendTypeStr = "Dawn Metal";
-    break;
-  }
-  case BACKENDTYPE::BACKENDTYPEANGLE: {
-    mBackendTypeStr = "ANGLE";
-    break;
-  }
-  case BACKENDTYPE::BACKENDTYPEOPENGL: {
-    mBackendTypeStr = "OPENGL";
-    break;
-  }
-  case BACKENDTYPE::BACKENDTYPED3D12: {
-    mBackendTypeStr = "D3D12";
-    break;
-  }
-  default: {
-    std::cerr << "Backend type can not reached." << std::endl;
-  }
+  case BACKENDTYPE::BACKENDTYPEDAWND3D12:
+    {
+      mBackendTypeStr = "Dawn D3D12";
+      break;
+    }
+  case BACKENDTYPE::BACKENDTYPEDAWNVULKAN:
+    {
+      mBackendTypeStr = "Dawn Vulkan";
+      break;
+    }
+  case BACKENDTYPE::BACKENDTYPEDAWNMETAL:
+    {
+      mBackendTypeStr = "Dawn Metal";
+      break;
+    }
+  case BACKENDTYPE::BACKENDTYPEANGLE:
+    {
+      mBackendTypeStr = "ANGLE";
+      break;
+    }
+  case BACKENDTYPE::BACKENDTYPEOPENGL:
+    {
+      mBackendTypeStr = "OPENGL";
+      break;
+    }
+  case BACKENDTYPE::BACKENDTYPED3D12:
+    {
+      mBackendTypeStr = "D3D12";
+      break;
+    }
+  default:
+    {
+      std::cerr << "Backend type can not reached." << std::endl;
+    }
   }
 }
 

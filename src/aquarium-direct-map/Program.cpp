@@ -208,25 +208,30 @@ void Program::setUniform(const std::string &name, const std::vector<float> &v) {
   GLint loc = uniform->getIndex();
 
   switch (type) {
-  case GL_FLOAT_VEC4: {
-    glUniform4fv(loc, 1, v.data());
-    break;
-  }
-  case GL_FLOAT_VEC3: {
-    glUniform3fv(loc, 1, v.data());
-    break;
-  }
-  case GL_FLOAT_VEC2: {
-    glUniform2fv(loc, 1, v.data());
-    break;
-  }
-  case GL_FLOAT_MAT4: {
-    glUniformMatrix4fv(loc, 1, false, v.data());
-    break;
-  }
-  default: {
-    std::cout << "set uniform error" << std::endl;
-  }
+  case GL_FLOAT_VEC4:
+    {
+      glUniform4fv(loc, 1, v.data());
+      break;
+    }
+  case GL_FLOAT_VEC3:
+    {
+      glUniform3fv(loc, 1, v.data());
+      break;
+    }
+  case GL_FLOAT_VEC2:
+    {
+      glUniform2fv(loc, 1, v.data());
+      break;
+    }
+  case GL_FLOAT_MAT4:
+    {
+      glUniformMatrix4fv(loc, 1, false, v.data());
+      break;
+    }
+  default:
+    {
+      std::cout << "set uniform error" << std::endl;
+    }
   }
 
   ASSERT(glGetError() == GL_NO_ERROR);
