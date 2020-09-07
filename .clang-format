@@ -8,7 +8,7 @@
 BasedOnStyle: Chromium
 
 # Allow double brackets such as std::vector<std::vector<int>>.
-Standard: Cpp11
+Standard: c++11
 
 # Do not merge top level empty functions
 AllowShortFunctionsOnASingleLine: InlineOnly
