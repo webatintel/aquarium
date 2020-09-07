@@ -538,29 +538,35 @@ void ContextGL::preFrame() {
 void ContextGL::setUniform(int index, const float *v, int type) const {
   ASSERT(index != -1);
   switch (type) {
-  case GL_FLOAT: {
-    glUniform1f(index, *v);
-    break;
-  }
-  case GL_FLOAT_VEC4: {
-    glUniform4fv(index, 1, v);
-    break;
-  }
-  case GL_FLOAT_VEC3: {
-    glUniform3fv(index, 1, v);
-    break;
-  }
-  case GL_FLOAT_VEC2: {
-    glUniform2fv(index, 1, v);
-    break;
-  }
-  case GL_FLOAT_MAT4: {
-    glUniformMatrix4fv(index, 1, false, v);
-    break;
-  }
-  default: {
-    std::cout << "set uniform error" << std::endl;
-  }
+  case GL_FLOAT:
+    {
+      glUniform1f(index, *v);
+      break;
+    }
+  case GL_FLOAT_VEC4:
+    {
+      glUniform4fv(index, 1, v);
+      break;
+    }
+  case GL_FLOAT_VEC3:
+    {
+      glUniform3fv(index, 1, v);
+      break;
+    }
+  case GL_FLOAT_VEC2:
+    {
+      glUniform2fv(index, 1, v);
+      break;
+    }
+  case GL_FLOAT_MAT4:
+    {
+      glUniformMatrix4fv(index, 1, false, v);
+      break;
+    }
+  default:
+    {
+      std::cout << "set uniform error" << std::endl;
+    }
   }
 
   ASSERT(glGetError() == GL_NO_ERROR);

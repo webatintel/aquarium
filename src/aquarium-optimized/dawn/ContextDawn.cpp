@@ -105,26 +105,31 @@ bool ContextDawn::initialize(
   wgpu::BackendType backendType = wgpu::BackendType::Null;
 
   switch (backend) {
-  case BACKENDTYPE::BACKENDTYPEDAWND3D12: {
-    backendType = wgpu::BackendType::D3D12;
-    break;
-  }
-  case BACKENDTYPE::BACKENDTYPEDAWNVULKAN: {
-    backendType = wgpu::BackendType::Vulkan;
-    break;
-  }
-  case BACKENDTYPE::BACKENDTYPEDAWNMETAL: {
-    backendType = wgpu::BackendType::Metal;
-    break;
-  }
-  case BACKENDTYPE::BACKENDTYPEOPENGL: {
-    backendType = wgpu::BackendType::OpenGL;
-    break;
-  }
-  default: {
-    std::cerr << "Backend type can not reached." << std::endl;
-    return false;
-  }
+  case BACKENDTYPE::BACKENDTYPEDAWND3D12:
+    {
+      backendType = wgpu::BackendType::D3D12;
+      break;
+    }
+  case BACKENDTYPE::BACKENDTYPEDAWNVULKAN:
+    {
+      backendType = wgpu::BackendType::Vulkan;
+      break;
+    }
+  case BACKENDTYPE::BACKENDTYPEDAWNMETAL:
+    {
+      backendType = wgpu::BackendType::Metal;
+      break;
+    }
+  case BACKENDTYPE::BACKENDTYPEOPENGL:
+    {
+      backendType = wgpu::BackendType::OpenGL;
+      break;
+    }
+  default:
+    {
+      std::cerr << "Backend type can not reached." << std::endl;
+      return false;
+    }
   }
 
   mDisableControlPanel =

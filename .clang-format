@@ -13,6 +13,8 @@ Standard: c++11
 # Do not merge top level empty functions
 AllowShortFunctionsOnASingleLine: InlineOnly
 
+IndentCaseBlocks: true
+
 IndentCaseLabels: false
 
 # Right-align pointers and references

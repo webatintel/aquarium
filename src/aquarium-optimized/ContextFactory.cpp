@@ -25,26 +25,29 @@ ContextFactory::~ContextFactory() {
 Context *ContextFactory::createContext(BACKENDTYPE backendType) {
   switch (backendType) {
   case BACKENDTYPE::BACKENDTYPEOPENGL:
-  case BACKENDTYPE::BACKENDTYPEANGLE: {
+  case BACKENDTYPE::BACKENDTYPEANGLE:
+    {
 #if defined(ENABLE_OPENGL_BACKEND) || defined(ENABLE_ANGLE_BACKEND)
-    mContext = new ContextGL(backendType);
+      mContext = new ContextGL(backendType);
 #endif
-    break;
-  }
+      break;
+    }
   case BACKENDTYPE::BACKENDTYPEDAWND3D12:
   case BACKENDTYPE::BACKENDTYPEDAWNMETAL:
-  case BACKENDTYPE::BACKENDTYPEDAWNVULKAN: {
+  case BACKENDTYPE::BACKENDTYPEDAWNVULKAN:
+    {
 #if defined(ENABLE_DAWN_BACKEND)
-    mContext = new ContextDawn(backendType);
+      mContext = new ContextDawn(backendType);
 #endif
-    break;
-  }
-  case BACKENDTYPE::BACKENDTYPED3D12: {
+      break;
+    }
+  case BACKENDTYPE::BACKENDTYPED3D12:
+    {
 #if defined(ENABLE_D3D12_BACKEND)
-    mContext = new ContextD3D12(backendType);
+      mContext = new ContextD3D12(backendType);
 #endif
-    break;
-  }
+      break;
+    }
   default:
     break;
   }
