@@ -65,14 +65,17 @@ void TextureDawn::loadTexture() {
     mTexture = mContext->createTexture(descriptor);
 
     for (unsigned int i = 0; i < 6; i++) {
-      wgpu::CreateBufferMappedResult result = mContext->CreateBufferMapped(
-          wgpu::BufferUsage::CopySrc | wgpu::BufferUsage::MapWrite,
-          mWidth * mHeight * 4);
-      memcpy(result.data, mPixelVec[i], mWidth * mHeight * 4);
-      result.buffer.Unmap();
+      wgpu::BufferDescriptor descriptor;
+      descriptor.usage =
+          wgpu::BufferUsage::CopySrc | wgpu::BufferUsage::MapWrite;
+      descriptor.size = mWidth * mHeight * 4;
+      descriptor.mappedAtCreation = true;
+      wgpu::Buffer staging = mContext->createBuffer(descriptor);
+      memcpy(staging.GetMappedRange(), mPixelVec[i], mWidth * mHeight * 4);
+      staging.Unmap();
 
       wgpu::BufferCopyView bufferCopyView =
-          mContext->createBufferCopyView(result.buffer, 0, mWidth * 4, mHeight);
+          mContext->createBufferCopyView(staging, 0, mWidth * 4, mHeight);
       wgpu::TextureCopyView textureCopyView =
           mContext->createTextureCopyView(mTexture, 0, {0, 0, i});
       wgpu::Extent3D copySize = {static_cast<uint32_t>(mWidth),
@@ -134,14 +137,18 @@ void TextureDawn::loadTexture() {
         height = 1;
       }
 
-      wgpu::CreateBufferMappedResult result = mContext->CreateBufferMapped(
-          wgpu::BufferUsage::CopySrc | wgpu::BufferUsage::MapWrite,
-          resizedWidth * height * 4);
-      memcpy(result.data, mResizedVec[i], resizedWidth * height * 4);
-      result.buffer.Unmap();
+      wgpu::BufferDescriptor descriptor;
+      descriptor.usage =
+          wgpu::BufferUsage::CopySrc | wgpu::BufferUsage::MapWrite;
+      descriptor.size = resizedWidth * height * 4;
+      descriptor.mappedAtCreation = true;
+      wgpu::Buffer staging = mContext->createBuffer(descriptor);
+      memcpy(staging.GetMappedRange(), mResizedVec[i],
+             resizedWidth * height * 4);
+      staging.Unmap();
 
-      wgpu::BufferCopyView bufferCopyView = mContext->createBufferCopyView(
-          result.buffer, 0, resizedWidth * 4, height);
+      wgpu::BufferCopyView bufferCopyView =
+          mContext->createBufferCopyView(staging, 0, resizedWidth * 4, height);
       wgpu::TextureCopyView textureCopyView =
           mContext->createTextureCopyView(mTexture, i, {0, 0, 0});
       wgpu::Extent3D copySize = {static_cast<uint32_t>(width),

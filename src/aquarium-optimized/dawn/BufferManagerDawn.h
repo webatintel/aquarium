@@ -42,7 +42,7 @@ private:
                                uint64_t,
                                void *userdata);
 
-  wgpu::CreateBufferMappedResult mBufferMappedResult;
+  wgpu::Buffer mBuf;
 
   BufferManagerDawn *mBufferManager;
   void *mappedData;
