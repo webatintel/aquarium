@@ -42,7 +42,7 @@ enum BACKENDTYPE : short {
 
 enum MODELNAME : short {
   MODELFIRST,
-  MODELRUINCOlOMN,
+  MODELRUINCOLUMN,
   MODELARCH,
   MODELROCKA,
   MODELROCKB,
@@ -222,7 +222,7 @@ const G_sceneInfo g_sceneInfo[] = {
     {"RockB", MODELNAME::MODELROCKB, {"", ""}, true, MODELGROUP::GENERIC},
     {"RockC", MODELNAME::MODELROCKC, {"", ""}, true, MODELGROUP::GENERIC},
     {"RuinColumn",
-     MODELNAME::MODELRUINCOlOMN,
+     MODELNAME::MODELRUINCOLUMN,
      {"", ""},
      true,
      MODELGROUP::GENERIC},

@@ -804,16 +804,16 @@ void Aquarium::render() {
 }
 
 void Aquarium::updateAndDrawBackground() {
-  Model *model = mAquariumModels[MODELNAME::MODELRUINCOlOMN];
-  for (int i = MODELNAME::MODELRUINCOlOMN; i <= MODELNAME::MODELSEAWEEDB; ++i) {
+  Model *model = mAquariumModels[MODELNAME::MODELRUINCOLUMN];
+  for (int i = MODELNAME::MODELRUINCOLUMN; i <= MODELNAME::MODELSEAWEEDB; ++i) {
     model = mAquariumModels[i];
     updateWorldMatrixAndDraw(model);
   }
 }
 
 void Aquarium::drawBackground() {
-  Model *model = mAquariumModels[MODELNAME::MODELRUINCOlOMN];
-  for (int i = MODELNAME::MODELRUINCOlOMN; i <= MODELNAME::MODELSEAWEEDB; ++i) {
+  Model *model = mAquariumModels[MODELNAME::MODELRUINCOLUMN];
+  for (int i = MODELNAME::MODELRUINCOLUMN; i <= MODELNAME::MODELSEAWEEDB; ++i) {
     model = mAquariumModels[i];
     model->draw();
   }
@@ -882,8 +882,8 @@ void Aquarium::updateAndDrawFishes() {
 }
 
 void Aquarium::updateBackground() {
-  Model *model = mAquariumModels[MODELNAME::MODELRUINCOlOMN];
-  for (int i = MODELNAME::MODELRUINCOlOMN; i <= MODELNAME::MODELSEAWEEDB; ++i) {
+  Model *model = mAquariumModels[MODELNAME::MODELRUINCOLUMN];
+  for (int i = MODELNAME::MODELRUINCOLUMN; i <= MODELNAME::MODELSEAWEEDB; ++i) {
     model = mAquariumModels[i];
     updateWorldMatrix(model);
   }
