@@ -26,8 +26,7 @@ bool RingBufferDawn::push(const wgpu::CommandEncoder &encoder,
                           void *pixels,
                           size_t size) {
   memcpy(static_cast<unsigned char *>(mPixels) + src_offset, pixels, size);
-  encoder.CopyBufferToBuffer(mBufferMappedResult.buffer, src_offset, destBuffer,
-                             dest_offset, size);
+  encoder.CopyBufferToBuffer(mBuf, src_offset, destBuffer, dest_offset, size);
   return true;
 }
 
@@ -39,9 +38,12 @@ bool RingBufferDawn::reset(size_t size) {
   mHead = 0;
   mTail = 0;
 
-  mBufferMappedResult = mBufferManager->mContext->CreateBufferMapped(
-      wgpu::BufferUsage::MapWrite | wgpu::BufferUsage::CopySrc, mSize);
-  mPixels = mBufferMappedResult.data;
+  wgpu::BufferDescriptor descriptor;
+  descriptor.usage = wgpu::BufferUsage::MapWrite | wgpu::BufferUsage::CopySrc;
+  descriptor.size = mSize;
+  descriptor.mappedAtCreation = true;
+  mBuf = mBufferManager->mContext->createBuffer(descriptor);
+  mPixels = mBuf.GetMappedRange();
 
   return true;
 }
@@ -63,15 +65,15 @@ void RingBufferDawn::flush() {
   mHead = 0;
   mTail = 0;
 
-  mBufferMappedResult.buffer.Unmap();
+  mBuf.Unmap();
 }
 
 void RingBufferDawn::destory() {
-  mBufferMappedResult.buffer = nullptr;
+  mBuf.Destroy();
 }
 
 void RingBufferDawn::reMap() {
-  mBufferMappedResult.buffer.MapWriteAsync(MapWriteCallback, this);
+  mBuf.MapWriteAsync(MapWriteCallback, this);
 }
 
 size_t RingBufferDawn::allocate(size_t size) {

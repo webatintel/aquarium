@@ -111,7 +111,7 @@ public:
       bool enableBlend) const;
   wgpu::TextureView createMultisampledRenderTargetView() const;
   wgpu::TextureView createDepthStencilView() const;
-  wgpu::Buffer createBuffer(uint32_t size, wgpu::BufferUsage bit) const;
+  wgpu::Buffer createBuffer(const wgpu::BufferDescriptor &descriptor) const;
   void setBufferData(const wgpu::Buffer &buffer,
                      uint32_t bufferSize,
                      const void *data,
@@ -134,8 +134,6 @@ public:
                         size_t bufferSize,
                         void *data,
                         size_t dataSize) const;
-  wgpu::CreateBufferMappedResult CreateBufferMapped(wgpu::BufferUsage usage,
-                                                    uint64_t size) const;
   void WaitABit();
   wgpu::CommandEncoder createCommandEncoder() const;
   size_t CalcConstantBufferByteSize(size_t byteSize) const;

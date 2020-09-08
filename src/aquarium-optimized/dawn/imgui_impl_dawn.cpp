@@ -197,13 +197,16 @@ static void ImGui_ImplDawn_CreateFontsTexture(bool enableAlphaBlending)
         descriptor.usage         = wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::Sampled;
         mTexture                 = mContextDawn->createTexture(descriptor);
 
-        wgpu::CreateBufferMappedResult result = mContextDawn->CreateBufferMapped(
-            wgpu::BufferUsage::CopySrc | wgpu::BufferUsage::MapWrite, width * height * 4);
-        memcpy(result.data, pixels, width * height * 4);
-        result.buffer.Unmap();
+        wgpu::BufferDescriptor bufferDescriptor;
+        bufferDescriptor.usage = wgpu::BufferUsage::CopySrc | wgpu::BufferUsage::MapWrite;
+        bufferDescriptor.size = width * height * 4;
+        bufferDescriptor.mappedAtCreation = true;
+        wgpu::Buffer staging = mContextDawn->createBuffer(bufferDescriptor);
+        memcpy(staging.GetMappedRange(), pixels, width * height * 4);
+        staging.Unmap();
 
         wgpu::BufferCopyView bufferCopyView =
-            mContextDawn->createBufferCopyView(result.buffer, 0, width * 4, height);
+            mContextDawn->createBufferCopyView(staging, 0, width * 4, height);
         wgpu::TextureCopyView textureCopyView =
             mContextDawn->createTextureCopyView(mTexture, 0, {0, 0, 0});
         wgpu::Extent3D copySize = {static_cast<uint32_t>(width), static_cast<uint32_t>(height), 1};

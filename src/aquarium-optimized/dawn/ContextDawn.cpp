@@ -355,8 +355,11 @@ wgpu::Buffer ContextDawn::createBufferFromData(const void *data,
                                                uint32_t size,
                                                uint32_t maxSize,
                                                wgpu::BufferUsage usage) {
-  wgpu::Buffer buffer =
-      createBuffer(maxSize, usage | wgpu::BufferUsage::CopyDst);
+  wgpu::BufferDescriptor descriptor;
+  descriptor.usage = usage | wgpu::BufferUsage::CopyDst;
+  descriptor.size = maxSize;
+  descriptor.mappedAtCreation = false;
+  wgpu::Buffer buffer = createBuffer(descriptor);
 
   setBufferData(buffer, maxSize, data, size);
   return buffer;
@@ -509,27 +512,25 @@ wgpu::TextureView ContextDawn::createDepthStencilView() const {
   return depthStencilTexture.CreateView();
 }
 
-wgpu::Buffer ContextDawn::createBuffer(uint32_t size,
-                                       wgpu::BufferUsage bit) const {
-  wgpu::BufferDescriptor descriptor;
-  descriptor.size = size;
-  descriptor.usage = bit;
-
-  wgpu::Buffer buffer = mDevice.CreateBuffer(&descriptor);
-  return buffer;
+wgpu::Buffer ContextDawn::createBuffer(
+    const wgpu::BufferDescriptor &descriptor) const {
+  return mDevice.CreateBuffer(&descriptor);
 }
 
 void ContextDawn::setBufferData(const wgpu::Buffer &buffer,
                                 uint32_t bufferSize,
                                 const void *data,
                                 uint32_t dataSize) {
-  wgpu::CreateBufferMappedResult result = CreateBufferMapped(
-      wgpu::BufferUsage::MapWrite | wgpu::BufferUsage::CopySrc, bufferSize);
-  memcpy(result.data, data, dataSize);
-  result.buffer.Unmap();
+  wgpu::BufferDescriptor descriptor;
+  descriptor.usage = wgpu::BufferUsage::MapWrite | wgpu::BufferUsage::CopySrc;
+  descriptor.size = bufferSize;
+  descriptor.mappedAtCreation = true;
+  wgpu::Buffer staging = createBuffer(descriptor);
+  memcpy(staging.GetMappedRange(), data, dataSize);
+  staging.Unmap();
 
   wgpu::CommandBuffer command =
-      copyBufferToBuffer(result.buffer, 0, buffer, 0, bufferSize);
+      copyBufferToBuffer(staging, 0, buffer, 0, bufferSize);
   mCommandBuffers.emplace_back(command);
 }
 
@@ -801,9 +802,12 @@ void ContextDawn::reallocResource(int preTotalInstance,
     bindGroupFishPers = new wgpu::BindGroup[curTotalInstance];
   }
 
-  size_t size = CalcConstantBufferByteSize(sizeof(FishPer) * curTotalInstance);
-  fishPersBuffer = createBuffer(
-      size, wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
+  wgpu::BufferDescriptor descriptor;
+  descriptor.usage = wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform;
+  descriptor.size =
+      CalcConstantBufferByteSize(sizeof(FishPer) * curTotalInstance);
+  descriptor.mappedAtCreation = false;
+  fishPersBuffer = createBuffer(descriptor);
 
   if (enableDynamicBufferOffset) {
     bindGroupFishPers[0] = makeBindGroup(
@@ -817,20 +821,6 @@ void ContextDawn::reallocResource(int preTotalInstance,
             CalcConstantBufferByteSize(sizeof(FishPer))}});
     }
   }
-}
-
-wgpu::CreateBufferMappedResult ContextDawn::CreateBufferMapped(
-    wgpu::BufferUsage usage,
-    uint64_t size) const {
-  wgpu::BufferDescriptor descriptor;
-  descriptor.nextInChain = nullptr;
-  descriptor.size = size;
-  descriptor.usage = usage;
-
-  wgpu::CreateBufferMappedResult result =
-      mDevice.CreateBufferMapped(&descriptor);
-  ASSERT(result.dataLength == size);
-  return result;
 }
 
 void ContextDawn::WaitABit() {

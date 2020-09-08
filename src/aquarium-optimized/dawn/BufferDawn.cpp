@@ -21,10 +21,15 @@ BufferDawn::BufferDawn(ContextDawn *context,
       mStride(0),
       mOffset(nullptr) {
   mSize = numComponents * sizeof(float);
+
   // Create buffer for vertex buffer. Because float is multiple of 4 bytes,
   // dummy padding isnt' needed.
   int bufferSize = sizeof(float) * static_cast<int>(buffer->size());
-  mBuf = context->createBuffer(bufferSize, mUsage | wgpu::BufferUsage::CopyDst);
+  wgpu::BufferDescriptor descriptor;
+  descriptor.usage = mUsage | wgpu::BufferUsage::CopyDst;
+  descriptor.size = bufferSize;
+  descriptor.mappedAtCreation = false;
+  mBuf = context->createBuffer(descriptor);
 
   context->setBufferData(mBuf, bufferSize, buffer->data(), bufferSize);
 }
@@ -47,7 +52,11 @@ BufferDawn::BufferDawn(ContextDawn *context,
   }
 
   int bufferSize = sizeof(unsigned short) * static_cast<int>(buffer->size());
-  mBuf = context->createBuffer(bufferSize, mUsage | wgpu::BufferUsage::CopyDst);
+  wgpu::BufferDescriptor descriptor;
+  descriptor.usage = mUsage | wgpu::BufferUsage::CopyDst;
+  descriptor.size = bufferSize;
+  descriptor.mappedAtCreation = false;
+  mBuf = context->createBuffer(descriptor);
 
   context->setBufferData(mBuf, bufferSize, buffer->data(), bufferSize);
 }

@@ -49,9 +49,12 @@ void FishModelInstancedDrawDawn::init() {
   mBiNormalBuffer = static_cast<BufferDawn *>(bufferMap["binormal"]);
   mIndicesBuffer = static_cast<BufferDawn *>(bufferMap["indices"]);
 
-  mFishPersBuffer = mContextDawn->createBuffer(
-      sizeof(FishPer) * instance,
-      wgpu::BufferUsage::Vertex | wgpu::BufferUsage::CopyDst);
+  wgpu::BufferDescriptor bufferDescriptor;
+  bufferDescriptor.usage =
+      wgpu::BufferUsage::Vertex | wgpu::BufferUsage::CopyDst;
+  bufferDescriptor.size = sizeof(FishPer) * instance;
+  bufferDescriptor.mappedAtCreation = false;
+  mFishPersBuffer = mContextDawn->createBuffer(bufferDescriptor);
 
   mVertexStateDescriptor.cVertexBuffers[0].attributeCount = 1;
   mVertexStateDescriptor.cVertexBuffers[0].arrayStride =
