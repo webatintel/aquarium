@@ -121,7 +121,7 @@ enum TOGGLE : short {
   DISCRETEGPU,
   // Update and draw for each model on OpenGL and Angle backend, but draw once
   // per frame on other backend.
-  UPATEANDDRAWFOREACHMODEL,
+  DRAWPERMODEL,
   // Support Full Screen mode
   ENABLEFULLSCREENMODE,
   // Print logs such as avg fps
@@ -529,6 +529,7 @@ private:
   ContextFactory *mFactory;
   std::vector<std::string> mSkyUrls;
   std::queue<Behavior *> mFishBehavior;
+  bool mDrawPerModel;
 };
 
 #endif  // AQUARIUM_H
