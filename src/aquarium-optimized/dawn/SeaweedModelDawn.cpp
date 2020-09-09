@@ -76,7 +76,7 @@ void SeaweedModelDawn::init() {
       {0, wgpu::ShaderStage::Fragment, wgpu::BindingType::UniformBuffer},
       {1, wgpu::ShaderStage::Fragment, wgpu::BindingType::Sampler},
       {2, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture, false,
-       false, wgpu::TextureViewDimension::e2D,
+       0, false, wgpu::TextureViewDimension::e2D,
        wgpu::TextureComponentType::Float},
   });
 

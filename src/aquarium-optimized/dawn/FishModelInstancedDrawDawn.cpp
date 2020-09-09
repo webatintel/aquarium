@@ -126,16 +126,16 @@ void FishModelInstancedDrawDawn::init() {
         {2, wgpu::ShaderStage::Fragment, wgpu::BindingType::Sampler},
         {3, wgpu::ShaderStage::Fragment, wgpu::BindingType::Sampler},
         {4, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture,
-         false, false, wgpu::TextureViewDimension::e2D,
+         false, 0, false, wgpu::TextureViewDimension::e2D,
          wgpu::TextureComponentType::Float},
         {5, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture,
-         false, false, wgpu::TextureViewDimension::e2D,
+         false, 0, false, wgpu::TextureViewDimension::e2D,
          wgpu::TextureComponentType::Float},
         {6, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture,
-         false, false, wgpu::TextureViewDimension::e2D,
+         false, 0, false, wgpu::TextureViewDimension::e2D,
          wgpu::TextureComponentType::Float},
         {7, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture,
-         false, false, wgpu::TextureViewDimension::Cube,
+         false, 0, false, wgpu::TextureViewDimension::Cube,
          wgpu::TextureComponentType::Float},
     });
   } else {
@@ -144,10 +144,10 @@ void FishModelInstancedDrawDawn::init() {
         {1, wgpu::ShaderStage::Fragment, wgpu::BindingType::UniformBuffer},
         {2, wgpu::ShaderStage::Fragment, wgpu::BindingType::Sampler},
         {3, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture,
-         false, false, wgpu::TextureViewDimension::e2D,
+         false, 0, false, wgpu::TextureViewDimension::e2D,
          wgpu::TextureComponentType::Float},
         {4, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture,
-         false, false, wgpu::TextureViewDimension::e2D,
+         false, 0, false, wgpu::TextureViewDimension::e2D,
          wgpu::TextureComponentType::Float},
     });
   }
