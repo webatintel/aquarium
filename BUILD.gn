@@ -122,7 +122,10 @@ executable("aquarium") {
   }
 
   if (enable_dawn) {
-    defines += [ "ENABLE_DAWN_BACKEND" ]
+    defines += [
+      "ENABLE_DAWN_BACKEND",
+      "DAWN_SKIP_ASSERT_SHORTHANDS",
+    ]
     if (dawn_enable_d3d12) {
       defines += [ "DAWN_ENABLE_D3D12_BACKEND" ]
     }
