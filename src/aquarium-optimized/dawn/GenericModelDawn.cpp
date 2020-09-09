@@ -128,16 +128,16 @@ void GenericModelDawn::init() {
         {1, wgpu::ShaderStage::Fragment, wgpu::BindingType::Sampler},
         {2, wgpu::ShaderStage::Fragment, wgpu::BindingType::Sampler},
         {3, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture,
-         false, false, wgpu::TextureViewDimension::e2D,
+         false, 0, false, wgpu::TextureViewDimension::e2D,
          wgpu::TextureComponentType::Float},
         {4, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture,
-         false, false, wgpu::TextureViewDimension::e2D,
+         false, 0, false, wgpu::TextureViewDimension::e2D,
          wgpu::TextureComponentType::Float},
         {5, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture,
-         false, false, wgpu::TextureViewDimension::e2D,
+         false, 0, false, wgpu::TextureViewDimension::e2D,
          wgpu::TextureComponentType::Float},
         {6, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture,
-         false, false, wgpu::TextureViewDimension::Cube,
+         false, 0, false, wgpu::TextureViewDimension::Cube,
          wgpu::TextureComponentType::Float},
     });
   } else if (mNormalTexture && mName != MODELNAME::MODELGLOBEBASE) {
@@ -145,10 +145,10 @@ void GenericModelDawn::init() {
         {0, wgpu::ShaderStage::Fragment, wgpu::BindingType::UniformBuffer},
         {1, wgpu::ShaderStage::Fragment, wgpu::BindingType::Sampler},
         {2, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture,
-         false, false, wgpu::TextureViewDimension::e2D,
+         false, 0, false, wgpu::TextureViewDimension::e2D,
          wgpu::TextureComponentType::Float},
         {3, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture,
-         false, false, wgpu::TextureViewDimension::e2D,
+         false, 0, false, wgpu::TextureViewDimension::e2D,
          wgpu::TextureComponentType::Float},
     });
   } else {
@@ -156,7 +156,7 @@ void GenericModelDawn::init() {
         {0, wgpu::ShaderStage::Fragment, wgpu::BindingType::UniformBuffer},
         {1, wgpu::ShaderStage::Fragment, wgpu::BindingType::Sampler},
         {2, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture,
-         false, false, wgpu::TextureViewDimension::e2D,
+         false, 0, false, wgpu::TextureViewDimension::e2D,
          wgpu::TextureComponentType::Float},
     });
   }
