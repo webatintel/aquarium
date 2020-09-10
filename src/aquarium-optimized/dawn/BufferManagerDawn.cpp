@@ -48,15 +48,12 @@ bool RingBufferDawn::reset(size_t size) {
   return true;
 }
 
-void RingBufferDawn::MapWriteCallback(WGPUBufferMapAsyncStatus status,
-                                      void *data,
-                                      uint64_t,
-                                      void *userdata) {
+void RingBufferDawn::MapCallback(WGPUBufferMapAsyncStatus status,
+                                 void *userdata) {
   ASSERT(status == WGPUBufferMapAsyncStatus_Success);
-  ASSERT(data != nullptr);
 
   RingBufferDawn *ringBuffer = static_cast<RingBufferDawn *>(userdata);
-  ringBuffer->mappedData = data;
+  ringBuffer->mappedData = ringBuffer->mBuf.GetMappedRange();
 
   ringBuffer->mBufferManager->mMappedBufferList.push(ringBuffer);
 }
@@ -73,7 +70,7 @@ void RingBufferDawn::destory() {
 }
 
 void RingBufferDawn::reMap() {
-  mBuf.MapWriteAsync(MapWriteCallback, this);
+  mBuf.MapAsync(wgpu::MapMode::Write, 0, 0, MapCallback, this);
 }
 
 size_t RingBufferDawn::allocate(size_t size) {

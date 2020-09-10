@@ -37,10 +37,7 @@ public:
   size_t allocate(size_t size) override;
 
 private:
-  static void MapWriteCallback(WGPUBufferMapAsyncStatus status,
-                               void *data,
-                               uint64_t,
-                               void *userdata);
+  static void MapCallback(WGPUBufferMapAsyncStatus status, void *userdata);
 
   wgpu::Buffer mBuf;
 
