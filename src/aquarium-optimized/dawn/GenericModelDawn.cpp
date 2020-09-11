@@ -91,7 +91,6 @@ void GenericModelDawn::init() {
     mVertexStateDescriptor.cVertexBuffers[4].attributes =
         &mVertexStateDescriptor.cAttributes[4];
     mVertexStateDescriptor.vertexBufferCount = 5;
-    mVertexStateDescriptor.indexFormat = wgpu::IndexFormat::Uint16;
   } else {
     mVertexStateDescriptor.cVertexBuffers[0].attributeCount = 1;
     mVertexStateDescriptor.cVertexBuffers[0].arrayStride =
@@ -118,7 +117,6 @@ void GenericModelDawn::init() {
     mVertexStateDescriptor.cVertexBuffers[2].attributes =
         &mVertexStateDescriptor.cAttributes[2];
     mVertexStateDescriptor.vertexBufferCount = 3;
-    mVertexStateDescriptor.indexFormat = wgpu::IndexFormat::Uint16;
   }
 
   if (mSkyboxTexture && mReflectionTexture &&
@@ -246,7 +244,8 @@ void GenericModelDawn::draw() {
     pass.SetVertexBuffer(3, mTangentBuffer->getBuffer());
     pass.SetVertexBuffer(4, mBiNormalBuffer->getBuffer());
   }
-  pass.SetIndexBuffer(mIndicesBuffer->getBuffer(), 0);
+  pass.SetIndexBufferWithFormat(mIndicesBuffer->getBuffer(),
+                                wgpu::IndexFormat::Uint16, 0);
   pass.DrawIndexed(mIndicesBuffer->getTotalComponents(), instance, 0, 0, 0);
   instance = 0;
 }

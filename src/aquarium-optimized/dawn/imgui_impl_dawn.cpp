@@ -66,7 +66,7 @@ static void ImGui_ImplDawn_SetupRenderState(ImDrawData *draw_data,
     pass.SetPipeline(mPipeline);
     pass.SetBindGroup(0, mBindGroup, 0, nullptr);
     pass.SetVertexBuffer(0, mVertexBuffer);
-    pass.SetIndexBuffer(mIndexBuffer, 0);
+    pass.SetIndexBufferWithFormat(mIndexBuffer, wgpu::IndexFormat::Uint16, 0);
 }
 
 // Render function
@@ -260,7 +260,6 @@ bool ImGui_ImplDawn_CreateDeviceObjects(int MSAASampleCount, bool enableAlphaBle
 
     mVertexStateDescriptor.cVertexBuffers[0].attributes = &mVertexStateDescriptor.cAttributes[0];
     mVertexStateDescriptor.vertexBufferCount            = 1;
-    mVertexStateDescriptor.indexFormat                  = wgpu::IndexFormat::Uint16;
 
     // Create bind group layout
     wgpu::BindGroupLayout layout = mContextDawn->MakeBindGroupLayout(

@@ -85,7 +85,6 @@ void OutsideModelDawn::init() {
   mVertexStateDescriptor.cVertexBuffers[4].attributes =
       &mVertexStateDescriptor.cAttributes[4];
   mVertexStateDescriptor.vertexBufferCount = 5;
-  mVertexStateDescriptor.indexFormat = wgpu::IndexFormat::Uint16;
 
   mGroupLayoutPer = mContextDawn->MakeBindGroupLayout({
       {0, wgpu::ShaderStage::Vertex, wgpu::BindingType::UniformBuffer},
@@ -155,7 +154,8 @@ void OutsideModelDawn::draw() {
     pass.SetVertexBuffer(3, mTangentBuffer->getBuffer());
     pass.SetVertexBuffer(4, mBiNormalBuffer->getBuffer());
   }
-  pass.SetIndexBuffer(mIndicesBuffer->getBuffer(), 0);
+  pass.SetIndexBufferWithFormat(mIndicesBuffer->getBuffer(),
+                                wgpu::IndexFormat::Uint16, 0);
   pass.DrawIndexed(mIndicesBuffer->getTotalComponents(), 1, 0, 0, 0);
 }
 
