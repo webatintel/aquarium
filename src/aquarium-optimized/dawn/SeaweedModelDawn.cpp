@@ -70,7 +70,6 @@ void SeaweedModelDawn::init() {
   mVertexStateDescriptor.cVertexBuffers[2].attributes =
       &mVertexStateDescriptor.cAttributes[2];
   mVertexStateDescriptor.vertexBufferCount = 3;
-  mVertexStateDescriptor.indexFormat = wgpu::IndexFormat::Uint16;
 
   mGroupLayoutModel = mContextDawn->MakeBindGroupLayout({
       {0, wgpu::ShaderStage::Fragment, wgpu::BindingType::UniformBuffer},
@@ -151,7 +150,8 @@ void SeaweedModelDawn::draw() {
   pass.SetVertexBuffer(0, mPositionBuffer->getBuffer());
   pass.SetVertexBuffer(1, mNormalBuffer->getBuffer());
   pass.SetVertexBuffer(2, mTexCoordBuffer->getBuffer());
-  pass.SetIndexBuffer(mIndicesBuffer->getBuffer(), 0);
+  pass.SetIndexBufferWithFormat(mIndicesBuffer->getBuffer(),
+                                wgpu::IndexFormat::Uint16, 0);
   pass.DrawIndexed(mIndicesBuffer->getTotalComponents(), instance, 0, 0, 0);
   instance = 0;
 }
