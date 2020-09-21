@@ -111,7 +111,7 @@ void FishModelInstancedDrawDawn::init() {
       offsetof(FishPer, nextPosition);
   mVertexStateDescriptor.cAttributes[8].format = wgpu::VertexFormat::Float;
   mVertexStateDescriptor.cAttributes[8].shaderLocation = 8;
-  mVertexStateDescriptor.cAttributes[9].offset = offsetof(FishPer, time);
+  mVertexStateDescriptor.cAttributes[8].offset = offsetof(FishPer, time);
   mVertexStateDescriptor.cVertexBuffers[5].attributes =
       &mVertexStateDescriptor.cAttributes[5];
   mVertexStateDescriptor.cVertexBuffers[5].stepMode =
