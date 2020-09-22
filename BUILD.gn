@@ -7,10 +7,10 @@
 import("third_party/dawn/scripts/dawn_features.gni")
 
 declare_args() {
-  enable_dawn = is_win || is_linux || is_mac
+  enable_dawn = is_win || (is_linux && !is_chromeos) || is_mac
   enable_angle = false
   enable_d3d12 = is_win
-  enable_opengl = is_win || is_linux || is_mac
+  enable_opengl = is_win || (is_linux && !is_chromeos) || is_mac
 }
 
 executable("aquarium") {
