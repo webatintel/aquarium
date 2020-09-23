@@ -127,13 +127,13 @@ executable("aquarium") {
       "DAWN_SKIP_ASSERT_SHORTHANDS",
     ]
     if (dawn_enable_d3d12) {
-      defines += [ "DAWN_ENABLE_D3D12_BACKEND" ]
+      defines += [ "DAWN_ENABLE_BACKEND_D3D12" ]
     }
     if (dawn_enable_metal) {
-      defines += [ "DAWN_ENABLE_METAL_BACKEND" ]
+      defines += [ "DAWN_ENABLE_BACKEND_METAL" ]
     }
     if (dawn_enable_vulkan) {
-      defines += [ "DAWN_ENABLE_VULKAN_BACKEND" ]
+      defines += [ "DAWN_ENABLE_BACKEND_VULKAN" ]
     }
 
     include_dirs += [ "third_party/dawn/src" ]

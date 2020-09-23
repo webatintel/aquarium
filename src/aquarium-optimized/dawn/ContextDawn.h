@@ -8,7 +8,7 @@
 #ifndef CONTEXTDAWN_H
 #define CONTEXTDAWN_H
 
-#ifdef DAWN_ENABLE_VULKAN_BACKEND
+#ifdef DAWN_ENABLE_BACKEND_VULKAN
 // The Vulkan header is included by VulkanBackend.h, so this should be placed
 // before the GLFW header.
 #include "dawn_native/VulkanBackend.h"
