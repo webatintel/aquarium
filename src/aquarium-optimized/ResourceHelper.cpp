@@ -9,14 +9,20 @@
 #include <iostream>
 #include <sstream>
 
-#ifdef _WIN32
+#include "build/build_config.h"
+
+#include "common/AQUARIUM_ASSERT.h"
+
+#if defined(OS_WIN)
 #include <Windows.h>
 #include <direct.h>
 const std::string slash = "\\";
-#elif __APPLE__
+#endif
+#if defined(OS_MACOSX) && !defined(OS_IOS)
 #include <mach-o/dyld.h>
 const std::string slash = "/";
-#else
+#endif
+#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
 #include <unistd.h>
 const std::string slash = "/";
 #endif
@@ -35,20 +41,22 @@ ResourceHelper::ResourceHelper(const std::string &mBackendName,
     : mBackendName(mBackendName),
       mBackendType(backendType),
       mShaderVersion(mShaderVersion) {
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
+#if defined(OS_WIN)
   TCHAR temp[200];
   GetModuleFileName(nullptr, temp, MAX_PATH);
   std::wstring ws(temp);
   mPath = std::string(ws.begin(), ws.end());
-#elif __APPLE__
+#elif defined(OS_MACOSX) && !defined(OS_IOS)
   char temp[200];
   uint32_t size = sizeof(temp);
   _NSGetExecutablePath(temp, &size);
   mPath = std::string(temp);
-#else
+#elif defined(OS_LINUX) && !defined(OS_CHROMEOS)
   char temp[200];
   readlink("/proc/self/exe", temp, sizeof(temp));
   mPath = std::string(temp);
+#else
+  ASSERT(false);
 #endif
 
   size_t nPos = mPath.find_last_of(slash);

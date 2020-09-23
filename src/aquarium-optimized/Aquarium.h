@@ -14,6 +14,8 @@
 #include <string>
 #include <unordered_map>
 
+#include "build/build_config.h"
+
 #include "Behavior.h"
 #include "common/FPSTimer.h"
 
@@ -23,10 +25,11 @@ class Texture;
 class Program;
 class Model;
 
-#if defined(WIN32) || defined(_WIN32) || \
-    defined(__WIN32) && !defined(__CYGWIN__)
+#if defined(OS_WIN)
 #define M_PI 3.141592653589793
-#else
+#endif
+#if (defined(OS_MACOSX) && !defined(OS_IOS)) || \
+    (defined(OS_LINUX) && !defined(OS_CHROMEOS))
 #include "math.h"
 #endif
 
