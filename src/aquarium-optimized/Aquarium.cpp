@@ -15,12 +15,8 @@
 #include <cmath>
 #include <fstream>
 #include <iostream>
-#ifdef _WIN32
-#include <Windows.h>
-#else
-#include <ctime>
-#endif
 
+#include "build/build_config.h"
 #include "cxxopts.hpp"
 #include "rapidjson/document.h"
 #include "rapidjson/filewritestream.h"
@@ -36,6 +32,14 @@
 #include "Texture.h"
 #include "common/AQUARIUM_ASSERT.h"
 #include "opengl/ContextGL.h"
+
+#if defined(OS_WIN)
+#include <Windows.h>
+#endif
+#if (defined(OS_MACOSX) && !defined(OS_IOS)) || \
+    (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+#include <ctime>
+#endif
 
 Aquarium::Aquarium()
     : mModelEnumMap(),
@@ -115,23 +119,23 @@ BACKENDTYPE Aquarium::getBackendType(const std::string &backendPath) {
   if (backendPath == "opengl") {
     return BACKENDTYPE::BACKENDTYPEOPENGL;
   } else if (backendPath == "dawn_d3d12") {
-#if defined(WIN32) || defined(_WIN32)
+#if defined(OS_WIN)
     return BACKENDTYPE::BACKENDTYPEDAWND3D12;
 #endif
   } else if (backendPath == "dawn_metal") {
-#if defined(__APPLE__)
+#if defined(OS_MACOSX) && !defined(OS_IOS)
     return BACKENDTYPE::BACKENDTYPEDAWNMETAL;
 #endif
   } else if (backendPath == "dawn_vulkan") {
-#if defined(WIN32) || defined(_WIN32) || defined(__linux__)
+#if defined(OS_WIN) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
     return BACKENDTYPE::BACKENDTYPEDAWNVULKAN;
 #endif
   } else if (backendPath == "angle") {
-#if defined(WIN32) || defined(_WIN32)
+#if defined(OS_WIN)
     return BACKENDTYPE::BACKENDTYPEANGLE;
 #endif
   } else if (backendPath == "d3d12") {
-#if defined(WIN32) || defined(_WIN32)
+#if defined(OS_WIN)
     return BACKENDTYPED3D12;
 #endif
   }
@@ -403,10 +407,13 @@ bool Aquarium::init(int argc, char **argv) {
 }
 
 void Aquarium::resetFpsTime() {
-#ifdef _WIN32
+#if defined(OS_WIN)
   g.start = GetTickCount64() / 1000.0;
-#else
+#elif (defined(OS_MACOSX) && !defined(OS_IOS)) || \
+    (defined(OS_LINUX) && !defined(OS_CHROMEOS))
   g.start = clock() / 1000000.0;
+#else
+  ASSERT(false);
 #endif
   g.then = g.start;
 }
@@ -653,10 +660,14 @@ void Aquarium::calculateFishCount() {
 
 double Aquarium::getElapsedTime() {
   // Update our time
-#ifdef _WIN32
+#if defined(OS_WIN)
   double now = GetTickCount64() / 1000.0;
-#else
+#elif (defined(OS_MACOSX) && !defined(OS_IOS)) || \
+    (defined(OS_LINUX) && !defined(OS_CHROMEOS))
   double now = clock() / 1000000.0;
+#else
+  double now;
+  ASSERT(false);
 #endif
   double elapsedTime = 0.0;
   if (g.then == 0.0) {

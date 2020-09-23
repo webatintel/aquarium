@@ -15,20 +15,11 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#ifdef _WIN32
-#include <Windows.h>
-#include <direct.h>
-#elif __APPLE__
-#include <mach-o/dyld.h>
-#include <ctime>
-#else
-#include <unistd.h>
-#include <ctime>
-#endif
 
 #define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
 
+#include "build/build_config.h"
 #include "rapidjson/document.h"
 #include "rapidjson/istreamwrapper.h"
 #include "rapidjson/stringbuffer.h"
@@ -40,6 +31,19 @@
 #include "Program.h"
 #include "common/AQUARIUM_ASSERT.h"
 #include "include/CmdArgsHelper.h"
+
+#if defined(OS_WIN)
+#include <Windows.h>
+#include <direct.h>
+#endif
+#if defined(OS_MACOSX) && !defined(OS_IOS)
+#include <mach-o/dyld.h>
+#include <ctime>
+#endif
+#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#include <unistd.h>
+#include <ctime>
+#endif
 
 #define min(a, b) ((a) < (b) ? (a) : (b))
 
@@ -330,26 +334,28 @@ void onDestroy() {
 
 void getCurrentPath() {
   // Get path of current build.
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
+#if defined(OS_WIN)
   TCHAR temp[200];
   GetModuleFileName(NULL, temp, MAX_PATH);
   std::wstring ws(temp);
   mPath = std::string(ws.begin(), ws.end());
   size_t nPos = mPath.find_last_of(slash);
   mPath = mPath.substr(0, nPos) + slash + ".." + slash + ".." + slash;
-#elif __APPLE__
+#elif defined(OS_MACOSX) && !defined(OS_IOS)
   char temp[200];
   uint32_t size = sizeof(temp);
   _NSGetExecutablePath(temp, &size);
   mPath = std::string(temp);
   int nPos = mPath.find_last_of(slash);
   mPath = mPath.substr(0, nPos) + slash + ".." + slash + ".." + slash;
-#else
+#elif defined(OS_LINUX) && !defined(OS_CHROMEOS)
   char temp[200];
   readlink("/proc/self/exe", temp, sizeof(temp));
   mPath = std::string(temp);
   int nPos = mPath.find_last_of(slash);
   mPath = mPath.substr(0, nPos) + slash + ".." + slash + ".." + slash;
+#else
+  ASSERT(false);
 #endif
 }
 
@@ -418,12 +424,14 @@ int main(int argc, char **argv) {
 
   glfwWindowHint(GLFW_SAMPLES, 4);
 
-#ifdef __APPLE__
+#if defined(OS_MACOSX) && !defined(OS_IOS)
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-#elif _WIN32 || __linux__
+#elif defined(OS_WIN) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+#else
+  ASSERT(false);
 #endif
 
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -518,10 +526,14 @@ void DrawGroup(const std::multimap<std::string, std::vector<float>> &group,
 
 void render() {
   // Update our time
-#ifdef _WIN32
+#if defined(OS_WIN)
   float now = GetTickCount64() / 1000.0f;
-#else
+#elif (defined(OS_MACOSX) && !defined(OS_IOS)) || \
+    (defined(OS_LINUX) && !defined(OS_CHROMEOS))
   float now = clock() / 1000000.0f;
+#else
+  float now;
+  ASSERT(false);
 #endif
   float elapsedTime = 0.0f;
   if (then == 0.0f) {

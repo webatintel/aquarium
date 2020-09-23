@@ -16,6 +16,8 @@
 #include <string>
 #include <vector>
 
+#include "build/build_config.h"
+
 #ifdef EGL_EGL_PROTOTYPES
 #include <memory>
 
@@ -56,7 +58,7 @@ void ProgramGL::compileProgram(bool enableBlending, const std::string &alpha) {
       R"(outColor = mix(outColor, vec4(fogColor.rgb, diffuseColor.a),
         clamp(pow((v_position.z / v_position.w), fogPower) * fogMult - fogOffset,0.0,1.0));)";
 
-#ifdef __APPLE__
+#if defined(OS_MACOSX) && !defined(OS_IOS)
   VertexShaderCode =
       std::regex_replace(VertexShaderCode, std::regex(R"(#version 450 core)"),
                          R"(#version 410 core)");
