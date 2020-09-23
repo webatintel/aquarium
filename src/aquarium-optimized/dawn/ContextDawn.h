@@ -18,7 +18,6 @@
 
 #include "dawn/webgpu_cpp.h"
 #include "dawn_native/DawnNative.h"
-#include "utils/WGPUHelpers.h"
 
 #include "../Context.h"
 #include "BufferManagerDawn.h"
@@ -97,7 +96,7 @@ public:
   wgpu::TextureCopyView createTextureCopyView(wgpu::Texture texture,
                                               uint32_t level,
                                               wgpu::Origin3D origin);
-  wgpu::ShaderModule createShaderModule(utils::SingleShaderStage stage,
+  wgpu::ShaderModule createShaderModule(wgpu::ShaderStage stage,
                                         const std::string &str) const;
   wgpu::BindGroupLayout MakeBindGroupLayout(
       std::initializer_list<wgpu::BindGroupLayoutEntry> bindingsInitializer)
@@ -118,8 +117,7 @@ public:
                      uint32_t dataSize);
   wgpu::BindGroup makeBindGroup(
       const wgpu::BindGroupLayout &layout,
-      std::initializer_list<utils::BindingInitializationHelper>
-          bindingsInitializer) const;
+      std::initializer_list<wgpu::BindGroupEntry> bindingsInitializer) const;
 
   void initGeneralResources(Aquarium *aquarium) override;
   void updateWorldlUniforms(Aquarium *aquarium) override;
@@ -179,7 +177,7 @@ private:
   wgpu::SwapChain mSwapchain;
   wgpu::CommandEncoder mCommandEncoder;
   wgpu::RenderPassEncoder mRenderPass;
-  utils::ComboRenderPassDescriptor mRenderPassDescriptor;
+  wgpu::RenderPassDescriptor mRenderPassDescriptor;
 
   wgpu::TextureView mBackbufferView;
   wgpu::TextureView mSceneRenderTargetView;

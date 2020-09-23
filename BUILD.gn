@@ -171,7 +171,8 @@ executable("aquarium") {
       "third_party/dawn/src/dawn:dawncpp",
       "third_party/dawn/src/dawn_native",
       "third_party/dawn/src/utils:dawn_bindings",
-      "third_party/dawn/src/utils:dawn_utils",
+      # "third_party/dawn/third_party/SPIRV-Tools",
+      "third_party/glslang:glslang_sources",
     ]
     if (dawn_enable_vulkan) {
       deps += [ "third_party/dawn/third_party/khronos:vulkan_headers" ]

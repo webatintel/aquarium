@@ -1,11 +1,12 @@
 // dear imgui: Renderer for Dawn
 // This needs to be used along with a Platform Binding (e.g. GLFW)
 
+#include <vector>
+
 #include "ProgramDawn.h"
 
 #include "imgui.h"
 #include "imgui_impl_dawn.h"
-#include "utils/ComboRenderPipelineDescriptor.h"
 
 // Dawn data
 wgpu::RenderPipeline mPipeline(nullptr);
@@ -245,21 +246,29 @@ bool ImGui_ImplDawn_CreateDeviceObjects(int MSAASampleCount, bool enableAlphaBle
     if (!mContextDawn->mDevice)
         return false;
 
-    utils::ComboVertexStateDescriptor mVertexStateDescriptor;
-    mVertexStateDescriptor.cVertexBuffers[0].attributeCount = 3;
-    mVertexStateDescriptor.cVertexBuffers[0].arrayStride    = sizeof(ImDrawVert);
-    mVertexStateDescriptor.cAttributes[0].format            = wgpu::VertexFormat::Float2;
-    mVertexStateDescriptor.cAttributes[0].shaderLocation    = 0;
-    mVertexStateDescriptor.cAttributes[0].offset            = 0;
-    mVertexStateDescriptor.cAttributes[1].format            = wgpu::VertexFormat::Float2;
-    mVertexStateDescriptor.cAttributes[1].shaderLocation    = 1;
-    mVertexStateDescriptor.cAttributes[1].offset            = IM_OFFSETOF(ImDrawVert, uv);
-    mVertexStateDescriptor.cAttributes[2].format            = wgpu::VertexFormat::UChar4Norm;
-    mVertexStateDescriptor.cAttributes[2].shaderLocation    = 2;
-    mVertexStateDescriptor.cAttributes[2].offset            = IM_OFFSETOF(ImDrawVert, col);
+    std::vector<wgpu::VertexAttributeDescriptor> vertexAttributeDescriptor;
+    vertexAttributeDescriptor.resize(3);
+    vertexAttributeDescriptor[0].format         = wgpu::VertexFormat::Float2;
+    vertexAttributeDescriptor[0].offset         = 0;
+    vertexAttributeDescriptor[0].shaderLocation = 0;
+    vertexAttributeDescriptor[1].format         = wgpu::VertexFormat::Float2;
+    vertexAttributeDescriptor[1].offset         = IM_OFFSETOF(ImDrawVert, uv);
+    vertexAttributeDescriptor[1].shaderLocation = 1;
+    vertexAttributeDescriptor[2].format         = wgpu::VertexFormat::UChar4Norm;
+    vertexAttributeDescriptor[2].offset         = IM_OFFSETOF(ImDrawVert, col);
+    vertexAttributeDescriptor[2].shaderLocation = 2;
 
-    mVertexStateDescriptor.cVertexBuffers[0].attributes = &mVertexStateDescriptor.cAttributes[0];
-    mVertexStateDescriptor.vertexBufferCount            = 1;
+    std::vector<wgpu::VertexBufferLayoutDescriptor> vertexBufferLayoutDescriptor;
+    vertexBufferLayoutDescriptor.resize(1);
+    vertexBufferLayoutDescriptor[0].arrayStride    = sizeof(ImDrawVert);
+    vertexBufferLayoutDescriptor[0].stepMode       = wgpu::InputStepMode::Vertex;
+    vertexBufferLayoutDescriptor[0].attributeCount = 3;
+    vertexBufferLayoutDescriptor[0].attributes     = &vertexAttributeDescriptor[0];
+
+    wgpu::VertexStateDescriptor mVertexStateDescriptor;
+    mVertexStateDescriptor.vertexBufferCount =
+        static_cast<uint32_t>(vertexBufferLayoutDescriptor.size());
+    mVertexStateDescriptor.vertexBuffers = vertexBufferLayoutDescriptor.data();
 
     // Create bind group layout
     wgpu::BindGroupLayout layout = mContextDawn->MakeBindGroupLayout(
@@ -274,6 +283,12 @@ bool ImGui_ImplDawn_CreateDeviceObjects(int MSAASampleCount, bool enableAlphaBle
     mProgramDawn = new ProgramDawn(mContextDawn, programPath + "imguiVertexShader",
                                    programPath + "imguiFragmentShader");
     mProgramDawn->compileProgram(false, "");
+
+    wgpu::StencilStateFaceDescriptor stencilStateFaceDescriptor;
+    stencilStateFaceDescriptor.compare     = wgpu::CompareFunction::Always;
+    stencilStateFaceDescriptor.failOp      = wgpu::StencilOperation::Keep;
+    stencilStateFaceDescriptor.depthFailOp = wgpu::StencilOperation::Keep;
+    stencilStateFaceDescriptor.passOp      = wgpu::StencilOperation::Keep;
 
     wgpu::BlendDescriptor blendDescriptor;
     wgpu::BlendDescriptor alphaDescriptor;
@@ -300,7 +315,25 @@ bool ImGui_ImplDawn_CreateDeviceObjects(int MSAASampleCount, bool enableAlphaBle
     const wgpu::ShaderModule &mVsModule = mProgramDawn->getVSModule();
     const wgpu::ShaderModule &mFsModule = mProgramDawn->getFSModule();
 
+    wgpu::ProgrammableStageDescriptor vertexStageDescriptor;
+    vertexStageDescriptor.module     = mVsModule;
+    vertexStageDescriptor.entryPoint = "main";
+
+    wgpu::ProgrammableStageDescriptor fragmentStageDescriptor;
+    fragmentStageDescriptor.module     = mFsModule;
+    fragmentStageDescriptor.entryPoint = "main";
+
+    wgpu::DepthStencilStateDescriptor depthStencilStateDescriptor;
+    depthStencilStateDescriptor.format            = wgpu::TextureFormat::Depth24PlusStencil8;
+    depthStencilStateDescriptor.depthWriteEnabled = false;
+    depthStencilStateDescriptor.depthCompare      = wgpu::CompareFunction::Always;
+    depthStencilStateDescriptor.stencilFront      = stencilStateFaceDescriptor;
+    depthStencilStateDescriptor.stencilBack       = stencilStateFaceDescriptor;
+    depthStencilStateDescriptor.stencilReadMask   = 0xff;
+    depthStencilStateDescriptor.stencilWriteMask  = 0xff;
+
     wgpu::ColorStateDescriptor ColorStateDescriptor;
+    ColorStateDescriptor.format     = mFormat;
     ColorStateDescriptor.colorBlend = blendDescriptor;
     ColorStateDescriptor.alphaBlend = blendDescriptor;
     ColorStateDescriptor.writeMask  = wgpu::ColorWriteMask::All;
@@ -314,19 +347,16 @@ bool ImGui_ImplDawn_CreateDeviceObjects(int MSAASampleCount, bool enableAlphaBle
     rasterizationState.depthBiasClamp      = 0.0;
 
     // create graphics mPipeline
-    utils::ComboRenderPipelineDescriptor mPipelineDescriptor(mContextDawn->mDevice);
-    mPipelineDescriptor.layout                    = mPipelineLayout;
-    mPipelineDescriptor.vertexStage.module        = mVsModule;
-    mPipelineDescriptor.cFragmentStage.module     = mFsModule;
-    mPipelineDescriptor.cVertexState              = mVertexStateDescriptor;
-    mPipelineDescriptor.depthStencilState         = &mPipelineDescriptor.cDepthStencilState;
-    mPipelineDescriptor.cDepthStencilState.format = wgpu::TextureFormat::Depth24PlusStencil8;
-    mPipelineDescriptor.cColorStates[0]           = ColorStateDescriptor;
-    mPipelineDescriptor.cColorStates[0].format    = mFormat;
-    mPipelineDescriptor.cDepthStencilState.depthWriteEnabled = false;
-    mPipelineDescriptor.cDepthStencilState.depthCompare      = wgpu::CompareFunction::Always;
+    wgpu::RenderPipelineDescriptor mPipelineDescriptor;
+    mPipelineDescriptor.layout             = mPipelineLayout;
+    mPipelineDescriptor.vertexStage        = vertexStageDescriptor;
+    mPipelineDescriptor.fragmentStage      = &fragmentStageDescriptor;
+    mPipelineDescriptor.vertexState        = &mVertexStateDescriptor;
+    mPipelineDescriptor.depthStencilState  = &depthStencilStateDescriptor;
+    mPipelineDescriptor.colorStateCount    = 1;
+    mPipelineDescriptor.colorStates        = &ColorStateDescriptor;
     mPipelineDescriptor.primitiveTopology  = wgpu::PrimitiveTopology::TriangleList;
-    mPipelineDescriptor.sampleCount                          = MSAASampleCount;
+    mPipelineDescriptor.sampleCount        = MSAASampleCount;
     mPipelineDescriptor.rasterizationState = &rasterizationState;
 
     mPipeline = mContextDawn->mDevice.CreateRenderPipeline(&mPipelineDescriptor);
@@ -342,9 +372,9 @@ bool ImGui_ImplDawn_CreateDeviceObjects(int MSAASampleCount, bool enableAlphaBle
     mConstantBuffer = mContextDawn->mDevice.CreateBuffer(&descriptor);
 
     mBindGroup = mContextDawn->makeBindGroup(
-        layout, {{0, mConstantBuffer, 0, sizeof(VERTEX_CONSTANT_BUFFER)},
-                 {1, mSampler},
-                 {2, mTextureView}});
+        layout, {{0, mConstantBuffer, 0, sizeof(VERTEX_CONSTANT_BUFFER), {}, {}},
+                 {1, {}, 0, 0, mSampler, {}},
+                 {2, {}, 0, 0, {}, mTextureView}});
 
     return true;
 }

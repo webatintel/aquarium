@@ -8,7 +8,6 @@
 
 #include "ContextDawn.h"
 #include "imgui.h"
-#include "utils/WGPUHelpers.h"
 
 IMGUI_IMPL_API bool ImGui_ImplDawn_Init(ContextDawn *context, wgpu::TextureFormat rtv_format);
 IMGUI_IMPL_API void ImGui_ImplDawn_Shutdown();

@@ -9,7 +9,6 @@
 #define SEAWEEDMODELDAWN_H
 
 #include "dawn/webgpu_cpp.h"
-#include "utils/ComboRenderPipelineDescriptor.h"
 
 #include "../SeaweedModel.h"
 #include "ContextDawn.h"
@@ -57,7 +56,7 @@ public:
   WorldUniformPer mWorldUniformPer;
 
 private:
-  utils::ComboVertexStateDescriptor mVertexStateDescriptor;
+  wgpu::VertexStateDescriptor mVertexStateDescriptor;
   wgpu::RenderPipeline mPipeline;
 
   wgpu::BindGroupLayout mGroupLayoutModel;

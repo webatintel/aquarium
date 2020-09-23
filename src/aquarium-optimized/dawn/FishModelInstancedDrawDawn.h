@@ -9,7 +9,6 @@
 #define FISHMODELINSTANCEDDRAWDAWN_H
 
 #include "dawn/webgpu_cpp.h"
-#include "utils/ComboRenderPipelineDescriptor.h"
 
 #include "../FishModel.h"
 #include "ContextDawn.h"
@@ -72,7 +71,7 @@ public:
   BufferDawn *mIndicesBuffer;
 
 private:
-  utils::ComboVertexStateDescriptor mVertexStateDescriptor;
+  wgpu::VertexStateDescriptor mVertexStateDescriptor;
   wgpu::RenderPipeline mPipeline;
 
   wgpu::BindGroupLayout mGroupLayoutModel;
