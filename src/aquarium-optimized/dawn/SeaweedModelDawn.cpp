@@ -7,6 +7,8 @@
 
 #include "SeaweedModelDawn.h"
 
+#include <vector>
+
 SeaweedModelDawn::SeaweedModelDawn(Context *context,
                                    Aquarium *aquarium,
                                    MODELGROUP type,
@@ -45,31 +47,36 @@ void SeaweedModelDawn::init() {
   mTexCoordBuffer = static_cast<BufferDawn *>(bufferMap["texCoord"]);
   mIndicesBuffer = static_cast<BufferDawn *>(bufferMap["indices"]);
 
-  mVertexStateDescriptor.cVertexBuffers[0].attributeCount = 1;
-  mVertexStateDescriptor.cVertexBuffers[0].arrayStride =
-      mPositionBuffer->getDataSize();
-  mVertexStateDescriptor.cAttributes[0].format = wgpu::VertexFormat::Float3;
-  mVertexStateDescriptor.cAttributes[0].shaderLocation = 0;
-  mVertexStateDescriptor.cAttributes[0].offset = 0;
-  mVertexStateDescriptor.cVertexBuffers[0].attributes =
-      &mVertexStateDescriptor.cAttributes[0];
-  mVertexStateDescriptor.cVertexBuffers[1].attributeCount = 1;
-  mVertexStateDescriptor.cVertexBuffers[1].arrayStride =
-      mNormalBuffer->getDataSize();
-  mVertexStateDescriptor.cAttributes[1].format = wgpu::VertexFormat::Float3;
-  mVertexStateDescriptor.cAttributes[1].shaderLocation = 1;
-  mVertexStateDescriptor.cAttributes[1].offset = 0;
-  mVertexStateDescriptor.cVertexBuffers[1].attributes =
-      &mVertexStateDescriptor.cAttributes[1];
-  mVertexStateDescriptor.cVertexBuffers[2].attributeCount = 1;
-  mVertexStateDescriptor.cVertexBuffers[2].arrayStride =
-      mTexCoordBuffer->getDataSize();
-  mVertexStateDescriptor.cAttributes[2].format = wgpu::VertexFormat::Float2;
-  mVertexStateDescriptor.cAttributes[2].shaderLocation = 2;
-  mVertexStateDescriptor.cAttributes[2].offset = 0;
-  mVertexStateDescriptor.cVertexBuffers[2].attributes =
-      &mVertexStateDescriptor.cAttributes[2];
-  mVertexStateDescriptor.vertexBufferCount = 3;
+  std::vector<wgpu::VertexAttributeDescriptor> vertexAttributeDescriptor;
+  vertexAttributeDescriptor.resize(3);
+  vertexAttributeDescriptor[0].format = wgpu::VertexFormat::Float3;
+  vertexAttributeDescriptor[0].offset = 0;
+  vertexAttributeDescriptor[0].shaderLocation = 0;
+  vertexAttributeDescriptor[1].format = wgpu::VertexFormat::Float3;
+  vertexAttributeDescriptor[1].offset = 0;
+  vertexAttributeDescriptor[1].shaderLocation = 1;
+  vertexAttributeDescriptor[2].format = wgpu::VertexFormat::Float2;
+  vertexAttributeDescriptor[2].offset = 0;
+  vertexAttributeDescriptor[2].shaderLocation = 2;
+
+  std::vector<wgpu::VertexBufferLayoutDescriptor> vertexBufferLayoutDescriptor;
+  vertexBufferLayoutDescriptor.resize(3);
+  vertexBufferLayoutDescriptor[0].arrayStride = mPositionBuffer->getDataSize();
+  vertexBufferLayoutDescriptor[0].stepMode = wgpu::InputStepMode::Vertex;
+  vertexBufferLayoutDescriptor[0].attributeCount = 1;
+  vertexBufferLayoutDescriptor[0].attributes = &vertexAttributeDescriptor[0];
+  vertexBufferLayoutDescriptor[1].arrayStride = mNormalBuffer->getDataSize();
+  vertexBufferLayoutDescriptor[1].stepMode = wgpu::InputStepMode::Vertex;
+  vertexBufferLayoutDescriptor[1].attributeCount = 1;
+  vertexBufferLayoutDescriptor[1].attributes = &vertexAttributeDescriptor[1];
+  vertexBufferLayoutDescriptor[2].arrayStride = mTexCoordBuffer->getDataSize();
+  vertexBufferLayoutDescriptor[2].stepMode = wgpu::InputStepMode::Vertex;
+  vertexBufferLayoutDescriptor[2].attributeCount = 1;
+  vertexBufferLayoutDescriptor[2].attributes = &vertexAttributeDescriptor[2];
+
+  mVertexStateDescriptor.vertexBufferCount =
+      static_cast<uint32_t>(vertexBufferLayoutDescriptor.size());
+  mVertexStateDescriptor.vertexBuffers = vertexBufferLayoutDescriptor.data();
 
   mGroupLayoutModel = mContextDawn->MakeBindGroupLayout({
       {0, wgpu::ShaderStage::Fragment, wgpu::BindingType::UniformBuffer},
@@ -110,18 +117,26 @@ void SeaweedModelDawn::init() {
   mBindGroupModel = mContextDawn->makeBindGroup(
       mGroupLayoutModel,
       {
-          {0, mLightFactorBuffer, 0, sizeof(LightFactorUniforms)},
-          {1, mDiffuseTexture->getSampler()},
-          {2, mDiffuseTexture->getTextureView()},
+          {0, mLightFactorBuffer, 0, sizeof(LightFactorUniforms), {}, {}},
+          {1, {}, 0, 0, mDiffuseTexture->getSampler(), {}},
+          {2, {}, 0, 0, {}, mDiffuseTexture->getTextureView()},
       });
 
   mBindGroupPer = mContextDawn->makeBindGroup(
       mGroupLayoutPer,
       {
-          {0, mViewBuffer, 0,
-           mContextDawn->CalcConstantBufferByteSize(sizeof(WorldUniformPer))},
-          {1, mTimeBuffer, 0,
-           mContextDawn->CalcConstantBufferByteSize(sizeof(SeaweedPer) * 4)},
+          {0,
+           mViewBuffer,
+           0,
+           mContextDawn->CalcConstantBufferByteSize(sizeof(WorldUniformPer)),
+           {},
+           {}},
+          {1,
+           mTimeBuffer,
+           0,
+           mContextDawn->CalcConstantBufferByteSize(sizeof(SeaweedPer) * 4),
+           {},
+           {}},
       });
 
   mContextDawn->setBufferData(mLightFactorBuffer, sizeof(mLightFactorUniforms),

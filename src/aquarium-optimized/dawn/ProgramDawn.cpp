@@ -41,8 +41,8 @@ void ProgramDawn::compileProgram(bool enableBlending,
         FragmentShaderCode, std::regex(R"(diffuseColor.a)"), alpha);
   }
 
-  mVsModule = context->createShaderModule(utils::SingleShaderStage::Vertex,
-                                          VertexShaderCode);
-  mFsModule = context->createShaderModule(utils::SingleShaderStage::Fragment,
+  mVsModule =
+      context->createShaderModule(wgpu::ShaderStage::Vertex, VertexShaderCode);
+  mFsModule = context->createShaderModule(wgpu::ShaderStage::Fragment,
                                           FragmentShaderCode);
 }

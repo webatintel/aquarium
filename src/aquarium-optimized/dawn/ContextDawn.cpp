@@ -12,16 +12,20 @@
 #include <string>
 #include <vector>
 
+#include "SPIRV/GlslangToSpv.h"
+#include "build/build_config.h"
 #include "dawn/dawn_proc.h"
 #include "dawn/dawn_wsi.h"
 #include "dawn/webgpu.h"
 #include "dawn/webgpu_cpp.h"
 #include "dawn_native/DawnNative.h"
+#include "glslang/Public/ShaderLang.h"
 #include "imgui_impl_glfw.h"
+#if 0
+#include "spirv-tools/libspirv.hpp"
+#include "spirv-tools/optimizer.hpp"
+#endif
 #include "utils/BackendBinding.h"
-#include "utils/ComboRenderPipelineDescriptor.h"
-#include "utils/GLFWUtils.h"
-#include "utils/SystemUtils.h"
 
 #include "../Aquarium.h"
 #include "../FishModel.h"
@@ -37,6 +41,14 @@
 #include "common/AQUARIUM_ASSERT.h"
 #include "common/Constants.h"
 #include "imgui_impl_dawn.h"
+
+#if defined(OS_WIN)
+#include <Windows.h>
+#endif
+#if (defined(OS_MACOSX) && !defined(OS_IOS)) || \
+    (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+#include <unistd.h>
+#endif
 
 ContextDawn::ContextDawn(BACKENDTYPE backendType)
     : queue(nullptr),
@@ -62,10 +74,12 @@ ContextDawn::ContextDawn(BACKENDTYPE backendType)
       mPreferredSwapChainFormat(wgpu::TextureFormat::RGBA8Unorm),
       bufferManager(nullptr) {
   mResourceHelper = new ResourceHelper("dawn", "", backendType);
+  glslang::InitializeProcess();
   initAvailableToggleBitset(backendType);
 }
 
 ContextDawn::~ContextDawn() {
+  glslang::FinalizeProcess();
   delete mResourceHelper;
   if (mWindow != nullptr && !mDisableControlPanel) {
     destoryImgUI();
@@ -141,7 +155,9 @@ bool ContextDawn::initialize(
     return false;
   }
 
-  utils::SetupGLFWWindowHintsForBackend(backendType);
+  // Without this GLFW will initialize a GL context on the window, which
+  // prevents using the window with other APIs (by crashing in weird ways).
+  glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
   // set full screen
   glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
@@ -370,16 +386,26 @@ wgpu::BufferCopyView ContextDawn::createBufferCopyView(
     uint32_t offset,
     uint32_t bytesPerRow,
     uint32_t rowsPerImage) const {
+  wgpu::BufferCopyView bufferCopyView;
+  bufferCopyView.layout.offset = offset;
+  bufferCopyView.layout.bytesPerRow = bytesPerRow;
+  bufferCopyView.layout.rowsPerImage = rowsPerImage;
+  bufferCopyView.buffer = buffer;
 
-  return utils::CreateBufferCopyView(buffer, offset, bytesPerRow, rowsPerImage);
+  return bufferCopyView;
 }
 
 wgpu::TextureCopyView ContextDawn::createTextureCopyView(
     wgpu::Texture texture,
     uint32_t level,
     wgpu::Origin3D origin) {
+  wgpu::TextureCopyView textureCopyView;
+  textureCopyView.texture = texture;
+  textureCopyView.mipLevel = level;
+  textureCopyView.origin = origin;
+  textureCopyView.aspect = wgpu::TextureAspect::All;
 
-  return utils::CreateTextureCopyView(texture, level, origin);
+  return textureCopyView;
 }
 
 wgpu::CommandBuffer ContextDawn::copyBufferToTexture(
@@ -407,16 +433,190 @@ wgpu::CommandBuffer ContextDawn::copyBufferToBuffer(
 }
 
 wgpu::ShaderModule ContextDawn::createShaderModule(
-    utils::SingleShaderStage stage,
+    wgpu::ShaderStage stage,
     const std::string &str) const {
-  return utils::CreateShaderModule(mDevice, stage, str.c_str());
+  EShLanguage language;
+  switch (stage) {
+  case wgpu::ShaderStage::Vertex:
+    language = EShLanguage::EShLangVertex;
+    break;
+  case wgpu::ShaderStage::Fragment:
+    language = EShLanguage::EShLangFragment;
+    break;
+  default:
+    ASSERT(false);
+  }
+
+  glslang::TShader shader(language);
+  {
+    const char *s = str.c_str();
+    const int len = static_cast<int>(str.length());
+    const TBuiltInResource resources = {
+        // Copied from //third_party/glslang/StandAlone/ResourceLimits.cpp
+
+        /* .MaxLights = */ 32,
+        /* .MaxClipPlanes = */ 6,
+        /* .MaxTextureUnits = */ 32,
+        /* .MaxTextureCoords = */ 32,
+        /* .MaxVertexAttribs = */ 64,
+        /* .MaxVertexUniformComponents = */ 4096,
+        /* .MaxVaryingFloats = */ 64,
+        /* .MaxVertexTextureImageUnits = */ 32,
+        /* .MaxCombinedTextureImageUnits = */ 80,
+        /* .MaxTextureImageUnits = */ 32,
+        /* .MaxFragmentUniformComponents = */ 4096,
+        /* .MaxDrawBuffers = */ 32,
+        /* .MaxVertexUniformVectors = */ 128,
+        /* .MaxVaryingVectors = */ 8,
+        /* .MaxFragmentUniformVectors = */ 16,
+        /* .MaxVertexOutputVectors = */ 16,
+        /* .MaxFragmentInputVectors = */ 15,
+        /* .MinProgramTexelOffset = */ -8,
+        /* .MaxProgramTexelOffset = */ 7,
+        /* .MaxClipDistances = */ 8,
+        /* .MaxComputeWorkGroupCountX = */ 65535,
+        /* .MaxComputeWorkGroupCountY = */ 65535,
+        /* .MaxComputeWorkGroupCountZ = */ 65535,
+        /* .MaxComputeWorkGroupSizeX = */ 1024,
+        /* .MaxComputeWorkGroupSizeY = */ 1024,
+        /* .MaxComputeWorkGroupSizeZ = */ 64,
+        /* .MaxComputeUniformComponents = */ 1024,
+        /* .MaxComputeTextureImageUnits = */ 16,
+        /* .MaxComputeImageUniforms = */ 8,
+        /* .MaxComputeAtomicCounters = */ 8,
+        /* .MaxComputeAtomicCounterBuffers = */ 1,
+        /* .MaxVaryingComponents = */ 60,
+        /* .MaxVertexOutputComponents = */ 64,
+        /* .MaxGeometryInputComponents = */ 64,
+        /* .MaxGeometryOutputComponents = */ 128,
+        /* .MaxFragmentInputComponents = */ 128,
+        /* .MaxImageUnits = */ 8,
+        /* .MaxCombinedImageUnitsAndFragmentOutputs = */ 8,
+        /* .MaxCombinedShaderOutputResources = */ 8,
+        /* .MaxImageSamples = */ 0,
+        /* .MaxVertexImageUniforms = */ 0,
+        /* .MaxTessControlImageUniforms = */ 0,
+        /* .MaxTessEvaluationImageUniforms = */ 0,
+        /* .MaxGeometryImageUniforms = */ 0,
+        /* .MaxFragmentImageUniforms = */ 8,
+        /* .MaxCombinedImageUniforms = */ 8,
+        /* .MaxGeometryTextureImageUnits = */ 16,
+        /* .MaxGeometryOutputVertices = */ 256,
+        /* .MaxGeometryTotalOutputComponents = */ 1024,
+        /* .MaxGeometryUniformComponents = */ 1024,
+        /* .MaxGeometryVaryingComponents = */ 64,
+        /* .MaxTessControlInputComponents = */ 128,
+        /* .MaxTessControlOutputComponents = */ 128,
+        /* .MaxTessControlTextureImageUnits = */ 16,
+        /* .MaxTessControlUniformComponents = */ 1024,
+        /* .MaxTessControlTotalOutputComponents = */ 4096,
+        /* .MaxTessEvaluationInputComponents = */ 128,
+        /* .MaxTessEvaluationOutputComponents = */ 128,
+        /* .MaxTessEvaluationTextureImageUnits = */ 16,
+        /* .MaxTessEvaluationUniformComponents = */ 1024,
+        /* .MaxTessPatchComponents = */ 120,
+        /* .MaxPatchVertices = */ 32,
+        /* .MaxTessGenLevel = */ 64,
+        /* .MaxViewports = */ 16,
+        /* .MaxVertexAtomicCounters = */ 0,
+        /* .MaxTessControlAtomicCounters = */ 0,
+        /* .MaxTessEvaluationAtomicCounters = */ 0,
+        /* .MaxGeometryAtomicCounters = */ 0,
+        /* .MaxFragmentAtomicCounters = */ 8,
+        /* .MaxCombinedAtomicCounters = */ 8,
+        /* .MaxAtomicCounterBindings = */ 1,
+        /* .MaxVertexAtomicCounterBuffers = */ 0,
+        /* .MaxTessControlAtomicCounterBuffers = */ 0,
+        /* .MaxTessEvaluationAtomicCounterBuffers = */ 0,
+        /* .MaxGeometryAtomicCounterBuffers = */ 0,
+        /* .MaxFragmentAtomicCounterBuffers = */ 1,
+        /* .MaxCombinedAtomicCounterBuffers = */ 1,
+        /* .MaxAtomicCounterBufferSize = */ 16384,
+        /* .MaxTransformFeedbackBuffers = */ 4,
+        /* .MaxTransformFeedbackInterleavedComponents = */ 64,
+        /* .MaxCullDistances = */ 8,
+        /* .MaxCombinedClipAndCullDistances = */ 8,
+        /* .MaxSamples = */ 4,
+        /* .maxMeshOutputVerticesNV = */ 256,
+        /* .maxMeshOutputPrimitivesNV = */ 512,
+        /* .maxMeshWorkGroupSizeX_NV = */ 32,
+        /* .maxMeshWorkGroupSizeY_NV = */ 1,
+        /* .maxMeshWorkGroupSizeZ_NV = */ 1,
+        /* .maxTaskWorkGroupSizeX_NV = */ 32,
+        /* .maxTaskWorkGroupSizeY_NV = */ 1,
+        /* .maxTaskWorkGroupSizeZ_NV = */ 1,
+        /* .maxMeshViewCountNV = */ 4,
+        /* .maxDualSourceDrawBuffersEXT = */ 1,
+        /* .limits = */
+        {
+            /* .nonInductiveForLoops = */ 1,
+            /* .whileLoops = */ 1,
+            /* .doWhileLoops = */ 1,
+            /* .generalUniformIndexing = */ 1,
+            /* .generalAttributeMatrixVectorIndexing = */ 1,
+            /* .generalVaryingIndexing = */ 1,
+            /* .generalSamplerIndexing = */ 1,
+            /* .generalVariableIndexing = */ 1,
+            /* .generalConstantMatrixVectorIndexing = */ 1,
+        },
+    };
+    shader.setStringsWithLengths(&s, &len, 1);
+    shader.setEntryPoint("main");
+    shader.setEnvInput(glslang::EShSource::EShSourceGlsl, language,
+                       glslang::EShClient::EShClientVulkan, 100);
+    shader.setEnvClient(glslang::EShClient::EShClientVulkan,
+                        glslang::EShTargetClientVersion::EShTargetVulkan_1_0);
+    shader.setEnvTarget(glslang::EShTargetLanguage::EShTargetSpv,
+                        glslang::EShTargetLanguageVersion::EShTargetSpv_1_0);
+    if (!shader.parse(&resources, 450, EProfile::ECoreProfile, false, false,
+                      EShMessages::EShMsgDefault)) {
+      std::cerr << shader.getInfoLog();
+      return {};
+    }
+  }
+
+  glslang::TProgram program;
+  program.addShader(&shader);
+  if (!program.link(EShMessages::EShMsgDefault)) {
+    std::cerr << program.getInfoLog();
+    return {};
+  }
+
+  std::vector<uint32_t> code;
+  {
+    glslang::SpvOptions options;
+    glslang::GlslangToSpv(*program.getIntermediate(language), code, &options);
+  }
+#if 0
+  {
+    spvtools::Optimizer optimizer(spv_target_env::SPV_ENV_VULKAN_1_0);
+    spvtools::OptimizerOptions options;
+    optimizer.RegisterPerformancePasses();
+    options.set_run_validator(false);
+    optimizer.Run(code.data(), code.size(), &code, options);
+  }
+#endif
+
+  wgpu::ShaderModuleSPIRVDescriptor spirvDescriptor;
+  spirvDescriptor.codeSize = static_cast<uint32_t>(code.size());
+  spirvDescriptor.code = code.data();
+
+  wgpu::ShaderModuleDescriptor descriptor;
+  descriptor.nextInChain = &spirvDescriptor;
+
+  return mDevice.CreateShaderModule(&descriptor);
 }
 
 wgpu::BindGroupLayout ContextDawn::MakeBindGroupLayout(
     std::initializer_list<wgpu::BindGroupLayoutEntry> bindingsInitializer)
     const {
+  std::vector<wgpu::BindGroupLayoutEntry> bindings = bindingsInitializer;
 
-  return utils::MakeBindGroupLayout(mDevice, bindingsInitializer);
+  wgpu::BindGroupLayoutDescriptor descriptor;
+  descriptor.entryCount = static_cast<uint32_t>(bindings.size());
+  descriptor.entries = bindings.data();
+
+  return mDevice.CreateBindGroupLayout(&descriptor);
 }
 
 wgpu::PipelineLayout ContextDawn::MakeBasicPipelineLayout(
@@ -438,6 +638,29 @@ wgpu::RenderPipeline ContextDawn::createRenderPipeline(
   const wgpu::ShaderModule &mVsModule = mProgramDawn->getVSModule();
   const wgpu::ShaderModule &mFsModule = mProgramDawn->getFSModule();
 
+  wgpu::ProgrammableStageDescriptor vertexStageDescriptor;
+  vertexStageDescriptor.module = mVsModule;
+  vertexStageDescriptor.entryPoint = "main";
+
+  wgpu::ProgrammableStageDescriptor fragmentStageDescriptor;
+  fragmentStageDescriptor.module = mFsModule;
+  fragmentStageDescriptor.entryPoint = "main";
+
+  wgpu::StencilStateFaceDescriptor stencilStateFaceDescriptor;
+  stencilStateFaceDescriptor.compare = wgpu::CompareFunction::Always;
+  stencilStateFaceDescriptor.failOp = wgpu::StencilOperation::Keep;
+  stencilStateFaceDescriptor.depthFailOp = wgpu::StencilOperation::Keep;
+  stencilStateFaceDescriptor.passOp = wgpu::StencilOperation::Keep;
+
+  wgpu::DepthStencilStateDescriptor depthStencilStateDescriptor;
+  depthStencilStateDescriptor.format = wgpu::TextureFormat::Depth24PlusStencil8;
+  depthStencilStateDescriptor.depthWriteEnabled = true;
+  depthStencilStateDescriptor.depthCompare = wgpu::CompareFunction::Less;
+  depthStencilStateDescriptor.stencilFront = stencilStateFaceDescriptor;
+  depthStencilStateDescriptor.stencilBack = stencilStateFaceDescriptor;
+  depthStencilStateDescriptor.stencilReadMask = 0xff;
+  depthStencilStateDescriptor.stencilWriteMask = 0xff;
+
   wgpu::BlendDescriptor blendDescriptor;
   blendDescriptor.operation = wgpu::BlendOperation::Add;
   if (enableBlend) {
@@ -449,6 +672,7 @@ wgpu::RenderPipeline ContextDawn::createRenderPipeline(
   }
 
   wgpu::ColorStateDescriptor ColorStateDescriptor;
+  ColorStateDescriptor.format = mPreferredSwapChainFormat;
   ColorStateDescriptor.colorBlend = blendDescriptor;
   ColorStateDescriptor.alphaBlend = blendDescriptor;
   ColorStateDescriptor.writeMask = wgpu::ColorWriteMask::All;
@@ -462,19 +686,14 @@ wgpu::RenderPipeline ContextDawn::createRenderPipeline(
   rasterizationState.depthBiasClamp = 0.0;
 
   // test
-  utils::ComboRenderPipelineDescriptor descriptor(mDevice);
+  wgpu::RenderPipelineDescriptor descriptor;
   descriptor.layout = mPipelineLayout;
-  descriptor.vertexStage.module = mVsModule;
-  descriptor.cFragmentStage.module = mFsModule;
+  descriptor.vertexStage = vertexStageDescriptor;
+  descriptor.fragmentStage = &fragmentStageDescriptor;
   descriptor.vertexState = &mVertexStateDescriptor;
-  descriptor.depthStencilState = &descriptor.cDepthStencilState;
-  descriptor.cDepthStencilState.format =
-      wgpu::TextureFormat::Depth24PlusStencil8;
+  descriptor.depthStencilState = &depthStencilStateDescriptor;
   descriptor.colorStateCount = 1;
-  descriptor.cColorStates[0] = ColorStateDescriptor;
-  descriptor.cColorStates[0].format = mPreferredSwapChainFormat;
-  descriptor.cDepthStencilState.depthWriteEnabled = true;
-  descriptor.cDepthStencilState.depthCompare = wgpu::CompareFunction::Less;
+  descriptor.colorStates = &ColorStateDescriptor;
   descriptor.primitiveTopology = wgpu::PrimitiveTopology::TriangleList;
   descriptor.sampleCount = mMSAASampleCount;
   descriptor.rasterizationState = &rasterizationState;
@@ -536,9 +755,15 @@ void ContextDawn::setBufferData(const wgpu::Buffer &buffer,
 
 wgpu::BindGroup ContextDawn::makeBindGroup(
     const wgpu::BindGroupLayout &layout,
-    std::initializer_list<utils::BindingInitializationHelper>
-        bindingsInitializer) const {
-  return utils::MakeBindGroup(mDevice, layout, bindingsInitializer);
+    std::initializer_list<wgpu::BindGroupEntry> bindingsInitializer) const {
+  std::vector<wgpu::BindGroupEntry> bindings = bindingsInitializer;
+
+  wgpu::BindGroupDescriptor descriptor;
+  descriptor.layout = layout;
+  descriptor.entryCount = static_cast<uint32_t>(bindings.size());
+  descriptor.entries = bindings.data();
+
+  return mDevice.CreateBindGroup(&descriptor);
 }
 
 void ContextDawn::initGeneralResources(Aquarium *aquarium) {
@@ -557,10 +782,10 @@ void ContextDawn::initGeneralResources(Aquarium *aquarium) {
       sizeof(aquarium->fogUniforms),
       wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
 
-  bindGroupGeneral =
-      makeBindGroup(groupLayoutGeneral,
-                    {{0, mLightBuffer, 0, sizeof(aquarium->lightUniforms)},
-                     {1, mFogBuffer, 0, sizeof(aquarium->fogUniforms)}});
+  bindGroupGeneral = makeBindGroup(
+      groupLayoutGeneral,
+      {{0, mLightBuffer, 0, sizeof(aquarium->lightUniforms), {}, {}},
+       {1, mFogBuffer, 0, sizeof(aquarium->fogUniforms), {}, {}}});
 
   setBufferData(mLightBuffer, sizeof(LightUniforms), &aquarium->lightUniforms,
                 sizeof(LightUniforms));
@@ -580,9 +805,13 @@ void ContextDawn::initGeneralResources(Aquarium *aquarium) {
 
   bindGroupWorld = makeBindGroup(
       groupLayoutWorld, {
-                            {0, mLightWorldPositionBuffer, 0,
+                            {0,
+                             mLightWorldPositionBuffer,
+                             0,
                              CalcConstantBufferByteSize(
-                                 sizeof(aquarium->lightWorldPositionUniform))},
+                                 sizeof(aquarium->lightWorldPositionUniform)),
+                             {},
+                             {}},
                         });
 
   bool enableDynamicBufferOffset = aquarium->toggleBitset.test(
@@ -720,25 +949,37 @@ void ContextDawn::preFrame() {
   mCommandEncoder = mDevice.CreateCommandEncoder();
   mBackbufferView = mSwapchain.GetCurrentTextureView();
 
+  wgpu::RenderPassColorAttachmentDescriptor colorAttachmentDescriptor;
   if (mMSAASampleCount > 1) {
     // If MSAA is enabled, we render to a multisampled texture and then resolve
     // to the backbuffer
-    mRenderPassDescriptor = utils::ComboRenderPassDescriptor(
-        {mSceneRenderTargetView}, mSceneDepthStencilView);
-    mRenderPassDescriptor.cColorAttachments[0].resolveTarget = mBackbufferView;
-    mRenderPassDescriptor.cColorAttachments[0].loadOp = wgpu::LoadOp::Clear;
-    mRenderPassDescriptor.cColorAttachments[0].storeOp = wgpu::StoreOp::Clear;
-    mRenderPassDescriptor.cColorAttachments[0].clearColor = {0.f, 0.8f, 1.f,
-                                                             0.f};
+    colorAttachmentDescriptor.attachment = mSceneRenderTargetView;
+    colorAttachmentDescriptor.resolveTarget = mBackbufferView;
+    colorAttachmentDescriptor.loadOp = wgpu::LoadOp::Clear;
+    colorAttachmentDescriptor.storeOp = wgpu::StoreOp::Clear;
+    colorAttachmentDescriptor.clearColor = {0.f, 0.8f, 1.f, 0.f};
   } else {
     // When MSAA is off, we render directly to the backbuffer
-    mRenderPassDescriptor = utils::ComboRenderPassDescriptor(
-        {mBackbufferView}, mSceneDepthStencilView);
-    mRenderPassDescriptor.cColorAttachments[0].loadOp = wgpu::LoadOp::Clear;
-    mRenderPassDescriptor.cColorAttachments[0].storeOp = wgpu::StoreOp::Store;
-    mRenderPassDescriptor.cColorAttachments[0].clearColor = {0.f, 0.8f, 1.f,
-                                                             0.f};
+    colorAttachmentDescriptor.attachment = mBackbufferView;
+    colorAttachmentDescriptor.loadOp = wgpu::LoadOp::Clear;
+    colorAttachmentDescriptor.storeOp = wgpu::StoreOp::Store;
+    colorAttachmentDescriptor.clearColor = {0.f, 0.8f, 1.f, 0.f};
   }
+
+  wgpu::RenderPassDepthStencilAttachmentDescriptor
+      depthStencilAttachmentDescriptor;
+  depthStencilAttachmentDescriptor.attachment = mSceneDepthStencilView;
+  depthStencilAttachmentDescriptor.depthLoadOp = wgpu::LoadOp::Clear;
+  depthStencilAttachmentDescriptor.depthStoreOp = wgpu::StoreOp::Store;
+  depthStencilAttachmentDescriptor.clearDepth = 1.f;
+  depthStencilAttachmentDescriptor.stencilLoadOp = wgpu::LoadOp::Clear;
+  depthStencilAttachmentDescriptor.stencilStoreOp = wgpu::StoreOp::Store;
+  depthStencilAttachmentDescriptor.clearStencil = 0;
+
+  mRenderPassDescriptor.colorAttachmentCount = 1;
+  mRenderPassDescriptor.colorAttachments = &colorAttachmentDescriptor;
+  mRenderPassDescriptor.depthStencilAttachment =
+      &depthStencilAttachmentDescriptor;
 
   mRenderPass = mCommandEncoder.BeginRenderPass(&mRenderPassDescriptor);
 }
@@ -811,14 +1052,21 @@ void ContextDawn::reallocResource(int preTotalInstance,
 
   if (enableDynamicBufferOffset) {
     bindGroupFishPers[0] = makeBindGroup(
-        groupLayoutFishPer,
-        {{0, fishPersBuffer, 0, CalcConstantBufferByteSize(sizeof(FishPer))}});
+        groupLayoutFishPer, {{0,
+                              fishPersBuffer,
+                              0,
+                              CalcConstantBufferByteSize(sizeof(FishPer)),
+                              {},
+                              {}}});
   } else {
     for (int i = 0; i < curTotalInstance; i++) {
       bindGroupFishPers[i] = makeBindGroup(
-          groupLayoutFishPer,
-          {{0, fishPersBuffer, CalcConstantBufferByteSize(sizeof(FishPer) * i),
-            CalcConstantBufferByteSize(sizeof(FishPer))}});
+          groupLayoutFishPer, {{0,
+                                fishPersBuffer,
+                                CalcConstantBufferByteSize(sizeof(FishPer) * i),
+                                CalcConstantBufferByteSize(sizeof(FishPer)),
+                                {},
+                                {}}});
     }
   }
 }
@@ -826,7 +1074,14 @@ void ContextDawn::reallocResource(int preTotalInstance,
 void ContextDawn::WaitABit() {
   mDevice.Tick();
 
-  utils::USleep(100);
+#if defined(OS_WIN)
+  Sleep(0);
+#elif (defined(OS_MACOSX) && !defined(OS_IOS)) || \
+    (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+  usleep(100);
+#else
+  ASSERT(false);
+#endif
 }
 
 wgpu::CommandEncoder ContextDawn::createCommandEncoder() const {
