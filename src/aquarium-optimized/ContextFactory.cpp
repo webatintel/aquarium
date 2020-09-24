@@ -28,7 +28,7 @@ Context *ContextFactory::createContext(BACKENDTYPE backendType) {
   case BACKENDTYPE::BACKENDTYPEANGLE:
     {
 #if defined(ENABLE_OPENGL_BACKEND) || defined(ENABLE_ANGLE_BACKEND)
-      mContext = new ContextGL(backendType);
+      mContext = ContextGL::create(backendType);
 #endif
       break;
     }
@@ -37,14 +37,14 @@ Context *ContextFactory::createContext(BACKENDTYPE backendType) {
   case BACKENDTYPE::BACKENDTYPEDAWNVULKAN:
     {
 #if defined(ENABLE_DAWN_BACKEND)
-      mContext = new ContextDawn(backendType);
+      mContext = ContextDawn::create(backendType);
 #endif
       break;
     }
   case BACKENDTYPE::BACKENDTYPED3D12:
     {
 #if defined(ENABLE_D3D12_BACKEND)
-      mContext = new ContextD3D12(backendType);
+      mContext = ContextD3D12::create(backendType);
 #endif
       break;
     }

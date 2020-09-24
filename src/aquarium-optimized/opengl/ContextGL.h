@@ -34,8 +34,10 @@ enum BACKENDTYPE : short;
 
 class ContextGL : public Context {
 public:
-  ContextGL(BACKENDTYPE backendType);
-  ~ContextGL();
+  static ContextGL *create(BACKENDTYPE backendType);
+
+  ~ContextGL() override;
+
   bool initialize(
       BACKENDTYPE backend,
       const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset,
@@ -109,6 +111,9 @@ public:
   void setParameter(unsigned int target, unsigned int pname, int param);
   void generateMipmap(unsigned int target);
   void updateAllFishData() override;
+
+protected:
+  explicit ContextGL(BACKENDTYPE backendType);
 
 private:
   void initState();

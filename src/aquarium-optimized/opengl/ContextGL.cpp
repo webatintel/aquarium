@@ -42,6 +42,10 @@ ContextGL::~ContextGL() {
   }
 }
 
+ContextGL *ContextGL::create(BACKENDTYPE backendType) {
+  return new ContextGL(backendType);
+}
+
 bool ContextGL::initialize(
     BACKENDTYPE backend,
     const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset,

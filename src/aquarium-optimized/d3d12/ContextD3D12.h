@@ -22,8 +22,10 @@ constexpr int cbvsrvCount = 88;
 
 class ContextD3D12 : public Context {
 public:
-  ContextD3D12(BACKENDTYPE backendType);
-  ~ContextD3D12();
+  static ContextD3D12 *create(BACKENDTYPE backendType);
+
+  ~ContextD3D12() override;
+
   bool initialize(
       BACKENDTYPE backend,
       const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset,
@@ -149,6 +151,9 @@ public:
   ComPtr<ID3D12Resource> mFishPersBuffer;
   ComPtr<ID3D12Resource> stagingBuffer;
   FishPer *fishPers;
+
+protected:
+  explicit ContextD3D12(BACKENDTYPE backendType);
 
 private:
   bool GetHardwareAdapter(
