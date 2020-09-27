@@ -13,6 +13,7 @@
 #include <queue>
 #include <string>
 #include <unordered_map>
+#include <utility>
 
 #include "build/build_config.h"
 
@@ -35,10 +36,10 @@ class Model;
 
 enum BACKENDTYPE : short {
   BACKENDTYPEANGLE,
-  BACKENDTYPEDAWND3D12,
-  BACKENDTYPEDAWNMETAL,
-  BACKENDTYPEDAWNVULKAN,
+  BACKENDTYPEDAWN,
   BACKENDTYPED3D12,
+  BACKENDTYPEMETAL,
+  BACKENDTYPEVULKAN,
   BACKENDTYPEOPENGL,
   BACKENDTYPELAST
 };
@@ -505,7 +506,8 @@ private:
   void updateGlobalUniforms();
 
   void updateWorldProjections(const std::vector<float> &w);
-  BACKENDTYPE getBackendType(const std::string &backendPath);
+  std::pair<BACKENDTYPE, BACKENDTYPE> getBackendType(
+      const std::string &backendPath);
   double getElapsedTime();
   void printAvgFps();
   void resetFpsTime();
@@ -528,7 +530,7 @@ private:
   int mCurFishCount;
   int mPreFishCount;
   int mTestTime;
-  BACKENDTYPE mBackendType;
+  std::pair<BACKENDTYPE, BACKENDTYPE> mBackendType;
   ContextFactory *mFactory;
   std::vector<std::string> mSkyUrls;
   std::queue<Behavior *> mFishBehavior;

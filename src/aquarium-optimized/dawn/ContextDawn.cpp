@@ -73,7 +73,8 @@ ContextDawn::ContextDawn(BACKENDTYPE backendType)
       mBindGroup(nullptr),
       mPreferredSwapChainFormat(wgpu::TextureFormat::RGBA8Unorm),
       bufferManager(nullptr) {
-  mResourceHelper = new ResourceHelper("dawn", "", backendType);
+  mResourceHelper = new ResourceHelper(
+      "dawn", "", {BACKENDTYPE::BACKENDTYPEDAWN, backendType});
   glslang::InitializeProcess();
   initAvailableToggleBitset(backendType);
 }
@@ -119,17 +120,17 @@ bool ContextDawn::initialize(
   wgpu::BackendType backendType = wgpu::BackendType::Null;
 
   switch (backend) {
-  case BACKENDTYPE::BACKENDTYPEDAWND3D12:
+  case BACKENDTYPE::BACKENDTYPED3D12:
     {
       backendType = wgpu::BackendType::D3D12;
       break;
     }
-  case BACKENDTYPE::BACKENDTYPEDAWNVULKAN:
+  case BACKENDTYPE::BACKENDTYPEVULKAN:
     {
       backendType = wgpu::BackendType::Vulkan;
       break;
     }
-  case BACKENDTYPE::BACKENDTYPEDAWNMETAL:
+  case BACKENDTYPE::BACKENDTYPEMETAL:
     {
       backendType = wgpu::BackendType::Metal;
       break;
@@ -253,7 +254,7 @@ bool ContextDawn::initialize(
 
   // TODO(jiawei.shao@intel.com): support recreating swapchain when window is
   // resized on all backends
-  if (backend == BACKENDTYPE::BACKENDTYPEDAWNVULKAN) {
+  if (backend == BACKENDTYPE::BACKENDTYPEVULKAN) {
     glfwSetFramebufferSizeCallback(mWindow, framebufferResizeCallback);
     glfwSetWindowUserPointer(mWindow, this);
   }

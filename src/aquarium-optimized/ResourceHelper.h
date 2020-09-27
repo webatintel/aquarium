@@ -8,6 +8,7 @@
 #define RESOURCEHELPER_H
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "Aquarium.h"
@@ -17,7 +18,7 @@ public:
   ResourceHelper() {}
   ResourceHelper(const std::string &mBackendName,
                  const std::string &mShaderVersion,
-                 BACKENDTYPE backendType);
+                 const std::pair<BACKENDTYPE, BACKENDTYPE> &backendType);
   void getSkyBoxUrls(std::vector<std::string> *skyUrls) const;
   const std::string &getPropPlacementPath() const { return mPropPlacementPath; }
   const std::string &getImagePath() const { return mImagePath; }
@@ -25,7 +26,9 @@ public:
   const std::string &getProgramPath() const;
   const std::string &getFishBehaviorPath() const { return mFishBehaviorPath; }
   const std::string &getBackendName() const { return mBackendName; }
-  BACKENDTYPE getBackendType() const { return mBackendType; }
+  std::pair<BACKENDTYPE, BACKENDTYPE> getBackendType() const {
+    return mBackendType;
+  }
   const std::string &getShaderVersion() const { return mShaderVersion; }
   const std::string &getRendererInfo() const;
   void setRenderer(const std::string &renderer);
@@ -39,7 +42,7 @@ private:
   std::string mFishBehaviorPath;
 
   std::string mBackendName;
-  BACKENDTYPE mBackendType;
+  std::pair<BACKENDTYPE, BACKENDTYPE> mBackendType;
   std::string mBackendTypeStr;
 
   std::string mShaderVersion;

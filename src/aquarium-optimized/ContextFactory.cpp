@@ -22,29 +22,28 @@ ContextFactory::~ContextFactory() {
   delete mContext;
 }
 
-Context *ContextFactory::createContext(BACKENDTYPE backendType) {
-  switch (backendType) {
+Context *ContextFactory::createContext(
+    const std::pair<BACKENDTYPE, BACKENDTYPE> &backendType) {
+  switch (backendType.first) {
   case BACKENDTYPE::BACKENDTYPEOPENGL:
   case BACKENDTYPE::BACKENDTYPEANGLE:
     {
 #if defined(ENABLE_OPENGL_BACKEND) || defined(ENABLE_ANGLE_BACKEND)
-      mContext = new ContextGL(backendType);
+      mContext = new ContextGL(backendType.second);
 #endif
       break;
     }
-  case BACKENDTYPE::BACKENDTYPEDAWND3D12:
-  case BACKENDTYPE::BACKENDTYPEDAWNMETAL:
-  case BACKENDTYPE::BACKENDTYPEDAWNVULKAN:
+  case BACKENDTYPE::BACKENDTYPEDAWN:
     {
 #if defined(ENABLE_DAWN_BACKEND)
-      mContext = new ContextDawn(backendType);
+      mContext = new ContextDawn(backendType.second);
 #endif
       break;
     }
   case BACKENDTYPE::BACKENDTYPED3D12:
     {
 #if defined(ENABLE_D3D12_BACKEND)
-      mContext = new ContextD3D12(backendType);
+      mContext = new ContextD3D12(backendType.second);
 #endif
       break;
     }

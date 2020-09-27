@@ -7,6 +7,8 @@
 #ifndef CONTEXTFACTORY_H
 #define CONTEXTFACTORY_H
 
+#include <utility>
+
 class Context;
 enum BACKENDTYPE : short;
 
@@ -14,7 +16,8 @@ class ContextFactory {
 public:
   ContextFactory();
   ~ContextFactory();
-  Context *createContext(BACKENDTYPE backendType);
+  Context *createContext(
+      const std::pair<BACKENDTYPE, BACKENDTYPE> &backendType);
 
 private:
   Context *mContext;

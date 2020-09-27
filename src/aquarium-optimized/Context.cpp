@@ -7,6 +7,7 @@
 #include "Context.h"
 
 #include <sstream>
+#include <utility>
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -100,8 +101,11 @@ void Context::renderImgui(
     }
 
     if (mResourceHelper->getBackendType() ==
-            BACKENDTYPE::BACKENDTYPEDAWND3D12 ||
-        mResourceHelper->getBackendType() == BACKENDTYPE::BACKENDTYPED3D12) {
+            std::make_pair(BACKENDTYPE::BACKENDTYPEDAWN,
+                           BACKENDTYPE::BACKENDTYPED3D12) ||
+        mResourceHelper->getBackendType() ==
+            std::make_pair(BACKENDTYPE::BACKENDTYPED3D12,
+                           BACKENDTYPE::BACKENDTYPELAST)) {
       if (toggleBitset->test(
               static_cast<size_t>(TOGGLE::DISABLED3D12RENDERPASS))) {
         ImGui::Text("RENDERPASS: OFF");
@@ -110,12 +114,8 @@ void Context::renderImgui(
       }
     }
 
-    if (mResourceHelper->getBackendType() ==
-            BACKENDTYPE::BACKENDTYPEDAWND3D12 ||
-        mResourceHelper->getBackendType() ==
-            BACKENDTYPE::BACKENDTYPEDAWNVULKAN ||
-        mResourceHelper->getBackendType() ==
-            BACKENDTYPE::BACKENDTYPEDAWNMETAL) {
+    if (mResourceHelper->getBackendType().first ==
+        BACKENDTYPE::BACKENDTYPEDAWN) {
       if (toggleBitset->test(
               static_cast<size_t>(TOGGLE::DISABLEDAWNVALIDATION))) {
         ImGui::Text("VALIDATION: OFF");

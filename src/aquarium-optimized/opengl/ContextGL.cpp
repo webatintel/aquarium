@@ -57,7 +57,8 @@ bool ContextGL::initialize(
   // TODO(yizhou) : Enable msaa in angle. Render into a multisample Texture and
   // then blit to a none multisample texture.
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-  mResourceHelper = new ResourceHelper("opengl", std::string("100"), backend);
+  mResourceHelper = new ResourceHelper(
+      "opengl", std::string("100"), {BACKENDTYPE::BACKENDTYPEANGLE, backend});
 #else
   if (mMSAASampleCount > 1) {
     glfwWindowHint(GLFW_SAMPLES, mMSAASampleCount);
@@ -65,7 +66,8 @@ bool ContextGL::initialize(
   mDisableControlPanel =
       (toggleBitset.test(static_cast<TOGGLE>(TOGGLE::DISABLECONTROLPANEL)));
 
-  mResourceHelper = new ResourceHelper("opengl", "450", backend);
+  mResourceHelper = new ResourceHelper(
+      "opengl", "450", {BACKENDTYPE::BACKENDTYPEOPENGL, backend});
 
 #if defined(OS_MACOSX) && !defined(OS_IOS)
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);

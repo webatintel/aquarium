@@ -35,9 +35,10 @@ const std::vector<std::string> skyBoxUrls = {
     "GlobeOuter_EM_positive_y.jpg", "GlobeOuter_EM_negative_y.jpg",
     "GlobeOuter_EM_positive_z.jpg", "GlobeOuter_EM_negative_z.jpg"};
 
-ResourceHelper::ResourceHelper(const std::string &mBackendName,
-                               const std::string &mShaderVersion,
-                               BACKENDTYPE backendType)
+ResourceHelper::ResourceHelper(
+    const std::string &mBackendName,
+    const std::string &mShaderVersion,
+    const std::pair<BACKENDTYPE, BACKENDTYPE> &backendType)
     : mBackendName(mBackendName),
       mBackendType(backendType),
       mShaderVersion(mShaderVersion) {
@@ -82,40 +83,50 @@ ResourceHelper::ResourceHelper(const std::string &mBackendName,
   fishBehaviorStream << mPath << "FishBehavior.json";
   mFishBehaviorPath = fishBehaviorStream.str();
 
-  switch (mBackendType) {
-  case BACKENDTYPE::BACKENDTYPEDAWND3D12:
-    {
-      mBackendTypeStr = "Dawn D3D12";
-      break;
-    }
-  case BACKENDTYPE::BACKENDTYPEDAWNVULKAN:
-    {
-      mBackendTypeStr = "Dawn Vulkan";
-      break;
-    }
-  case BACKENDTYPE::BACKENDTYPEDAWNMETAL:
-    {
-      mBackendTypeStr = "Dawn Metal";
-      break;
-    }
-  case BACKENDTYPE::BACKENDTYPEANGLE:
-    {
-      mBackendTypeStr = "ANGLE";
-      break;
-    }
-  case BACKENDTYPE::BACKENDTYPEOPENGL:
-    {
-      mBackendTypeStr = "OPENGL";
-      break;
-    }
-  case BACKENDTYPE::BACKENDTYPED3D12:
-    {
-      mBackendTypeStr = "D3D12";
-      break;
-    }
-  default:
-    {
-      std::cerr << "Backend type can not reached." << std::endl;
+  for (auto backend : {mBackendType.first, mBackendType.second}) {
+    switch (backend) {
+    case BACKENDTYPE::BACKENDTYPEDAWN:
+      {
+        mBackendTypeStr += "Dawn";
+        mBackendTypeStr += " ";
+        break;
+      }
+    case BACKENDTYPE::BACKENDTYPEANGLE:
+      {
+        mBackendTypeStr += "ANGLE";
+#if 0
+        mBackendTypeStr += " ";
+#endif
+        break;
+      }
+    case BACKENDTYPE::BACKENDTYPEOPENGL:
+      {
+        mBackendTypeStr += "OPENGL";
+        break;
+      }
+    case BACKENDTYPE::BACKENDTYPED3D12:
+      {
+        mBackendTypeStr += "D3D12";
+        break;
+      }
+    case BACKENDTYPE::BACKENDTYPEMETAL:
+      {
+        mBackendTypeStr += "Metal";
+        break;
+      }
+    case BACKENDTYPE::BACKENDTYPEVULKAN:
+      {
+        mBackendTypeStr += "Vulkan";
+        break;
+      }
+    case BACKENDTYPE::BACKENDTYPELAST:
+      {
+        break;
+      }
+    default:
+      {
+        std::cerr << "Backend type can not reached." << std::endl;
+      }
     }
   }
 }

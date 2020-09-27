@@ -51,7 +51,7 @@ Aquarium::Aquarium()
       mCurFishCount(500),
       mPreFishCount(0),
       mTestTime(INT_MAX),
-      mBackendType(BACKENDTYPE::BACKENDTYPELAST),
+      mBackendType(BACKENDTYPE::BACKENDTYPELAST, BACKENDTYPE::BACKENDTYPELAST),
       mFactory(nullptr) {
   g.then = 0.0;
   g.mclock = 0.0;
@@ -115,32 +115,33 @@ Aquarium::~Aquarium() {
   delete mFactory;
 }
 
-BACKENDTYPE Aquarium::getBackendType(const std::string &backendPath) {
+std::pair<BACKENDTYPE, BACKENDTYPE> Aquarium::getBackendType(
+    const std::string &backendPath) {
   if (backendPath == "opengl") {
-    return BACKENDTYPE::BACKENDTYPEOPENGL;
+    return {BACKENDTYPE::BACKENDTYPEOPENGL, BACKENDTYPE::BACKENDTYPELAST};
   } else if (backendPath == "dawn_d3d12") {
 #if defined(OS_WIN)
-    return BACKENDTYPE::BACKENDTYPEDAWND3D12;
+    return {BACKENDTYPE::BACKENDTYPEDAWN, BACKENDTYPE::BACKENDTYPED3D12};
 #endif
   } else if (backendPath == "dawn_metal") {
 #if defined(OS_MACOSX) && !defined(OS_IOS)
-    return BACKENDTYPE::BACKENDTYPEDAWNMETAL;
+    return {BACKENDTYPE::BACKENDTYPEDAWN, BACKENDTYPE::BACKENDTYPEMETAL};
 #endif
   } else if (backendPath == "dawn_vulkan") {
 #if defined(OS_WIN) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
-    return BACKENDTYPE::BACKENDTYPEDAWNVULKAN;
+    return {BACKENDTYPE::BACKENDTYPEDAWN, BACKENDTYPE::BACKENDTYPEVULKAN};
 #endif
   } else if (backendPath == "angle") {
 #if defined(OS_WIN)
-    return BACKENDTYPE::BACKENDTYPEANGLE;
+    return {BACKENDTYPE::BACKENDTYPEANGLE, BACKENDTYPE::BACKENDTYPELAST};
 #endif
   } else if (backendPath == "d3d12") {
 #if defined(OS_WIN)
-    return BACKENDTYPED3D12;
+    return {BACKENDTYPE::BACKENDTYPED3D12, BACKENDTYPE::BACKENDTYPELAST};
 #endif
   }
 
-  return BACKENDTYPELAST;
+  return {BACKENDTYPE::BACKENDTYPELAST, BACKENDTYPE::BACKENDTYPELAST};
 }
 
 bool Aquarium::init(int argc, char **argv) {
@@ -195,7 +196,7 @@ bool Aquarium::init(int argc, char **argv) {
   }
   std::string backend = result["backend"].as<std::string>();
   mBackendType = getBackendType(backend);
-  if (mBackendType == BACKENDTYPE::BACKENDTYPELAST) {
+  if (mBackendType.first == BACKENDTYPE::BACKENDTYPELAST) {
     std::cout << "Can not create " << backend << " backend" << std::endl;
     return false;
   }
@@ -373,7 +374,7 @@ bool Aquarium::init(int argc, char **argv) {
     }
   }
 
-  if (!mContext->initialize(mBackendType, toggleBitset, windowWidth,
+  if (!mContext->initialize(mBackendType.second, toggleBitset, windowWidth,
                             windowHeight)) {
     return false;
   }
