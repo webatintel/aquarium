@@ -51,7 +51,6 @@ Aquarium::Aquarium()
       mCurFishCount(500),
       mPreFishCount(0),
       mTestTime(INT_MAX),
-      mBackendType(BACKENDTYPE::BACKENDTYPELAST),
       mFactory(nullptr) {
   g.then = 0.0;
   g.mclock = 0.0;
@@ -116,31 +115,30 @@ Aquarium::~Aquarium() {
 }
 
 BACKENDTYPE Aquarium::getBackendType(const std::string &backendPath) {
-  if (backendPath == "opengl") {
-    return BACKENDTYPE::BACKENDTYPEOPENGL;
+  if (backendPath == "angle_d3d11") {
+#if defined(OS_WIN)
+    return (BACKENDTYPE::BACKENDTYPEANGLE | BACKENDTYPE::BACKENDTYPED3D11);
+#endif
   } else if (backendPath == "dawn_d3d12") {
 #if defined(OS_WIN)
-    return BACKENDTYPE::BACKENDTYPEDAWND3D12;
+    return (BACKENDTYPE::BACKENDTYPEDAWN | BACKENDTYPE::BACKENDTYPED3D12);
 #endif
   } else if (backendPath == "dawn_metal") {
 #if defined(OS_MACOSX) && !defined(OS_IOS)
-    return BACKENDTYPE::BACKENDTYPEDAWNMETAL;
+    return (BACKENDTYPE::BACKENDTYPEDAWN | BACKENDTYPE::BACKENDTYPEMETAL);
 #endif
   } else if (backendPath == "dawn_vulkan") {
 #if defined(OS_WIN) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
-    return BACKENDTYPE::BACKENDTYPEDAWNVULKAN;
-#endif
-  } else if (backendPath == "angle") {
-#if defined(OS_WIN)
-    return BACKENDTYPE::BACKENDTYPEANGLE;
+    return (BACKENDTYPE::BACKENDTYPEDAWN | BACKENDTYPE::BACKENDTYPEVULKAN);
 #endif
   } else if (backendPath == "d3d12") {
 #if defined(OS_WIN)
     return BACKENDTYPED3D12;
 #endif
+  } else if (backendPath == "opengl") {
+    return BACKENDTYPE::BACKENDTYPEOPENGL;
   }
-
-  return BACKENDTYPELAST;
+  return BACKENDTYPENONE;
 }
 
 bool Aquarium::init(int argc, char **argv) {
@@ -195,7 +193,7 @@ bool Aquarium::init(int argc, char **argv) {
   }
   std::string backend = result["backend"].as<std::string>();
   mBackendType = getBackendType(backend);
-  if (mBackendType == BACKENDTYPE::BACKENDTYPELAST) {
+  if (mBackendType == BACKENDTYPE::BACKENDTYPENONE) {
     std::cout << "Can not create " << backend << " backend" << std::endl;
     return false;
   }

@@ -33,15 +33,25 @@ class Model;
 #include "math.h"
 #endif
 
-enum BACKENDTYPE : short {
-  BACKENDTYPEANGLE,
-  BACKENDTYPEDAWND3D12,
-  BACKENDTYPEDAWNMETAL,
-  BACKENDTYPEDAWNVULKAN,
-  BACKENDTYPED3D12,
-  BACKENDTYPEOPENGL,
-  BACKENDTYPELAST
+enum BACKENDTYPE {
+  // Wrapper of native graphics APIs
+  BACKENDTYPEANGLE = 1 << 0,
+  BACKENDTYPEDAWN = 1 << 1,
+
+  // Native graphics APIs
+  BACKENDTYPED3D11 = 1 << 2,
+  BACKENDTYPED3D12 = 1 << 3,
+  BACKENDTYPEMETAL = 1 << 4,
+  BACKENDTYPEOPENGL = 1 << 5,
+  BACKENDTYPEVULKAN = 1 << 6,
+
+  // Keep this as last one
+  BACKENDTYPENONE = 1 << 7,
 };
+
+inline BACKENDTYPE operator|(BACKENDTYPE a, BACKENDTYPE b) {
+  return static_cast<BACKENDTYPE>(static_cast<int>(a) | static_cast<int>(b));
+}
 
 enum MODELNAME : short {
   MODELFIRST,

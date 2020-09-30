@@ -82,40 +82,25 @@ ResourceHelper::ResourceHelper(const std::string &mBackendName,
   fishBehaviorStream << mPath << "FishBehavior.json";
   mFishBehaviorPath = fishBehaviorStream.str();
 
-  switch (mBackendType) {
-  case BACKENDTYPE::BACKENDTYPEDAWND3D12:
-    {
-      mBackendTypeStr = "Dawn D3D12";
-      break;
-    }
-  case BACKENDTYPE::BACKENDTYPEDAWNVULKAN:
-    {
-      mBackendTypeStr = "Dawn Vulkan";
-      break;
-    }
-  case BACKENDTYPE::BACKENDTYPEDAWNMETAL:
-    {
-      mBackendTypeStr = "Dawn Metal";
-      break;
-    }
-  case BACKENDTYPE::BACKENDTYPEANGLE:
-    {
-      mBackendTypeStr = "ANGLE";
-      break;
-    }
-  case BACKENDTYPE::BACKENDTYPEOPENGL:
-    {
-      mBackendTypeStr = "OPENGL";
-      break;
-    }
-  case BACKENDTYPE::BACKENDTYPED3D12:
-    {
-      mBackendTypeStr = "D3D12";
-      break;
-    }
-  default:
-    {
-      std::cerr << "Backend type can not reached." << std::endl;
+  int expo = 0;
+  while (1 << expo++ != BACKENDTYPE::BACKENDTYPENONE) {
+    if (mBackendType & 1 << expo) {
+      if (mBackendTypeStr != "")
+        mBackendTypeStr += " ";
+      if (1 << expo == BACKENDTYPE::BACKENDTYPEANGLE)
+        mBackendTypeStr += "ANGLE";
+      else if (1 << expo == BACKENDTYPE::BACKENDTYPEDAWN)
+        mBackendTypeStr += "Dawn";
+      else if (1 << expo == BACKENDTYPE::BACKENDTYPED3D11)
+        mBackendTypeStr += "D3D11";
+      else if (1 << expo == BACKENDTYPE::BACKENDTYPED3D12)
+        mBackendTypeStr += "D3D12";
+      else if (1 << expo == BACKENDTYPE::BACKENDTYPEMETAL)
+        mBackendTypeStr += "Metal";
+      else if (1 << expo == BACKENDTYPE::BACKENDTYPEOPENGL)
+        mBackendTypeStr += "OpenGL";
+      else if (1 << expo == BACKENDTYPE::BACKENDTYPEVULKAN)
+        mBackendTypeStr += "Vulkan";
     }
   }
 }

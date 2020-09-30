@@ -22,11 +22,6 @@ class Buffer;
 class Texture;
 class Model;
 
-enum BACKENDTYPE : short;
-enum MODELGROUP : short;
-enum MODELNAME : short;
-enum TOGGLE : short;
-
 struct Global;
 static char fishCountInputBuffer[64];
 

@@ -14,9 +14,8 @@
 #include "stdafx.h"
 using Microsoft::WRL::ComPtr;
 
+#include "../Aquarium.h"
 #include "../Context.h"
-
-enum BACKENDTYPE : short;
 
 constexpr int cbvsrvCount = 88;
 
