@@ -256,13 +256,13 @@ build aquarium by vs
 # Run
 ```sh
 # "--num-fish" : specifies how many fishes will be rendered
-# "--backend" : specifies running a certain backend, 'opengl', 'dawn_d3d12', 'dawn_vulkan', 'dawn_metal', 'dawn_opengl', 'angle'
+# "--backend" : specifies running a certain backend, 'opengl', 'dawn_d3d12', 'dawn_vulkan', 'dawn_metal', 'dawn_opengl', 'angle_d3d11'
 # "--enable-full-screen-mode" : specifies rendering a full screen mode
 
 # run on Windows
 aquarium.exe --num-fish 10000 --backend dawn_d3d12
 aquarium.exe --num-fish 10000 --backend dawn_vulkan
-aquarium.exe --num-fish 10000 --backend angle
+aquarium.exe --num-fish 10000 --backend angle_d3d11
 
 # run on Linux
 ./aquarium  --num-fish 10000 --backend opengl

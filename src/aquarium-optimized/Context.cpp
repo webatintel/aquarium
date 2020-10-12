@@ -99,9 +99,7 @@ void Context::renderImgui(
       ImGui::Text("INSTANCEDDRAWS: OFF");
     }
 
-    if (mResourceHelper->getBackendType() ==
-            BACKENDTYPE::BACKENDTYPEDAWND3D12 ||
-        mResourceHelper->getBackendType() == BACKENDTYPE::BACKENDTYPED3D12) {
+    if (mResourceHelper->getBackendType() & BACKENDTYPE::BACKENDTYPED3D12) {
       if (toggleBitset->test(
               static_cast<size_t>(TOGGLE::DISABLED3D12RENDERPASS))) {
         ImGui::Text("RENDERPASS: OFF");
@@ -110,12 +108,7 @@ void Context::renderImgui(
       }
     }
 
-    if (mResourceHelper->getBackendType() ==
-            BACKENDTYPE::BACKENDTYPEDAWND3D12 ||
-        mResourceHelper->getBackendType() ==
-            BACKENDTYPE::BACKENDTYPEDAWNVULKAN ||
-        mResourceHelper->getBackendType() ==
-            BACKENDTYPE::BACKENDTYPEDAWNMETAL) {
+    if (mResourceHelper->getBackendType() & BACKENDTYPE::BACKENDTYPEDAWN) {
       if (toggleBitset->test(
               static_cast<size_t>(TOGGLE::DISABLEDAWNVALIDATION))) {
         ImGui::Text("VALIDATION: OFF");

@@ -118,32 +118,17 @@ bool ContextDawn::initialize(
     int windowHeight) {
   wgpu::BackendType backendType = wgpu::BackendType::Null;
 
-  switch (backend) {
-  case BACKENDTYPE::BACKENDTYPEDAWND3D12:
-    {
-      backendType = wgpu::BackendType::D3D12;
-      break;
-    }
-  case BACKENDTYPE::BACKENDTYPEDAWNVULKAN:
-    {
-      backendType = wgpu::BackendType::Vulkan;
-      break;
-    }
-  case BACKENDTYPE::BACKENDTYPEDAWNMETAL:
-    {
-      backendType = wgpu::BackendType::Metal;
-      break;
-    }
-  case BACKENDTYPE::BACKENDTYPEOPENGL:
-    {
-      backendType = wgpu::BackendType::OpenGL;
-      break;
-    }
-  default:
-    {
-      std::cerr << "Backend type can not reached." << std::endl;
-      return false;
-    }
+  if (backend & BACKENDTYPE::BACKENDTYPED3D12)
+    backendType = wgpu::BackendType::D3D12;
+  else if (backend & BACKENDTYPE::BACKENDTYPEMETAL)
+    backendType = wgpu::BackendType::Metal;
+  else if (backend & BACKENDTYPE::BACKENDTYPEOPENGL)
+    backendType = wgpu::BackendType::OpenGL;
+  else if (backend & BACKENDTYPE::BACKENDTYPEVULKAN)
+    backendType = wgpu::BackendType::Vulkan;
+  else {
+    std::cerr << "Backend type can not reached." << std::endl;
+    return false;
   }
 
   mDisableControlPanel =
@@ -253,7 +238,7 @@ bool ContextDawn::initialize(
 
   // TODO(jiawei.shao@intel.com): support recreating swapchain when window is
   // resized on all backends
-  if (backend == BACKENDTYPE::BACKENDTYPEDAWNVULKAN) {
+  if (backend & BACKENDTYPE::BACKENDTYPEVULKAN) {
     glfwSetFramebufferSizeCallback(mWindow, framebufferResizeCallback);
     glfwSetWindowUserPointer(mWindow, this);
   }

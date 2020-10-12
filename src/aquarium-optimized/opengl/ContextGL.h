@@ -26,11 +26,11 @@
 #include "glad/glad.h"
 #endif
 
+#include "../Aquarium.h"
 #include "../Context.h"
 
 class BufferGL;
 class TextureGL;
-enum BACKENDTYPE : short;
 
 class ContextGL : public Context {
 public:

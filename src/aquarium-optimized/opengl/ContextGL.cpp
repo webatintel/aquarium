@@ -117,8 +117,14 @@ bool ContextGL::initialize(
   std::vector<EGLAttrib> display_attribs;
 
   display_attribs.push_back(EGL_PLATFORM_ANGLE_TYPE_ANGLE);
-  // display_attribs.push_back(EGL_PLATFORM_ANGLE_TYPE_OPENGL_ANGLE);
-  display_attribs.push_back(EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE);
+
+  if (backendType & BACKENDTYPE::BACKENDTYPED3D11)
+    display_attribs.push_back(EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE);
+  else if (backendType & BACKENDTYPE::BACKENDTYPEOPENGL)
+    display_attribs.push_back(EGL_PLATFORM_ANGLE_TYPE_OPENGL_ANGLE);
+  else if (backendType & BACKENDTYPE::BACKENDTYPEVULKAN)
+    display_attribs.push_back(EGL_PLATFORM_ANGLE_TYPE_VULKAN_ANGLE);
+
   display_attribs.push_back(EGL_PLATFORM_ANGLE_MAX_VERSION_MAJOR_ANGLE);
   display_attribs.push_back(-1);
   display_attribs.push_back(EGL_PLATFORM_ANGLE_MAX_VERSION_MINOR_ANGLE);

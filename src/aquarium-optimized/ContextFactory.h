@@ -7,9 +7,9 @@
 #ifndef CONTEXTFACTORY_H
 #define CONTEXTFACTORY_H
 
-class Context;
-enum BACKENDTYPE : short;
+#include "Aquarium.h"
 
+class Context;
 class ContextFactory {
 public:
   ContextFactory();

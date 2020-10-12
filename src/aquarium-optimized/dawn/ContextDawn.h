@@ -19,6 +19,7 @@
 #include "dawn/webgpu_cpp.h"
 #include "dawn_native/DawnNative.h"
 
+#include "../Aquarium.h"
 #include "../Context.h"
 #include "BufferManagerDawn.h"
 
@@ -27,7 +28,6 @@ class BufferDawn;
 class ProgramDawn;
 class RingBufferDawn;
 class BufferManagerDawn;
-enum BACKENDTYPE : short;
 
 class ContextDawn : public Context {
 public:
