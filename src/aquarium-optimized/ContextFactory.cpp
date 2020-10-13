@@ -25,19 +25,19 @@ ContextFactory::~ContextFactory() {
 Context *ContextFactory::createContext(BACKENDTYPE backendType) {
   if (backendType & BACKENDTYPE::BACKENDTYPEANGLE) {
 #if defined(ENABLE_ANGLE_BACKEND)
-    mContext = new ContextGL(backendType);
+    mContext = ContextGL::create(backendType);
 #endif
   } else if (backendType & BACKENDTYPE::BACKENDTYPEDAWN) {
 #if defined(ENABLE_DAWN_BACKEND)
-      mContext = new ContextDawn(backendType);
+      mContext = ContextDawn::create(backendType);
 #endif
   } else if (backendType & BACKENDTYPE::BACKENDTYPED3D12) {
 #if defined(ENABLE_D3D12_BACKEND)
-      mContext = new ContextD3D12(backendType);
+      mContext = ContextD3D12::create(backendType);
 #endif
   } else if (backendType & BACKENDTYPE::BACKENDTYPEOPENGL) {
 #if defined(ENABLE_OPENGL_BACKEND)
-    mContext = new ContextGL(backendType);
+    mContext = ContextGL::create(backendType);
 #endif
   }
   return mContext;

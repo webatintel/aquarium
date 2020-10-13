@@ -111,6 +111,23 @@ ContextDawn::~ContextDawn() {
   mDevice = nullptr;
 }
 
+ContextDawn *ContextDawn::create(BACKENDTYPE backendType) {
+  if (backendType & BACKENDTYPE::BACKENDTYPED3D12) {
+#ifdef DAWN_ENABLE_BACKEND_D3D12
+    return new ContextDawn(backendType);
+#endif
+  } else if (backendType & BACKENDTYPE::BACKENDTYPEMETAL) {
+#ifdef DAWN_ENABLE_BACKEND_METAL
+    return new ContextDawn(backendType);
+#endif
+  } else if (backendType & BACKENDTYPE::BACKENDTYPEVULKAN) {
+#ifdef DAWN_ENABLE_BACKEND_VULKAN
+    return new ContextDawn(backendType);
+#endif
+  }
+  return nullptr;
+}
+
 bool ContextDawn::initialize(
     BACKENDTYPE backend,
     const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset,
