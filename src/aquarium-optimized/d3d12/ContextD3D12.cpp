@@ -78,6 +78,10 @@ ContextD3D12::~ContextD3D12() {
   destoryFishResource();
 }
 
+ContextD3D12 *ContextD3D12::create(BACKENDTYPE backendType) {
+  return new ContextD3D12(backendType);
+}
+
 bool ContextD3D12::initialize(
     BACKENDTYPE backend,
     const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset,
