@@ -29,8 +29,8 @@ const std::string slash = "\\";
 const std::string slash = "/";
 #endif
 
-class Scene;
 class Program;
+class Scene;
 class Texture;
 
 static FPSTimer g_fpsTimer;  // object to measure frames per second;

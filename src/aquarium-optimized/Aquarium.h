@@ -19,11 +19,11 @@
 #include "Behavior.h"
 #include "common/FPSTimer.h"
 
-class ContextFactory;
 class Context;
-class Texture;
-class Program;
+class ContextFactory;
 class Model;
+class Program;
+class Texture;
 
 #if defined(OS_WIN)
 #define M_PI 3.141592653589793

@@ -23,11 +23,8 @@
 #include "../Context.h"
 #include "BufferManagerDawn.h"
 
-class TextureDawn;
-class BufferDawn;
-class ProgramDawn;
-class RingBufferDawn;
 class BufferManagerDawn;
+class ProgramDawn;
 
 class ContextDawn : public Context {
 public:
