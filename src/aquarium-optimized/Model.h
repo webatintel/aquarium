@@ -16,14 +16,13 @@
 
 #include "Aquarium.h"
 
-class Program;
-class Context;
-class Texture;
 class Buffer;
+class Program;
+class Texture;
+struct WorldUniforms;
 
 enum MODELGROUP : short;
 enum MODELNAME : short;
-struct WorldUniforms;
 
 class Model {
 public:

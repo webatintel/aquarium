@@ -10,8 +10,6 @@
 
 #include <string>
 
-enum UNIFORMNAME : short;
-
 class Program {
 public:
   Program() {}

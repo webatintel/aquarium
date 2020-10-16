@@ -14,8 +14,6 @@
 #include "ContextDawn.h"
 #include "ProgramDawn.h"
 
-struct FishPer;
-
 class FishModelDawn : public FishModel {
 public:
   FishModelDawn(Context *context,

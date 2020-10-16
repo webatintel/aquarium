@@ -17,12 +17,11 @@
 #include "common/FPSTimer.h"
 
 class Aquarium;
-class Program;
 class Buffer;
-class Texture;
 class Model;
+class Program;
+class Texture;
 
-struct Global;
 static char fishCountInputBuffer[64];
 
 class Context {
