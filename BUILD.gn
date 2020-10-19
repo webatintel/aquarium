@@ -66,6 +66,15 @@ executable("aquarium") {
     "CXXOPTS_NO_EXCEPTIONS",
     "CXXOPTS_NO_RTTI",
   ]
+  if (is_win) {
+    defines += [ "GLFW_EXPOSE_NATIVE_WIN32" ]
+  }
+  if (is_linux && !is_chromeos) {
+    defines += [ "GLFW_EXPOSE_NATIVE_X11" ]
+  }
+  if (is_mac) {
+    defines += [ "GLFW_EXPOSE_NATIVE_COCOA" ]
+  }
 
   if (enable_angle || enable_opengl) {
     sources += [

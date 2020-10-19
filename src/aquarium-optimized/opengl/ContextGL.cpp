@@ -16,7 +16,6 @@
 #include "imgui_impl_glfw.h"
 
 #ifdef EGL_EGL_PROTOTYPES
-#define GLFW_EXPOSE_NATIVE_WIN32
 #include "GLFW/glfw3native.h"
 #endif
 
