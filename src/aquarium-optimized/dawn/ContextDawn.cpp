@@ -1115,7 +1115,7 @@ void ContextDawn::destoryFishResource() {
   fishPersBuffer = nullptr;
 
   if (fishPers != nullptr) {
-    delete fishPers;
+    delete[] fishPers;
     fishPers = nullptr;
   }
   if (mEnableDynamicBufferOffset) {
