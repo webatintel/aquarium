@@ -13,7 +13,7 @@ vars = {
   'angle_revision': '6c824a1bc17b286b86cf05a0228ec549875351eb',
   'glslang_revision': 'b5f003d7a3ece37db45578a8a3140b370036fc64',
   'build_revision': '896323eeda1bd1b01156b70625d5e14de225ebc3',
-  'buildtools_revision': '2c41dfb19abe40908834803b6fed797b0f341fe1',
+  'buildtools_revision': 'c8f5482fd0c9ec93bc4312a119982888c4df1c3d',
   'tools_clang_revision': '698732d5db36040c07d5cc5f9137fcc943494c11',
   'spirv_tools_revision': '85f3e93d13f32d45bd7f9999aa51baddf2452aae',
   'jsoncpp_revision': '571788934b5ee8643d53e5d054534abbe6006168',
