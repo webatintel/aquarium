@@ -74,6 +74,8 @@ ContextD3D12::~ContextD3D12() {
     destoryImgUI();
   }
   destoryFishResource();
+
+  glfwTerminate();
 }
 
 ContextD3D12 *ContextD3D12::create(BACKENDTYPE backendType) {
@@ -488,8 +490,6 @@ void ContextD3D12::Terminate() {
     ThrowIfFailed(mFence->SetEventOnCompletion(lastSerias, mFenceEvent));
     WaitForSingleObject(mFenceEvent, INFINITE);
   }
-
-  glfwTerminate();
 }
 
 void ContextD3D12::showWindow() {

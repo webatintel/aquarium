@@ -39,6 +39,8 @@ ContextGL::~ContextGL() {
   if (!mDisableControlPanel) {
     destoryImgUI();
   }
+
+  glfwTerminate();
 }
 
 ContextGL *ContextGL::create(BACKENDTYPE backendType) {
@@ -447,7 +449,6 @@ void ContextGL::DoFlush(
 }
 
 void ContextGL::Terminate() {
-  glfwTerminate();
 }
 
 void ContextGL::showWindow() {
