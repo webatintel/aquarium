@@ -482,9 +482,9 @@ int main(int argc, char **argv) {
     glfwPollEvents();
   }
 
-  glfwTerminate();
-
   onDestroy();
+
+  glfwTerminate();
 
   return 0;
 }

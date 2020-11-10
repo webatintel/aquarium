@@ -109,6 +109,8 @@ ContextDawn::~ContextDawn() {
   mSwapchain = nullptr;
   queue = nullptr;
   mDevice = nullptr;
+
+  glfwTerminate();
 }
 
 ContextDawn *ContextDawn::create(BACKENDTYPE backendType) {
@@ -898,7 +900,6 @@ void ContextDawn::Flush() {
 }
 
 void ContextDawn::Terminate() {
-  glfwTerminate();
 }
 
 void ContextDawn::showWindow() {
