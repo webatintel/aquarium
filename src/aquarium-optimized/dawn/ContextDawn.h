@@ -8,6 +8,23 @@
 #ifndef CONTEXTDAWN_H
 #define CONTEXTDAWN_H
 
+#ifdef GLFW_EXPOSE_NATIVE_X11
+// workaround conflict between poorly named X macro and 3rd-party code
+#include <X11/X.h>
+#undef None
+#undef Success
+#undef Always
+#endif
+
+#ifdef DAWN_ENABLE_BACKEND_VULKAN
+#ifdef GLFW_EXPOSE_NATIVE_WIN32
+#define VK_USE_PLATFORM_WIN32_KHR
+#endif
+#ifdef GLFW_EXPOSE_NATIVE_X11
+#define VK_USE_PLATFORM_XCB_KHR
+#define VK_USE_PLATFORM_XLIB_KHR
+#endif
+#endif
 #ifdef DAWN_ENABLE_BACKEND_VULKAN
 // The Vulkan header is included by VulkanBackend.h, so this should be placed
 // before the GLFW header.
