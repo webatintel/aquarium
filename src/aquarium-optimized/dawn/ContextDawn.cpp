@@ -15,7 +15,6 @@
 #include "SPIRV/GlslangToSpv.h"
 #include "build/build_config.h"
 #include "dawn/dawn_proc.h"
-#include "dawn/dawn_wsi.h"
 #include "dawn/webgpu.h"
 #include "dawn/webgpu_cpp.h"
 #include "dawn_native/DawnNative.h"
@@ -25,7 +24,6 @@
 #include "spirv-tools/libspirv.hpp"
 #include "spirv-tools/optimizer.hpp"
 #endif
-#include "utils/BackendBinding.h"
 
 #include "../Aquarium.h"
 #include "../FishModel.h"
@@ -35,6 +33,7 @@
 #include "GenericModelDawn.h"
 #include "InnerModelDawn.h"
 #include "OutsideModelDawn.h"
+#include "PlatformContextDawn.h"
 #include "ProgramDawn.h"
 #include "SeaweedModelDawn.h"
 #include "TextureDawn.h"
@@ -116,15 +115,15 @@ ContextDawn::~ContextDawn() {
 ContextDawn *ContextDawn::create(BACKENDTYPE backendType) {
   if (backendType & BACKENDTYPE::BACKENDTYPED3D12) {
 #ifdef DAWN_ENABLE_BACKEND_D3D12
-    return new ContextDawn(backendType);
+    return new PlatformContextDawn(backendType);
 #endif
   } else if (backendType & BACKENDTYPE::BACKENDTYPEMETAL) {
 #ifdef DAWN_ENABLE_BACKEND_METAL
-    return new ContextDawn(backendType);
+    return new PlatformContextDawn(backendType);
 #endif
   } else if (backendType & BACKENDTYPE::BACKENDTYPEVULKAN) {
 #ifdef DAWN_ENABLE_BACKEND_VULKAN
-    return new ContextDawn(backendType);
+    return new PlatformContextDawn(backendType);
 #endif
   }
   return nullptr;
@@ -196,7 +195,7 @@ bool ContextDawn::initialize(
   mInstance->EnableBackendValidation(true);
 #endif
 
-  utils::DiscoverAdapter(mInstance.get(), mWindow, backendType);
+  mInstance->DiscoverDefaultAdapters();
 
   dawn_native::Adapter backendAdapter;
   if (!GetHardwareAdapter(mInstance, &backendAdapter, backendType,
@@ -222,23 +221,17 @@ bool ContextDawn::initialize(
 
   DawnProcTable backendProcs = dawn_native::GetProcs();
 
-  utils::BackendBinding *binding =
-      utils::CreateBinding(backendType, mWindow, backendDevice);
-  if (binding == nullptr) {
-    return false;
-  }
-
   dawnProcSetProcs(&backendProcs);
   mDevice = wgpu::Device::Acquire(backendDevice);
 
   queue = mDevice.GetDefaultQueue();
   wgpu::SwapChainDescriptor swapChainDesc;
-  swapChainDesc.implementation = binding->GetSwapChainImplementation();
+  swapChainDesc.implementation =
+      reinterpret_cast<uintptr_t>(getSwapChainImplementation(backendType));
 
   mSwapchain = mDevice.CreateSwapChain(nullptr, &swapChainDesc);
 
-  mPreferredSwapChainFormat = static_cast<wgpu::TextureFormat>(
-      binding->GetPreferredSwapChainTextureFormat());
+  mPreferredSwapChainFormat = getPreferredSwapChainTextureFormat(backendType);
   mSwapchain.Configure(mPreferredSwapChainFormat, kSwapchainBackBufferUsage,
                        mClientWidth, mClientHeight);
 
