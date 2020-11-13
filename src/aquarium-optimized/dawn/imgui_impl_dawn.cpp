@@ -62,7 +62,8 @@ static void ImGui_ImplDawn_SetupRenderState(ImDrawData *draw_data,
 
     // TODO(yizhou): setting viewport isn't supported in dawn yet.
     // Setup viewport
-    // pass.SetViewport(0.0f, 0.0f, draw_data->DisplaySize.x, draw_data->DisplaySize.y, 0.0f, 1.0f);
+    // pass.SetViewport(0.0f, 0.0f, draw_data->DisplaySize.x * draw_data->FramebufferScale.x,
+    //                  draw_data->DisplaySize.y * draw_data->FramebufferScale.y, 0.0f, 1.0f);
 
     pass.SetPipeline(mPipeline);
     pass.SetBindGroup(0, mBindGroup, 0, nullptr);
@@ -147,6 +148,7 @@ void ImGui_ImplDawn_Draw(ImDrawData *draw_data)
     int global_vtx_offset = 0;
     int global_idx_offset = 0;
     ImVec2 clip_off       = draw_data->DisplayPos;
+    ImVec2 clip_scale     = draw_data->FramebufferScale;
     for (int n = 0; n < draw_data->CmdListsCount; n++)
     {
         const ImDrawList *cmd_list = draw_data->CmdLists[n];
@@ -166,8 +168,15 @@ void ImGui_ImplDawn_Draw(ImDrawData *draw_data)
             else
             {
                 // Apply Scissor, Bind texture, Draw
-                pass.SetScissorRect(pcmd->ClipRect.x - clip_off.x, pcmd->ClipRect.y - clip_off.y,
-                                    pcmd->ClipRect.z - clip_off.x, pcmd->ClipRect.w - clip_off.y);
+                ImVec4 clip_rect;
+                clip_rect.x = (pcmd->ClipRect.x - clip_off.x) * clip_scale.x;
+                clip_rect.y = (pcmd->ClipRect.y - clip_off.y) * clip_scale.y;
+                clip_rect.z = (pcmd->ClipRect.z - clip_off.x) * clip_scale.x;
+                clip_rect.w = (pcmd->ClipRect.w - clip_off.y) * clip_scale.y;
+                pass.SetScissorRect(static_cast<uint32_t>(clip_rect.x),
+                                    static_cast<uint32_t>(clip_rect.y),
+                                    static_cast<uint32_t>(clip_rect.z),
+                                    static_cast<uint32_t>(clip_rect.w));
                 pass.DrawIndexed(pcmd->ElemCount, 1, pcmd->IdxOffset + global_idx_offset,
                                  pcmd->VtxOffset + global_vtx_offset, 0);
             }
