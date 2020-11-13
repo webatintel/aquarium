@@ -6,6 +6,10 @@
 
 import("third_party/dawn/scripts/dawn_features.gni")
 
+if (is_mac) {
+  import("build/config/mac/mac_sdk.gni")
+}
+
 declare_args() {
   enable_dawn = is_win || (is_linux && !is_chromeos) || is_mac
   enable_angle = false
@@ -74,6 +78,12 @@ executable("aquarium") {
   }
   if (is_mac) {
     defines += [ "GLFW_EXPOSE_NATIVE_COCOA" ]
+  }
+
+  ldflags = []
+
+  if (is_mac) {
+    cflags_objcc = []
   }
 
   if (enable_angle || enable_opengl) {
@@ -147,6 +157,23 @@ executable("aquarium") {
 
     include_dirs += [ "third_party/dawn/src" ]
 
+    if (dawn_enable_metal) {
+      if (is_mac) {
+        libs += [
+          "AppKit.framework",
+          "QuartzCore.framework",
+        ]
+        if (mac_min_system_version != "10.10.0") {
+          libs += [ "Metal.framework" ]
+        }
+      }
+    }
+    if (dawn_enable_vulkan) {
+      if (is_linux && !is_chromeos) {
+        libs += [ "dl" ]
+      }
+    }
+
     sources += [
       "src/aquarium-optimized/dawn/BufferDawn.cpp",
       "src/aquarium-optimized/dawn/BufferDawn.h",
@@ -164,6 +191,7 @@ executable("aquarium") {
       "src/aquarium-optimized/dawn/InnerModelDawn.h",
       "src/aquarium-optimized/dawn/OutsideModelDawn.cpp",
       "src/aquarium-optimized/dawn/OutsideModelDawn.h",
+      "src/aquarium-optimized/dawn/PlatformContextDawn.h",
       "src/aquarium-optimized/dawn/ProgramDawn.cpp",
       "src/aquarium-optimized/dawn/ProgramDawn.h",
       "src/aquarium-optimized/dawn/SeaweedModelDawn.cpp",
@@ -173,18 +201,37 @@ executable("aquarium") {
       "src/aquarium-optimized/dawn/imgui_impl_dawn.cpp",
       "src/aquarium-optimized/dawn/imgui_impl_dawn.h",
     ]
+    if (dawn_enable_metal) {
+      sources += [ "src/aquarium-optimized/dawn/PlatformContextDawn.mm" ]
+    } else {
+      sources += [ "src/aquarium-optimized/dawn/PlatformContextDawn.cpp" ]
+    }
 
     deps += [
       "third_party/dawn/src/dawn:dawn_headers",
       "third_party/dawn/src/dawn:dawn_proc",
       "third_party/dawn/src/dawn:dawncpp",
       "third_party/dawn/src/dawn_native",
-      "third_party/dawn/src/utils:dawn_bindings",
       # "third_party/dawn/third_party/SPIRV-Tools",
       "third_party/glslang:glslang_sources",
     ]
     if (dawn_enable_vulkan) {
       deps += [ "third_party/dawn/third_party/khronos:vulkan_headers" ]
+    }
+
+    if (dawn_enable_metal) {
+      if (is_mac) {
+        if (mac_deployment_target == "10.10.0") {
+          cflags_objcc += [ "-Wno-unguarded-availability" ]
+        }
+
+        if (mac_min_system_version == "10.10.0") {
+          ldflags += [
+            "-weak_framework",
+            "Metal",
+          ]
+        }
+      }
     }
   }
 

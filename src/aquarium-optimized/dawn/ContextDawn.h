@@ -33,6 +33,7 @@
 #define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
 
+#include "dawn/dawn_wsi.h"
 #include "dawn/webgpu_cpp.h"
 #include "dawn_native/DawnNative.h"
 
@@ -171,12 +172,18 @@ public:
 protected:
   explicit ContextDawn(BACKENDTYPE backendType);
 
+  GLFWwindow *mWindow;
+
 private:
   bool GetHardwareAdapter(
       std::unique_ptr<dawn_native::Instance> &instance,
       dawn_native::Adapter *backendAdapter,
       wgpu::BackendType backendType,
       const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset);
+  virtual DawnSwapChainImplementation *getSwapChainImplementation(
+      wgpu::BackendType backendType) = 0;
+  virtual wgpu::TextureFormat getPreferredSwapChainTextureFormat(
+      wgpu::BackendType backendType) = 0;
 
   void initAvailableToggleBitset(BACKENDTYPE backendType) override;
   static void framebufferResizeCallback(GLFWwindow *window,
@@ -190,7 +197,6 @@ private:
       wgpu::TextureUsage::OutputAttachment | wgpu::TextureUsage::CopyDst;
 
   bool mIsSwapchainOutOfDate = false;
-  GLFWwindow *mWindow;
   std::unique_ptr<dawn_native::Instance> mInstance;
 
   wgpu::SwapChain mSwapchain;
