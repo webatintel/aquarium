@@ -46,8 +46,12 @@ public:
     float specularFactor;
   } mLightFactorUniforms;
 
+  struct Seaweed {
+    float time;
+    float padding[3];
+  };
   struct SeaweedPer {
-    float time[20];
+    Seaweed seaweed[20];
   } mSeaweedPer;
 
   struct WorldUniformPer {
