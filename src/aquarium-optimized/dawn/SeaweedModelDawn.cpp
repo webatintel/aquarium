@@ -107,7 +107,7 @@ void SeaweedModelDawn::init() {
       wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
   mTimeBuffer = mContextDawn->createBufferFromData(
       &mSeaweedPer, sizeof(mSeaweedPer),
-      mContextDawn->CalcConstantBufferByteSize(sizeof(mSeaweedPer) * 4),
+      mContextDawn->CalcConstantBufferByteSize(sizeof(mSeaweedPer)),
       wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
   mViewBuffer = mContextDawn->createBufferFromData(
       &mWorldUniformPer, sizeof(WorldUniformPer),
@@ -134,7 +134,7 @@ void SeaweedModelDawn::init() {
           {1,
            mTimeBuffer,
            0,
-           mContextDawn->CalcConstantBufferByteSize(sizeof(SeaweedPer) * 4),
+           mContextDawn->CalcConstantBufferByteSize(sizeof(SeaweedPer)),
            {},
            {}},
       });
@@ -150,8 +150,7 @@ void SeaweedModelDawn::prepareForDraw() {
       mContextDawn->CalcConstantBufferByteSize(sizeof(WorldUniformPer)),
       &mWorldUniformPer, sizeof(WorldUniformPer));
   mContextDawn->updateBufferData(
-      mTimeBuffer,
-      mContextDawn->CalcConstantBufferByteSize(sizeof(SeaweedPer) * 4),
+      mTimeBuffer, mContextDawn->CalcConstantBufferByteSize(sizeof(SeaweedPer)),
       &mSeaweedPer, sizeof(SeaweedPer));
 }
 
@@ -174,7 +173,7 @@ void SeaweedModelDawn::draw() {
 void SeaweedModelDawn::updatePerInstanceUniforms(
     const WorldUniforms &worldUniforms) {
   mWorldUniformPer.worldUniforms[instance] = worldUniforms;
-  mSeaweedPer.time[instance] = mAquarium->g.mclock + instance;
+  mSeaweedPer.seaweed[instance].time = mAquarium->g.mclock + instance;
 
   instance++;
 }
