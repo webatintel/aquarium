@@ -68,6 +68,9 @@ static_library("glfw") {
     "${glfw_dir}/src/window.c",
   ]
   libs = []
+  if (is_mac) {
+    frameworks = []
+  }
 
   if (is_win) {
     sources += [
@@ -129,7 +132,7 @@ static_library("glfw") {
       "${glfw_dir}/src/nsgl_context.h",
       "${glfw_dir}/src/nsgl_context.m",
     ]
-    libs += [
+    frameworks += [
       "Cocoa.framework",
       "IOKit.framework",
       "CoreFoundation.framework",

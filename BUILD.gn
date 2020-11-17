@@ -20,6 +20,11 @@ declare_args() {
 executable("aquarium") {
   libs = []
 
+  if (is_mac) {
+    frameworks = []
+    weak_frameworks = []
+  }
+
   sources = [
     "src/aquarium-optimized/Aquarium.cpp",
     "src/aquarium-optimized/Aquarium.h",
@@ -159,12 +164,14 @@ executable("aquarium") {
 
     if (dawn_enable_metal) {
       if (is_mac) {
-        libs += [
+        frameworks += [
           "AppKit.framework",
           "QuartzCore.framework",
         ]
-        if (mac_min_system_version != "10.10.0") {
-          libs += [ "Metal.framework" ]
+        if (mac_min_system_version == "10.10.0") {
+          weak_frameworks += [ "Metal.framework" ]
+        } else {
+          frameworks += [ "Metal.framework" ]
         }
       }
     }
@@ -223,13 +230,6 @@ executable("aquarium") {
       if (is_mac) {
         if (mac_deployment_target == "10.10.0") {
           cflags_objcc += [ "-Wno-unguarded-availability" ]
-        }
-
-        if (mac_min_system_version == "10.10.0") {
-          ldflags += [
-            "-weak_framework",
-            "Metal",
-          ]
         }
       }
     }
