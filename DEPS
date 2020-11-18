@@ -4,6 +4,10 @@
 # found in the LICENSE file.
 #
 
+gclient_gn_args_file = 'build/config/gclient_args.gni'
+gclient_gn_args = [
+]
+
 vars = {
   'chromium_git': 'https://chromium.googlesource.com',
   'github_git': 'https://github.com',
