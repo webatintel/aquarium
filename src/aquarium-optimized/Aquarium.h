@@ -28,8 +28,7 @@ class Texture;
 #if defined(OS_WIN)
 #define M_PI 3.141592653589793
 #endif
-#if (defined(OS_MACOSX) && !defined(OS_IOS)) || \
-    (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+#if defined(OS_MAC) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
 #include "math.h"
 #endif
 

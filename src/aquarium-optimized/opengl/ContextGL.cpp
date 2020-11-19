@@ -72,7 +72,7 @@ bool ContextGL::initialize(
 
   mResourceHelper = new ResourceHelper("opengl", "450", backend);
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
   mGLSLVersion = "#version 410";

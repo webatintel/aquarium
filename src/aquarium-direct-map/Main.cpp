@@ -36,7 +36,7 @@
 #include <Windows.h>
 #include <direct.h>
 #endif
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
 #include <mach-o/dyld.h>
 #include <ctime>
 #endif
@@ -341,7 +341,7 @@ void getCurrentPath() {
   mPath = std::string(ws.begin(), ws.end());
   size_t nPos = mPath.find_last_of(slash);
   mPath = mPath.substr(0, nPos) + slash + ".." + slash + ".." + slash;
-#elif defined(OS_MACOSX) && !defined(OS_IOS)
+#elif defined(OS_MAC)
   char temp[200];
   uint32_t size = sizeof(temp);
   _NSGetExecutablePath(temp, &size);
@@ -424,7 +424,7 @@ int main(int argc, char **argv) {
 
   glfwWindowHint(GLFW_SAMPLES, 4);
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 #elif defined(OS_WIN) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
@@ -528,8 +528,7 @@ void render() {
   // Update our time
 #if defined(OS_WIN)
   float now = GetTickCount64() / 1000.0f;
-#elif (defined(OS_MACOSX) && !defined(OS_IOS)) || \
-    (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+#elif defined(OS_MAC) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
   float now = clock() / 1000000.0f;
 #else
   float now;

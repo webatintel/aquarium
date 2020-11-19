@@ -36,8 +36,7 @@
 #if defined(OS_WIN)
 #include <Windows.h>
 #endif
-#if (defined(OS_MACOSX) && !defined(OS_IOS)) || \
-    (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+#if defined(OS_MAC) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
 #include <ctime>
 #endif
 
@@ -124,7 +123,7 @@ BACKENDTYPE Aquarium::getBackendType(const std::string &backendPath) {
     return (BACKENDTYPE::BACKENDTYPEDAWN | BACKENDTYPE::BACKENDTYPED3D12);
 #endif
   } else if (backendPath == "dawn_metal") {
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
     return (BACKENDTYPE::BACKENDTYPEDAWN | BACKENDTYPE::BACKENDTYPEMETAL);
 #endif
   } else if (backendPath == "dawn_vulkan") {
@@ -407,8 +406,7 @@ bool Aquarium::init(int argc, char **argv) {
 void Aquarium::resetFpsTime() {
 #if defined(OS_WIN)
   g.start = GetTickCount64() / 1000.0;
-#elif (defined(OS_MACOSX) && !defined(OS_IOS)) || \
-    (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+#elif defined(OS_MAC) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
   g.start = clock() / 1000000.0;
 #else
   ASSERT(false);
@@ -660,8 +658,7 @@ double Aquarium::getElapsedTime() {
   // Update our time
 #if defined(OS_WIN)
   double now = GetTickCount64() / 1000.0;
-#elif (defined(OS_MACOSX) && !defined(OS_IOS)) || \
-    (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+#elif defined(OS_MAC) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
   double now = clock() / 1000000.0;
 #else
   double now;

@@ -44,8 +44,7 @@
 #if defined(OS_WIN)
 #include <Windows.h>
 #endif
-#if (defined(OS_MACOSX) && !defined(OS_IOS)) || \
-    (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+#if defined(OS_MAC) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
 #include <unistd.h>
 #endif
 
@@ -1072,8 +1071,7 @@ void ContextDawn::WaitABit() {
 
 #if defined(OS_WIN)
   Sleep(0);
-#elif (defined(OS_MACOSX) && !defined(OS_IOS)) || \
-    (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+#elif defined(OS_MAC) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
   usleep(100);
 #else
   ASSERT(false);
