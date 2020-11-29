@@ -18,7 +18,7 @@
 #include <direct.h>
 const std::string slash = "\\";
 #endif
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
 #include <mach-o/dyld.h>
 const std::string slash = "/";
 #endif
@@ -46,7 +46,7 @@ ResourceHelper::ResourceHelper(const std::string &mBackendName,
   GetModuleFileName(nullptr, temp, MAX_PATH);
   std::wstring ws(temp);
   mPath = std::string(ws.begin(), ws.end());
-#elif defined(OS_MACOSX) && !defined(OS_IOS)
+#elif defined(OS_MAC)
   char temp[200];
   uint32_t size = sizeof(temp);
   _NSGetExecutablePath(temp, &size);

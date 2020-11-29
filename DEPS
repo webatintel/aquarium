@@ -16,7 +16,7 @@ vars = {
   'angle_root': 'third_party/angle',
   'angle_revision': '6c824a1bc17b286b86cf05a0228ec549875351eb',
   'glslang_revision': 'b5f003d7a3ece37db45578a8a3140b370036fc64',
-  'build_revision': 'a6687877adc9064b6f4b2845d382e02575be1430',
+  'build_revision': 'ac54a056cee215f7c28ebdf06742bcb5d192a0ed',
   'buildtools_revision': 'c8f5482fd0c9ec93bc4312a119982888c4df1c3d',
   'tools_clang_revision': '6cbea33c97d07ee51a1e03ee02b9d9c3d919752a',
   'spirv_tools_revision': '85f3e93d13f32d45bd7f9999aa51baddf2452aae',

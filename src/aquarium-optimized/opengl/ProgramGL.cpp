@@ -58,7 +58,7 @@ void ProgramGL::compileProgram(bool enableBlending, const std::string &alpha) {
       R"(outColor = mix(outColor, vec4(fogColor.rgb, diffuseColor.a),
         clamp(pow((v_position.z / v_position.w), fogPower) * fogMult - fogOffset,0.0,1.0));)";
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
   VertexShaderCode =
       std::regex_replace(VertexShaderCode, std::regex(R"(#version 450 core)"),
                          R"(#version 410 core)");
