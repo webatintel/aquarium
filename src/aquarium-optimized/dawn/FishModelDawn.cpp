@@ -95,6 +95,7 @@ void FishModelDawn::init() {
   mVertexStateDescriptor.vertexBufferCount =
       static_cast<uint32_t>(vertexBufferLayoutDescriptor.size());
   mVertexStateDescriptor.vertexBuffers = vertexBufferLayoutDescriptor.data();
+  mVertexStateDescriptor.indexFormat = wgpu::IndexFormat::Uint16;
 
   if (mSkyboxTexture && mReflectionTexture) {
     mGroupLayoutModel = mContextDawn->MakeBindGroupLayout({
@@ -193,8 +194,7 @@ void FishModelDawn::draw() {
   pass.SetVertexBuffer(2, mTexCoordBuffer->getBuffer());
   pass.SetVertexBuffer(3, mTangentBuffer->getBuffer());
   pass.SetVertexBuffer(4, mBiNormalBuffer->getBuffer());
-  pass.SetIndexBufferWithFormat(mIndicesBuffer->getBuffer(),
-                                wgpu::IndexFormat::Uint16, 0);
+  pass.SetIndexBuffer(mIndicesBuffer->getBuffer(), 0);
 
   if (mEnableDynamicBufferOffset) {
     for (int i = 0; i < mCurInstance; i++) {
