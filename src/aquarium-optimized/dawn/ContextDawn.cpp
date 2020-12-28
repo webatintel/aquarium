@@ -387,6 +387,8 @@ wgpu::BufferCopyView ContextDawn::createBufferCopyView(
   bufferCopyView.layout.bytesPerRow = bytesPerRow;
   bufferCopyView.layout.rowsPerImage = rowsPerImage;
   bufferCopyView.buffer = buffer;
+  bufferCopyView.bytesPerRow = 0;  // This field is deprecated, but it must be
+                                   // zero-initialized to pass Dawn validation.
 
   return bufferCopyView;
 }
@@ -399,7 +401,6 @@ wgpu::TextureCopyView ContextDawn::createTextureCopyView(
   textureCopyView.texture = texture;
   textureCopyView.mipLevel = level;
   textureCopyView.origin = origin;
-  textureCopyView.aspect = wgpu::TextureAspect::All;
 
   return textureCopyView;
 }
