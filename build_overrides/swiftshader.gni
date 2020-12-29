@@ -4,6 +4,8 @@
 # found in the LICENSE file.
 #
 
-import("vulkan_common.gni")
+swiftshader_standalone = false
 
-vulkan_use_x11 = angle_use_x11
+swiftshader_dir = "//third_party/swiftshader"
+
+swiftshader_spirv_tools_dir = "//third_party/SPIRV-Tools"

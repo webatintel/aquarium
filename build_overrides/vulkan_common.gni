@@ -1,0 +1,19 @@
+#
+# Copyright (c) 2020 The Aquarium Project Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+
+# When building with customized GN arguments, it may happen ANGLE and
+# Dawn settings can result in conflicting values for Vulkan. Values
+# derived from ANGLE will take precedence here, as currently the Vulkan
+# repositories are always fetched via ANGLE's DEPS file. One should
+# override the defaults at his/her own risk, or just consider disabling
+# the other backend when conflicts happen.
+
+import("//third_party/angle/gni/angle.gni")
+
+vulkan_headers_dir = "//third_party/angle/third_party/vulkan-headers/src"
+
+vulkan_data_subdir = angle_data_dir
+vulkan_gen_subdir = "angle/vulkan"

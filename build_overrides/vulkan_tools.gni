@@ -5,5 +5,3 @@
 #
 
 import("vulkan_common.gni")
-
-vulkan_use_x11 = angle_use_x11

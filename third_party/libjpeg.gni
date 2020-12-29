@@ -1,0 +1,14 @@
+#
+# Copyright (c) 2020 The Aquarium Project Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+
+declare_args() {
+  # Uses system libjpeg.
+  use_system_libjpeg = false
+}
+
+# If use_system_libjpeg is not set, libjpeg-turbo is enforced because
+# there's no other jpeg implementation bundled.
+use_libjpeg_turbo = true

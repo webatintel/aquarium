@@ -25,7 +25,6 @@
 #include "EGL/eglext.h"
 #include "EGL/eglext_angle.h"
 #include "EGL/eglplatform.h"
-#include "EGLWindow.h"
 #include "angle_gl.h"
 #else
 #include "glad/glad.h"
@@ -79,8 +78,9 @@ void ProgramGL::compileProgram(bool enableBlending, const std::string &alpha) {
       FragmentShaderCode, std::regex(R"(\n.*?// #noNormalMap)"), "");
 
   if (enableBlending) {
-    FragmentShaderCode = std::regex_replace(
-        FragmentShaderCode, std::regex(R"(diffuseColor.a)"), alpha);
+    FragmentShaderCode =
+        std::regex_replace(FragmentShaderCode, std::regex(R"(diffuseColor.a)"),
+                           "float(" + alpha + ")");
   }
 
   bool status = mContext->compileProgram(mProgramId, VertexShaderCode,
