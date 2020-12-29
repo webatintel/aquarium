@@ -17,6 +17,11 @@ declare_args() {
   enable_opengl = is_win || (is_linux && !is_chromeos) || is_mac
 }
 
+# RapidJSON is used by both Aquarium and ANGLE tests, so the ideal path
+# should be //third_party/rapidjson. However, ANGLE cannot be configured
+# to use that path.
+rapidjson_dir = "//third_party/angle/third_party/rapidjson"
+
 executable("aquarium") {
   libs = []
 
@@ -56,13 +61,13 @@ executable("aquarium") {
   ]
 
   deps = [
+    "$rapidjson_dir:rapidjson",
     "third_party:glfw",
     "third_party:imgui",
     "third_party:stb",
   ]
 
   include_dirs = [
-    "third_party/rapidjson/include",
     "third_party/stb",
     "src",
     "third_party/imgui",
@@ -122,18 +127,16 @@ executable("aquarium") {
 
     defines += [
       "ENABLE_ANGLE_BACKEND",
+      "GL_GLES_PROTOTYPES",
       "EGL_EGL_PROTOTYPES",
+      "GL_GLEXT_PROTOTYPES",
       "IMGUI_IMPL_OPENGL_LOADER_CUSTOM",
       "IMGUI_IMPL_OPENGL_ES3",
     ]
 
-    include_dirs += [
-      "third_party/angle/include",
-      "third_party/angle/util",
-    ]
+    include_dirs += [ "third_party/angle/include" ]
 
     deps += [
-      "third_party/angle:angle_util_static",
       "third_party/angle:libANGLE",
       "third_party/angle:libEGL",
       "third_party/angle:libGLESv2",
@@ -215,11 +218,11 @@ executable("aquarium") {
     }
 
     deps += [
+      # "third_party/SPIRV-Tools",
       "third_party/dawn/src/dawn:dawn_headers",
       "third_party/dawn/src/dawn:dawn_proc",
       "third_party/dawn/src/dawn:dawncpp",
       "third_party/dawn/src/dawn_native",
-      # "third_party/dawn/third_party/SPIRV-Tools",
       "third_party/glslang:glslang_sources",
     ]
     if (dawn_enable_vulkan) {
@@ -309,6 +312,7 @@ executable("aquarium-direct-map") {
   ]
 
   deps = [
+    "$rapidjson_dir:rapidjson",
     "third_party:glad",
     "third_party:glfw",
     "third_party:stb",
@@ -316,7 +320,6 @@ executable("aquarium-direct-map") {
 
   include_dirs = [
     "third_party/glad/include",
-    "third_party/rapidjson/include",
     "third_party/stb",
     "third_party/glfw/include",
     "src",

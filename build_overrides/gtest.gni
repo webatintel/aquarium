@@ -4,6 +4,10 @@
 # found in the LICENSE file.
 #
 
-import("vulkan_common.gni")
+gtest_include_multiprocess = true
 
-vulkan_use_x11 = angle_use_x11
+gtest_include_platform_test = true
+
+gtest_include_objc_support = true
+
+gtest_include_ios_coverage = true

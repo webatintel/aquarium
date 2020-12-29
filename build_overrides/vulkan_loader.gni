@@ -6,4 +6,4 @@
 
 import("vulkan_common.gni")
 
-vulkan_use_x11 = angle_use_x11
+vulkan_loader_shared = angle_shared_libvulkan

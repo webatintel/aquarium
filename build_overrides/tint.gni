@@ -5,11 +5,11 @@
 #
 
 tint_root_dir = "//third_party/dawn/third_party/tint"
-tint_spirv_tools_dir = "//third_party/dawn/third_party/SPIRV-Tools"
-tint_googletest_dir = "//third_party/dawn/third_party/googletest"
-tint_spirv_headers_dir = "//third_party/dawn/third_party/spirv-headers"
+tint_spirv_tools_dir = "//third_party/SPIRV-Tools"
+tint_googletest_dir = "//third_party/googletest/src"
+tint_spirv_headers_dir = "//third_party/SPIRV-Headers"
 
-tint_build_spv_reader = false
+tint_build_spv_reader = true
 tint_build_spv_writer = true
 tint_build_wgsl_reader = true
-tint_build_wgsl_writer = false
+tint_build_wgsl_writer = true

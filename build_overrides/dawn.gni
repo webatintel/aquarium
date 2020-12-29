@@ -4,14 +4,24 @@
 # found in the LICENSE file.
 #
 
-dawn_standalone = true
+dawn_standalone = false
 
-dawn_glfw_dir = "//third_party/glfw"
-dawn_glm_dir = "//third_party/dawn/third_party/glm"
+dawn_has_build = true
+
+dawn_root = "//third_party/dawn/"
+
 dawn_jinja2_dir = "//third_party/dawn/third_party/jinja2"
-dawn_googletest_dir = "//third_party/dawn/third_party/googletest"
 dawn_shaderc_dir = "//third_party/dawn/third_party/shaderc"
-dawn_spirv_cross_dir = "//third_party/dawn/third_party/spirv-cross"
-dawn_spirv_tools_dir = "//third_party/dawn/third_party/SPIRV-Tools"
+dawn_spirv_cross_dir = "//third_party/SPIRV-Cross"
+dawn_spirv_tools_dir = "//third_party/SPIRV-Tools"
+dawn_swiftshader_dir = "//third_party/swiftshader"
 dawn_tint_dir = "//third_party/dawn/third_party/tint"
-dawn_vulkan_validation_layers_dir = "//third_party/vulkan-validation-layers"
+dawn_vulkan_loader_dir = "//third_party/angle/third_party/vulkan-loader/src"
+dawn_vulkan_validation_layers_dir =
+    "//third_party/angle/third_party/vulkan-validation-layers/src"
+
+# There's no chance to build Dawn tests and examples in Aquarium. It may
+# happen certain repositories are not checked out at all.
+dawn_glfw_dir = ""
+dawn_glm_dir = ""
+dawn_googletest_dir = ""

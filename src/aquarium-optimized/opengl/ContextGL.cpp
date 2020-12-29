@@ -123,11 +123,11 @@ bool ContextGL::initialize(
 
   display_attribs.push_back(EGL_PLATFORM_ANGLE_TYPE_ANGLE);
 
-  if (backendType & BACKENDTYPE::BACKENDTYPED3D11)
+  if (backend & BACKENDTYPE::BACKENDTYPED3D11)
     display_attribs.push_back(EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE);
-  else if (backendType & BACKENDTYPE::BACKENDTYPEOPENGL)
+  else if (backend & BACKENDTYPE::BACKENDTYPEOPENGL)
     display_attribs.push_back(EGL_PLATFORM_ANGLE_TYPE_OPENGL_ANGLE);
-  else if (backendType & BACKENDTYPE::BACKENDTYPEVULKAN)
+  else if (backend & BACKENDTYPE::BACKENDTYPEVULKAN)
     display_attribs.push_back(EGL_PLATFORM_ANGLE_TYPE_VULKAN_ANGLE);
 
   display_attribs.push_back(EGL_PLATFORM_ANGLE_MAX_VERSION_MAJOR_ANGLE);

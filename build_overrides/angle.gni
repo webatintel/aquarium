@@ -6,9 +6,15 @@
 
 angle_root = "//third_party/angle"
 
+angle_has_build = true
+
 angle_glslang_dir = "//third_party/glslang"
-angle_googletest_dir = "//third_party/googletest"
-angle_libjpeg_turbo_dir = "//third_party/angle/third_party/libjpeg_turbo"
+angle_googletest_dir = "//third_party/googletest/src"
 angle_jsoncpp_dir = "//third_party/angle/third_party/jsoncpp"
+angle_libjpeg_turbo_dir = "//third_party/angle/third_party/libjpeg_turbo"
 angle_libpng_dir = "//third_party/angle/third_party/libpng"
+angle_spirv_cross_dir = "//third_party/SPIRV-Cross"
+angle_spirv_headers_dir = "//third_party/SPIRV-Headers"
 angle_spirv_tools_dir = "//third_party/SPIRV-Tools"
+angle_vulkan_memory_allocator_dir =
+    "//third_party/angle/third_party/vulkan_memory_allocator"
