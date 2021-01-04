@@ -53,7 +53,7 @@ inline BACKENDTYPE operator|(BACKENDTYPE a, BACKENDTYPE b) {
 }
 
 enum MODELNAME : short {
-  MODELFIRST,
+  // begin of background
   MODELRUINCOLUMN,
   MODELARCH,
   MODELROCKA,
@@ -76,6 +76,8 @@ enum MODELNAME : short {
   MODELGLOBEINNER,
   MODELSEAWEEDA,
   MODELSEAWEEDB,
+
+  // begin of fish
   MODELSMALLFISHA,
   MODELMEDIUMFISHA,
   MODELMEDIUMFISHB,
@@ -111,29 +113,28 @@ struct G_sceneInfo {
 enum FISHENUM : short { BIG, MEDIUM, SMALL, MAX };
 
 enum TOGGLE : short {
-  // Stop rendering after specified time.
+  // Stop rendering after specified time
   AUTOSTOP,
-  // Enable alpha blending.
+  // Enable alpha blending
   ENABLEALPHABLENDING,
-  // Go through instanced draw.
+  // Go through instanced draw
   ENABLEINSTANCEDDRAWS,
-  // The toggle is only supported on Dawn backend.
-  // By default, the app will enable dynamic buffer offset.
-  // The toggle is to disable dbo feature.
+  // The toggle is only supported on Dawn backend
+  // By default, the app will enable dynamic buffer offset
+  // The toggle is to disable dbo feature
   ENABLEDYNAMICBUFFEROFFSET,
   // Turn off render pass on dawn_d3d12
   DISABLED3D12RENDERPASS,
-  // Turn off dawn validation,
+  // Turn off dawn validation
   DISABLEDAWNVALIDATION,
-  // Disable control panel,
+  // Disable control panel
   DISABLECONTROLPANEL,
-  // Select integrated gpu if available.
+  // Select integrated gpu if available
   INTEGRATEDGPU,
-  // Select discrete gpu if available.
+  // Select discrete gpu if available
   DISCRETEGPU,
-  // Update and draw for each model on OpenGL and Angle backend, but draw once
-  // per frame on other backend.
-  UPATEANDDRAWFOREACHMODEL,
+  // Draw per instance or model
+  DRAWPERMODEL,
   // Support Full Screen mode
   ENABLEFULLSCREENMODE,
   // Print logs such as avg fps
@@ -510,23 +511,13 @@ private:
   void loadModel(const G_sceneInfo &info);
   void setupModelEnumMap();
   void calculateFishCount();
-  void updateWorldMatrixAndDraw(Model *model);
   void updateGlobalUniforms();
 
-  void updateWorldProjections(const std::vector<float> &w);
   BACKENDTYPE getBackendType(const std::string &backendPath);
   double getElapsedTime();
   void printAvgFps();
   void resetFpsTime();
-  void updateWorldMatrix(Model *model);
-
-  void updateAndDrawFishes();
-  void updateAndDrawBackground();
-
-  void updateBackground();
-  void drawBackground();
-  void updateFishes();
-  void drawFishes();
+  void updateAndDraw();
 
   std::unordered_map<std::string, MODELNAME> mModelEnumMap;
   std::unordered_map<std::string, Texture *> mTextureMap;

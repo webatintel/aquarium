@@ -392,8 +392,6 @@ void ContextGL::initState() {
 }
 
 void ContextGL::initAvailableToggleBitset(BACKENDTYPE backendType) {
-  mAvailableToggleBitset.set(
-      static_cast<size_t>(TOGGLE::UPATEANDDRAWFOREACHMODEL));
   mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEFULLSCREENMODE));
 }
 
