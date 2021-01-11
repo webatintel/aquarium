@@ -213,7 +213,7 @@ private:
   ComPtr<ID3D12Resource> mSceneRenderTargetTexture;
   D3D12_RENDER_TARGET_VIEW_DESC mSceneRenderTargetView;
 
-  UINT mVsync;
+  bool mVsync;
   bool mDisableD3D12RenderPass;
 };
 

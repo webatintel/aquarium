@@ -58,7 +58,7 @@ ContextD3D12::ContextD3D12(BACKENDTYPE backendType)
       mLightView({}),
       mFogView({}),
       mSceneRenderTargetView({}),
-      mVsync(1u),
+      mVsync(false),
       mDisableD3D12RenderPass(false) {
   for (UINT n = 0; n < mFrameCount; n++) {
     mBufferSerias[n] = 0;
@@ -87,7 +87,8 @@ bool ContextD3D12::initialize(
     const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset,
     int windowWidth,
     int windowHeight) {
-  mVsync = toggleBitset.test(static_cast<size_t>(TOGGLE::TURNOFFVSYNC)) ? 0 : 1;
+  mVsync = toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEVSYNC)) ? true
+                                                                       : false;
   mDisableControlPanel =
       toggleBitset.test(static_cast<TOGGLE>(TOGGLE::DISABLECONTROLPANEL));
 
@@ -385,7 +386,6 @@ void ContextD3D12::initAvailableToggleBitset(BACKENDTYPE backendType) {
   mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::DISCRETEGPU));
   mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::INTEGRATEDGPU));
   mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEFULLSCREENMODE));
-  mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::TURNOFFVSYNC));
   mAvailableToggleBitset.set(
       static_cast<size_t>(TOGGLE::DISABLED3D12RENDERPASS));
 }

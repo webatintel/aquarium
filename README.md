@@ -285,7 +285,7 @@ aquarium.exe --num-fish 10000 --backend d3d12 --enable-instanced-draws
 aquarium.exe --num-fish 10000 --backend opengl --msaa-sample-count 4
 
 
-# “--disable-dynamic-buffer-offset” ：The path is to test individual draw by creating many binding groups on dawn backend.
+# "--disable-dynamic-buffer-offset": The path is to test individual draw by creating many binding groups on dawn backend.
 # By default, dynamic buffer offset is enabled. This arg is only supported on dawn backend.
 
 aquarium.exe --num-fish 10000 --backend dawn_d3d12 --disable-dynamic-buffer-offset
@@ -297,40 +297,40 @@ aquarium.exe --num-fish 10000 --backend dawn_vulkan --disable-dynamic-buffer-off
 aquarium.exe --num-fish 10000 --backend dawn_d3d12 --integrated-gpu
 aquarium.exe --num-fish 10000 --backend dawn_vulkan --discrete-gpu
 
-# "--buffer-mapping-aync" : Test buffer mapping async mode to update fish positions.
+# "--buffer-mapping-aync": Test buffer mapping async mode to update fish positions.
 # This mode is only implemented for Dawn backend.
 aquarium.exe --num-fish 10000 --backend dawn_d3d12 --buffer-mapping-async
 
-# "--enable-full-screen-mode" : Render aquarium in full screen mode instead of window mode.
+# "--enable-full-screen-mode": Render aquarium in full screen mode instead of window mode.
 aquarium.exe --num-fish 10000 --backend dawn_d3d12 --enable-full-screen-mode
 
-# "--print-log" : print log including average fps when exit the application.
+# "--print-log": print log including average fps when exit the application.
 aquarium.exe --num-fish 10000 --backend dawn_d3d12 --print-log
 
-# "--test-time <second>" : Render the application for some second and then exit, and the application will run 5 min by default.
+# "--test-time <second>": Render the application for some second and then exit, and the application will run 5 min by default.
 aquarium.exe --num-fish 10000 --backend dawn_d3d12 --test-time 30
 
-#"--window-size <width,height>" : Set window size.
+#"--window-size <width,height>": Set window size.
 aquarium.exe --num-fish 10000 --backend dawn_d3d12 --window-size 2560,1440
 
-#“--turn-off-vsync” : Unlimit 60 fps.
-aquarium.exe --num-fish 10000 --backend dawn_vulkan --turn-off-vsync
+#"--enable-vsync": Enable vsync.
+aquarium.exe --num-fish 10000 --backend dawn_vulkan --enable-vsync
 
-#“--disable-d3d12-render-pass” : Turn off render pass for dawn_d3d12 and d3d12 backend. Render pass is only supported on windows sdk > 17763
+#"--disable-d3d12-render-pass": Turn off render pass for dawn_d3d12 and d3d12 backend. Render pass is only supported on windows sdk > 17763
 # or more advanced platforms. This feature is supported on versions of Windows prior to build 1809, or dawn will
 # emulate a render pass.
 aquarium.exe --num-fish 10000 --backend dawn_d3d12 --disable-d3d12-render-pass
 
-#“--disable-dawn-validation” : Disable Dawn validation.
+#"--disable-dawn-validation": Disable Dawn validation.
 aquarium.exe --num-fish 10000 --backend dawn_d3d12 --disable-dawn-validation
 
-#"--alpha-blending <0-1|false>" : Force enable alpha blending to a specific value for all models or disable alpha blending. By default, alpha blending is enabled.
+#"--alpha-blending <0-1|false>": Force enable alpha blending to a specific value for all models or disable alpha blending. By default, alpha blending is enabled.
 #Imgui uses stb truetype to render characters to gray bitmaps with format alpha8. The alpha value of the bitmap is 255 #or 0. When alpha blending is enabled, the pixels of the glyphs shows only if alpha is 255, while the other pixels are #rendered as background color. When alpha blending is disabled, the pixels are set to white if alpha is 255, and black
 #if alpha is 0.
 aquarium.exe --num-fish 10000 --backend opengl --alpha-blending 0.5
 aquarium.exe --num-fish 10000 --backend opengl --alpha-blending false
 
-# "--simulating-fish-come-and-go" : Load fish behavior from FishBehavior.json from the path of aquarium repo. The mode is only implemented for Dawn backend.
+# "--simulating-fish-come-and-go": Load fish behavior from FishBehavior.json from the path of aquarium repo. The mode is only implemented for Dawn backend.
 # The fish number will increase or decrease according to the fish behavior. Please follow the format of fish number definition
 # in the json file. "frame" means the fish number will change after some frames. "op" means to increase or decrease fish,
 # "count" defines fish number to be changed.
@@ -346,7 +346,7 @@ aquarium.exe --num-fish 10000 --backend opengl --alpha-blending false
 
 aquarium.exe --num-fish 10000 --backend dawn_d3d12 --simulating-fish-come-and-go
 
-#“--disable-control-panel” : Turn off control panel because it impacts on performance of Aquarium on different conditions. You can show fps by passing '--print-log --test-time 30' to print the fps to cmd line instead.
+#"--disable-control-panel": Turn off control panel because it impacts on performance of Aquarium on different conditions. You can show fps by passing '--print-log --test-time 30' to print the fps to cmd line instead.
 
 aquarium.exe --num-fish 10000 --backend dawn_d3d12 --disable-control-panel --print-log --test-time 30
 

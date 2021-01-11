@@ -204,7 +204,7 @@ bool ContextDawn::initialize(
 
   WGPUDevice backendDevice;
   dawn_native::DeviceDescriptor descriptor;
-  if (toggleBitset.test(static_cast<size_t>(TOGGLE::TURNOFFVSYNC))) {
+  if (!toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEVSYNC))) {
     const char *turnOffVsync = "turn_off_vsync";
     descriptor.forceEnabledToggles.push_back(turnOffVsync);
   }
@@ -330,7 +330,6 @@ void ContextDawn::initAvailableToggleBitset(BACKENDTYPE backendType) {
   mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::INTEGRATEDGPU));
   mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEFULLSCREENMODE));
   mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::BUFFERMAPPINGASYNC));
-  mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::TURNOFFVSYNC));
   mAvailableToggleBitset.set(
       static_cast<size_t>(TOGGLE::DISABLED3D12RENDERPASS));
   mAvailableToggleBitset.set(

@@ -142,8 +142,8 @@ enum TOGGLE : short {
   BUFFERMAPPINGASYNC,
   // Simulate fish come and go for Dawn backend
   SIMULATINGFISHCOMEANDGO,
-  // Turn off vsync, donot limit fps to 60
-  TURNOFFVSYNC,
+  // Enable vsync
+  ENABLEVSYNC,
   TOGGLEMAX
 };
 

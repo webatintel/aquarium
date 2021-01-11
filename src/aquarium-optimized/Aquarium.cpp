@@ -175,7 +175,7 @@ bool Aquarium::init(int argc, char **argv) {
      "Load fish behavior from FishBehavior.json. Dawn only.");
   oa("test-time", "Render for some seconds then exit.",
      cxxopts::value<int>(mTestTime));
-  oa("turn-off-vsync", "Unlimit 60 fps");
+  oa("enable-vsync", "Enable vsync");
   oa("window-size", "Format is <width,height>. Set window size",
      cxxopts::value<std::string>());
   oa("help", "Print help");
@@ -349,15 +349,13 @@ bool Aquarium::init(int argc, char **argv) {
     toggleBitset.set(static_cast<size_t>(TOGGLE::AUTOSTOP));
   }
 
-  if (result.count("turn-off-vsync")) {
-    if (!availableToggleBitset.test(
-            static_cast<size_t>(TOGGLE::TURNOFFVSYNC))) {
-      std::cerr << "Turn off vsync isn't supported for the backend."
-                << std::endl;
+  if (result.count("enable-vsync")) {
+    if (!availableToggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEVSYNC))) {
+      std::cerr << "Enable vsync isn't supported for the backend." << std::endl;
       return false;
     }
 
-    toggleBitset.set(static_cast<size_t>(TOGGLE::TURNOFFVSYNC));
+    toggleBitset.set(static_cast<size_t>(TOGGLE::ENABLEVSYNC));
   }
 
   if (result.count("window-size")) {
