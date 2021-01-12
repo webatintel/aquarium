@@ -388,6 +388,7 @@ void ContextD3D12::initAvailableToggleBitset(BACKENDTYPE backendType) {
   mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::TURNOFFVSYNC));
   mAvailableToggleBitset.set(
       static_cast<size_t>(TOGGLE::DISABLED3D12RENDERPASS));
+  mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::DRAWPERMODEL));
 }
 
 void ContextD3D12::DoFlush(
