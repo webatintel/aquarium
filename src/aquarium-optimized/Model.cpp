@@ -10,9 +10,6 @@
 #include "Aquarium.h"
 #include "Buffer.h"
 
-Model::Model() : mProgram(nullptr), mBlend(false), mName(MODELMAX) {
-}
-
 Model::~Model() {
   for (auto &buf : bufferMap) {
     if (buf.second != nullptr) {

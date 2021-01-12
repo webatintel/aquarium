@@ -14,7 +14,6 @@
 
 class ResourceHelper {
 public:
-  ResourceHelper() {}
   ResourceHelper(const std::string &mBackendName,
                  const std::string &mShaderVersion,
                  BACKENDTYPE backendType);

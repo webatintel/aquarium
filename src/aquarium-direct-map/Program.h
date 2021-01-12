@@ -18,7 +18,6 @@
 
 class Program {
 public:
-  Program() {}
   Program(const std::string &vId, const std::string &fId);
   ~Program();
   void use();

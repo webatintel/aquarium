@@ -16,7 +16,6 @@
 
 class Texture {
 public:
-  Texture() {}
   ~Texture();
   Texture(const std::string &url, bool flip);
   Texture(const std::vector<std::string> &urls);

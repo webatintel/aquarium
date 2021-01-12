@@ -26,7 +26,6 @@ enum MODELNAME : short;
 
 class Model {
 public:
-  Model();
   Model(MODELGROUP type, MODELNAME name, bool blend)
       : mProgram(nullptr), mBlend(blend), mName(name) {}
   virtual ~Model();

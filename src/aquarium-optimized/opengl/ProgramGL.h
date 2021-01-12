@@ -22,7 +22,6 @@
 
 class ProgramGL : public Program {
 public:
-  ProgramGL() {}
   ProgramGL(ContextGL *, std::string mVId, std::string mFId);
   ~ProgramGL() override;
 

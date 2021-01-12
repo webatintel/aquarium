@@ -12,7 +12,6 @@
 
 class Program {
 public:
-  Program() {}
   Program(const std::string &mVertexShader, const std::string &fragmentShader)
       : mVId(mVertexShader), mFId(fragmentShader) {}
   virtual ~Program() {}
