@@ -16,7 +16,6 @@
 
 class Buffer {
 public:
-  Buffer() {}
   Buffer(const AttribBuffer &array, GLenum target);
   ~Buffer();
 

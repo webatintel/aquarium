@@ -12,7 +12,6 @@
 
 class Behavior {
 public:
-  Behavior() {}
   Behavior(int frame, std::string &op, int count)
       : mFrame(frame), mOp(op), mCount(count) {}
 

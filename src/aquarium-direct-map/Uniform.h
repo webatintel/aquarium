@@ -14,7 +14,6 @@
 
 class Uniform {
 public:
-  Uniform() {}
   Uniform(const std::string &name,
           GLenum type,
           int length,

@@ -23,7 +23,6 @@ class ContextD3D12;
 
 class ProgramD3D12 : public Program {
 public:
-  ProgramD3D12() {}
   ProgramD3D12(ContextD3D12 *context,
                const std::string &mVId,
                const std::string &mFId);

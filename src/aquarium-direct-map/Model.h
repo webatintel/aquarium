@@ -23,7 +23,6 @@ struct GenericPer;
 
 class Model {
 public:
-  Model() {}
   ~Model();
   Model(Program *program,
         const std::unordered_map<std::string, const AttribBuffer *> &arrays,

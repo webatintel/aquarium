@@ -19,7 +19,6 @@ class Model;
 
 class Scene {
 public:
-  Scene() {}
   ~Scene();
   Scene(const std::string opt_programIds[2]);
 

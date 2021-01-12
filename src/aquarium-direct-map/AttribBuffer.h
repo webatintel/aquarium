@@ -14,7 +14,6 @@
 
 class AttribBuffer {
 public:
-  AttribBuffer() {}
   AttribBuffer(int numComponents,
                const std::vector<float> &buffer,
                int size,
