@@ -10,9 +10,11 @@
 
 #include <string>
 
+#include "common/Path.h"
+
 class Program {
 public:
-  Program(const std::string &mVertexShader, const std::string &fragmentShader)
+  Program(const Path &mVertexShader, const Path &fragmentShader)
       : mVId(mVertexShader), mFId(fragmentShader) {}
   virtual ~Program() {}
   virtual void setProgram() {}
@@ -22,8 +24,8 @@ public:
 protected:
   void loadProgram();
 
-  std::string mVId;
-  std::string mFId;
+  Path mVId;
+  Path mFId;
 
   std::string VertexShaderCode;
   std::string FragmentShaderCode;

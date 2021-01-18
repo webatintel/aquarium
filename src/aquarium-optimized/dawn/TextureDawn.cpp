@@ -25,7 +25,7 @@ TextureDawn::~TextureDawn() {
 
 TextureDawn::TextureDawn(ContextDawn *context,
                          const std::string &name,
-                         const std::string &url)
+                         const Path &url)
     : Texture(name, url, true),
       mTextureDimension(wgpu::TextureDimension::e2D),
       mTextureViewDimension(wgpu::TextureViewDimension::e2D),
@@ -38,7 +38,7 @@ TextureDawn::TextureDawn(ContextDawn *context,
 
 TextureDawn::TextureDawn(ContextDawn *context,
                          const std::string &name,
-                         const std::vector<std::string> &urls)
+                         const std::vector<Path> &urls)
     : Texture(name, urls, false),
       mTextureDimension(wgpu::TextureDimension::e2D),
       mTextureViewDimension(wgpu::TextureViewDimension::Cube),

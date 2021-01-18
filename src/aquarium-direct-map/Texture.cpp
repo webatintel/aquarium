@@ -9,14 +9,16 @@
 #include "Texture.h"
 
 #include <iostream>
+#include <string>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
 #include "common/AQUARIUM_ASSERT.h"
+#include "common/Path.h"
 
 // initializs texture 2d
-Texture::Texture(const std::string &url, bool flip)
+Texture::Texture(const Path &url, bool flip)
     : urls(),
       target(GL_TEXTURE_2D),
       texture(0u),
@@ -24,15 +26,14 @@ Texture::Texture(const std::string &url, bool flip)
       width(0),
       height(0),
       flip(flip) {
-  std::string urlpath = url;
-  urls.push_back(urlpath);
+  urls.push_back(url);
   glGenTextures(1, &texture);
 
   uploadTextures();
 }
 
 // initializs cube map
-Texture::Texture(const std::vector<std::string> &urls) : urls(urls) {
+Texture::Texture(const std::vector<Path> &urls) : urls(urls) {
   ASSERT(urls.size() == 6);
   target = GL_TEXTURE_CUBE_MAP;
   glGenTextures(1, &texture);
@@ -58,11 +59,12 @@ bool Texture::isPowerOf2(int value) {
 // support 3 channel formats currently. The group is discussing on whether
 // webgpu shoud support 3 channel format.
 // https://github.com/gpuweb/gpuweb/issues/66#issuecomment-410021505
-bool Texture::loadImageBySTB(const std::string &filename, uint8_t **pixels) {
+bool Texture::loadImageBySTB(Path &filename, uint8_t **pixels) {
   stbi_set_flip_vertically_on_load(flip);
-  *pixels = stbi_load(filename.c_str(), &width, &height, 0, 4);
+  *pixels = stbi_load(std::string(filename).c_str(), &width, &height, 0, 4);
   if (*pixels == 0) {
-    std::cout << stderr << "Couldn't open input file" << filename << std::endl;
+    std::cout << stderr << "Couldn't open input file" << std::string(filename)
+              << std::endl;
     return false;
   }
   return true;

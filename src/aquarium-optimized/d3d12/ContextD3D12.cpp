@@ -622,22 +622,20 @@ Buffer *ContextD3D12::createBuffer(int numComponents,
   return buffer;
 }
 
-Program *ContextD3D12::createProgram(const std::string &mVId,
-                                     const std::string &mFId) {
+Program *ContextD3D12::createProgram(const Path &mVId, const Path &mFId) {
   ProgramD3D12 *program = new ProgramD3D12(this, mVId, mFId);
 
   return program;
 }
 
-Texture *ContextD3D12::createTexture(const std::string &name,
-                                     const std::string &url) {
+Texture *ContextD3D12::createTexture(const std::string &name, const Path &url) {
   Texture *texture = new TextureD3D12(this, name, url);
   texture->loadTexture();
   return texture;
 }
 
 Texture *ContextD3D12::createTexture(const std::string &name,
-                                     const std::vector<std::string> &urls) {
+                                     const std::vector<Path> &urls) {
   Texture *texture = new TextureD3D12(this, name, urls);
   texture->loadTexture();
   return texture;

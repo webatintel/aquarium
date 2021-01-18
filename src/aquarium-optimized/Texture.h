@@ -11,14 +11,14 @@
 #include <string>
 #include <vector>
 
+#include "common/Path.h"
+
 class Texture {
 public:
   virtual ~Texture() {}
-  Texture(const std::string &name,
-          const std::vector<std::string> &urls,
-          bool flip)
+  Texture(const std::string &name, const std::vector<Path> &urls, bool flip)
       : mUrls(urls), mFlip(flip), mName(name) {}
-  Texture(const std::string &name, const std::string &url, bool flip);
+  Texture(const std::string &name, const Path &url, bool flip);
   std::string getName() { return mName; }
   virtual void loadTexture() = 0;
   void generateMipmap(uint8_t *input_pixels,
@@ -34,8 +34,7 @@ public:
 
 protected:
   bool isPowerOf2(int);
-  bool loadImage(const std::vector<std::string> &urls,
-                 std::vector<uint8_t *> *pixels);
+  bool loadImage(const std::vector<Path> &urls, std::vector<uint8_t *> *pixels);
   void DestoryImageData(std::vector<uint8_t *> &pixelVec);
   void copyPaddingBuffer(unsigned char *dst,
                          unsigned char *src,
@@ -43,7 +42,7 @@ protected:
                          int height,
                          int kPadding);
 
-  std::vector<std::string> mUrls;
+  std::vector<Path> mUrls;
   int mWidth;
   int mHeight;
   bool mFlip;

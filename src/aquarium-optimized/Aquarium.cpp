@@ -31,6 +31,7 @@
 #include "SeaweedModel.h"
 #include "Texture.h"
 #include "common/AQUARIUM_ASSERT.h"
+#include "common/Path.h"
 #include "opengl/ContextGL.h"
 
 #if defined(OS_WIN)
@@ -380,7 +381,7 @@ bool Aquarium::init(int argc, char **argv) {
   getElapsedTime();
 
   const ResourceHelper *resourceHelper = mContext->getResourceHelper();
-  std::vector<std::string> skyUrls;
+  std::vector<Path> skyUrls;
   resourceHelper->getSkyBoxUrls(&skyUrls);
   mTextureMap["skybox"] = mContext->createTexture("skybox", skyUrls);
 
@@ -450,7 +451,7 @@ void Aquarium::setupModelEnumMap() {
 // Load world matrices of models from json file.
 void Aquarium::loadPlacement() {
   const ResourceHelper *resourceHelper = mContext->getResourceHelper();
-  std::string proppath = resourceHelper->getPropPlacementPath();
+  Path proppath = resourceHelper->getPropPlacementPath();
   std::ifstream PlacementStream(proppath, std::ios::in);
   rapidjson::IStreamWrapper isPlacement(PlacementStream);
   rapidjson::Document document;
@@ -492,7 +493,7 @@ void Aquarium::loadModels() {
 
 void Aquarium::loadFishScenario() {
   const ResourceHelper *resourceHelper = mContext->getResourceHelper();
-  std::string fishBehaviorPath = resourceHelper->getFishBehaviorPath();
+  Path fishBehaviorPath = resourceHelper->getFishBehaviorPath();
 
   std::ifstream FishStream(fishBehaviorPath, std::ios::in);
   rapidjson::IStreamWrapper is(FishStream);
@@ -515,10 +516,9 @@ void Aquarium::loadFishScenario() {
 // Load vertex and index buffers, textures and program for each model.
 void Aquarium::loadModel(const G_sceneInfo &info) {
   const ResourceHelper *resourceHelper = mContext->getResourceHelper();
-  std::string imagePath = resourceHelper->getImagePath();
-  std::string programPath = resourceHelper->getProgramPath();
-  std::string modelPath =
-      resourceHelper->getModelPath(std::string(info.namestr));
+  Path imagePath = resourceHelper->getImagePath();
+  Path programPath = resourceHelper->getProgramPath();
+  Path modelPath = resourceHelper->getModelPath(std::string(info.namestr));
 
   std::ifstream ModelStream(modelPath, std::ios::in);
   rapidjson::IStreamWrapper is(ModelStream);
@@ -547,7 +547,8 @@ void Aquarium::loadModel(const G_sceneInfo &info) {
       std::string image = itr->value.GetString();
 
       if (mTextureMap.find(image) == mTextureMap.end()) {
-        mTextureMap[image] = mContext->createTexture(name, imagePath + image);
+        mTextureMap[image] =
+            mContext->createTexture(name, Path(imagePath).push(image));
       }
 
       model->textureMap[name] = mTextureMap[image];
@@ -608,7 +609,8 @@ void Aquarium::loadModel(const G_sceneInfo &info) {
     if (mProgramMap.find(vsId + fsId) != mProgramMap.end()) {
       program = mProgramMap[vsId + fsId];
     } else {
-      program = mContext->createProgram(programPath + vsId, programPath + fsId);
+      program = mContext->createProgram(Path(programPath).push(vsId),
+                                        Path(programPath).push(fsId));
       if (toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEALPHABLENDING)) &&
           info.type != MODELGROUP::INNER && info.type != MODELGROUP::OUTSIDE) {
         program->compileProgram(true, g.alpha);

@@ -11,18 +11,19 @@
 #include <vector>
 
 #include "Aquarium.h"
+#include "common/Path.h"
 
 class ResourceHelper {
 public:
   ResourceHelper(const std::string &mBackendName,
                  const std::string &mShaderVersion,
                  BACKENDTYPE backendType);
-  void getSkyBoxUrls(std::vector<std::string> *skyUrls) const;
-  const std::string &getPropPlacementPath() const { return mPropPlacementPath; }
-  const std::string &getImagePath() const { return mImagePath; }
-  std::string getModelPath(const std::string &modelName) const;
-  const std::string &getProgramPath() const;
-  const std::string &getFishBehaviorPath() const { return mFishBehaviorPath; }
+  void getSkyBoxUrls(std::vector<Path> *skyUrls) const;
+  Path getPropPlacementPath() const { return mPropPlacementPath; }
+  Path getImagePath() const { return mImagePath; }
+  Path getModelPath(const std::string &modelName) const;
+  Path getProgramPath() const;
+  Path getFishBehaviorPath() const { return mFishBehaviorPath; }
   const std::string &getBackendName() const { return mBackendName; }
   BACKENDTYPE getBackendType() const { return mBackendType; }
   const std::string &getShaderVersion() const { return mShaderVersion; }
@@ -30,12 +31,12 @@ public:
   void setRenderer(const std::string &renderer);
 
 private:
-  std::string mPath;
-  std::string mImagePath;
-  std::string mProgramPath;
-  std::string mPropPlacementPath;
-  std::string mModelPath;
-  std::string mFishBehaviorPath;
+  Path mPath;
+  Path mImagePath;
+  Path mProgramPath;
+  Path mPropPlacementPath;
+  Path mModelPath;
+  Path mFishBehaviorPath;
 
   std::string mBackendName;
   BACKENDTYPE mBackendType;

@@ -340,15 +340,14 @@ void ContextDawn::initAvailableToggleBitset(BACKENDTYPE backendType) {
   mAvailableToggleBitset.set(static_cast<size_t>(TOGGLE::DRAWPERMODEL));
 }
 
-Texture *ContextDawn::createTexture(const std::string &name,
-                                    const std::string &url) {
+Texture *ContextDawn::createTexture(const std::string &name, const Path &url) {
   Texture *texture = new TextureDawn(this, name, url);
   texture->loadTexture();
   return texture;
 }
 
 Texture *ContextDawn::createTexture(const std::string &name,
-                                    const std::vector<std::string> &urls) {
+                                    const std::vector<Path> &urls) {
   Texture *texture = new TextureDawn(this, name, urls);
   texture->loadTexture();
   return texture;
@@ -851,8 +850,7 @@ Buffer *ContextDawn::createBuffer(int numComponents,
   return buffer;
 }
 
-Program *ContextDawn::createProgram(const std::string &mVId,
-                                    const std::string &mFId) {
+Program *ContextDawn::createProgram(const Path &mVId, const Path &mFId) {
   ProgramDawn *program = new ProgramDawn(this, mVId, mFId);
 
   return program;

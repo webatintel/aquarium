@@ -17,12 +17,10 @@ class ContextDawn;
 class TextureDawn : public Texture {
 public:
   ~TextureDawn() override;
+  TextureDawn(ContextDawn *context, const std::string &name, const Path &url);
   TextureDawn(ContextDawn *context,
               const std::string &name,
-              const std::string &url);
-  TextureDawn(ContextDawn *context,
-              const std::string &name,
-              const std::vector<std::string> &urls);
+              const std::vector<Path> &urls);
 
   const wgpu::Texture &getTextureId() const { return mTexture; }
   const wgpu::Sampler &getSampler() const { return mSampler; }

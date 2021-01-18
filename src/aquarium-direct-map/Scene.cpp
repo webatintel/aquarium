@@ -12,7 +12,6 @@
 #include <cstdio>
 #include <fstream>
 #include <iostream>
-#include <sstream>
 
 #include "rapidjson/document.h"
 #include "rapidjson/filereadstream.h"
@@ -23,14 +22,15 @@
 #include "Model.h"
 #include "Program.h"
 #include "common/AQUARIUM_ASSERT.h"
+#include "common/Path.h"
 
-std::vector<std::string> g_skyBoxUrls = {
-    "GlobeOuter_EM_positive_x.jpg", "GlobeOuter_EM_negative_x.jpg",
-    "GlobeOuter_EM_positive_y.jpg", "GlobeOuter_EM_negative_y.jpg",
-    "GlobeOuter_EM_positive_z.jpg", "GlobeOuter_EM_negative_z.jpg"};
+std::vector<Path> g_skyBoxUrls = {
+    Path("GlobeOuter_EM_positive_x.jpg"), Path("GlobeOuter_EM_negative_x.jpg"),
+    Path("GlobeOuter_EM_positive_y.jpg"), Path("GlobeOuter_EM_negative_y.jpg"),
+    Path("GlobeOuter_EM_positive_z.jpg"), Path("GlobeOuter_EM_negative_z.jpg")};
 
 Scene::Scene(const std::string opt_programIds[2])
-    : url(), models(), textureMap(), arrayMap() {
+    : url(Path::getVoidPath()), models(), textureMap(), arrayMap() {
   programIds[0] = opt_programIds[0];
   programIds[1] = opt_programIds[1];
 }
@@ -65,26 +65,18 @@ Scene::~Scene() {
   }
 }
 
-void Scene::setupSkybox(const std::string &path) {
+void Scene::setupSkybox(const Path &path) {
   for (auto &v : g_skyBoxUrls) {
-    std::ostringstream url;
-    url << path << resourceFolder << slash << v;
-
-    v = url.str();
+    v = Path(path).push(resourceFolder).push(v);
   }
 }
 
-void Scene::load(const std::string &path, const std::string &name) {
-  std::ostringstream oss;
-  oss << path << resourceFolder << slash;
-  std::string imagePath = oss.str();
-  oss << name << ".js";
-  std::string modelPath = oss.str();
-  oss.str("");
-  oss << path << shaderFolder << slash << shaderVersion << slash;
-  std::string programPath = oss.str();
+void Scene::load(const Path &path, const std::string &name) {
+  Path imagePath = Path(path).push(resourceFolder);
+  Path modelPath = Path(imagePath).push(name + ".js");
+  Path programPath = Path(path).push(shaderFolder).push(shaderVersion);
 
-  this->url = modelPath;
+  this->url.push(modelPath);
   this->loaded = true;
 
   std::ifstream PlacementStream(modelPath, std::ios::in);
@@ -102,7 +94,7 @@ void Scene::load(const std::string &path, const std::string &name) {
       std::string image = itr->value.GetString();
 
       if (g_textureMap.find(image) == g_textureMap.end()) {
-        g_textureMap[image] = new Texture(imagePath + image, true);
+        g_textureMap[image] = new Texture(Path(imagePath).push(image), true);
       }
 
       textureMap[name] = g_textureMap[image];
@@ -143,7 +135,8 @@ void Scene::load(const std::string &path, const std::string &name) {
     std::string fsId;
 
     if (textureMap.find("diffuse") == textureMap.end()) {
-      std::cout << "missing diffuse texture for" << url.c_str() << std::endl;
+      std::cout << "missing diffuse texture for" << std::string(url)
+                << std::endl;
     }
 
     if (g_textureMap.find("skybox") == g_textureMap.end()) {
@@ -159,7 +152,7 @@ void Scene::load(const std::string &path, const std::string &name) {
       textureMap["skybox"] = g_textureMap["skybox"];
     } else if (textureMap.find("reflectionMap") != textureMap.end()) {
       if (textureMap.find("normalMap") != textureMap.end()) {
-        std::cout << "missing normal Map for" << url.c_str() << std::endl;
+        std::cout << "missing normal Map for" << std::string(url) << std::endl;
       }
 
       type = "reflection";
@@ -181,7 +174,8 @@ void Scene::load(const std::string &path, const std::string &name) {
     if (g_programMap.find(vsId + fsId) != g_programMap.end()) {
       program = g_programMap[vsId + fsId];
     } else {
-      program = new Program(programPath + vsId, programPath + fsId);
+      program = new Program(Path(programPath).push(vsId),
+                            Path(programPath).push(fsId));
       g_programMap[vsId + fsId] = program;
     }
 

@@ -83,8 +83,7 @@ public:
   void uploadBuffer(unsigned int target,
                     const std::vector<unsigned short> &buf);
 
-  Program *createProgram(const std::string &mVId,
-                         const std::string &mFId) override;
+  Program *createProgram(const Path &mVId, const Path &mFId) override;
   unsigned int generateProgram();
   void setProgram(unsigned int program);
   void deleteProgram(unsigned int program);
@@ -95,10 +94,9 @@ public:
   unsigned int generateVAO();
   void deleteVAO(unsigned int vao);
 
+  Texture *createTexture(const std::string &name, const Path &url) override;
   Texture *createTexture(const std::string &name,
-                         const std::string &url) override;
-  Texture *createTexture(const std::string &name,
-                         const std::vector<std::string> &urls) override;
+                         const std::vector<Path> &urls) override;
   unsigned int generateTexture();
   void bindTexture(unsigned int target, unsigned int texture);
   void deleteTexture(unsigned int texture);

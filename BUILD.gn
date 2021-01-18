@@ -58,6 +58,8 @@ executable("aquarium") {
     "src/common/AQUARIUM_ASSERT.h",
     "src/common/FPSTimer.cpp",
     "src/common/FPSTimer.h",
+    "src/common/Path.cpp",
+    "src/common/Path.h",
   ]
 
   deps = [
@@ -309,6 +311,8 @@ executable("aquarium-direct-map") {
     "src/common/AQUARIUM_ASSERT.h",
     "src/common/FPSTimer.cpp",
     "src/common/FPSTimer.h",
+    "src/common/Path.cpp",
+    "src/common/Path.h",
   ]
 
   deps = [

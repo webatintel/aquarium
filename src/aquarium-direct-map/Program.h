@@ -16,9 +16,11 @@
 #include "Texture.h"
 #include "Uniform.h"
 
+class Path;
+
 class Program {
 public:
-  Program(const std::string &vId, const std::string &fId);
+  Program(Path &vId, Path &fId);
   ~Program();
   void use();
   void setUniform(const std::string &name, float v);
@@ -39,7 +41,7 @@ public:
   GLuint getProgramId() { return program; }
 
 private:
-  void createProgramFromTags(const std::string &vId, const std::string &fId);
+  void createProgramFromTags(Path &vId, Path &fId);
   GLuint LoadProgram(const std::string &vertexShader,
                      const std::string &fragmentShader);
   void createSetters();
