@@ -14,6 +14,7 @@
 
 #include "AttribBuffer.h"
 #include "Texture.h"
+#include "common/Path.h"
 
 class Model;
 
@@ -22,16 +23,16 @@ public:
   ~Scene();
   Scene(const std::string opt_programIds[2]);
 
-  void load(const std::string &path, const std::string &name);
+  void load(const Path &path, const std::string &name);
   const std::vector<Model *> &getModels() const { return models; }
 
   bool loaded;
 
 private:
-  void setupSkybox(const std::string &path);
+  void setupSkybox(const Path &path);
 
   std::string programIds[2];
-  std::string url;
+  Path url;
   std::vector<Model *> models;
   std::unordered_map<std::string, Texture *> textureMap;
   std::unordered_map<std::string, const AttribBuffer *> arrayMap;

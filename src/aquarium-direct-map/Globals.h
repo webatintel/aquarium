@@ -21,11 +21,7 @@
 #include "common/FPSTimer.h"
 
 #if defined(OS_WIN)
-const std::string slash = "\\";
 #define M_PI 3.141592653589793
-#endif
-#if defined(OS_MAC) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
-const std::string slash = "/";
 #endif
 
 class Program;

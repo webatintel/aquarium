@@ -58,13 +58,11 @@ public:
                        std::vector<unsigned short> *buffer,
                        bool isIndex) override;
 
-  Program *createProgram(const std::string &mVId,
-                         const std::string &mFId) override;
+  Program *createProgram(const Path &mVId, const Path &mFId) override;
 
+  Texture *createTexture(const std::string &name, const Path &url) override;
   Texture *createTexture(const std::string &name,
-                         const std::string &url) override;
-  Texture *createTexture(const std::string &name,
-                         const std::vector<std::string> &urls) override;
+                         const std::vector<Path> &urls) override;
 
   void initGeneralResources(Aquarium *aquarium) override;
   void updateWorldlUniforms(Aquarium *aquarium) override;

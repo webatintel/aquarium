@@ -22,7 +22,7 @@
 
 class ProgramGL : public Program {
 public:
-  ProgramGL(ContextGL *, std::string mVId, std::string mFId);
+  ProgramGL(ContextGL *, const Path &mVId, const Path &mFId);
   ~ProgramGL() override;
 
   void setProgram() override;

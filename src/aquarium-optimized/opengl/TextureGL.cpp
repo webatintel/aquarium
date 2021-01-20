@@ -11,7 +11,7 @@
 #include "common/AQUARIUM_ASSERT.h"
 
 // initializs texture 2d
-TextureGL::TextureGL(ContextGL *context, std::string name, std::string url)
+TextureGL::TextureGL(ContextGL *context, std::string name, const Path &url)
     : Texture(name, url, true),
       mTarget(GL_TEXTURE_2D),
       mFormat(GL_RGBA),
@@ -22,7 +22,7 @@ TextureGL::TextureGL(ContextGL *context, std::string name, std::string url)
 // initializs cube map
 TextureGL::TextureGL(ContextGL *context,
                      std::string name,
-                     const std::vector<std::string> &urls)
+                     const std::vector<Path> &urls)
     : Texture(name, urls, false),
       mTarget(GL_TEXTURE_CUBE_MAP),
       mFormat(GL_RGBA),

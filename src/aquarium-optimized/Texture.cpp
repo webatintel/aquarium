@@ -17,24 +17,25 @@
 #include "stb_image_resize.h"
 
 #include "../common/AQUARIUM_ASSERT.h"
+#include "../common/Path.h"
 
-Texture::Texture(const std::string &name, const std::string &url, bool flip)
+Texture::Texture(const std::string &name, const Path &url, bool flip)
     : mUrls(), mWidth(0), mHeight(0), mFlip(flip), mName(name) {
-  std::string urlpath = url;
-  mUrls.push_back(urlpath);
+  mUrls.push_back(url);
 }
 
 // Force loading 3 channel images to 4 channel by stb becasue Dawn doesn't
 // support 3 channel formats currently. The group is discussing on whether
 // webgpu shoud support 3 channel format.
 // https://github.com/gpuweb/gpuweb/issues/66#issuecomment-410021505
-bool Texture::loadImage(const std::vector<std::string> &urls,
+bool Texture::loadImage(const std::vector<Path> &urls,
                         std::vector<uint8_t *> *pixels) {
   stbi_set_flip_vertically_on_load(mFlip);
   for (auto filename : urls) {
-    uint8_t *pixel = stbi_load(filename.c_str(), &mWidth, &mHeight, 0, 4);
+    uint8_t *pixel =
+        stbi_load(std::string(filename).c_str(), &mWidth, &mHeight, 0, 4);
     if (pixel == 0) {
-      std::cout << stderr << "Couldn't open input file" << filename
+      std::cout << stderr << "Couldn't open input file" << std::string(filename)
                 << std::endl;
       return false;
     }

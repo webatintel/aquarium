@@ -34,7 +34,7 @@
 #include "../Texture.h"
 #include "common/AQUARIUM_ASSERT.h"
 
-ProgramGL::ProgramGL(ContextGL *context, std::string mVId, std::string mFId)
+ProgramGL::ProgramGL(ContextGL *context, const Path &mVId, const Path &mFId)
     : Program(mVId, mFId), mProgramId(0u), mContext(context) {
   mProgramId = context->generateProgram();
   mVAO = context->generateVAO();

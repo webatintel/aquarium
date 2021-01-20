@@ -18,8 +18,9 @@
 #include "build/build_config.h"
 
 #include "common/AQUARIUM_ASSERT.h"
+#include "common/Path.h"
 
-Program::Program(const std::string &vId, const std::string &fId)
+Program::Program(Path &vId, Path &fId)
     : program(0u), attribLocs(), uniforms(), textureUnits() {
   createProgramFromTags(vId, fId);
   createSetters();
@@ -36,8 +37,7 @@ Program::~Program() {
   }
 }
 
-void Program::createProgramFromTags(const std::string &vId,
-                                    const std::string &fId) {
+void Program::createProgramFromTags(Path &vId, Path &fId) {
   std::ifstream VertexShaderStream(vId, std::ios::in);
   std::string VertexShaderCode(
       (std::istreambuf_iterator<char>(VertexShaderStream)),

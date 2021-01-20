@@ -16,7 +16,7 @@ TextureD3D12::~TextureD3D12() {
 
 TextureD3D12::TextureD3D12(ContextD3D12 *context,
                            const std::string &name,
-                           const std::string &url)
+                           const Path &url)
     : Texture(name, url, true),
       mTextureDimension(D3D12_RESOURCE_DIMENSION_TEXTURE2D),
       mTextureViewDimension(D3D12_SRV_DIMENSION_TEXTURE2D),
@@ -27,7 +27,7 @@ TextureD3D12::TextureD3D12(ContextD3D12 *context,
 
 TextureD3D12::TextureD3D12(ContextD3D12 *context,
                            const std::string &name,
-                           const std::vector<std::string> &urls)
+                           const std::vector<Path> &urls)
     : Texture(name, urls, false),
       mTextureDimension(D3D12_RESOURCE_DIMENSION_TEXTURE2D),
       mTextureViewDimension(D3D12_SRV_DIMENSION_TEXTURECUBE),

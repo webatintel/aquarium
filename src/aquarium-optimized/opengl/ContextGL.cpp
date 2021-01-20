@@ -333,15 +333,14 @@ void ContextGL::framebufferResizeCallback(GLFWwindow *window,
   glViewport(0, 0, width, height);
 }
 
-Texture *ContextGL::createTexture(const std::string &name,
-                                  const std::string &url) {
+Texture *ContextGL::createTexture(const std::string &name, const Path &url) {
   TextureGL *texture = new TextureGL(this, name, url);
   texture->loadTexture();
   return texture;
 }
 
 Texture *ContextGL::createTexture(const std::string &name,
-                                  const std::vector<std::string> &urls) {
+                                  const std::vector<Path> &urls) {
   TextureGL *texture = new TextureGL(this, name, urls);
   texture->loadTexture();
   return texture;
@@ -416,8 +415,7 @@ Buffer *ContextGL::createBuffer(int numComponents,
   return buffer;
 }
 
-Program *ContextGL::createProgram(const std::string &mVId,
-                                  const std::string &mFId) {
+Program *ContextGL::createProgram(const Path &mVId, const Path &mFId) {
   ProgramGL *program = new ProgramGL(this, mVId, mFId);
 
   return program;

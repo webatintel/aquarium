@@ -12,7 +12,6 @@
 #include <cmath>
 #include <fstream>
 #include <iostream>
-#include <sstream>
 #include <string>
 #include <vector>
 
@@ -30,18 +29,13 @@
 #include "Model.h"
 #include "Program.h"
 #include "common/AQUARIUM_ASSERT.h"
+#include "common/Path.h"
 #include "include/CmdArgsHelper.h"
 
 #if defined(OS_WIN)
 #include <Windows.h>
-#include <direct.h>
 #endif
-#if defined(OS_MAC)
-#include <mach-o/dyld.h>
-#include <ctime>
-#endif
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
-#include <unistd.h>
+#if defined(OS_MAC) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
 #include <ctime>
 #endif
 
@@ -55,7 +49,7 @@ int clientWidth;
 int clientHeight;
 
 // Get current path of the binary
-std::string mPath;
+Path mPath = Path::getExecutablePath().pop().pop().pop();
 
 // The number of fish is passed from cmd args directly
 int g_numFish;
@@ -260,9 +254,7 @@ void initializeGlobalInfo() {
 
 // Load json file from assets. Initialize g_sceneGroups and classify groups.
 void LoadPlacement() {
-  std::ostringstream oss;
-  oss << mPath << resourceFolder << slash << "PropPlacement.js";
-  std::string proppath = oss.str();
+  Path proppath = Path(mPath).push(resourceFolder).push("PropPlacement.js");
   std::ifstream PlacementStream(proppath, std::ios::in);
   rapidjson::IStreamWrapper isPlacement(PlacementStream);
   rapidjson::Document document;
@@ -332,36 +324,7 @@ void onDestroy() {
   }
 }
 
-void getCurrentPath() {
-  // Get path of current build.
-#if defined(OS_WIN)
-  TCHAR temp[200];
-  GetModuleFileName(NULL, temp, MAX_PATH);
-  std::wstring ws(temp);
-  mPath = std::string(ws.begin(), ws.end());
-  size_t nPos = mPath.find_last_of(slash);
-  mPath = mPath.substr(0, nPos) + slash + ".." + slash + ".." + slash;
-#elif defined(OS_MAC)
-  char temp[200];
-  uint32_t size = sizeof(temp);
-  _NSGetExecutablePath(temp, &size);
-  mPath = std::string(temp);
-  int nPos = mPath.find_last_of(slash);
-  mPath = mPath.substr(0, nPos) + slash + ".." + slash + ".." + slash;
-#elif defined(OS_LINUX) && !defined(OS_CHROMEOS)
-  char temp[200];
-  readlink("/proc/self/exe", temp, sizeof(temp));
-  mPath = std::string(temp);
-  int nPos = mPath.find_last_of(slash);
-  mPath = mPath.substr(0, nPos) + slash + ".." + slash + ".." + slash;
-#else
-  ASSERT(false);
-#endif
-}
-
 bool initialize(int argc, char **argv) {
-  getCurrentPath();
-
   glEnable(GL_DEPTH_TEST);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 

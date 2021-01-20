@@ -19,6 +19,7 @@
 class Aquarium;
 class Buffer;
 class Model;
+class Path;
 class Program;
 class Texture;
 
@@ -36,18 +37,16 @@ public:
       const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset,
       int windowWidth,
       int windowHeight) = 0;
+  virtual Texture *createTexture(const std::string &name, const Path &url) = 0;
   virtual Texture *createTexture(const std::string &name,
-                                 const std::string &url) = 0;
-  virtual Texture *createTexture(const std::string &name,
-                                 const std::vector<std::string> &urls) = 0;
+                                 const std::vector<Path> &urls) = 0;
   virtual Buffer *createBuffer(int numComponents,
                                std::vector<float> *buffer,
                                bool isIndex) = 0;
   virtual Buffer *createBuffer(int numComponents,
                                std::vector<unsigned short> *buffer,
                                bool isIndex) = 0;
-  virtual Program *createProgram(const std::string &mVId,
-                                 const std::string &mFId) = 0;
+  virtual Program *createProgram(const Path &mVId, const Path &mFId) = 0;
   virtual void setWindowTitle(const std::string &text) = 0;
   virtual bool ShouldQuit() = 0;
   virtual void KeyBoardQuit() = 0;

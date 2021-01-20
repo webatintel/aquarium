@@ -21,9 +21,7 @@ class ContextDawn;
 
 class ProgramDawn : public Program {
 public:
-  ProgramDawn(ContextDawn *context,
-              const std::string &mVId,
-              const std::string &mFId);
+  ProgramDawn(ContextDawn *context, const Path &mVId, const Path &mFId);
   ~ProgramDawn() override;
 
   void compileProgram(bool enableAlphaBlending,

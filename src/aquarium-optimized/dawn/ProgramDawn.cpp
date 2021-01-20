@@ -14,8 +14,8 @@
 #include "common/AQUARIUM_ASSERT.h"
 
 ProgramDawn::ProgramDawn(ContextDawn *context,
-                         const std::string &mVId,
-                         const std::string &mFId)
+                         const Path &mVId,
+                         const Path &mFId)
     : Program(mVId, mFId),
       mVsModule(nullptr),
       mFsModule(nullptr),

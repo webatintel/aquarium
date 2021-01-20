@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "ProgramDawn.h"
+#include "common/Path.h"
 
 #include "imgui.h"
 #include "imgui_impl_dawn.h"
@@ -289,9 +290,9 @@ bool ImGui_ImplDawn_CreateDeviceObjects(int MSAASampleCount, bool enableAlphaBle
     wgpu::PipelineLayout mPipelineLayout = mContextDawn->MakeBasicPipelineLayout({layout});
 
     ResourceHelper *resourceHelper = mContextDawn->getResourceHelper();
-    std::string programPath        = resourceHelper->getProgramPath();
-    mProgramDawn = new ProgramDawn(mContextDawn, programPath + "imguiVertexShader",
-                                   programPath + "imguiFragmentShader");
+    Path programPath               = resourceHelper->getProgramPath();
+    mProgramDawn = new ProgramDawn(mContextDawn, Path(programPath).push("imguiVertexShader"),
+                                   Path(programPath).push("imguiFragmentShader"));
     mProgramDawn->compileProgram(false, "");
 
     wgpu::StencilStateFaceDescriptor stencilStateFaceDescriptor;
