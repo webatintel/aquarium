@@ -13,15 +13,17 @@
 #include "AQUARIUM_ASSERT.h"
 
 FPSTimer::FPSTimer()
-    : mTotalTime(static_cast<double>(NUM_FRAMES_TO_AVERAGE)),
-      mTimeTable(NUM_FRAMES_TO_AVERAGE, 1.0f),
+    : mTotalTime(millisecondToDuration(NUM_FRAMES_TO_AVERAGE * 1000)),
+      mTimeTable(NUM_FRAMES_TO_AVERAGE, millisecondToDuration(1000)),
       mTimeTableCursor(0),
       mHistoryFPS(NUM_HISTORY_DATA, 1.0f),
       mHistoryFrameTime(NUM_HISTORY_DATA, 100.0f),
       mAverageFPS(0.0) {
 }
 
-void FPSTimer::update(double elapsedTime, double renderingTime, int testTime) {
+void FPSTimer::update(Duration elapsedTime,
+                      Duration renderingTime,
+                      Duration testTime) {
   mTotalTime += elapsedTime - mTimeTable[mTimeTableCursor];
   mTimeTable[mTimeTableCursor] = elapsedTime;
 
@@ -30,8 +32,8 @@ void FPSTimer::update(double elapsedTime, double renderingTime, int testTime) {
     mTimeTableCursor = 0;
   }
 
-  mAverageFPS = floor(
-      (1.0f / (mTotalTime / static_cast<double>(NUM_FRAMES_TO_AVERAGE))) + 0.5);
+  Duration frameTime = mTotalTime / NUM_FRAMES_TO_AVERAGE;
+  mAverageFPS = floor(1000.0 / durationToMillisecond<double>(frameTime) + 0.5);
 
   for (int i = 0; i < NUM_HISTORY_DATA - 1; i++) {
     mHistoryFPS[i] = mHistoryFPS[i + 1];
@@ -40,7 +42,8 @@ void FPSTimer::update(double elapsedTime, double renderingTime, int testTime) {
   mHistoryFPS[NUM_HISTORY_DATA - 1] = mAverageFPS;
   mHistoryFrameTime[NUM_HISTORY_DATA - 1] = 1000.0 / mAverageFPS;
 
-  if (testTime - renderingTime > 5 && testTime - renderingTime < 25) {
+  if (testTime - renderingTime > millisecondToDuration(5000) &&
+      testTime - renderingTime < millisecondToDuration(25000)) {
     mLogFPS.push_back(mAverageFPS);
   }
 }

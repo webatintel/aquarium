@@ -8,6 +8,8 @@
 #ifndef FPSTIMER_H
 #define FPSTIMER_H
 
+#include <chrono>
+#include <ratio>
 #include <vector>
 
 constexpr int NUM_HISTORY_DATA = 100;
@@ -16,17 +18,39 @@ constexpr int FPS_VALID_THRESHOLD = 5;
 
 class FPSTimer {
 public:
+  // The unit of std::chrono::duration is second, while FPSTimer prefers
+  // millisecond.
+  typedef std::chrono::duration<
+      std::chrono::steady_clock::duration::rep,
+      std::ratio_multiply<std::chrono::steady_clock::duration::period,
+                          std::kilo>>
+      Duration;
+
+  template <typename T>
+  static Duration millisecondToDuration(const T &ms) {
+    auto duration =
+        std::chrono::duration_cast<std::chrono::steady_clock::duration>(
+            std::chrono::duration<T, std::milli>(ms));
+    return Duration(duration.count());
+  }
+  template <typename T>
+  static T durationToMillisecond(const Duration &duration) {
+    auto ms = std::chrono::duration_cast<std::chrono::duration<T, std::milli>>(
+        std::chrono::steady_clock::duration(duration.count()));
+    return ms.count();
+  }
+
   FPSTimer();
 
-  void update(double elapsedTime, double renderingTime, int testTime);
+  void update(Duration elapsedTime, Duration renderingTime, Duration testTime);
   double getAverageFPS() const { return mAverageFPS; }
   const float *getHistoryFps() const { return mHistoryFPS.data(); }
   const float *getHistoryFrameTime() const { return mHistoryFrameTime.data(); }
   int variance() const;
 
 private:
-  double mTotalTime;
-  std::vector<double> mTimeTable;
+  Duration mTotalTime;
+  std::vector<Duration> mTimeTable;
   int mTimeTableCursor;
 
   std::vector<float> mHistoryFPS;

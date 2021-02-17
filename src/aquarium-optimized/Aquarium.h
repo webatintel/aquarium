@@ -10,6 +10,7 @@
 #define AQUARIUM_H
 
 #include <bitset>
+#include <chrono>
 #include <queue>
 #include <string>
 #include <unordered_map>
@@ -441,8 +442,8 @@ struct Global {
   float m4t2[16];
   float m4t3[16];
   float colorMult[4] = {1, 1, 1, 1};
-  double then;
-  double start;
+  std::chrono::steady_clock::time_point start;
+  std::chrono::steady_clock::time_point then;
   float mclock;
   float eyeClock;
   std::string alpha;
@@ -514,7 +515,7 @@ private:
   void updateGlobalUniforms();
 
   BACKENDTYPE getBackendType(const std::string &backendPath);
-  double getElapsedTime();
+  std::chrono::steady_clock::duration getElapsedTime();
   void printAvgFps();
   void resetFpsTime();
   void updateAndDraw();

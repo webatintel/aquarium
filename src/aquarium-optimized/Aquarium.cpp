@@ -15,6 +15,7 @@
 #include <cmath>
 #include <fstream>
 #include <iostream>
+#include <ratio>
 
 #include "build/build_config.h"
 #include "cxxopts.hpp"
@@ -36,9 +37,26 @@
 #if defined(OS_WIN)
 #include <Windows.h>
 #endif
-#if defined(OS_MAC) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
-#include <ctime>
+
+// libc++ wraps around the steady clock on Windows every 16-30 minutes. Here is
+// a backport of https://reviews.llvm.org/D93456 to workaround this.
+static std::chrono::steady_clock::time_point getCurrentTimePoint() {
+#if defined(OS_WIN)
+  std::chrono::steady_clock::time_point timePoint;
+  LARGE_INTEGER counter;
+  LARGE_INTEGER frequency;
+  QueryPerformanceCounter(&counter);
+  QueryPerformanceFrequency(&frequency);
+  timePoint += std::chrono::steady_clock::duration(
+      counter.QuadPart / frequency.QuadPart * std::nano::den);
+  timePoint += std::chrono::steady_clock::duration(
+      counter.QuadPart % frequency.QuadPart * std::nano::den /
+      frequency.QuadPart);
+  return timePoint;
+#else
+  return std::chrono::steady_clock::now();
 #endif
+}
 
 Aquarium::Aquarium()
     : mModelEnumMap(),
@@ -51,7 +69,7 @@ Aquarium::Aquarium()
       mPreFishCount(0),
       mTestTime(INT_MAX),
       mFactory(nullptr) {
-  g.then = 0.0;
+  g.then = getCurrentTimePoint();
   g.mclock = 0.0;
   g.eyeClock = 0.0;
   g.alpha = "1";
@@ -393,8 +411,9 @@ bool Aquarium::init(int argc, char **argv) {
   loadReource();
   mContext->Flush();
 
-  std::cout << "End loading.\nCost " << getElapsedTime() << "s totally."
-            << std::endl;
+  std::cout << "End loading.\nCost "
+            << std::chrono::duration<double>(getElapsedTime()).count()
+            << "s totally." << std::endl;
   mContext->showWindow();
 
   resetFpsTime();
@@ -403,13 +422,7 @@ bool Aquarium::init(int argc, char **argv) {
 }
 
 void Aquarium::resetFpsTime() {
-#if defined(OS_WIN)
-  g.start = GetTickCount64() / 1000.0;
-#elif defined(OS_MAC) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
-  g.start = clock() / 1000000.0;
-#else
-  ASSERT(false);
-#endif
+  g.start = getCurrentTimePoint();
   g.then = g.start;
 }
 
@@ -420,8 +433,11 @@ void Aquarium::display() {
 
     mContext->DoFlush(toggleBitset);
 
+    auto totalTime = std::chrono::duration_cast<
+        std::chrono::duration<std::chrono::steady_clock::duration::rep>>(
+        g.then - g.start);
     if (toggleBitset.test(static_cast<size_t>(TOGGLE::AUTOSTOP)) &&
-        (g.then - g.start) > mTestTime) {
+        totalTime.count() > mTestTime) {
       break;
     }
   }
@@ -650,22 +666,10 @@ void Aquarium::calculateFishCount() {
   }
 }
 
-double Aquarium::getElapsedTime() {
+std::chrono::steady_clock::duration Aquarium::getElapsedTime() {
   // Update our time
-#if defined(OS_WIN)
-  double now = GetTickCount64() / 1000.0;
-#elif defined(OS_MAC) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
-  double now = clock() / 1000000.0;
-#else
-  double now;
-  ASSERT(false);
-#endif
-  double elapsedTime = 0.0;
-  if (g.then == 0.0) {
-    elapsedTime = 0.0;
-  } else {
-    elapsedTime = now - g.then;
-  }
+  std::chrono::steady_clock::time_point now = getCurrentTimePoint();
+  std::chrono::steady_clock::duration elapsedTime = now - g.then;
   g.then = now;
 
   return elapsedTime;
@@ -681,12 +685,16 @@ void Aquarium::printAvgFps() {
 }
 
 void Aquarium::updateGlobalUniforms() {
-  double elapsedTime = getElapsedTime();
-  double renderingTime = g.then - g.start;
+  std::chrono::steady_clock::duration elapsedTime = getElapsedTime();
+  std::chrono::steady_clock::duration renderingTime = g.then - g.start;
+  std::chrono::steady_clock::duration testTime =
+      std::chrono::seconds(mTestTime);
 
-  mFpsTimer.update(elapsedTime, renderingTime, mTestTime);
-  g.mclock += elapsedTime * g_speed;
-  g.eyeClock += elapsedTime * g_eyeSpeed;
+  mFpsTimer.update(FPSTimer::Duration(elapsedTime.count()),
+                   FPSTimer::Duration(renderingTime.count()),
+                   FPSTimer::Duration(testTime.count()));
+  g.mclock += std::chrono::duration<float>(elapsedTime).count() * g_speed;
+  g.eyeClock += std::chrono::duration<float>(elapsedTime).count() * g_eyeSpeed;
 
   g.eyePosition[0] = sin(g.eyeClock) * g_eyeRadius;
   g.eyePosition[1] = g_eyeHeight;
