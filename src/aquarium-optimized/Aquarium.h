@@ -114,8 +114,6 @@ struct G_sceneInfo {
 enum FISHENUM : short { BIG, MEDIUM, SMALL, MAX };
 
 enum TOGGLE : short {
-  // Stop rendering after specified time
-  AUTOSTOP,
   // Enable alpha blending
   ENABLEALPHABLENDING,
   // Go through instanced draw
