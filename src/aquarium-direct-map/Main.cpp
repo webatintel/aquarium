@@ -9,9 +9,11 @@
 // other models. Calculate fish count for each type of fish.
 // Update uniforms for each frame. Show fps for each frame.
 
+#include <chrono>
 #include <cmath>
 #include <fstream>
 #include <iostream>
+#include <ratio>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -38,15 +40,14 @@
 #endif
 #if defined(OS_MAC)
 #include <mach-o/dyld.h>
-#include <ctime>
 #endif
 #if defined(OS_LINUX) && !defined(OS_CHROMEOS)
 #include <unistd.h>
-#include <ctime>
 #endif
 
 #define min(a, b) ((a) < (b) ? (a) : (b))
 
+std::chrono::steady_clock::time_point getCurrentTimePoint();
 void render();
 
 // Define glfw window and the size of window
@@ -61,7 +62,7 @@ std::string mPath;
 int g_numFish;
 
 // Variables calculate time
-float then = 0.0f;
+std::chrono::steady_clock::time_point then = getCurrentTimePoint();
 float mClock = 0.0f;
 float eyeClock = 0.0f;
 
@@ -193,6 +194,26 @@ Fish g_fishTable[] = {{"SmallFishA",
                        0.04f,
                        {0.0f, -0.3f, 9.0f},
                        {0.3f, 0.3f, 1000.0f}}};
+
+// libc++ wraps around the steady clock on Windows every 16-30 minutes. Here is
+// a backport of https://reviews.llvm.org/D93456 to workaround this.
+std::chrono::steady_clock::time_point getCurrentTimePoint() {
+#if defined(OS_WIN)
+  std::chrono::steady_clock::time_point timePoint;
+  LARGE_INTEGER counter;
+  LARGE_INTEGER frequency;
+  QueryPerformanceCounter(&counter);
+  QueryPerformanceFrequency(&frequency);
+  timePoint += std::chrono::steady_clock::duration(
+      counter.QuadPart / frequency.QuadPart * std::nano::den);
+  timePoint += std::chrono::steady_clock::duration(
+      counter.QuadPart % frequency.QuadPart * std::nano::den /
+      frequency.QuadPart);
+  return timePoint;
+#else
+  return std::chrono::steady_clock::now();
+#endif
+}
 
 void setGenericConstMatrix(GenericConst *genericConst) {
   genericConst->viewProjection = &viewProjection;
@@ -526,30 +547,21 @@ void DrawGroup(const std::multimap<std::string, std::vector<float>> &group,
 
 void render() {
   // Update our time
-#if defined(OS_WIN)
-  float now = GetTickCount64() / 1000.0f;
-#elif defined(OS_MAC) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
-  float now = clock() / 1000000.0f;
-#else
-  float now;
-  ASSERT(false);
-#endif
-  float elapsedTime = 0.0f;
-  if (then == 0.0f) {
-    elapsedTime = 0.0f;
-  } else {
-    elapsedTime = now - then;
-  }
+  std::chrono::steady_clock::time_point now = getCurrentTimePoint();
+  std::chrono::steady_clock::duration elapsedTime = now - then;
   then = now;
 
-  g_fpsTimer.update(elapsedTime, 0, 1);
+  g_fpsTimer.update(FPSTimer::Duration(elapsedTime.count()),
+                    FPSTimer::millisecondToDuration(0),
+                    FPSTimer::millisecondToDuration(1000));
   std::string text =
       "Aquarium FPS: " +
       std::to_string(static_cast<unsigned int>(g_fpsTimer.getAverageFPS()));
   glfwSetWindowTitle(window, text.c_str());
 
-  mClock += elapsedTime * g_speed;
-  eyeClock += elapsedTime * g_viewSettings.eyeSpeed;
+  mClock += std::chrono::duration<float>(elapsedTime).count() * g_speed;
+  eyeClock += std::chrono::duration<float>(elapsedTime).count() *
+              g_viewSettings.eyeSpeed;
 
   eyePosition[0] = sin(eyeClock) * g_viewSettings.eyeRadius;
   eyePosition[1] = g_viewSettings.eyeHeight;
