@@ -362,10 +362,6 @@ bool Aquarium::init(int argc, char **argv) {
     toggleBitset.set(static_cast<size_t>(TOGGLE::SIMULATINGFISHCOMEANDGO));
   }
 
-  if (result.count("test-time")) {
-    toggleBitset.set(static_cast<size_t>(TOGGLE::AUTOSTOP));
-  }
-
   if (result.count("turn-off-vsync")) {
     if (!availableToggleBitset.test(
             static_cast<size_t>(TOGGLE::TURNOFFVSYNC))) {
@@ -436,8 +432,7 @@ void Aquarium::display() {
     auto totalTime = std::chrono::duration_cast<
         std::chrono::duration<std::chrono::steady_clock::duration::rep>>(
         g.then - g.start);
-    if (toggleBitset.test(static_cast<size_t>(TOGGLE::AUTOSTOP)) &&
-        totalTime.count() > mTestTime) {
+    if ((totalTime.count() & INT_MAX) > mTestTime) {
       break;
     }
   }
