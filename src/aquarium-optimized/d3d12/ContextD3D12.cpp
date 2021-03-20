@@ -74,8 +74,6 @@ ContextD3D12::~ContextD3D12() {
     destoryImgUI();
   }
   destoryFishResource();
-
-  glfwTerminate();
 }
 
 ContextD3D12 *ContextD3D12::create(BACKENDTYPE backendType) {
@@ -91,9 +89,8 @@ bool ContextD3D12::initialize(
   mDisableControlPanel =
       toggleBitset.test(static_cast<TOGGLE>(TOGGLE::DISABLECONTROLPANEL));
 
-  // initialise GLFW
-  if (!glfwInit()) {
-    std::cout << "Failed to initialise GLFW" << std::endl;
+  if (glfwGetError(nullptr) != GLFW_NO_ERROR) {
+    std::cout << "Failed to initialize GLFW" << std::endl;
     return false;
   }
 
@@ -102,16 +99,14 @@ bool ContextD3D12::initialize(
   // set full screen
   // glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 
-  GLFWmonitor *pMonitor = glfwGetPrimaryMonitor();
-  const GLFWvidmode *mode = glfwGetVideoMode(pMonitor);
-  mClientWidth = mode->width;
-  mClientHeight = mode->height;
+  mClientWidth = getMonitorResolution().first;
+  mClientHeight = getMonitorResolution().second;
 
   setWindowSize(windowWidth, windowHeight);
 
   if (toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEFULLSCREENMODE))) {
     mWindow = glfwCreateWindow(mClientWidth, mClientHeight, "Aquarium",
-                               pMonitor, nullptr);
+                               glfwGetPrimaryMonitor(), nullptr);
   } else {
     mWindow = glfwCreateWindow(mClientWidth, mClientHeight, "Aquarium", nullptr,
                                nullptr);
@@ -119,7 +114,6 @@ bool ContextD3D12::initialize(
 
   if (mWindow == nullptr) {
     std::cout << "Failed to open GLFW window." << std::endl;
-    glfwTerminate();
     return false;
   }
 

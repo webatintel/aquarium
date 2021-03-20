@@ -39,8 +39,6 @@ ContextGL::~ContextGL() {
   if (!mDisableControlPanel) {
     destoryImgUI();
   }
-
-  glfwTerminate();
 }
 
 ContextGL *ContextGL::create(BACKENDTYPE backendType) {
@@ -52,9 +50,8 @@ bool ContextGL::initialize(
     const std::bitset<static_cast<size_t>(TOGGLE::TOGGLEMAX)> &toggleBitset,
     int windowWidth,
     int windowHeight) {
-  // initialise GLFW
-  if (!glfwInit()) {
-    std::cout << "Failed to initialise GLFW" << std::endl;
+  if (glfwGetError(nullptr) != GLFW_NO_ERROR) {
+    std::cout << "Failed to initialize GLFW" << std::endl;
     return false;
   }
 
@@ -87,17 +84,15 @@ bool ContextGL::initialize(
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 #endif
 
-  GLFWmonitor *pMonitor = glfwGetPrimaryMonitor();
-  const GLFWvidmode *mode = glfwGetVideoMode(pMonitor);
-  mClientWidth = mode->width;
-  mClientHeight = mode->height;
+  mClientWidth = getMonitorResolution().first;
+  mClientHeight = getMonitorResolution().second;
 
   setWindowSize(windowWidth, windowHeight);
 
   glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
   if (toggleBitset.test(static_cast<size_t>(TOGGLE::ENABLEFULLSCREENMODE))) {
     mWindow = glfwCreateWindow(mClientWidth, mClientHeight, "Aquarium",
-                               pMonitor, nullptr);
+                               glfwGetPrimaryMonitor(), nullptr);
   } else {
     mWindow = glfwCreateWindow(mClientWidth, mClientHeight, "Aquarium", nullptr,
                                nullptr);
@@ -105,7 +100,6 @@ bool ContextGL::initialize(
 
   if (mWindow == nullptr) {
     std::cout << "Failed to open GLFW window." << std::endl;
-    glfwTerminate();
     return false;
   }
 

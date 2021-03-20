@@ -6,13 +6,51 @@
 
 #include "Context.h"
 
+#include <iostream>
 #include <sstream>
+
+#define GLFW_INCLUDE_NONE
+#include "GLFW/glfw3.h"
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_internal.h"
 
 #include "Aquarium.h"
+
+int Context::GLFWInitializer::sCounter = 0;
+
+Context::GLFWInitializer::GLFWInitializer() {
+  ++sCounter;
+  glfwInit();  // Initialization failure can be detected with glfwGetError(). On
+               // success, the next glfwInit() invocation will be a no-op.
+}
+
+Context::GLFWInitializer::~GLFWInitializer() {
+  if (--sCounter == 0) {
+    glfwTerminate();  // no effect if GLFW is not initialized
+  }
+}
+
+std::pair<int, int> Context::getMonitorResolution() {
+  GLFWInitializer initializer;
+  if (glfwGetError(nullptr) != GLFW_NO_ERROR) {
+    std::cout << "Failed to initialize GLFW" << std::endl;
+    return {};
+  }
+
+  GLFWmonitor *monitor = glfwGetPrimaryMonitor();
+  if (!monitor) {
+    return {};
+  }
+
+  const GLFWvidmode *mode = glfwGetVideoMode(monitor);
+  if (!mode) {
+    return {};
+  }
+
+  return {mode->width, mode->height};
+}
 
 void Context::renderImgui(
     const FPSTimer &fpsTimer,
