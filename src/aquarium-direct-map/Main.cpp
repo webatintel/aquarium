@@ -16,6 +16,7 @@
 #include <ratio>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 #define GLFW_INCLUDE_NONE
@@ -46,6 +47,29 @@
 #endif
 
 #define min(a, b) ((a) < (b) ? (a) : (b))
+
+namespace {
+
+class GLFWInitializer {
+public:
+  GLFWInitializer() {
+    ++sCounter;
+    glfwInit();  // Initialization failure can be detected with glfwGetError().
+                 // On success, the next glfwInit() invocation will be a no-op.
+  }
+  ~GLFWInitializer() {
+    if (--sCounter == 0) {
+      glfwTerminate();  // no effect if GLFW is not initialized
+    }
+  }
+
+private:
+  static int sCounter;
+};
+
+int GLFWInitializer::sCounter = 0;
+
+}  // namespace
 
 std::chrono::steady_clock::time_point getCurrentTimePoint();
 void render();
@@ -213,6 +237,26 @@ std::chrono::steady_clock::time_point getCurrentTimePoint() {
 #else
   return std::chrono::steady_clock::now();
 #endif
+}
+
+std::pair<int, int> getMonitorResolution() {
+  GLFWInitializer initializer;
+  if (glfwGetError(nullptr) != GLFW_NO_ERROR) {
+    std::cout << "Failed to initialize GLFW" << std::endl;
+    return {};
+  }
+
+  GLFWmonitor *monitor = glfwGetPrimaryMonitor();
+  if (!monitor) {
+    return {};
+  }
+
+  const GLFWvidmode *mode = glfwGetVideoMode(monitor);
+  if (!mode) {
+    return {};
+  }
+
+  return {mode->width, mode->height};
 }
 
 void setGenericConstMatrix(GenericConst *genericConst) {
@@ -436,10 +480,9 @@ bool initialize(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
-
-  // initialize GLFW
-  if (!glfwInit()) {
-    std::cout << stderr << "Failed to initialize GLFW" << std::endl;
+  GLFWInitializer initializer;
+  if (glfwGetError(nullptr) != GLFW_NO_ERROR) {
+    std::cout << "Failed to initialize GLFW" << std::endl;
     return -1;
   }
 
@@ -460,15 +503,12 @@ int main(int argc, char **argv) {
   glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
   glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
-  GLFWmonitor *pMonitor = glfwGetPrimaryMonitor();
-  const GLFWvidmode *mode = glfwGetVideoMode(pMonitor);
-  clientWidth = mode->width;
-  clientHeight = mode->height;
+  clientWidth = getMonitorResolution().first;
+  clientHeight = getMonitorResolution().second;
 
   window = glfwCreateWindow(clientWidth, clientHeight, "Aquarium", NULL, NULL);
   if (window == NULL) {
     std::cout << "Failed to open GLFW window." << std::endl;
-    glfwTerminate();
     return -1;
   }
   glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
@@ -504,8 +544,6 @@ int main(int argc, char **argv) {
   }
 
   onDestroy();
-
-  glfwTerminate();
 
   return 0;
 }

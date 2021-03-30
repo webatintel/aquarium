@@ -10,6 +10,7 @@
 
 #include <bitset>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "Aquarium.h"
@@ -25,7 +26,18 @@ class Texture;
 static char fishCountInputBuffer[64];
 
 class Context {
+  class GLFWInitializer {
+  public:
+    GLFWInitializer();
+    ~GLFWInitializer();
+
+  private:
+    static int sCounter;
+  };
+
 public:
+  static std::pair<int, int> getMonitorResolution();
+
   Context()
       : mDisableControlPanel(false),
         mMSAASampleCount(1),
@@ -111,6 +123,7 @@ protected:
   int mMSAASampleCount;
 
 private:
+  GLFWInitializer mGLFWInitializer;
   bool show_option_window;
 };
 
