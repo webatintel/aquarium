@@ -26,6 +26,7 @@
 #endif
 
 #include "../Aquarium.h"
+#include "../Assert.h"
 #include "../FishModel.h"
 #include "BufferDawn.h"
 #include "FishModelDawn.h"
@@ -37,8 +38,6 @@
 #include "ProgramDawn.h"
 #include "SeaweedModelDawn.h"
 #include "TextureDawn.h"
-#include "common/AQUARIUM_ASSERT.h"
-#include "common/Constants.h"
 #include "imgui_impl_dawn.h"
 
 #if defined(OS_WIN)

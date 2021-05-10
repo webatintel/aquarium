@@ -10,8 +10,9 @@
 #include <regex>
 #include <string>
 
+#include "../Assert.h"
 #include "ContextDawn.h"
-#include "common/AQUARIUM_ASSERT.h"
+
 
 ProgramDawn::ProgramDawn(ContextDawn *context,
                          const std::string &mVId,

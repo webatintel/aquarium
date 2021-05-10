@@ -11,8 +11,8 @@
 #include <algorithm>
 #include <cmath>
 
+#include "../Assert.h"
 #include "ContextDawn.h"
-#include "common/AQUARIUM_ASSERT.h"
 
 TextureDawn::~TextureDawn() {
 

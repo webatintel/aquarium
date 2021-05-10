@@ -25,13 +25,13 @@
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
 
+#include "Assert.h"
 #include "ContextFactory.h"
 #include "FishModel.h"
 #include "Matrix.h"
 #include "Program.h"
 #include "SeaweedModel.h"
 #include "Texture.h"
-#include "common/AQUARIUM_ASSERT.h"
 #include "opengl/ContextGL.h"
 
 #if defined(OS_WIN)

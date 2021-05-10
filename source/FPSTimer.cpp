@@ -10,7 +10,7 @@
 #include <cmath>
 #include <iostream>
 
-#include "AQUARIUM_ASSERT.h"
+#include "Assert.h"
 
 FPSTimer::FPSTimer()
     : mTotalTime(millisecondToDuration(NUM_FRAMES_TO_AVERAGE * 1000)),

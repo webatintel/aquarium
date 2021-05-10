@@ -18,7 +18,7 @@
 #include "build/build_config.h"
 
 #include "Behavior.h"
-#include "common/FPSTimer.h"
+#include "FPSTimer.h"
 
 class Context;
 class ContextFactory;

@@ -6,11 +6,10 @@
 
 #include "PlatformContextDawn.h"
 
+#include "../Assert.h"
 #include "GLFW/glfw3native.h"
 #include "dawn/dawn_wsi.h"
 #include "dawn/webgpu.h"
-
-#include "common/AQUARIUM_ASSERT.h"
 
 #if defined(DAWN_ENABLE_BACKEND_METAL)
 #import <CoreGraphics/CGGeometry.h>
