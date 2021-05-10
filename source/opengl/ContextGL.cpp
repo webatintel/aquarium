@@ -19,6 +19,7 @@
 #include "GLFW/glfw3native.h"
 #endif
 
+#include "../Assert.h"
 #include "BufferGL.h"
 #include "FishModelGL.h"
 #include "GenericModelGL.h"
@@ -27,7 +28,6 @@
 #include "ProgramGL.h"
 #include "SeaweedModelGL.h"
 #include "TextureGL.h"
-#include "common/AQUARIUM_ASSERT.h"
 #include "imgui_impl_opengl3.h"
 
 ContextGL::ContextGL(BACKENDTYPE backendType) : mWindow(nullptr) {

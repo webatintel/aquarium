@@ -3,7 +3,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Context.h: Defines the accessing to graphics API of a graphics backend.
+// Defines the accessing to graphics API of a graphics backend.
 
 #ifndef CONTEXT_H
 #define CONTEXT_H
@@ -13,8 +13,8 @@
 #include <vector>
 
 #include "Aquarium.h"
+#include "FPSTimer.h"
 #include "ResourceHelper.h"
-#include "common/FPSTimer.h"
 
 class Aquarium;
 class Buffer;

@@ -30,9 +30,9 @@
 #include "glad/glad.h"
 #endif
 
+#include "../Assert.h"
 #include "../Buffer.h"
 #include "../Texture.h"
-#include "common/AQUARIUM_ASSERT.h"
 
 ProgramGL::ProgramGL(ContextGL *context, std::string mVId, std::string mFId)
     : Program(mVId, mFId), mProgramId(0u), mContext(context) {

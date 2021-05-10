@@ -202,9 +202,6 @@ ps aux | grep -i "metal"
 Aquarium uses gn to build on Linux, macOS and Windows.
 
 ```sh
-# Aquarium contains two projects, aquarium-direct-map is a direct map version to WebGL repo, and only has OpenGL backend.  The aquarium
-# project contains many backends.
-
 # cd the repo
 cd aquarium
 
@@ -221,7 +218,6 @@ gclient sync
 # To build a release version, specify 'is_debug=false'.
 gn gen out/Release --args="is_debug=false"
 ninja -C out/Release aquarium
-ninja -C out/Release aquarium-direct-map
 
 # Build on Windows by vs
 gn gen out/build --ide=vs
@@ -349,11 +345,6 @@ aquarium.exe --num-fish 10000 --backend dawn_d3d12 --simulating-fish-come-and-go
 #“--disable-control-panel” : Turn off control panel because it impacts on performance of Aquarium on different conditions. You can show fps by passing '--print-log --test-time 30' to print the fps to cmd line instead.
 
 aquarium.exe --num-fish 10000 --backend dawn_d3d12 --disable-control-panel --print-log --test-time 30
-
-# aquarium-direct-map only has OpenGL backend
-# Enable MSAA
-./aquarium-direct-map  --num-fish 10000 --backend opengl --enable-msaa
-
 ```
 
 # TODO
@@ -363,6 +354,5 @@ aquarium.exe --num-fish 10000 --backend dawn_d3d12 --disable-control-panel --pri
 * Texture without VK_IMAGE_USAGE_TRANSFER_DST_BIT should not be cleared. This is a warning of Dawn Vulkan backend.
 * Enable dynamic choosing backend for ANGLE backend.
 * Enable MSAA mode for ANGLE backend.
-* Support Imgui for Direct Map Aquarium.
 * Check and create the highest OpenGL version supported on each of the platforms.
 * Check if some feature is available for D3D12 backend.

@@ -6,9 +6,8 @@
 // TextureGL.cpp. Wrap textures of OpenGL. Load image files and wrap into an
 // OpenGL texture.
 
+#include "../Assert.h"
 #include "TextureGL.h"
-
-#include "common/AQUARIUM_ASSERT.h"
 
 // initializs texture 2d
 TextureGL::TextureGL(ContextGL *context, std::string name, std::string url)

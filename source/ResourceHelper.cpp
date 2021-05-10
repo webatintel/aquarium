@@ -9,9 +9,8 @@
 #include <iostream>
 #include <sstream>
 
+#include "Assert.h"
 #include "build/build_config.h"
-
-#include "common/AQUARIUM_ASSERT.h"
 
 #if defined(OS_WIN)
 #include <Windows.h>

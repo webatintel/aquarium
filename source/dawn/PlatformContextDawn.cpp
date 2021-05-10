@@ -14,11 +14,10 @@
 #undef Always
 #endif
 
+#include "../Assert.h"
 #include "GLFW/glfw3native.h"
 #include "build/build_config.h"
 #include "dawn/webgpu.h"
-
-#include "common/AQUARIUM_ASSERT.h"
 
 #if defined(OS_WIN)
 #include <Windows.h>

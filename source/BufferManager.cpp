@@ -6,7 +6,7 @@
 
 #include "BufferManager.h"
 
-#include "common/AQUARIUM_ASSERT.h"
+#include "Assert.h"
 
 BufferManager::BufferManager()
     : mBufferPoolSize(BUFFER_POOL_MAX_SIZE), mUsedSize(0), mCount(0) {
