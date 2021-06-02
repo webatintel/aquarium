@@ -14,20 +14,22 @@
 *.userosscache
 
 # Third party libraries
-/third_party/SPIRV-Cross/
-/third_party/SPIRV-Headers/
-/third_party/SPIRV-Tools/
-/third_party/abseil-cpp/
 /third_party/angle/
+/third_party/catapult/
 /third_party/cxxopts/
 /third_party/dawn/
 /third_party/glfw/
-/third_party/glslang/
 /third_party/googletest/
+/third_party/jinja2/
+/third_party/jsoncpp/
+/third_party/libjpeg_turbo/
 /third_party/llvm-build/
+/third_party/markupsafe/
 /third_party/nasm/
 /third_party/stb/
 /third_party/swiftshader/
+/third_party/vulkan_memory_allocator/
+/third_party/vulkan-deps/
 /third_party/zlib/
 
 # Gn build dummy folders

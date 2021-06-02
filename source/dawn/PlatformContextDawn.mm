@@ -59,7 +59,7 @@ public:
       default:
         ASSERT(false);
       }
-      if ((~WGPUTextureUsage::WGPUTextureUsage_OutputAttachment &
+      if ((~WGPUTextureUsage::WGPUTextureUsage_RenderAttachment &
            ~WGPUTextureUsage::WGPUTextureUsage_Present & allowedUsage) ==
           WGPUTextureUsage::WGPUTextureUsage_None) {
         [layer setFramebufferOnly:YES];

@@ -11,10 +11,10 @@ if (is_mac) {
 }
 
 declare_args() {
-  enable_dawn = is_win || (is_linux && !is_chromeos) || is_mac
+  enable_dawn = is_win || is_linux || is_mac
   enable_angle = false
   enable_d3d12 = is_win
-  enable_opengl = is_win || (is_linux && !is_chromeos) || is_mac
+  enable_opengl = is_win || is_linux || is_mac
 }
 
 # RapidJSON is used by both Aquarium and ANGLE tests, so the ideal path
@@ -82,7 +82,7 @@ executable("aquarium") {
   if (is_win) {
     defines += [ "GLFW_EXPOSE_NATIVE_WIN32" ]
   }
-  if (is_linux && !is_chromeos) {
+  if (is_linux) {
     defines += [ "GLFW_EXPOSE_NATIVE_X11" ]
   }
   if (is_mac) {
@@ -178,7 +178,7 @@ executable("aquarium") {
       }
     }
     if (dawn_enable_vulkan) {
-      if (is_linux && !is_chromeos) {
+      if (is_linux) {
         libs += [ "dl" ]
       }
     }
@@ -217,12 +217,12 @@ executable("aquarium") {
     }
 
     deps += [
-      # "third_party/SPIRV-Tools",
+      "third_party/vulkan-deps/spirv-tools/src:SPIRV-Tools",
       "third_party/dawn/src/dawn:dawn_headers",
       "third_party/dawn/src/dawn:dawn_proc",
       "third_party/dawn/src/dawn:dawncpp",
       "third_party/dawn/src/dawn_native",
-      "third_party/glslang:glslang_sources",
+      "third_party/vulkan-deps/glslang/src:glslang_sources",
     ]
     if (dawn_enable_vulkan) {
       deps += [ "third_party/dawn/third_party/khronos:vulkan_headers" ]

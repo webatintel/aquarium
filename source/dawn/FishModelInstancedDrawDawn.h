@@ -71,7 +71,7 @@ public:
   BufferDawn *mIndicesBuffer;
 
 private:
-  wgpu::VertexStateDescriptor mVertexStateDescriptor;
+  wgpu::VertexState mVertexState;
   wgpu::RenderPipeline mPipeline;
 
   wgpu::BindGroupLayout mGroupLayoutModel;

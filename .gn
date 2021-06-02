@@ -9,6 +9,19 @@ buildconfig = "//build/config/BUILDCONFIG.gn"
 default_args = {
   clang_use_chrome_plugins = false
   treat_warnings_as_errors = false
+
+  angle_enable_abseil = false
+
+  # Set this to false if we'd like to remove swiftshader
+  angle_enable_swiftshader = true
+
+  angle_has_histograms = false
+
+  # Override ANGLE's Vulkan dependencies.
+  angle_vulkan_headers_dir = "//third_party/vulkan-deps/vulkan-headers/src"
+  angle_vulkan_loader_dir = "//third_party/vulkan-deps/vulkan-loader/src"
+  angle_vulkan_tools_dir = "//third_party/vulkan-deps/vulkan-tools/src"
+  angle_vulkan_validation_layers_dir = "//third_party/vulkan-deps/vulkan-validation-layers/src"
 }
 
 check_targets = [
