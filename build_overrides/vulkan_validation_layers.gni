@@ -6,5 +6,5 @@
 
 import("vulkan_common.gni")
 
-vvl_spirv_tools_dir = "//third_party/SPIRV-Tools"
-vvl_glslang_dir = "//third_party/glslang"
+vvl_spirv_tools_dir = "//third_party/vulkan-deps/spirv-tools/src"
+vvl_glslang_dir = "//third_party/vulkan-deps/glslang/src"

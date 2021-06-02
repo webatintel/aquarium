@@ -60,7 +60,7 @@ public:
   WorldUniformPer mWorldUniformPer;
 
 private:
-  wgpu::VertexStateDescriptor mVertexStateDescriptor;
+  wgpu::VertexState mVertexState;
   wgpu::RenderPipeline mPipeline;
 
   wgpu::BindGroupLayout mGroupLayoutModel;

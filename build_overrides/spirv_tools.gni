@@ -7,4 +7,4 @@
 spirv_tools_standalone = false
 
 spirv_tools_googletest_dir = ""  # unused
-spirv_tools_spirv_headers_dir = "//third_party/SPIRV-Headers"
+spirv_tools_spirv_headers_dir = "//third_party/vulkan-deps/spirv-headers/src"

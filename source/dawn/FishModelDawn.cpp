@@ -38,6 +38,7 @@ FishModelDawn::FishModelDawn(Context *context,
 
 void FishModelDawn::init() {
   mProgramDawn = static_cast<ProgramDawn *>(mProgram);
+  const wgpu::ShaderModule &mVsModule = mProgramDawn->getVSModule();
 
   mDiffuseTexture = static_cast<TextureDawn *>(textureMap["diffuse"]);
   mNormalTexture = static_cast<TextureDawn *>(textureMap["normalMap"]);
@@ -51,84 +52,124 @@ void FishModelDawn::init() {
   mBiNormalBuffer = static_cast<BufferDawn *>(bufferMap["binormal"]);
   mIndicesBuffer = static_cast<BufferDawn *>(bufferMap["indices"]);
 
-  std::vector<wgpu::VertexAttributeDescriptor> vertexAttributeDescriptor;
-  vertexAttributeDescriptor.resize(5);
-  vertexAttributeDescriptor[0].format = wgpu::VertexFormat::Float3;
-  vertexAttributeDescriptor[0].offset = 0;
-  vertexAttributeDescriptor[0].shaderLocation = 0;
-  vertexAttributeDescriptor[1].format = wgpu::VertexFormat::Float3;
-  vertexAttributeDescriptor[1].offset = 0;
-  vertexAttributeDescriptor[1].shaderLocation = 1;
-  vertexAttributeDescriptor[2].format = wgpu::VertexFormat::Float2;
-  vertexAttributeDescriptor[2].offset = 0;
-  vertexAttributeDescriptor[2].shaderLocation = 2;
-  vertexAttributeDescriptor[3].format = wgpu::VertexFormat::Float3;
-  vertexAttributeDescriptor[3].offset = 0;
-  vertexAttributeDescriptor[3].shaderLocation = 3;
-  vertexAttributeDescriptor[4].format = wgpu::VertexFormat::Float3;
-  vertexAttributeDescriptor[4].offset = 0;
-  vertexAttributeDescriptor[4].shaderLocation = 4;
+  std::vector<wgpu::VertexAttribute> vertexAttribute;
+  vertexAttribute.resize(5);
+  vertexAttribute[0].format = wgpu::VertexFormat::Float32x3;
+  vertexAttribute[0].offset = 0;
+  vertexAttribute[0].shaderLocation = 0;
+  vertexAttribute[1].format = wgpu::VertexFormat::Float32x3;
+  vertexAttribute[1].offset = 0;
+  vertexAttribute[1].shaderLocation = 1;
+  vertexAttribute[2].format = wgpu::VertexFormat::Float32x2;
+  vertexAttribute[2].offset = 0;
+  vertexAttribute[2].shaderLocation = 2;
+  vertexAttribute[3].format = wgpu::VertexFormat::Float32x3;
+  vertexAttribute[3].offset = 0;
+  vertexAttribute[3].shaderLocation = 3;
+  vertexAttribute[4].format = wgpu::VertexFormat::Float32x3;
+  vertexAttribute[4].offset = 0;
+  vertexAttribute[4].shaderLocation = 4;
 
-  std::vector<wgpu::VertexBufferLayoutDescriptor> vertexBufferLayoutDescriptor;
-  vertexBufferLayoutDescriptor.resize(5);
-  vertexBufferLayoutDescriptor[0].arrayStride = mPositionBuffer->getDataSize();
-  vertexBufferLayoutDescriptor[0].stepMode = wgpu::InputStepMode::Vertex;
-  vertexBufferLayoutDescriptor[0].attributeCount = 1;
-  vertexBufferLayoutDescriptor[0].attributes = &vertexAttributeDescriptor[0];
-  vertexBufferLayoutDescriptor[1].arrayStride = mNormalBuffer->getDataSize();
-  vertexBufferLayoutDescriptor[1].stepMode = wgpu::InputStepMode::Vertex;
-  vertexBufferLayoutDescriptor[1].attributeCount = 1;
-  vertexBufferLayoutDescriptor[1].attributes = &vertexAttributeDescriptor[1];
-  vertexBufferLayoutDescriptor[2].arrayStride = mTexCoordBuffer->getDataSize();
-  vertexBufferLayoutDescriptor[2].stepMode = wgpu::InputStepMode::Vertex;
-  vertexBufferLayoutDescriptor[2].attributeCount = 1;
-  vertexBufferLayoutDescriptor[2].attributes = &vertexAttributeDescriptor[2];
-  vertexBufferLayoutDescriptor[3].arrayStride = mTangentBuffer->getDataSize();
-  vertexBufferLayoutDescriptor[3].stepMode = wgpu::InputStepMode::Vertex;
-  vertexBufferLayoutDescriptor[3].attributeCount = 1;
-  vertexBufferLayoutDescriptor[3].attributes = &vertexAttributeDescriptor[3];
-  vertexBufferLayoutDescriptor[4].arrayStride = mBiNormalBuffer->getDataSize();
-  vertexBufferLayoutDescriptor[4].stepMode = wgpu::InputStepMode::Vertex;
-  vertexBufferLayoutDescriptor[4].attributeCount = 1;
-  vertexBufferLayoutDescriptor[4].attributes = &vertexAttributeDescriptor[4];
+  std::vector<wgpu::VertexBufferLayout> vertexBufferLayout;
+  vertexBufferLayout.resize(5);
+  vertexBufferLayout[0].arrayStride = mPositionBuffer->getDataSize();
+  vertexBufferLayout[0].stepMode = wgpu::InputStepMode::Vertex;
+  vertexBufferLayout[0].attributeCount = 1;
+  vertexBufferLayout[0].attributes = &vertexAttribute[0];
+  vertexBufferLayout[1].arrayStride = mNormalBuffer->getDataSize();
+  vertexBufferLayout[1].stepMode = wgpu::InputStepMode::Vertex;
+  vertexBufferLayout[1].attributeCount = 1;
+  vertexBufferLayout[1].attributes = &vertexAttribute[1];
+  vertexBufferLayout[2].arrayStride = mTexCoordBuffer->getDataSize();
+  vertexBufferLayout[2].stepMode = wgpu::InputStepMode::Vertex;
+  vertexBufferLayout[2].attributeCount = 1;
+  vertexBufferLayout[2].attributes = &vertexAttribute[2];
+  vertexBufferLayout[3].arrayStride = mTangentBuffer->getDataSize();
+  vertexBufferLayout[3].stepMode = wgpu::InputStepMode::Vertex;
+  vertexBufferLayout[3].attributeCount = 1;
+  vertexBufferLayout[3].attributes = &vertexAttribute[3];
+  vertexBufferLayout[4].arrayStride = mBiNormalBuffer->getDataSize();
+  vertexBufferLayout[4].stepMode = wgpu::InputStepMode::Vertex;
+  vertexBufferLayout[4].attributeCount = 1;
+  vertexBufferLayout[4].attributes = &vertexAttribute[4];
 
-  mVertexStateDescriptor.vertexBufferCount =
-      static_cast<uint32_t>(vertexBufferLayoutDescriptor.size());
-  mVertexStateDescriptor.vertexBuffers = vertexBufferLayoutDescriptor.data();
-  mVertexStateDescriptor.indexFormat = wgpu::IndexFormat::Uint16;
+  mVertexState.module = mVsModule;
+  mVertexState.entryPoint = "main";
+  mVertexState.bufferCount = static_cast<uint32_t>(vertexBufferLayout.size());
+  mVertexState.buffers = vertexBufferLayout.data();
 
+  std::vector<wgpu::BindGroupLayoutEntry> bindGroupLayoutEntry;
   if (mSkyboxTexture && mReflectionTexture) {
-    mGroupLayoutModel = mContextDawn->MakeBindGroupLayout({
-        {0, wgpu::ShaderStage::Vertex, wgpu::BindingType::UniformBuffer},
-        {1, wgpu::ShaderStage::Fragment, wgpu::BindingType::UniformBuffer},
-        {2, wgpu::ShaderStage::Fragment, wgpu::BindingType::Sampler},
-        {3, wgpu::ShaderStage::Fragment, wgpu::BindingType::Sampler},
-        {4, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture,
-         false, 0, false, wgpu::TextureViewDimension::e2D,
-         wgpu::TextureComponentType::Float},
-        {5, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture,
-         false, 0, false, wgpu::TextureViewDimension::e2D,
-         wgpu::TextureComponentType::Float},
-        {6, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture,
-         false, 0, false, wgpu::TextureViewDimension::e2D,
-         wgpu::TextureComponentType::Float},
-        {7, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture,
-         false, 0, false, wgpu::TextureViewDimension::Cube,
-         wgpu::TextureComponentType::Float},
-    });
+    bindGroupLayoutEntry.resize(8);
+    bindGroupLayoutEntry[0].binding = 0;
+    bindGroupLayoutEntry[0].visibility = wgpu::ShaderStage::Vertex;
+    bindGroupLayoutEntry[0].buffer.type = wgpu::BufferBindingType::Uniform;
+    bindGroupLayoutEntry[0].buffer.hasDynamicOffset = false;
+    bindGroupLayoutEntry[0].buffer.minBindingSize = 0;
+    bindGroupLayoutEntry[1].binding = 1;
+    bindGroupLayoutEntry[1].visibility = wgpu::ShaderStage::Fragment;
+    bindGroupLayoutEntry[1].buffer.type = wgpu::BufferBindingType::Uniform;
+    bindGroupLayoutEntry[1].buffer.hasDynamicOffset = false;
+    bindGroupLayoutEntry[1].buffer.minBindingSize = 0;
+    bindGroupLayoutEntry[2].binding = 2;
+    bindGroupLayoutEntry[2].visibility = wgpu::ShaderStage::Fragment;
+    bindGroupLayoutEntry[2].sampler.type = wgpu::SamplerBindingType::Filtering;
+    bindGroupLayoutEntry[3].binding = 3;
+    bindGroupLayoutEntry[3].visibility = wgpu::ShaderStage::Fragment;
+    bindGroupLayoutEntry[3].sampler.type = wgpu::SamplerBindingType::Filtering;
+    bindGroupLayoutEntry[4].binding = 4;
+    bindGroupLayoutEntry[4].visibility = wgpu::ShaderStage::Fragment;
+    bindGroupLayoutEntry[4].texture.sampleType = wgpu::TextureSampleType::Float;
+    bindGroupLayoutEntry[4].texture.viewDimension =
+        wgpu::TextureViewDimension::e2D;
+    bindGroupLayoutEntry[4].texture.multisampled = false;
+    bindGroupLayoutEntry[5].binding = 5;
+    bindGroupLayoutEntry[5].visibility = wgpu::ShaderStage::Fragment;
+    bindGroupLayoutEntry[5].texture.sampleType = wgpu::TextureSampleType::Float;
+    bindGroupLayoutEntry[5].texture.viewDimension =
+        wgpu::TextureViewDimension::e2D;
+    bindGroupLayoutEntry[5].texture.multisampled = false;
+    bindGroupLayoutEntry[6].binding = 6;
+    bindGroupLayoutEntry[6].visibility = wgpu::ShaderStage::Fragment;
+    bindGroupLayoutEntry[6].texture.sampleType = wgpu::TextureSampleType::Float;
+    bindGroupLayoutEntry[6].texture.viewDimension =
+        wgpu::TextureViewDimension::e2D;
+    bindGroupLayoutEntry[6].texture.multisampled = false;
+    bindGroupLayoutEntry[7].binding = 7;
+    bindGroupLayoutEntry[7].visibility = wgpu::ShaderStage::Fragment;
+    bindGroupLayoutEntry[7].texture.sampleType = wgpu::TextureSampleType::Float;
+    bindGroupLayoutEntry[7].texture.viewDimension =
+        wgpu::TextureViewDimension::Cube;
+    bindGroupLayoutEntry[7].texture.multisampled = false;
   } else {
-    mGroupLayoutModel = mContextDawn->MakeBindGroupLayout({
-        {0, wgpu::ShaderStage::Vertex, wgpu::BindingType::UniformBuffer},
-        {1, wgpu::ShaderStage::Fragment, wgpu::BindingType::UniformBuffer},
-        {2, wgpu::ShaderStage::Fragment, wgpu::BindingType::Sampler},
-        {3, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture,
-         false, 0, false, wgpu::TextureViewDimension::e2D,
-         wgpu::TextureComponentType::Float},
-        {4, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture,
-         false, 0, false, wgpu::TextureViewDimension::e2D,
-         wgpu::TextureComponentType::Float},
-    });
+    bindGroupLayoutEntry.resize(5);
+    bindGroupLayoutEntry[0].binding = 0;
+    bindGroupLayoutEntry[0].visibility = wgpu::ShaderStage::Vertex;
+    bindGroupLayoutEntry[0].buffer.type = wgpu::BufferBindingType::Uniform;
+    bindGroupLayoutEntry[0].buffer.hasDynamicOffset = false;
+    bindGroupLayoutEntry[0].buffer.minBindingSize = 0;
+    bindGroupLayoutEntry[1].binding = 1;
+    bindGroupLayoutEntry[1].visibility = wgpu::ShaderStage::Fragment;
+    bindGroupLayoutEntry[1].buffer.type = wgpu::BufferBindingType::Uniform;
+    bindGroupLayoutEntry[1].buffer.hasDynamicOffset = false;
+    bindGroupLayoutEntry[1].buffer.minBindingSize = 0;
+    bindGroupLayoutEntry[2].binding = 2;
+    bindGroupLayoutEntry[2].visibility = wgpu::ShaderStage::Fragment;
+    bindGroupLayoutEntry[2].sampler.type = wgpu::SamplerBindingType::Filtering;
+    bindGroupLayoutEntry[3].binding = 3;
+    bindGroupLayoutEntry[3].visibility = wgpu::ShaderStage::Fragment;
+    bindGroupLayoutEntry[3].texture.sampleType = wgpu::TextureSampleType::Float;
+    bindGroupLayoutEntry[3].texture.viewDimension =
+        wgpu::TextureViewDimension::e2D;
+    bindGroupLayoutEntry[3].texture.multisampled = false;
+    bindGroupLayoutEntry[4].binding = 4;
+    bindGroupLayoutEntry[4].visibility = wgpu::ShaderStage::Fragment;
+    bindGroupLayoutEntry[4].texture.sampleType = wgpu::TextureSampleType::Float;
+    bindGroupLayoutEntry[4].texture.viewDimension =
+        wgpu::TextureViewDimension::e2D;
+    bindGroupLayoutEntry[4].texture.multisampled = false;
   }
+  mGroupLayoutModel = mContextDawn->MakeBindGroupLayout(bindGroupLayoutEntry);
 
   mPipelineLayout = mContextDawn->MakeBasicPipelineLayout({
       mContextDawn->groupLayoutGeneral,
@@ -137,8 +178,8 @@ void FishModelDawn::init() {
       mContextDawn->groupLayoutFishPer,
   });
 
-  mPipeline = mContextDawn->createRenderPipeline(
-      mPipelineLayout, mProgramDawn, mVertexStateDescriptor, mBlend);
+  mPipeline = mContextDawn->createRenderPipeline(mPipelineLayout, mProgramDawn,
+                                                 mVertexState, mBlend);
 
   mFishVertexBuffer = mContextDawn->createBufferFromData(
       &mFishVertexUniforms, sizeof(FishVertexUniforms),
@@ -151,26 +192,48 @@ void FishModelDawn::init() {
 
   // Fish models includes small, medium and big. Some of them contains
   // reflection and skybox texture, but some doesn't.
+  std::vector<wgpu::BindGroupEntry> bindGroupEntry;
   if (mSkyboxTexture && mReflectionTexture) {
-    mBindGroupModel = mContextDawn->makeBindGroup(
-        mGroupLayoutModel,
-        {{0, mFishVertexBuffer, 0, sizeof(FishVertexUniforms), {}, {}},
-         {1, mLightFactorBuffer, 0, sizeof(LightFactorUniforms), {}, {}},
-         {2, {}, 0, 0, mReflectionTexture->getSampler(), {}},
-         {3, {}, 0, 0, mSkyboxTexture->getSampler(), {}},
-         {4, {}, 0, 0, {}, mDiffuseTexture->getTextureView()},
-         {5, {}, 0, 0, {}, mNormalTexture->getTextureView()},
-         {6, {}, 0, 0, {}, mReflectionTexture->getTextureView()},
-         {7, {}, 0, 0, {}, mSkyboxTexture->getTextureView()}});
+    bindGroupEntry.resize(8);
+    bindGroupEntry[0].binding = 0;
+    bindGroupEntry[0].buffer = mFishVertexBuffer;
+    bindGroupEntry[0].offset = 0;
+    bindGroupEntry[0].size = sizeof(FishVertexUniforms);
+    bindGroupEntry[1].binding = 1;
+    bindGroupEntry[1].buffer = mLightFactorBuffer;
+    bindGroupEntry[1].offset = 0;
+    bindGroupEntry[1].size = sizeof(LightFactorUniforms);
+    bindGroupEntry[2].binding = 2;
+    bindGroupEntry[2].sampler = mReflectionTexture->getSampler();
+    bindGroupEntry[3].binding = 3;
+    bindGroupEntry[3].sampler = mSkyboxTexture->getSampler();
+    bindGroupEntry[4].binding = 4;
+    bindGroupEntry[4].textureView = mDiffuseTexture->getTextureView();
+    bindGroupEntry[5].binding = 5;
+    bindGroupEntry[5].textureView = mNormalTexture->getTextureView();
+    bindGroupEntry[6].binding = 6;
+    bindGroupEntry[6].textureView = mReflectionTexture->getTextureView();
+    bindGroupEntry[7].binding = 7;
+    bindGroupEntry[7].textureView = mSkyboxTexture->getTextureView();
   } else {
-    mBindGroupModel = mContextDawn->makeBindGroup(
-        mGroupLayoutModel,
-        {{0, mFishVertexBuffer, 0, sizeof(FishVertexUniforms), {}, {}},
-         {1, mLightFactorBuffer, 0, sizeof(LightFactorUniforms), {}, {}},
-         {2, {}, 0, 0, mDiffuseTexture->getSampler(), {}},
-         {3, {}, 0, 0, {}, mDiffuseTexture->getTextureView()},
-         {4, {}, 0, 0, {}, mNormalTexture->getTextureView()}});
+    bindGroupEntry.resize(5);
+    bindGroupEntry[0].binding = 0;
+    bindGroupEntry[0].buffer = mFishVertexBuffer;
+    bindGroupEntry[0].offset = 0;
+    bindGroupEntry[0].size = sizeof(FishVertexUniforms);
+    bindGroupEntry[1].binding = 1;
+    bindGroupEntry[1].buffer = mLightFactorBuffer;
+    bindGroupEntry[1].offset = 0;
+    bindGroupEntry[1].size = sizeof(LightFactorUniforms);
+    bindGroupEntry[2].binding = 2;
+    bindGroupEntry[2].sampler = mDiffuseTexture->getSampler();
+    bindGroupEntry[3].binding = 3;
+    bindGroupEntry[3].textureView = mDiffuseTexture->getTextureView();
+    bindGroupEntry[4].binding = 4;
+    bindGroupEntry[4].textureView = mNormalTexture->getTextureView();
   }
+  mBindGroupModel =
+      mContextDawn->makeBindGroup(mGroupLayoutModel, bindGroupEntry);
 
   mContextDawn->setBufferData(mLightFactorBuffer, sizeof(LightFactorUniforms),
                               &mLightFactorUniforms,
@@ -194,7 +257,8 @@ void FishModelDawn::draw() {
   pass.SetVertexBuffer(2, mTexCoordBuffer->getBuffer());
   pass.SetVertexBuffer(3, mTangentBuffer->getBuffer());
   pass.SetVertexBuffer(4, mBiNormalBuffer->getBuffer());
-  pass.SetIndexBuffer(mIndicesBuffer->getBuffer(), 0);
+  pass.SetIndexBuffer(mIndicesBuffer->getBuffer(), wgpu::IndexFormat::Uint16, 0,
+                      0);
 
   if (mEnableDynamicBufferOffset) {
     for (int i = 0; i < mCurInstance; i++) {

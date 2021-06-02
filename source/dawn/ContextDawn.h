@@ -96,13 +96,13 @@ public:
                                     uint32_t size,
                                     uint32_t maxSize,
                                     wgpu::BufferUsage usage);
-  wgpu::BufferCopyView createBufferCopyView(const wgpu::Buffer &buffer,
-                                            uint32_t offset,
-                                            uint32_t bytesPerRow,
-                                            uint32_t rowsPerImage) const;
+  wgpu::ImageCopyBuffer createImageCopyBuffer(const wgpu::Buffer &buffer,
+                                              uint32_t offset,
+                                              uint32_t bytesPerRow,
+                                              uint32_t rowsPerImage) const;
   wgpu::CommandBuffer copyBufferToTexture(
-      const wgpu::BufferCopyView &bufferCopyView,
-      const wgpu::TextureCopyView &textureCopyView,
+      const wgpu::ImageCopyBuffer &imageCopyBuffer,
+      const wgpu::ImageCopyTexture &imageCopyTexture,
       const wgpu::Extent3D &ext3D) const;
   wgpu::CommandBuffer copyBufferToBuffer(wgpu::Buffer const &srcBuffer,
                                          uint64_t srcOffset,
@@ -110,20 +110,19 @@ public:
                                          uint64_t destOffset,
                                          uint64_t size) const;
 
-  wgpu::TextureCopyView createTextureCopyView(wgpu::Texture texture,
-                                              uint32_t level,
-                                              wgpu::Origin3D origin);
+  wgpu::ImageCopyTexture createImageCopyTexture(wgpu::Texture texture,
+                                                uint32_t level,
+                                                wgpu::Origin3D origin);
   wgpu::ShaderModule createShaderModule(wgpu::ShaderStage stage,
                                         const std::string &str) const;
   wgpu::BindGroupLayout MakeBindGroupLayout(
-      std::initializer_list<wgpu::BindGroupLayoutEntry> bindingsInitializer)
-      const;
+      std::vector<wgpu::BindGroupLayoutEntry> bindingsInitializer) const;
   wgpu::PipelineLayout MakeBasicPipelineLayout(
       std::vector<wgpu::BindGroupLayout> bindingsInitializer) const;
   wgpu::RenderPipeline createRenderPipeline(
       wgpu::PipelineLayout mPipelineLayout,
       ProgramDawn *mProgramDawn,
-      const wgpu::VertexStateDescriptor &mVertexInputDescriptor,
+      const wgpu::VertexState &mVertexInput,
       bool enableBlend) const;
   wgpu::TextureView createMultisampledRenderTargetView() const;
   wgpu::TextureView createDepthStencilView() const;
@@ -134,7 +133,7 @@ public:
                      uint32_t dataSize);
   wgpu::BindGroup makeBindGroup(
       const wgpu::BindGroupLayout &layout,
-      std::initializer_list<wgpu::BindGroupEntry> bindingsInitializer) const;
+      std::vector<wgpu::BindGroupEntry> bindingsInitializer) const;
 
   void initGeneralResources(Aquarium *aquarium) override;
   void updateWorldlUniforms(Aquarium *aquarium) override;
@@ -194,7 +193,7 @@ private:
   // TODO(jiawei.shao@intel.com): remove wgpu::TextureUsageBit::CopyDst when the
   // bug in Dawn is fixed.
   static constexpr wgpu::TextureUsage kSwapchainBackBufferUsage =
-      wgpu::TextureUsage::OutputAttachment | wgpu::TextureUsage::CopyDst;
+      wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::CopyDst;
 
   bool mIsSwapchainOutOfDate = false;
   std::unique_ptr<dawn_native::Instance> mInstance;

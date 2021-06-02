@@ -68,7 +68,7 @@ static void ImGui_ImplDawn_SetupRenderState(ImDrawData *draw_data,
     pass.SetPipeline(mPipeline);
     pass.SetBindGroup(0, mBindGroup, 0, nullptr);
     pass.SetVertexBuffer(0, mVertexBuffer);
-    pass.SetIndexBuffer(mIndexBuffer, 0);
+    pass.SetIndexBuffer(mIndexBuffer, wgpu::IndexFormat::Uint16, 0, 0);
 }
 
 // Render function
@@ -200,7 +200,7 @@ static void ImGui_ImplDawn_CreateFontsTexture(bool enableAlphaBlending)
         descriptor.dimension     = wgpu::TextureDimension::e2D;
         descriptor.size.width    = width;
         descriptor.size.height   = height;
-        descriptor.size.depth    = 1;
+        descriptor.size.depthOrArrayLayers    = 1;
         descriptor.sampleCount   = 1;
         descriptor.format        = mFormat;
         descriptor.mipLevelCount = 1;
@@ -215,13 +215,13 @@ static void ImGui_ImplDawn_CreateFontsTexture(bool enableAlphaBlending)
         memcpy(staging.GetMappedRange(), pixels, width * height * 4);
         staging.Unmap();
 
-        wgpu::BufferCopyView bufferCopyView =
-            mContextDawn->createBufferCopyView(staging, 0, width * 4, height);
-        wgpu::TextureCopyView textureCopyView =
-            mContextDawn->createTextureCopyView(mTexture, 0, {0, 0, 0});
+        wgpu::ImageCopyBuffer imageCopyBuffer =
+            mContextDawn->createImageCopyBuffer(staging, 0, width * 4, height);
+        wgpu::ImageCopyTexture imageCopyTexture =
+            mContextDawn->createImageCopyTexture(mTexture, 0, {0, 0, 0});
         wgpu::Extent3D copySize = {static_cast<uint32_t>(width), static_cast<uint32_t>(height), 1};
         wgpu::CommandBuffer copyCommand =
-            mContextDawn->copyBufferToTexture(bufferCopyView, textureCopyView, copySize);
+            mContextDawn->copyBufferToTexture(imageCopyBuffer, imageCopyTexture, copySize);
         mContextDawn->queue.Submit(1, &copyCommand);
 
         // Create texture view
@@ -255,36 +255,42 @@ bool ImGui_ImplDawn_CreateDeviceObjects(int MSAASampleCount, bool enableAlphaBle
     if (!mContextDawn->mDevice)
         return false;
 
-    std::vector<wgpu::VertexAttributeDescriptor> vertexAttributeDescriptor;
-    vertexAttributeDescriptor.resize(3);
-    vertexAttributeDescriptor[0].format         = wgpu::VertexFormat::Float2;
-    vertexAttributeDescriptor[0].offset         = 0;
-    vertexAttributeDescriptor[0].shaderLocation = 0;
-    vertexAttributeDescriptor[1].format         = wgpu::VertexFormat::Float2;
-    vertexAttributeDescriptor[1].offset         = IM_OFFSETOF(ImDrawVert, uv);
-    vertexAttributeDescriptor[1].shaderLocation = 1;
-    vertexAttributeDescriptor[2].format         = wgpu::VertexFormat::UChar4Norm;
-    vertexAttributeDescriptor[2].offset         = IM_OFFSETOF(ImDrawVert, col);
-    vertexAttributeDescriptor[2].shaderLocation = 2;
+    std::vector<wgpu::VertexAttribute> vertexAttribute;
+    vertexAttribute.resize(3);
+    vertexAttribute[0].format         = wgpu::VertexFormat::Float32x2;
+    vertexAttribute[0].offset         = 0;
+    vertexAttribute[0].shaderLocation = 0;
+    vertexAttribute[1].format         = wgpu::VertexFormat::Float32x2;
+    vertexAttribute[1].offset         = IM_OFFSETOF(ImDrawVert, uv);
+    vertexAttribute[1].shaderLocation = 1;
+    vertexAttribute[2].format         = wgpu::VertexFormat::Unorm8x4;
+    vertexAttribute[2].offset         = IM_OFFSETOF(ImDrawVert, col);
+    vertexAttribute[2].shaderLocation = 2;
 
-    std::vector<wgpu::VertexBufferLayoutDescriptor> vertexBufferLayoutDescriptor;
-    vertexBufferLayoutDescriptor.resize(1);
-    vertexBufferLayoutDescriptor[0].arrayStride    = sizeof(ImDrawVert);
-    vertexBufferLayoutDescriptor[0].stepMode       = wgpu::InputStepMode::Vertex;
-    vertexBufferLayoutDescriptor[0].attributeCount = 3;
-    vertexBufferLayoutDescriptor[0].attributes     = &vertexAttributeDescriptor[0];
-
-    wgpu::VertexStateDescriptor mVertexStateDescriptor;
-    mVertexStateDescriptor.vertexBufferCount =
-        static_cast<uint32_t>(vertexBufferLayoutDescriptor.size());
-    mVertexStateDescriptor.vertexBuffers = vertexBufferLayoutDescriptor.data();
-    mVertexStateDescriptor.indexFormat   = wgpu::IndexFormat::Uint16;
+    std::vector<wgpu::VertexBufferLayout> vertexBufferLayout;
+    vertexBufferLayout.resize(1);
+    vertexBufferLayout[0].arrayStride    = sizeof(ImDrawVert);
+    vertexBufferLayout[0].stepMode       = wgpu::InputStepMode::Vertex;
+    vertexBufferLayout[0].attributeCount = 3;
+    vertexBufferLayout[0].attributes     = &vertexAttribute[0];
 
     // Create bind group layout
-    wgpu::BindGroupLayout layout = mContextDawn->MakeBindGroupLayout(
-        {{0, wgpu::ShaderStage::Vertex, wgpu::BindingType::UniformBuffer},
-         {1, wgpu::ShaderStage::Fragment, wgpu::BindingType::Sampler},
-         {2, wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture}});
+    std::vector<wgpu::BindGroupLayoutEntry> bindGroupLayoutEntry;
+    bindGroupLayoutEntry.resize(3);
+    bindGroupLayoutEntry[0].binding                 = 0;
+    bindGroupLayoutEntry[0].visibility              = wgpu::ShaderStage::Vertex;
+    bindGroupLayoutEntry[0].buffer.type             = wgpu::BufferBindingType::Uniform;
+    bindGroupLayoutEntry[0].buffer.hasDynamicOffset = false;
+    bindGroupLayoutEntry[0].buffer.minBindingSize   = 0;
+    bindGroupLayoutEntry[1].binding                 = 1;
+    bindGroupLayoutEntry[1].visibility              = wgpu::ShaderStage::Fragment;
+    bindGroupLayoutEntry[1].sampler.type            = wgpu::SamplerBindingType::Filtering;
+    bindGroupLayoutEntry[2].binding                 = 2;
+    bindGroupLayoutEntry[2].visibility              = wgpu::ShaderStage::Fragment;
+    bindGroupLayoutEntry[2].texture.sampleType      = wgpu::TextureSampleType::Float;
+    bindGroupLayoutEntry[2].texture.viewDimension   = wgpu::TextureViewDimension::e2D;
+    bindGroupLayoutEntry[2].texture.multisampled    = false;
+    wgpu::BindGroupLayout layout = mContextDawn->MakeBindGroupLayout(bindGroupLayoutEntry);
 
     wgpu::PipelineLayout mPipelineLayout = mContextDawn->MakeBasicPipelineLayout({layout});
 
@@ -294,80 +300,89 @@ bool ImGui_ImplDawn_CreateDeviceObjects(int MSAASampleCount, bool enableAlphaBle
                                    programPath + "imguiFragmentShader");
     mProgramDawn->compileProgram(false, "");
 
-    wgpu::StencilStateFaceDescriptor stencilStateFaceDescriptor;
-    stencilStateFaceDescriptor.compare     = wgpu::CompareFunction::Always;
-    stencilStateFaceDescriptor.failOp      = wgpu::StencilOperation::Keep;
-    stencilStateFaceDescriptor.depthFailOp = wgpu::StencilOperation::Keep;
-    stencilStateFaceDescriptor.passOp      = wgpu::StencilOperation::Keep;
-
-    wgpu::BlendDescriptor blendDescriptor;
-    wgpu::BlendDescriptor alphaDescriptor;
-    if (enableAlphaBlending)
-    {
-        blendDescriptor.operation = wgpu::BlendOperation::Add;
-        blendDescriptor.srcFactor = wgpu::BlendFactor::SrcAlpha;
-        blendDescriptor.dstFactor = wgpu::BlendFactor::OneMinusSrcAlpha;
-
-        alphaDescriptor.operation = wgpu::BlendOperation::Add;
-        alphaDescriptor.srcFactor = wgpu::BlendFactor::OneMinusSrcAlpha;
-        alphaDescriptor.dstFactor = wgpu::BlendFactor::Zero;
-    } else
-    {
-        blendDescriptor.operation = wgpu::BlendOperation::Add;
-        blendDescriptor.srcFactor = wgpu::BlendFactor::One;
-        blendDescriptor.dstFactor = wgpu::BlendFactor::Zero;
-
-        alphaDescriptor.operation = wgpu::BlendOperation::Add;
-        alphaDescriptor.srcFactor = wgpu::BlendFactor::One;
-        alphaDescriptor.dstFactor = wgpu::BlendFactor::Zero;
-    }
-
     const wgpu::ShaderModule &mVsModule = mProgramDawn->getVSModule();
     const wgpu::ShaderModule &mFsModule = mProgramDawn->getFSModule();
 
-    wgpu::ProgrammableStageDescriptor vertexStageDescriptor;
-    vertexStageDescriptor.module     = mVsModule;
-    vertexStageDescriptor.entryPoint = "main";
+    wgpu::VertexState vertexState;
+    vertexState.module      = mVsModule;
+    vertexState.entryPoint  = "main";
+    vertexState.bufferCount = static_cast<uint32_t>(vertexBufferLayout.size());
+    vertexState.buffers     = vertexBufferLayout.data();
 
-    wgpu::ProgrammableStageDescriptor fragmentStageDescriptor;
-    fragmentStageDescriptor.module     = mFsModule;
-    fragmentStageDescriptor.entryPoint = "main";
+    wgpu::PrimitiveState primitiveState;
+    primitiveState.topology         = wgpu::PrimitiveTopology::TriangleList;
+    primitiveState.stripIndexFormat = wgpu::IndexFormat::Undefined;
+    primitiveState.frontFace        = wgpu::FrontFace::CCW;
+    primitiveState.cullMode         = wgpu::CullMode::None;
 
-    wgpu::DepthStencilStateDescriptor depthStencilStateDescriptor;
-    depthStencilStateDescriptor.format            = wgpu::TextureFormat::Depth24PlusStencil8;
-    depthStencilStateDescriptor.depthWriteEnabled = false;
-    depthStencilStateDescriptor.depthCompare      = wgpu::CompareFunction::Always;
-    depthStencilStateDescriptor.stencilFront      = stencilStateFaceDescriptor;
-    depthStencilStateDescriptor.stencilBack       = stencilStateFaceDescriptor;
-    depthStencilStateDescriptor.stencilReadMask   = 0xff;
-    depthStencilStateDescriptor.stencilWriteMask  = 0xff;
+    wgpu::StencilFaceState stencilFaceState;
+    stencilFaceState.compare     = wgpu::CompareFunction::Always;
+    stencilFaceState.failOp      = wgpu::StencilOperation::Keep;
+    stencilFaceState.depthFailOp = wgpu::StencilOperation::Keep;
+    stencilFaceState.passOp      = wgpu::StencilOperation::Keep;
 
-    wgpu::ColorStateDescriptor ColorStateDescriptor;
-    ColorStateDescriptor.format     = mFormat;
-    ColorStateDescriptor.colorBlend = blendDescriptor;
-    ColorStateDescriptor.alphaBlend = blendDescriptor;
-    ColorStateDescriptor.writeMask  = wgpu::ColorWriteMask::All;
+    wgpu::DepthStencilState depthStencilState;
+    depthStencilState.format              = wgpu::TextureFormat::Depth24PlusStencil8;
+    depthStencilState.depthWriteEnabled   = false;
+    depthStencilState.depthCompare        = wgpu::CompareFunction::Always;
+    depthStencilState.stencilFront        = stencilFaceState;
+    depthStencilState.stencilBack         = stencilFaceState;
+    depthStencilState.stencilReadMask     = 0xffffffff;
+    depthStencilState.stencilWriteMask    = 0xffffffff;
+    depthStencilState.depthBias           = 0;
+    depthStencilState.depthBiasSlopeScale = 0.0;
+    depthStencilState.depthBiasClamp      = 0.0;
 
-    wgpu::RasterizationStateDescriptor rasterizationState;
-    rasterizationState.nextInChain         = nullptr;
-    rasterizationState.frontFace           = wgpu::FrontFace::CCW;
-    rasterizationState.cullMode            = wgpu::CullMode::None;
-    rasterizationState.depthBias           = 0;
-    rasterizationState.depthBiasSlopeScale = 0.0;
-    rasterizationState.depthBiasClamp      = 0.0;
+    wgpu::MultisampleState multisampleState;
+    multisampleState.count                  = MSAASampleCount;
+    multisampleState.mask                   = 0xffffffff;
+    multisampleState.alphaToCoverageEnabled = false;
+
+    wgpu::BlendComponent colorBlendComponent;
+    wgpu::BlendComponent alphaBlendComponent;
+    if (enableAlphaBlending)
+    {
+        colorBlendComponent.operation = wgpu::BlendOperation::Add;
+        colorBlendComponent.srcFactor = wgpu::BlendFactor::SrcAlpha;
+        colorBlendComponent.dstFactor = wgpu::BlendFactor::OneMinusSrcAlpha;
+
+        alphaBlendComponent.operation = wgpu::BlendOperation::Add;
+        alphaBlendComponent.srcFactor = wgpu::BlendFactor::OneMinusSrcAlpha;
+        alphaBlendComponent.dstFactor = wgpu::BlendFactor::Zero;
+    } else
+    {
+        colorBlendComponent.operation = wgpu::BlendOperation::Add;
+        colorBlendComponent.srcFactor = wgpu::BlendFactor::One;
+        colorBlendComponent.dstFactor = wgpu::BlendFactor::Zero;
+
+        alphaBlendComponent.operation = wgpu::BlendOperation::Add;
+        alphaBlendComponent.srcFactor = wgpu::BlendFactor::One;
+        alphaBlendComponent.dstFactor = wgpu::BlendFactor::Zero;
+    }
+
+    wgpu::BlendState blendState;
+    blendState.color = colorBlendComponent;
+    blendState.alpha = alphaBlendComponent;
+
+    wgpu::ColorTargetState colorTargetState;
+    colorTargetState.format    = mFormat;
+    colorTargetState.blend     = &blendState;
+    colorTargetState.writeMask = wgpu::ColorWriteMask::All;
+
+    wgpu::FragmentState fragmentState;
+    fragmentState.module      = mFsModule;
+    fragmentState.entryPoint  = "main";
+    fragmentState.targetCount = 1;
+    fragmentState.targets     = &colorTargetState;
 
     // create graphics mPipeline
-    wgpu::RenderPipelineDescriptor mPipelineDescriptor;
-    mPipelineDescriptor.layout             = mPipelineLayout;
-    mPipelineDescriptor.vertexStage        = vertexStageDescriptor;
-    mPipelineDescriptor.fragmentStage      = &fragmentStageDescriptor;
-    mPipelineDescriptor.vertexState        = &mVertexStateDescriptor;
-    mPipelineDescriptor.depthStencilState  = &depthStencilStateDescriptor;
-    mPipelineDescriptor.colorStateCount    = 1;
-    mPipelineDescriptor.colorStates        = &ColorStateDescriptor;
-    mPipelineDescriptor.primitiveTopology  = wgpu::PrimitiveTopology::TriangleList;
-    mPipelineDescriptor.sampleCount        = MSAASampleCount;
-    mPipelineDescriptor.rasterizationState = &rasterizationState;
+    wgpu::RenderPipelineDescriptor2 mPipelineDescriptor;
+    mPipelineDescriptor.layout       = mPipelineLayout;
+    mPipelineDescriptor.vertex       = vertexState;
+    mPipelineDescriptor.primitive    = primitiveState;
+    mPipelineDescriptor.depthStencil = &depthStencilState;
+    mPipelineDescriptor.multisample  = multisampleState;
+    mPipelineDescriptor.fragment     = &fragmentState;
 
     mPipeline = mContextDawn->mDevice.CreateRenderPipeline(&mPipelineDescriptor);
 
@@ -381,10 +396,17 @@ bool ImGui_ImplDawn_CreateDeviceObjects(int MSAASampleCount, bool enableAlphaBle
 
     mConstantBuffer = mContextDawn->mDevice.CreateBuffer(&descriptor);
 
-    mBindGroup = mContextDawn->makeBindGroup(
-        layout, {{0, mConstantBuffer, 0, sizeof(VERTEX_CONSTANT_BUFFER), {}, {}},
-                 {1, {}, 0, 0, mSampler, {}},
-                 {2, {}, 0, 0, {}, mTextureView}});
+    std::vector<wgpu::BindGroupEntry> bindGroupEntry;
+    bindGroupEntry.resize(3);
+    bindGroupEntry[0].binding      = 0;
+    bindGroupEntry[0].buffer      = mConstantBuffer;
+    bindGroupEntry[0].offset      = 0;
+    bindGroupEntry[0].size        = sizeof(VERTEX_CONSTANT_BUFFER);
+    bindGroupEntry[1].binding     = 1;
+    bindGroupEntry[1].sampler     = mSampler;
+    bindGroupEntry[2].binding     = 2;
+    bindGroupEntry[2].textureView = mTextureView;
+    mBindGroup = mContextDawn->makeBindGroup(layout, bindGroupEntry);
 
     return true;
 }

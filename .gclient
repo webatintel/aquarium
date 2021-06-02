@@ -9,5 +9,10 @@ solutions = [
     "url"         : "https://github.com/webatintel/Aquarium.git",
     "deps_file"   : "DEPS",
     "managed"     : False,
+    # Due to crbug.com/1215885, we have to use "\\" on Windows.
+    "custom_deps" : {
+      "third_party\\angle\\third_party\\VK-GL-CTS\\src": None,
+      "third_party/angle/third_party/VK-GL-CTS/src": None,
+    },
   },
 ]

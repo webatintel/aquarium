@@ -222,7 +222,7 @@ bool ContextDawn::initialize(
   dawnProcSetProcs(&backendProcs);
   mDevice = wgpu::Device::Acquire(backendDevice);
 
-  queue = mDevice.GetDefaultQueue();
+  queue = mDevice.GetQueue();
   wgpu::SwapChainDescriptor swapChainDesc;
   swapChainDesc.implementation =
       reinterpret_cast<uintptr_t>(getSwapChainImplementation(backendType));
@@ -377,40 +377,38 @@ wgpu::Buffer ContextDawn::createBufferFromData(const void *data,
   return buffer;
 }
 
-wgpu::BufferCopyView ContextDawn::createBufferCopyView(
+wgpu::ImageCopyBuffer ContextDawn::createImageCopyBuffer(
     const wgpu::Buffer &buffer,
     uint32_t offset,
     uint32_t bytesPerRow,
     uint32_t rowsPerImage) const {
-  wgpu::BufferCopyView bufferCopyView;
-  bufferCopyView.layout.offset = offset;
-  bufferCopyView.layout.bytesPerRow = bytesPerRow;
-  bufferCopyView.layout.rowsPerImage = rowsPerImage;
-  bufferCopyView.buffer = buffer;
-  bufferCopyView.bytesPerRow = 0;  // This field is deprecated, but it must be
-                                   // zero-initialized to pass Dawn validation.
+  wgpu::ImageCopyBuffer imageCopyBuffer;
+  imageCopyBuffer.layout.offset = offset;
+  imageCopyBuffer.layout.bytesPerRow = bytesPerRow;
+  imageCopyBuffer.layout.rowsPerImage = rowsPerImage;
+  imageCopyBuffer.buffer = buffer;
 
-  return bufferCopyView;
+  return imageCopyBuffer;
 }
 
-wgpu::TextureCopyView ContextDawn::createTextureCopyView(
+wgpu::ImageCopyTexture ContextDawn::createImageCopyTexture(
     wgpu::Texture texture,
     uint32_t level,
     wgpu::Origin3D origin) {
-  wgpu::TextureCopyView textureCopyView;
-  textureCopyView.texture = texture;
-  textureCopyView.mipLevel = level;
-  textureCopyView.origin = origin;
+  wgpu::ImageCopyTexture imageCopyTexture;
+  imageCopyTexture.texture = texture;
+  imageCopyTexture.mipLevel = level;
+  imageCopyTexture.origin = origin;
 
-  return textureCopyView;
+  return imageCopyTexture;
 }
 
 wgpu::CommandBuffer ContextDawn::copyBufferToTexture(
-    const wgpu::BufferCopyView &bufferCopyView,
-    const wgpu::TextureCopyView &textureCopyView,
+    const wgpu::ImageCopyBuffer &imageCopyBuffer,
+    const wgpu::ImageCopyTexture &imageCopyTexture,
     const wgpu::Extent3D &ext3D) const {
   wgpu::CommandEncoder encoder = mDevice.CreateCommandEncoder();
-  encoder.CopyBufferToTexture(&bufferCopyView, &textureCopyView, &ext3D);
+  encoder.CopyBufferToTexture(&imageCopyBuffer, &imageCopyTexture, &ext3D);
   wgpu::CommandBuffer copy = encoder.Finish();
   return copy;
 }
@@ -605,13 +603,10 @@ wgpu::ShaderModule ContextDawn::createShaderModule(
 }
 
 wgpu::BindGroupLayout ContextDawn::MakeBindGroupLayout(
-    std::initializer_list<wgpu::BindGroupLayoutEntry> bindingsInitializer)
-    const {
-  std::vector<wgpu::BindGroupLayoutEntry> bindings = bindingsInitializer;
-
+    std::vector<wgpu::BindGroupLayoutEntry> bindingsInitializer) const {
   wgpu::BindGroupLayoutDescriptor descriptor;
-  descriptor.entryCount = static_cast<uint32_t>(bindings.size());
-  descriptor.entries = bindings.data();
+  descriptor.entryCount = static_cast<uint32_t>(bindingsInitializer.size());
+  descriptor.entries = bindingsInitializer.data();
 
   return mDevice.CreateBindGroupLayout(&descriptor);
 }
@@ -630,70 +625,73 @@ wgpu::PipelineLayout ContextDawn::MakeBasicPipelineLayout(
 wgpu::RenderPipeline ContextDawn::createRenderPipeline(
     wgpu::PipelineLayout mPipelineLayout,
     ProgramDawn *mProgramDawn,
-    const wgpu::VertexStateDescriptor &mVertexStateDescriptor,
+    const wgpu::VertexState &mVertexState,
     bool enableBlend) const {
-  const wgpu::ShaderModule &mVsModule = mProgramDawn->getVSModule();
+
   const wgpu::ShaderModule &mFsModule = mProgramDawn->getFSModule();
 
-  wgpu::ProgrammableStageDescriptor vertexStageDescriptor;
-  vertexStageDescriptor.module = mVsModule;
-  vertexStageDescriptor.entryPoint = "main";
+  wgpu::PrimitiveState primitiveState;
+  primitiveState.topology = wgpu::PrimitiveTopology::TriangleList;
+  primitiveState.stripIndexFormat = wgpu::IndexFormat::Undefined;
+  primitiveState.frontFace = wgpu::FrontFace::CCW;
+  primitiveState.cullMode = wgpu::CullMode::Back;
 
-  wgpu::ProgrammableStageDescriptor fragmentStageDescriptor;
-  fragmentStageDescriptor.module = mFsModule;
-  fragmentStageDescriptor.entryPoint = "main";
+  wgpu::StencilFaceState stencilFaceState;
+  stencilFaceState.compare = wgpu::CompareFunction::Always;
+  stencilFaceState.failOp = wgpu::StencilOperation::Keep;
+  stencilFaceState.depthFailOp = wgpu::StencilOperation::Keep;
+  stencilFaceState.passOp = wgpu::StencilOperation::Keep;
 
-  wgpu::StencilStateFaceDescriptor stencilStateFaceDescriptor;
-  stencilStateFaceDescriptor.compare = wgpu::CompareFunction::Always;
-  stencilStateFaceDescriptor.failOp = wgpu::StencilOperation::Keep;
-  stencilStateFaceDescriptor.depthFailOp = wgpu::StencilOperation::Keep;
-  stencilStateFaceDescriptor.passOp = wgpu::StencilOperation::Keep;
+  wgpu::DepthStencilState depthStencilState;
+  depthStencilState.format = wgpu::TextureFormat::Depth24PlusStencil8;
+  depthStencilState.depthWriteEnabled = true;
+  depthStencilState.depthCompare = wgpu::CompareFunction::Less;
+  depthStencilState.stencilFront = stencilFaceState;
+  depthStencilState.stencilBack = stencilFaceState;
+  depthStencilState.stencilReadMask = 0xffffffff;
+  depthStencilState.stencilWriteMask = 0xffffffff;
+  depthStencilState.depthBias = 0;
+  depthStencilState.depthBiasSlopeScale = 0.0f;
+  depthStencilState.depthBiasClamp = 0.0f;
 
-  wgpu::DepthStencilStateDescriptor depthStencilStateDescriptor;
-  depthStencilStateDescriptor.format = wgpu::TextureFormat::Depth24PlusStencil8;
-  depthStencilStateDescriptor.depthWriteEnabled = true;
-  depthStencilStateDescriptor.depthCompare = wgpu::CompareFunction::Less;
-  depthStencilStateDescriptor.stencilFront = stencilStateFaceDescriptor;
-  depthStencilStateDescriptor.stencilBack = stencilStateFaceDescriptor;
-  depthStencilStateDescriptor.stencilReadMask = 0xff;
-  depthStencilStateDescriptor.stencilWriteMask = 0xff;
+  wgpu::MultisampleState multisampleState;
+  multisampleState.count = mMSAASampleCount;
+  multisampleState.mask = 0xffffffff;
+  multisampleState.alphaToCoverageEnabled = false;
 
-  wgpu::BlendDescriptor blendDescriptor;
-  blendDescriptor.operation = wgpu::BlendOperation::Add;
+  wgpu::BlendComponent blendComponent;
+  blendComponent.operation = wgpu::BlendOperation::Add;
   if (enableBlend) {
-    blendDescriptor.srcFactor = wgpu::BlendFactor::SrcAlpha;
-    blendDescriptor.dstFactor = wgpu::BlendFactor::OneMinusSrcAlpha;
+    blendComponent.srcFactor = wgpu::BlendFactor::SrcAlpha;
+    blendComponent.dstFactor = wgpu::BlendFactor::OneMinusSrcAlpha;
   } else {
-    blendDescriptor.srcFactor = wgpu::BlendFactor::One;
-    blendDescriptor.dstFactor = wgpu::BlendFactor::Zero;
+    blendComponent.srcFactor = wgpu::BlendFactor::One;
+    blendComponent.dstFactor = wgpu::BlendFactor::Zero;
   }
 
-  wgpu::ColorStateDescriptor ColorStateDescriptor;
-  ColorStateDescriptor.format = mPreferredSwapChainFormat;
-  ColorStateDescriptor.colorBlend = blendDescriptor;
-  ColorStateDescriptor.alphaBlend = blendDescriptor;
-  ColorStateDescriptor.writeMask = wgpu::ColorWriteMask::All;
+  wgpu::BlendState blendState;
+  blendState.color = blendComponent;
+  blendState.alpha = blendComponent;
 
-  wgpu::RasterizationStateDescriptor rasterizationState;
-  rasterizationState.nextInChain = nullptr;
-  rasterizationState.frontFace = wgpu::FrontFace::CCW;
-  rasterizationState.cullMode = wgpu::CullMode::Back;
-  rasterizationState.depthBias = 0;
-  rasterizationState.depthBiasSlopeScale = 0.0;
-  rasterizationState.depthBiasClamp = 0.0;
+  wgpu::ColorTargetState colorTargetState;
+  colorTargetState.format = mPreferredSwapChainFormat;
+  colorTargetState.blend = &blendState;
+  colorTargetState.writeMask = wgpu::ColorWriteMask::All;
+
+  wgpu::FragmentState fragmentState;
+  fragmentState.module = mFsModule;
+  fragmentState.entryPoint = "main";
+  fragmentState.targetCount = 1;
+  fragmentState.targets = &colorTargetState;
 
   // test
-  wgpu::RenderPipelineDescriptor descriptor;
+  wgpu::RenderPipelineDescriptor2 descriptor;
   descriptor.layout = mPipelineLayout;
-  descriptor.vertexStage = vertexStageDescriptor;
-  descriptor.fragmentStage = &fragmentStageDescriptor;
-  descriptor.vertexState = &mVertexStateDescriptor;
-  descriptor.depthStencilState = &depthStencilStateDescriptor;
-  descriptor.colorStateCount = 1;
-  descriptor.colorStates = &ColorStateDescriptor;
-  descriptor.primitiveTopology = wgpu::PrimitiveTopology::TriangleList;
-  descriptor.sampleCount = mMSAASampleCount;
-  descriptor.rasterizationState = &rasterizationState;
+  descriptor.vertex = mVertexState;
+  descriptor.primitive = primitiveState;
+  descriptor.depthStencil = &depthStencilState;
+  descriptor.multisample = multisampleState;
+  descriptor.fragment = &fragmentState;
 
   wgpu::RenderPipeline mPipeline = mDevice.CreateRenderPipeline(&descriptor);
 
@@ -705,11 +703,11 @@ wgpu::TextureView ContextDawn::createMultisampledRenderTargetView() const {
   descriptor.dimension = wgpu::TextureDimension::e2D;
   descriptor.size.width = mClientWidth;
   descriptor.size.height = mClientHeight;
-  descriptor.size.depth = 1;
+  descriptor.size.depthOrArrayLayers = 1;
   descriptor.sampleCount = mMSAASampleCount;
   descriptor.format = mPreferredSwapChainFormat;
   descriptor.mipLevelCount = 1;
-  descriptor.usage = wgpu::TextureUsage::OutputAttachment;
+  descriptor.usage = wgpu::TextureUsage::RenderAttachment;
 
   return mDevice.CreateTexture(&descriptor).CreateView();
 }
@@ -719,11 +717,11 @@ wgpu::TextureView ContextDawn::createDepthStencilView() const {
   descriptor.dimension = wgpu::TextureDimension::e2D;
   descriptor.size.width = mClientWidth;
   descriptor.size.height = mClientHeight;
-  descriptor.size.depth = 1;
+  descriptor.size.depthOrArrayLayers = 1;
   descriptor.sampleCount = mMSAASampleCount;
   descriptor.format = wgpu::TextureFormat::Depth24PlusStencil8;
   descriptor.mipLevelCount = 1;
-  descriptor.usage = wgpu::TextureUsage::OutputAttachment;
+  descriptor.usage = wgpu::TextureUsage::RenderAttachment;
   auto depthStencilTexture = mDevice.CreateTexture(&descriptor);
   return depthStencilTexture.CreateView();
 }
@@ -752,23 +750,32 @@ void ContextDawn::setBufferData(const wgpu::Buffer &buffer,
 
 wgpu::BindGroup ContextDawn::makeBindGroup(
     const wgpu::BindGroupLayout &layout,
-    std::initializer_list<wgpu::BindGroupEntry> bindingsInitializer) const {
-  std::vector<wgpu::BindGroupEntry> bindings = bindingsInitializer;
-
+    std::vector<wgpu::BindGroupEntry> bindingsInitializer) const {
   wgpu::BindGroupDescriptor descriptor;
   descriptor.layout = layout;
-  descriptor.entryCount = static_cast<uint32_t>(bindings.size());
-  descriptor.entries = bindings.data();
+  descriptor.entryCount = static_cast<uint32_t>(bindingsInitializer.size());
+  descriptor.entries = bindingsInitializer.data();
 
   return mDevice.CreateBindGroup(&descriptor);
 }
 
 void ContextDawn::initGeneralResources(Aquarium *aquarium) {
   // initilize general uniform buffers
-  groupLayoutGeneral = MakeBindGroupLayout({
-      {0, wgpu::ShaderStage::Fragment, wgpu::BindingType::UniformBuffer},
-      {1, wgpu::ShaderStage::Fragment, wgpu::BindingType::UniformBuffer},
-  });
+  {
+    std::vector<wgpu::BindGroupLayoutEntry> bindGroupLayoutEntry;
+    bindGroupLayoutEntry.resize(2);
+    bindGroupLayoutEntry[0].binding = 0;
+    bindGroupLayoutEntry[0].visibility = wgpu::ShaderStage::Fragment;
+    bindGroupLayoutEntry[0].buffer.type = wgpu::BufferBindingType::Uniform;
+    bindGroupLayoutEntry[0].buffer.hasDynamicOffset = false;
+    bindGroupLayoutEntry[0].buffer.minBindingSize = 0;
+    bindGroupLayoutEntry[1].binding = 1;
+    bindGroupLayoutEntry[1].visibility = wgpu::ShaderStage::Fragment;
+    bindGroupLayoutEntry[1].buffer.type = wgpu::BufferBindingType::Uniform;
+    bindGroupLayoutEntry[1].buffer.hasDynamicOffset = false;
+    bindGroupLayoutEntry[1].buffer.minBindingSize = 0;
+    groupLayoutGeneral = MakeBindGroupLayout(bindGroupLayoutEntry);
+  }
 
   mLightBuffer = createBufferFromData(
       &aquarium->lightUniforms, sizeof(aquarium->lightUniforms),
@@ -779,10 +786,19 @@ void ContextDawn::initGeneralResources(Aquarium *aquarium) {
       sizeof(aquarium->fogUniforms),
       wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
 
-  bindGroupGeneral = makeBindGroup(
-      groupLayoutGeneral,
-      {{0, mLightBuffer, 0, sizeof(aquarium->lightUniforms), {}, {}},
-       {1, mFogBuffer, 0, sizeof(aquarium->fogUniforms), {}, {}}});
+  {
+    std::vector<wgpu::BindGroupEntry> bindGroupEntry;
+    bindGroupEntry.resize(2);
+    bindGroupEntry[0].binding = 0;
+    bindGroupEntry[0].buffer = mLightBuffer;
+    bindGroupEntry[0].offset = 0;
+    bindGroupEntry[0].size = sizeof(aquarium->lightUniforms);
+    bindGroupEntry[1].binding = 1;
+    bindGroupEntry[1].buffer = mFogBuffer;
+    bindGroupEntry[1].offset = 0;
+    bindGroupEntry[1].size = sizeof(aquarium->fogUniforms);
+    bindGroupGeneral = makeBindGroup(groupLayoutGeneral, bindGroupEntry);
+  }
 
   setBufferData(mLightBuffer, sizeof(LightUniforms), &aquarium->lightUniforms,
                 sizeof(LightUniforms));
@@ -790,9 +806,16 @@ void ContextDawn::initGeneralResources(Aquarium *aquarium) {
                 sizeof(FogUniforms));
 
   // initilize world uniform buffers
-  groupLayoutWorld = MakeBindGroupLayout({
-      {0, wgpu::ShaderStage::Vertex, wgpu::BindingType::UniformBuffer},
-  });
+  {
+    std::vector<wgpu::BindGroupLayoutEntry> bindGroupLayoutEntry;
+    bindGroupLayoutEntry.resize(1);
+    bindGroupLayoutEntry[0].binding = 0;
+    bindGroupLayoutEntry[0].visibility = wgpu::ShaderStage::Vertex;
+    bindGroupLayoutEntry[0].buffer.type = wgpu::BufferBindingType::Uniform;
+    bindGroupLayoutEntry[0].buffer.hasDynamicOffset = false;
+    bindGroupLayoutEntry[0].buffer.minBindingSize = 0;
+    groupLayoutWorld = MakeBindGroupLayout(bindGroupLayoutEntry);
+  }
 
   mLightWorldPositionBuffer = createBufferFromData(
       &aquarium->lightWorldPositionUniform,
@@ -800,27 +823,37 @@ void ContextDawn::initGeneralResources(Aquarium *aquarium) {
       CalcConstantBufferByteSize(sizeof(aquarium->lightWorldPositionUniform)),
       wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform);
 
-  bindGroupWorld = makeBindGroup(
-      groupLayoutWorld, {
-                            {0,
-                             mLightWorldPositionBuffer,
-                             0,
-                             CalcConstantBufferByteSize(
-                                 sizeof(aquarium->lightWorldPositionUniform)),
-                             {},
-                             {}},
-                        });
+  {
+    std::vector<wgpu::BindGroupEntry> bindGroupEntry;
+    bindGroupEntry.resize(1);
+    bindGroupEntry[0].binding = 0;
+    bindGroupEntry[0].buffer = mLightWorldPositionBuffer;
+    bindGroupEntry[0].offset = 0;
+    bindGroupEntry[0].size =
+        CalcConstantBufferByteSize(sizeof(aquarium->lightWorldPositionUniform));
+    bindGroupWorld = makeBindGroup(groupLayoutWorld, bindGroupEntry);
+  }
 
   bool enableDynamicBufferOffset = aquarium->toggleBitset.test(
       static_cast<size_t>(TOGGLE::ENABLEDYNAMICBUFFEROFFSET));
-  if (enableDynamicBufferOffset) {
-    groupLayoutFishPer = MakeBindGroupLayout({
-        {0, wgpu::ShaderStage::Vertex, wgpu::BindingType::UniformBuffer, true},
-    });
-  } else {
-    groupLayoutFishPer = MakeBindGroupLayout({
-        {0, wgpu::ShaderStage::Vertex, wgpu::BindingType::UniformBuffer},
-    });
+  {
+    std::vector<wgpu::BindGroupLayoutEntry> bindGroupLayoutEntry;
+    if (enableDynamicBufferOffset) {
+      bindGroupLayoutEntry.resize(1);
+      bindGroupLayoutEntry[0].binding = 0;
+      bindGroupLayoutEntry[0].visibility = wgpu::ShaderStage::Vertex;
+      bindGroupLayoutEntry[0].buffer.type = wgpu::BufferBindingType::Uniform;
+      bindGroupLayoutEntry[0].buffer.hasDynamicOffset = true;
+      bindGroupLayoutEntry[0].buffer.minBindingSize = 0;
+    } else {
+      bindGroupLayoutEntry.resize(1);
+      bindGroupLayoutEntry[0].binding = 0;
+      bindGroupLayoutEntry[0].visibility = wgpu::ShaderStage::Vertex;
+      bindGroupLayoutEntry[0].buffer.type = wgpu::BufferBindingType::Uniform;
+      bindGroupLayoutEntry[0].buffer.hasDynamicOffset = false;
+      bindGroupLayoutEntry[0].buffer.minBindingSize = 0;
+    }
+    groupLayoutFishPer = MakeBindGroupLayout(bindGroupLayoutEntry);
   }
 
   reallocResource(aquarium->getPreFishCount(), aquarium->getCurFishCount(),
@@ -945,37 +978,35 @@ void ContextDawn::preFrame() {
   mCommandEncoder = mDevice.CreateCommandEncoder();
   mBackbufferView = mSwapchain.GetCurrentTextureView();
 
-  wgpu::RenderPassColorAttachmentDescriptor colorAttachmentDescriptor;
+  wgpu::RenderPassColorAttachment colorAttachment;
   if (mMSAASampleCount > 1) {
     // If MSAA is enabled, we render to a multisampled texture and then resolve
     // to the backbuffer
-    colorAttachmentDescriptor.attachment = mSceneRenderTargetView;
-    colorAttachmentDescriptor.resolveTarget = mBackbufferView;
-    colorAttachmentDescriptor.loadOp = wgpu::LoadOp::Clear;
-    colorAttachmentDescriptor.storeOp = wgpu::StoreOp::Clear;
-    colorAttachmentDescriptor.clearColor = {0.f, 0.8f, 1.f, 0.f};
+    colorAttachment.view = mSceneRenderTargetView;
+    colorAttachment.resolveTarget = mBackbufferView;
+    colorAttachment.loadOp = wgpu::LoadOp::Clear;
+    colorAttachment.storeOp = wgpu::StoreOp::Clear;
+    colorAttachment.clearColor = {0.f, 0.8f, 1.f, 0.f};
   } else {
     // When MSAA is off, we render directly to the backbuffer
-    colorAttachmentDescriptor.attachment = mBackbufferView;
-    colorAttachmentDescriptor.loadOp = wgpu::LoadOp::Clear;
-    colorAttachmentDescriptor.storeOp = wgpu::StoreOp::Store;
-    colorAttachmentDescriptor.clearColor = {0.f, 0.8f, 1.f, 0.f};
+    colorAttachment.view = mBackbufferView;
+    colorAttachment.loadOp = wgpu::LoadOp::Clear;
+    colorAttachment.storeOp = wgpu::StoreOp::Store;
+    colorAttachment.clearColor = {0.f, 0.8f, 1.f, 0.f};
   }
 
-  wgpu::RenderPassDepthStencilAttachmentDescriptor
-      depthStencilAttachmentDescriptor;
-  depthStencilAttachmentDescriptor.attachment = mSceneDepthStencilView;
-  depthStencilAttachmentDescriptor.depthLoadOp = wgpu::LoadOp::Clear;
-  depthStencilAttachmentDescriptor.depthStoreOp = wgpu::StoreOp::Store;
-  depthStencilAttachmentDescriptor.clearDepth = 1.f;
-  depthStencilAttachmentDescriptor.stencilLoadOp = wgpu::LoadOp::Clear;
-  depthStencilAttachmentDescriptor.stencilStoreOp = wgpu::StoreOp::Store;
-  depthStencilAttachmentDescriptor.clearStencil = 0;
+  wgpu::RenderPassDepthStencilAttachment depthStencilAttachment;
+  depthStencilAttachment.view = mSceneDepthStencilView;
+  depthStencilAttachment.depthLoadOp = wgpu::LoadOp::Clear;
+  depthStencilAttachment.depthStoreOp = wgpu::StoreOp::Store;
+  depthStencilAttachment.clearDepth = 1.f;
+  depthStencilAttachment.stencilLoadOp = wgpu::LoadOp::Clear;
+  depthStencilAttachment.stencilStoreOp = wgpu::StoreOp::Store;
+  depthStencilAttachment.clearStencil = 0;
 
   mRenderPassDescriptor.colorAttachmentCount = 1;
-  mRenderPassDescriptor.colorAttachments = &colorAttachmentDescriptor;
-  mRenderPassDescriptor.depthStencilAttachment =
-      &depthStencilAttachmentDescriptor;
+  mRenderPassDescriptor.colorAttachments = &colorAttachment;
+  mRenderPassDescriptor.depthStencilAttachment = &depthStencilAttachment;
 
   mRenderPass = mCommandEncoder.BeginRenderPass(&mRenderPassDescriptor);
 }
@@ -1047,22 +1078,23 @@ void ContextDawn::reallocResource(int preTotalInstance,
   fishPersBuffer = createBuffer(descriptor);
 
   if (enableDynamicBufferOffset) {
-    bindGroupFishPers[0] = makeBindGroup(
-        groupLayoutFishPer, {{0,
-                              fishPersBuffer,
-                              0,
-                              CalcConstantBufferByteSize(sizeof(FishPer)),
-                              {},
-                              {}}});
+    std::vector<wgpu::BindGroupEntry> bindGroupEntry;
+    bindGroupEntry.resize(1);
+    bindGroupEntry[0].binding = 0;
+    bindGroupEntry[0].buffer = fishPersBuffer;
+    bindGroupEntry[0].offset = 0;
+    bindGroupEntry[0].size = CalcConstantBufferByteSize(sizeof(FishPer));
+    bindGroupFishPers[0] = makeBindGroup(groupLayoutFishPer, bindGroupEntry);
   } else {
     for (int i = 0; i < curTotalInstance; i++) {
-      bindGroupFishPers[i] = makeBindGroup(
-          groupLayoutFishPer, {{0,
-                                fishPersBuffer,
-                                CalcConstantBufferByteSize(sizeof(FishPer) * i),
-                                CalcConstantBufferByteSize(sizeof(FishPer)),
-                                {},
-                                {}}});
+      std::vector<wgpu::BindGroupEntry> bindGroupEntry;
+      bindGroupEntry.resize(1);
+      bindGroupEntry[0].binding = 0;
+      bindGroupEntry[0].buffer = fishPersBuffer;
+      bindGroupEntry[0].offset =
+          CalcConstantBufferByteSize(sizeof(FishPer) * i);
+      bindGroupEntry[0].size = CalcConstantBufferByteSize(sizeof(FishPer));
+      bindGroupFishPers[i] = makeBindGroup(groupLayoutFishPer, bindGroupEntry);
     }
   }
 }

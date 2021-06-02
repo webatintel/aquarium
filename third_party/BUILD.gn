@@ -34,7 +34,7 @@ config("glfw_public_config") {
     defines = [ "_GLFW_COCOA" ]
   }
 
-  if (is_linux && !is_chromeos) {
+  if (is_linux) {
     defines = [ "_GLFW_X11" ]
   }
 }
@@ -87,14 +87,14 @@ static_library("glfw") {
     ]
   }
 
-  if ((is_linux && !is_chromeos) || is_mac) {
+  if (is_linux || is_mac) {
     sources += [
       "${glfw_dir}/src/posix_thread.c",
       "${glfw_dir}/src/posix_thread.h",
     ]
   }
 
-  if (is_linux && !is_chromeos) {
+  if (is_linux) {
     sources += [
       "${glfw_dir}/src/glx_context.c",
       "${glfw_dir}/src/glx_context.h",

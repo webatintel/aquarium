@@ -10,18 +10,17 @@ dawn_has_build = true
 
 dawn_root = "//third_party/dawn/"
 
-dawn_jinja2_dir = "//third_party/dawn/third_party/jinja2"
-dawn_shaderc_dir = "//third_party/dawn/third_party/shaderc"
-dawn_spirv_cross_dir = "//third_party/SPIRV-Cross"
-dawn_spirv_tools_dir = "//third_party/SPIRV-Tools"
+dawn_jinja2_dir = "//third_party/jinja2"
+dawn_spirv_cross_dir = "//third_party/vulkan-deps/spirv-cross/src"
+dawn_spirv_tools_dir = "//third_party/vulkan-deps/spirv-tools/src"
 dawn_swiftshader_dir = "//third_party/swiftshader"
 dawn_tint_dir = "//third_party/dawn/third_party/tint"
-dawn_vulkan_loader_dir = "//third_party/angle/third_party/vulkan-loader/src"
-dawn_vulkan_validation_layers_dir =
-    "//third_party/angle/third_party/vulkan-validation-layers/src"
+dawn_vulkan_loader_dir = "//third_party/vulkan-deps/vulkan-loader/src"
+dawn_vulkan_validation_layers_dir = "//third_party/vulkan-deps/vulkan-validation-layers/src"
 
 # There's no chance to build Dawn tests and examples in Aquarium. It may
 # happen certain repositories are not checked out at all.
 dawn_glfw_dir = ""
 dawn_glm_dir = ""
 dawn_googletest_dir = ""
+dawn_shaderc_dir = ""
